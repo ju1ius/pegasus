@@ -20,10 +20,10 @@ class OneOf extends Composite
         return implode(' | ', $this->_stringMembers());
     }
     
-    protected function _uncachedMatch($text, $pos=0, array &$cache=null, ParseError $error=null, \SplStack $stack)
+    public function match($text, $pos, $parser)
     {
         foreach ($this->members as $member) {
-            $node = $member->_match($text, $pos, $cache, $error, $stack);
+            $node = $parser->apply($member);
             if($node) {
                 // Wrap the succeeding child in a node representing the OneOf
                 return new Node($this->name, $text, $pos, $node->end, [$node]);

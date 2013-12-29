@@ -1,12 +1,12 @@
 <?php
 
-require_once __DIR__.'/../../../Pegasus_TestCase.php';
+require_once __DIR__.'/../ExpressionBase_TestCase.php';
 
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Node;
 
 
-class LiteralTest extends Pegasus_TestCase
+class LiteralTest extends ExpressionBase_TestCase
 {
     /**
      * @dataProvider testMatchProvider
@@ -16,7 +16,7 @@ class LiteralTest extends Pegasus_TestCase
         $expr = new Literal($literal);
         $this->assertEquals(
             $expected,
-            call_user_func_array([$expr, 'match'], $params)
+            call_user_func_array([$this, 'parse'], array_merge([$expr], $params))
         );
     }
     public function testMatchProvider()

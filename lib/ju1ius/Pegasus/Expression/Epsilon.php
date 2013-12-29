@@ -6,6 +6,7 @@ use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Exception\ParseError;
 use ju1ius\Pegasus\Node;
 
+
 /**
  * The empty string
  *
@@ -18,7 +19,7 @@ class Epsilon extends Expression
         return 'E';
     }
 
-    protected function _uncachedMatch($text, $pos=0, array &$cache=null, ParseError $error=null, \SplStack $stack)
+    public function match($text, $pos, $parser)
     {
         return new Node($this->name, $text, $pos, $pos);
     }

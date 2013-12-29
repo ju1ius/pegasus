@@ -53,12 +53,12 @@ class Node
      **/
     public function getText()
     {
-        return substr($this->full_text, $this->start, $this->end - $this->start);
+        return (string) substr($this->full_text, $this->start, $this->end - $this->start);
     }
 
-    public function equals($other = null)
+    public function equals($other=null)
     {
-        return $other !== null
+        return $other instanceof $this
             && $this->expr_name === $other->name
             && $this->full_text === $other->full_text
             && $this->start === $other->start

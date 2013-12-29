@@ -42,7 +42,7 @@ class NodeVisitor
     {
         try {
             // ignored rule
-            if (isset($this->ignored[$node->expr_name])) return null;
+            if (!$node || isset($this->ignored[$node->expr_name])) return null;
 
             // filter dropped (null) nodes before visiting
             $children = array_map([$this, 'visit'], $node->children);

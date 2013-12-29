@@ -22,9 +22,8 @@ class LazyReference extends Expression
         return "<LazyReference to {$this->identifier}>";
     }
 
-    protected function _uncachedMatch($text, $pos=0, array &$cache=null, ParseError $error=null, \SplStack $stack)
+    public function match($text, $pos, $parser)
     {
         return null;
     }
-    
 }

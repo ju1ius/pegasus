@@ -19,9 +19,9 @@ class Not extends Composite
         return sprintf('!(%s)', $this->_stringMembers()[0]);
     }
     
-    protected function _uncachedMatch($text, $pos=0, array &$cache=null, ParseError $error=null, \SplStack $stack)
+    public function match($text, $pos, $parser)
     {
-        $node = $this->members[0]->_match($text, $pos, $cache, $error, $stack);
+        $node = $parser->apply($this->members[0]);
         if (!$node) {
             return new Node($this->name, $text, $pos, $pos);
         }

@@ -35,7 +35,7 @@ class ParseError extends \Exception
 
     public function line()
     {
-        return substr_count($this->text, "\n", 0, $this->pos+1) + 1;
+        return substr_count($this->text, "\n", 0, $this->pos) + 1;
     }
 
     public function column()

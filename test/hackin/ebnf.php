@@ -3,6 +3,7 @@
 require_once __DIR__.'/../../vendor/autoload.php';
 
 use ju1ius\Pegasus\PegasusGrammar;
+use ju1ius\Pegasus\Packrat\Parser;
 use ju1ius\Pegasus\RuleVisitor;
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Expression\Regex;
@@ -44,12 +45,33 @@ $regex_pattern = '@\G
 //$node = $rx_rx->match('/foo\/bar/i');
 //var_dump($node);
 
-$metagrammar = PegasusGrammar::build();
-$my_syntax = <<<'EOS'
-some_rule = ('foo' 'bar')
-    | ('bar' 'baz')
-    | ('foo')
+//$metagrammar = PegasusGrammar::build();
+//$my_syntax = <<<'EOS'
+//some_rule = ('foo' 'bar')
+    //| ('bar' 'baz')
+    //| ('foo')
+//EOS;
+//$tree = $metagrammar->parse($my_syntax);
+//list($rules, $default) = (new RuleVisitor)->visit($tree);
+//var_dump($rules);
+
+//$_ = new Regex('\s*', '_');
+//$id = new Regex('\w+', 'id');
+//$eq = new Literal ('=', 'eq');
+//$expr = new Sequence([
+    //$id, $_, $eq, $_, $id, $_
+//], 'expr');
+//$rules = new Sequence([
+    //$_, new OneOrMore([$expr], 'expr+')
+//], 'rules');
+//
+$rules = PegasusGrammar::getRules();
+$parser = new Parser($rules);
+$test = <<<'EOS'
+myrule = 'foo'
+other = 'bar'
 EOS;
-$tree = $metagrammar->parse($my_syntax);
-list($rules, $default) = (new RuleVisitor)->visit($tree);
-var_dump($rules);
+var_dump(strlen($test));
+$tree = $parser->parse($test);
+var_dump($tree);
+//$result = (new RuleVisitor)->visit($tree);

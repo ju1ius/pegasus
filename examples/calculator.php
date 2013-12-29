@@ -3,6 +3,7 @@
 require_once __DIR__.'/../vendor/autoload.php';
 
 use ju1ius\Pegasus\Grammar;
+use ju1ius\Pegasus\Packrat\Parser;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\NodeVisitor;
 
@@ -96,7 +97,8 @@ _ = /\s*/
 EOS;
 
 $grammar = new Grammar($syntax);
-$tree = $grammar->parse($argv[1]);
+$parser = new Parser($graammar);
+$tree = $parser->parse($argv[1]);
 $calculator = new Calculator();
 $result = $calculator->visit($tree);
 echo "Result: ", $result, "\n";

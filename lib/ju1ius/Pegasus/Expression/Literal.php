@@ -36,7 +36,7 @@ class Literal extends Expression
         return sprintf('"%s"', $this->literal);
     }
 
-    protected function _uncachedMatch($text, $pos=0, array &$cache=null, ParseError $error=null, \SplStack $stack)
+    public function match($text, $pos, $parser)
     {
         if ($pos === strpos($text, $this->literal, $pos)) {
             return new Node($this->name, $text, $pos, $pos + $this->length);

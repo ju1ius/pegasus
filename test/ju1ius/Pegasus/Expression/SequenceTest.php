@@ -18,7 +18,7 @@ class SequenceTest extends ExpressionBase_TestCase
         $expr = new Sequence($members);
         $this->assertEquals(
             $expected,
-            call_user_func_array([$expr, 'match'], $match_args)
+            call_user_func_array([$this, 'parse'], array_merge([$expr], $match_args))
         );
     }
     public function testMatchProvider()
@@ -42,10 +42,7 @@ class SequenceTest extends ExpressionBase_TestCase
     public function testMatchError($members, $match_args)
     {
         $expr = new Sequence($members);
-        $this->assertEquals(
-            call_user_func_array([$expr, 'match'], $match_args),
-            $expected
-        );
+        call_user_func_array([$this, 'parse'], array_merge([$expr], $match_args));
     }
     public function testMatchErrorProvider()
     {

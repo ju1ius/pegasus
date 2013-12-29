@@ -16,7 +16,7 @@ class RegexTest extends ExpressionBase_TestCase
         $expr = $this->expr('Regex', $args);
         $this->assertEquals(
             $expected,
-            call_user_func_array([$expr, 'match'], $match_args)
+            call_user_func_array([$this, 'parse'], array_merge([$expr], $match_args))
         );
     }
     public function testMatchProvider()

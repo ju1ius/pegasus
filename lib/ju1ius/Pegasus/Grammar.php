@@ -38,6 +38,19 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
         $rules = [],
         $default_rule = null;
 
+    public static function fromString($syntax, $default_rule=null)
+    {
+        list($expressions, $first) = static::expressionsFromSyntax($syntax);
+        $grammar = (new static)->merge($expressions);
+        $grammar->setDefault($default_rule ? $expressions[$default_rule] : $first);
+        return $grammar;
+    }
+
+    public static function fromExpression(Expression $expr)
+    {
+        //TODO
+    }
+
     /**
      * @param string $peg          The grammar definition
      * @param string $default_rule The name of the rule invoked when you call parse() on the grammar.
@@ -45,19 +58,18 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      **/
     public function __construct($rules, $default_rule=null)
     {
-        list($exprs, $first) = $this->_expressionsFromRules($rules);
+        list($exprs, $first) = static::expressionsFromSyntax($rules);
         $this->rules = array_merge($this->rules, $exprs);
         $this->default_rule = $default_rule ? $exprs[$default_rule] : $first;
     }
 
-    public function parse($text, $pos=0)
+    public function setDefault($name)
     {
-        return $this->default_rule->parse($text, $pos);
+        $this->default_rule = $this->rules[$name];
     }
-
-    public function match($text, $pos=0)
+    public function getDefault()
     {
-        return $this->default_rule->match($text, $pos);
+        return $this->default_rule;
     }
     
     public function __toString()
@@ -70,6 +82,15 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
         return implode("\n", array_map(function($expr) {
             return $expr->asRule();
         }, $exprs));
+    }
+
+    public function merge($grammar)
+    {
+        foreach ($grammar as $name => $rule) {
+            $this->rules[$name] = $rule;
+        }
+
+        return $this;
     }
 
     public function offsetExists($index)
@@ -105,9 +126,9 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      * and that root is the starting symbol for parsing,
      * but there's nothing saying you can't have multiple roots.
      **/
-    protected function _expressionsFromRules($rules)
+    protected static function expressionsFromSyntax($syntax)
     {
-        $tree = PegasusGrammar::build()->parse($rules);
+        $tree = PegasusGrammar::build()->parse($syntax);
         return (new RuleVisitor)->visit($tree);
     }
 }

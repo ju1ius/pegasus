@@ -30,7 +30,7 @@ class Regex extends Expression
         return $this->compiled_pattern;
     }
 
-    protected function _uncachedMatch($text, $pos=0, array &$cache=null, ParseError $error=null, \SplStack $stack)
+    public function match($text, $pos, $parser)
     {
         // @TODO: should we use PREG_OFFSET_CAPTURE or substr($text, $pos) ?
         if(preg_match($this->compiled_pattern, $text, $matches, 0, $pos)) {

@@ -38,14 +38,14 @@ class Quantifier extends Composite
         );
     }
 
-    protected function _uncachedMatch($text, $pos=0, array &$cache=null, ParseError $error=null, \SplStack $stack)
+    public function match($text, $pos, $parser)
     {
         $new_pos = $pos;
         $children = [];
         $match_count = 0;
         while(true) {
 
-            $node = $this->members[0]->_match($text, $new_pos, $cache, $error, $stack);
+            $node = $parser->apply($this->members[0]);
             if(!$node) break;
             $match_count++;
 

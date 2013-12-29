@@ -14,10 +14,10 @@ use ju1ius\Pegasus\Node;
  **/
 class AllOf extends Composite
 {
-    protected function _uncachedMatch($text, $pos=0, array &$cache=null, ParseError $error=null, \SplStack $stack)
+    public function match($text, $pos, $parser)
     {
         foreach ($this->members as $member) {
-            $node = $member->_match($text, $pos, $cache, $error, $stack);
+            $node = $parser->apply($this);
             if(!$node) return;
         }
         return new Node($this->name, $text, $pos, $node->end, [$node]);

@@ -9,12 +9,17 @@ use ju1ius\Pegasus\Node\Regex as RegexNode;
 
 class PegasusGrammarTest extends Pegasus_TestCase
 {
-    protected static $grammar;
+    protected static $parser;
 
     public static function setUpBeforeClass()
     {
-        //self::$base_rules = PegasusGrammar::getRules();
-        self::$grammar = PegasusGrammar::build();
+        $grammar = PegasusGrammar::build();
+        self::$parser = new Parser($grammar);
+    }
+
+    protected function parse($rule_name, $text, $pos=0)
+    {
+        return self::$parser->parse($text, $pos, $rule_name);
     }
 
     /**
@@ -24,7 +29,7 @@ class PegasusGrammarTest extends Pegasus_TestCase
     {
         $this->assertEquals(
             $expected,
-            self::$grammar['comment']->match($input)
+            $this->parse('comment', $input)
         );
     }
     public function testCommentProvider()
@@ -53,7 +58,7 @@ class PegasusGrammarTest extends Pegasus_TestCase
      */
     public function test_($input, $expected)
     {
-        $node = self::$grammar['_']->match($input);
+        $node = $this->parse('_', $input);
         $this->assertEquals(
             $expected,
             $node->getText()
@@ -79,7 +84,7 @@ class PegasusGrammarTest extends Pegasus_TestCase
      */
     public function testIdentifier($input, $expected)
     {
-        $node = self::$grammar['identifier']->match($input);
+        $node = $this->parse('identifier', $input);
         $this->assertEquals($expected, $node->getText());
     }
     public function testIdentifierProvider()
@@ -99,7 +104,7 @@ class PegasusGrammarTest extends Pegasus_TestCase
      */
     public function testEquals($input, $expected)
     {
-        $node = self::$grammar['equals']->match($input);
+        $node = $this->parse('equals', $input);
         $this->assertEquals($expected, $node->getText());
     }
     public function testEqualsProvider()
@@ -116,7 +121,7 @@ class PegasusGrammarTest extends Pegasus_TestCase
      */
     public function testReference($input, $expected)
     {
-        $node = self::$grammar['reference']->match($input);
+        $node = $this->parse('reference', $input);
         $this->assertEquals($expected, $node->getText());
     }
     public function testReferenceProvider()
@@ -132,7 +137,7 @@ class PegasusGrammarTest extends Pegasus_TestCase
      */
     public function testReferenceNotEquals($input)
     {
-        $node = self::$grammar['reference']->match($input);
+        $node = $this->parse('reference', $input);
     }
     public function testReferenceNotEqualsProvider()
     {
@@ -147,7 +152,7 @@ class PegasusGrammarTest extends Pegasus_TestCase
      */
     public function testLiteral($input, $expected)
     {
-        $node = self::$grammar['literal']->match($input);
+        $node = $this->parse('literal', $input);
         $this->assertEquals($expected, $node);
     }
     public function testLiteralProvider()
@@ -185,7 +190,7 @@ class PegasusGrammarTest extends Pegasus_TestCase
     {
         $this->assertEquals(
             $expected,
-            self::$grammar['quantifier']->match($input)
+            $this->parse('quantifier', $input)
         );
     }
     public function testQuantifierProvider()

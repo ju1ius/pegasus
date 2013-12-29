@@ -12,7 +12,7 @@ use ju1ius\Pegasus\Exception\ParseError;
 abstract class Expression
 {
     public $name;
-    protected $id;
+    public $id;
 
     public function __construct($name='')
     {
@@ -21,13 +21,15 @@ abstract class Expression
     }
 
     abstract public function asRhs();
+    abstract public function match($text, $pos, $parser);
+/*
     abstract protected function _uncachedMatch(
         $text, $pos=0,
         array &$cache,
         ParseError $error,
         \SplStack $stack
     );
-
+ */
     /**
      * Return a parse tree of $text, starting at $pos.
      *
@@ -37,6 +39,7 @@ abstract class Expression
      *
      * @return Node
      */
+/*
     public function parse($text, $pos=0)
     {
         $node = $this->match($text, $pos);
@@ -46,7 +49,7 @@ abstract class Expression
 
         return $node;
     }
-
+ */
     /**
      * Return the parse tree matching this expression at the given position,
      * not necessarily extending all the way to the end of $text.
@@ -55,17 +58,10 @@ abstract class Expression
      *
      * @return Node
      */
-    public function match($text, $pos=0)
+/*
+    public function match($text, $pos=0, $parser)
     {
-        $error = new ParseError($text);
-        $cache = [];
-        $stack= new \SplStack();
-        $node = $this->_match($text, $pos, $cache, $error, $stack);
-        if (!$node) {
-            throw $error;
-        }
-
-        return $node;
+        return $this->_match($text, $pos, $parser);
     }
 
     protected function _match($text, $pos, array &$cache, ParseError $error,
@@ -87,7 +83,7 @@ abstract class Expression
         $stack->pop();
         return $node;
     }
-
+*/
     public function __toString()
     {
         return sprintf('<%s: %s>', get_class($this), $this->asRule());

@@ -22,14 +22,4 @@ class Optional extends Quantifier
     {
         return sprintf('(%s)?', $this->_stringMembers()[0]);
     }
-    /*
-    protected function _uncachedMatch($text, $pos=0, $cache=null, $error=null)
-    {
-        $node = $this->members[0]->_match($text, $pos, $cache, $error);
-        if ($node) {
-            return new Node($this->name, $text, $pos, $node->end, [$node]);
-        }
-        return new Node($this->name, $text, $pos, $pos);
-    }
-    */
 }
