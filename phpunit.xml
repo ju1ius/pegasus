@@ -1,0 +1,15 @@
+<phpunit
+    verbose="true"
+    colors="true">
+    <testsuites>
+        <testsuite name="Expressions">
+            <file>test/ju1ius/Pegasus/Expression/LiteralTest.php</file>
+            <file>test/ju1ius/Pegasus/Expression/RegexTest.php</file>
+            <file>test/ju1ius/Pegasus/Expression/QuantifierTest.php</file>
+            <directory>test/ju1ius/Pegasus/Expression</directory>
+        </testsuite>
+        <testsuite name="Grammar">
+            <file>test/ju1ius/Pegasus/PegasusGrammarTest.php</file>
+        </testsuite>
+    </testsuites>
+</phpunit>
