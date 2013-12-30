@@ -3,7 +3,7 @@
 namespace ju1ius\Pegasus\Expression;
 
 use ju1ius\Pegasus\Expression\Composite;
-use ju1ius\Pegasus\Exception\ParseError;
+use ju1ius\Pegasus\Parser\ParserInterface;
 use ju1ius\Pegasus\Node;
 
 
@@ -21,7 +21,7 @@ class Sequence extends Composite
         return implode(' ', $this->_stringMembers());
     }
     
-    public function match($text, $pos, $parser)
+    public function match($text, $pos, ParserInterface $parser)
     {
         $new_pos = $pos;
         $seq_len = 0;

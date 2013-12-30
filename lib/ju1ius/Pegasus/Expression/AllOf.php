@@ -3,7 +3,7 @@
 namespace ju1ius\Pegasus\Expression;
 
 use ju1ius\Pegasus\Expression\Composite;
-use ju1ius\Pegasus\Exception\ParseError;
+use ju1ius\Pegasus\Parser\ParserInterface;
 use ju1ius\Pegasus\Node;
 
 /**
@@ -14,7 +14,7 @@ use ju1ius\Pegasus\Node;
  **/
 class AllOf extends Composite
 {
-    public function match($text, $pos, $parser)
+    public function match($text, $pos, ParserInterface $parser)
     {
         foreach ($this->members as $member) {
             $node = $parser->apply($this, $pos);

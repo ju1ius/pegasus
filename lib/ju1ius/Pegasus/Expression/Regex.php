@@ -3,8 +3,9 @@
 namespace ju1ius\Pegasus\Expression;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Exception\ParseError;
+use ju1ius\Pegasus\Parser\ParserInterface;
 use ju1ius\Pegasus\Node\Regex as RegexNode;
+
 
 /**
  * An expression that matches what a regex does.
@@ -34,9 +35,8 @@ class Regex extends Expression
         return $this->compiled_pattern;
     }
 
-    public function match($text, $pos, $parser)
+    public function match($text, $pos, ParserInterface $parser)
     {
-        // @TODO: should we use PREG_OFFSET_CAPTURE or substr($text, $pos) ?
         if(preg_match($this->compiled_pattern, $text, $matches, 0, $pos)) {
             $match = $matches[0];
             $length = strlen($match);

@@ -1,6 +1,6 @@
 <?php
 
-namespace ju1ius\Pegasus\Packrat;
+namespace ju1ius\Pegasus\Parser;
 
 
 class MemoEntry

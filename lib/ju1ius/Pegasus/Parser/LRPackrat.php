@@ -1,11 +1,17 @@
 <?php
 
-namespace ju1ius\Pegasus\Packrat;
+namespace ju1ius\Pegasus\Parser;
 
 use ju1ius\Pegasus\Expression;
 
 
-class LRParser extends Parser
+/**
+ * A packrat parser implementing Wrath, Douglass & Millstein's
+ * algorithm to fully support left-recursive rules.
+ *
+ * @see doc/algo/packrat-lr.pdf
+ */
+class LRPackrat extends Packrat
 {
     protected
         $heads,

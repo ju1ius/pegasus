@@ -3,7 +3,7 @@
 require_once __DIR__.'/../../Pegasus_TestCase.php';
 
 use ju1ius\Pegasus\PegasusGrammar;
-use ju1ius\Pegasus\Packrat\Parser;
+use ju1ius\Pegasus\Parser\Packrat;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Node\Regex as RegexNode;
 
@@ -15,7 +15,7 @@ class PegasusGrammarTest extends Pegasus_TestCase
     public static function setUpBeforeClass()
     {
         $grammar = PegasusGrammar::build();
-        self::$parser = new Parser($grammar);
+        self::$parser = new Packrat($grammar);
     }
 
     protected function parse($rule_name, $text, $pos=0)

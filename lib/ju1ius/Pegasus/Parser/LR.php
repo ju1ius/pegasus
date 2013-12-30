@@ -1,6 +1,6 @@
 <?php
 
-namespace ju1ius\Pegasus\Packrat;
+namespace ju1ius\Pegasus\Parser;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Node;

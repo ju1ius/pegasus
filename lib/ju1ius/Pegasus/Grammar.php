@@ -4,6 +4,7 @@ namespace ju1ius\Pegasus;
 
 use ju1ius\Pegasus\Expression;
 
+
 /**
  * A collection of expressions that describe a language.
  *
@@ -61,7 +62,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
 
     public function parse($syntax)
     {
-        return (new Packrat\Parser($this))->parse($syntax);
+        return (new Parser\Packrat($this))->parse($syntax);
     }
     
     public function __toString()

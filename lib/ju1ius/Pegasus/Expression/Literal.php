@@ -3,7 +3,7 @@
 namespace ju1ius\Pegasus\Expression;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Exception\ParseError;
+use ju1ius\Pegasus\Parser\ParserInterface;
 use ju1ius\Pegasus\Node;
 
 
@@ -36,7 +36,7 @@ class Literal extends Expression
         return sprintf('"%s"', $this->literal);
     }
 
-    public function match($text, $pos, $parser)
+    public function match($text, $pos, ParserInterface $parser)
     {
         if ($pos === strpos($text, $this->literal, $pos)) {
             return new Node($this->name, $text, $pos, $pos + $this->length);

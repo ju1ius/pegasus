@@ -3,7 +3,7 @@
 namespace ju1ius\Pegasus\Expression;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Exception\ParseError;
+use ju1ius\Pegasus\Parser\ParserInterface;
 use ju1ius\Pegasus\Node;
 
 
@@ -19,7 +19,7 @@ class Epsilon extends Expression
         return 'E';
     }
 
-    public function match($text, $pos, $parser)
+    public function match($text, $pos, ParserInterface $parser)
     {
         return new Node($this->name, $text, $pos, $pos);
     }

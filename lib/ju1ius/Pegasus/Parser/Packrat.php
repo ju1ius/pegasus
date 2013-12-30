@@ -1,6 +1,6 @@
 <?php
 
-namespace ju1ius\Pegasus\Packrat;
+namespace ju1ius\Pegasus\Parser;
 
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Expression;
@@ -17,7 +17,7 @@ use ju1ius\Pegasus\Exception\ParseError;
  *
  * @see docs/packrat-lr.pdf
  */
-class Parser
+class Packrat implements ParserInterface
 {
     protected $grammar = null;
     protected $memo = [];
@@ -71,6 +71,7 @@ class Parser
     /**
      * The APPLY-RULE procedure, used in every rule application,
      * ensures that no rule is ever evaluated more than once at a given position.
+     *
      * When rule R is applied at position P, APPLY-RULE consults the memo table.
      * If the memo table indicates that R was previously applied at P,
      * the appropriate parse tree node is returned,
@@ -85,7 +86,8 @@ class Parser
         $this->error->pos = $pos;
         $this->error->expr = $expr;
 
-        if ($m = $this->memo($expr, $pos)) {
+        if (isset($this->memo[$expr->id][$pos])) {
+            $m = $this->memo[$expr->id][$pos];
             $this->pos = $m->end;
             return $m->result;
         }
@@ -105,6 +107,7 @@ class Parser
 
     /**
      * Evaluates an expression & updates current position on success.
+     *
      */
     public function evaluate(Expression $expr)
     {

@@ -2,7 +2,7 @@
 
 require_once __DIR__.'/../../Pegasus_TestCase.php';
 
-use ju1ius\Pegasus\Packrat\Parser;
+use ju1ius\Pegasus\Parser\Packrat;
 use ju1ius\Pegasus\Expression;
 
 
@@ -16,7 +16,7 @@ class ExpressionBase_TestCase extends Pegasus_TestCase
 
     protected function parse(Expression $expr, $text, $pos=0)
     {
-        $parser = new Parser($expr);
+        $parser = new Packrat($expr);
         return $parser->parse($text, $pos);
     }
     

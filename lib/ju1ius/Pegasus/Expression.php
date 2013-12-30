@@ -4,6 +4,7 @@ namespace ju1ius\Pegasus;
 
 use ju1ius\Pegasus\Exception\IncompleteParseError;
 use ju1ius\Pegasus\Exception\ParseError;
+use ju1ius\Pegasus\Parser\ParserInterface;
 
 
 /**
@@ -21,7 +22,7 @@ abstract class Expression
     }
 
     abstract public function asRhs();
-    abstract public function match($text, $pos, $parser);
+    abstract public function match($text, $pos, ParserInterface $parser);
 /*
     abstract protected function _uncachedMatch(
         $text, $pos=0,
