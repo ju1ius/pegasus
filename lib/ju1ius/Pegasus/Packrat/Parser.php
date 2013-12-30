@@ -8,6 +8,15 @@ use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Exception\ParseError;
 
 
+/**
+ * A packrat parser implementing Wrath, Douglass & Millstein's
+ * algorithm to prevent infinite loops in left-recursive rules.
+ *
+ * For a full implementation of left-recursion,
+ * use LRParser.
+ *
+ * @see docs/packrat-lr.pdf
+ */
 class Parser
 {
     protected $grammar = null;
@@ -59,71 +68,63 @@ class Parser
         return $result;
     }
 
+    /**
+     * The APPLY-RULE procedure, used in every rule application,
+     * ensures that no rule is ever evaluated more than once at a given position.
+     * When rule R is applied at position P, APPLY-RULE consults the memo table.
+     * If the memo table indicates that R was previously applied at P,
+     * the appropriate parse tree node is returned,
+     * and the parser’s current position is updated accordingly.
+     * Otherwise, APPLY-RULE evaluates the rule,
+     * stores the result in the memo table,
+     * and returns the corresponding parse tree node.
+     */
     public function apply(Expression $expr, $pos=0)
     {
-        //echo __METHOD__, ' @', $this->pos, ': trying ',
-            //$expr, "\n";
-
-        $start_pos = $pos;
         $this->pos = $pos;
-        $this->updateError($expr);
-        if ($memo = $this->memo($expr, $start_pos)) {
-            return $this->recall($memo, $expr);
-        }
-        $memo = $this->inject_fail($expr, $start_pos);
-        //$result = $this->evaluate($expr);
-        $result = $expr->match($this->source, $start_pos, $this);
-        //if ($result) echo "MATCHED!\n";
-        return $this->save($memo, $result);
-    }
+        $this->error->pos = $pos;
+        $this->error->expr = $expr;
 
-    public function evaluate(Expression $expr)
-    {
-        $result = $expr->match($this->source, $this->pos, $this);
+        if ($m = $this->memo($expr, $pos)) {
+            $this->pos = $m->end;
+            return $m->result;
+        }
+        // Store a result of FAIL in the memo table
+        // before it evaluates the body of a rule.
+        // This has the effect of making all left-recursive applications
+        // (both direct and indirect) fail.
+        $m = new MemoEntry(null, $pos);
+        $this->memo[$expr->id][$pos] = $m;
+        // evaluate expression
+        $result = $this->evaluate($expr);
+        // update the result in the memo table
+        $m->result = $result;
+        $m->end = $this->pos;
         return $result;
     }
 
-    protected function updateError(Expression $expr)
+    /**
+     * Evaluates an expression & updates current position on success.
+     */
+    public function evaluate(Expression $expr)
     {
-        $this->error->pos = $this->pos;
-        $this->error->expr = $expr;
+        $result = $expr->match($this->source, $this->pos, $this);
+        if ($result) $this->pos = $result->end;
+        return $result;
     }
-    
+
+    /**
+     * Fetches the memo entry corresponding
+     * to the given expression at the given position.
+     *
+     * @param Expression $expr
+     * @param int $pos
+     */    
     protected function memo(Expression $expr, $start_pos)
     {
         return isset($this->memo[$expr->id][$start_pos])
             ? $this->memo[$expr->id][$start_pos]
             : null
         ;
-    }
-
-    protected function inject_memo(Expression $expr, $start_pos, $result, $end_pos)
-    {
-        return $this->memo[$expr->id][$start_pos] = new MemoEntry($result, $end_pos);
-    }
-
-    protected function inject_fail(Expression $expr, $fail_pos)
-    {
-        return $this->memo[$expr->id][$fail_pos] = new MemoEntry(null, $fail_pos);
-    }
-
-    protected function save($memo, $result)
-    {
-        //echo __METHOD__, '@', $this->pos, ': ',
-            //$result ?: 'NULL', "\n";
-        if ($result) {
-            $this->pos = $result->end;
-        }
-        $memo->end = $this->pos;
-        $memo->result = $result;
-        return $result;
-    }
-
-    protected function recall(MemoEntry $memo, Expression $expr)
-    {
-        //echo __METHOD__, '@', $this->pos, ': ',
-            //$expr, "\n";
-        $this->pos = $memo->end;
-        return $memo->result;
     }
 }

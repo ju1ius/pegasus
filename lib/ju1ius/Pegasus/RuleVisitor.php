@@ -2,6 +2,9 @@
 
 namespace ju1ius\Pegasus;
 
+use ju1ius\Pegasus\Exception\UndefinedLabelException;
+use ju1ius\Pegasus\Exception\VisitationError;
+
 
 /**
  * Class RuleVisitor
@@ -24,7 +27,6 @@ class RuleVisitor extends NodeVisitor
         parent::__construct($actions);
     }
     
-
     /**
      * Documentation for genericVisit
      *
@@ -65,7 +67,11 @@ class RuleVisitor extends NodeVisitor
             $rule_map[$rule_name] = $this->_resolveRefs($rule_map, $rule_map[$rule_name], $unwalked_names, [$rule_name]);
             unset($unwalked_names[$rule_name]);
         }
-        return [$rule_map, $rules[0]];
+        $default = $rules[0] instanceof Expression\LazyReference
+            ? $rule_map[$rules[0]->identifier]
+            : $rules[0]
+        ;
+        return [$rule_map, $default];
     }
     
     /**
@@ -286,7 +292,7 @@ class RuleVisitor extends NodeVisitor
             if (!isset($walking_names[$label])) {
                 // We aren't already working on traversing this label:
                 if (!isset($rule_map[$label])) {
-                    throw new UndefinedLabelException($expr);
+                    throw new UndefinedLabelException($label);
                 }
                 $reffed_expr = $rule_map[$label];
                 $walking_names[] = $label;

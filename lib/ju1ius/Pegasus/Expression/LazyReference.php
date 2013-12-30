@@ -11,9 +11,10 @@ use ju1ius\Pegasus\Exception\ParseError;
  */
 class LazyReference extends Expression
 {
-    public function __construct($identifier)
+    public function __construct($identifier/*, $ref*/)
     {
         $this->identifier = $identifier;
+        //$this->ref = $ref;
         parent::__construct();
     }
     
@@ -24,6 +25,7 @@ class LazyReference extends Expression
 
     public function match($text, $pos, $parser)
     {
+        //return $this->ref->match($text, $pos, $parser);
         return null;
     }
 }

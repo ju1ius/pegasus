@@ -2,6 +2,9 @@
 
 namespace ju1ius\Pegasus;
 
+use ju1ius\Pegasus\Exception\VisitationError;
+
+
 /**
  * A shell for writing things that turn parse trees into something useful
  *
@@ -64,10 +67,10 @@ class NodeVisitor
 
             return $this->$visitor($node, $children);
 
-        } catch (VisitationException $e) {
+        } catch (VisitationError $e) {
             throw $e;
         } catch (\Exception $e) {
-            throw new VisitationException($node, $e);
+            throw new VisitationError($e, $node);
         }
     }
 
