@@ -88,7 +88,7 @@ class Node
         }
     }
 
-    public function treeView($error=null)
+    public function treeview($error=null)
     {
         $ret = [sprintf(
             '<%s "%s" matching "%s">%s',
@@ -98,7 +98,7 @@ class Node
             $error === $this ? '  <-- *** We were here. ***' : ''
         )];
         foreach($this->children as $child) {
-            $ret[] = self::indent($child->treeView($error));
+            $ret[] = self::indent($child->treeview($error));
         }
         return implode("\n", $ret);
     }

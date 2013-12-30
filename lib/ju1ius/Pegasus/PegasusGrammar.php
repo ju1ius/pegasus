@@ -10,6 +10,8 @@ use ju1ius\Pegasus\Expression\Not;
 use ju1ius\Pegasus\Expression\OneOf;
 use ju1ius\Pegasus\Expression\Sequence;
 
+use ju1ius\Pegasus\Packrat\Parser;
+
 
 /**
  * Grammar class for parsing Pegasus grammar definitions.
@@ -71,12 +73,6 @@ EOS;
             self::$GRAMMAR = new Grammar(self::SYNTAX);
         }
         return self::$GRAMMAR;
-    }
-
-    public function parse($syntax)
-    {
-        $parser = new Packrat\Parser($this);
-        return $parser->parse($syntax);
     }
 
     /**
@@ -144,14 +140,13 @@ EOS;
      * Return a 2-tuple: a dict of rule names pointing to their expressions,
      * and then the top-level expression for the first rule.
      */
-    protected static function expressionsFromSyntax($syntax)
+    protected function expressionsFromSyntax($syntax)
     {
         // Use the hard-coded rules to parse the (more extensive) rule syntax.
         // (For example, unless I start using parentheses in the rule language
         // definition itself, I should never have to hard-code expressions for
         // those above.)
-        $rules = self::getRules();
-        $parser = new Packrat\Parser($rules);
+        $parser = new Packrat\Parser(self::getRules());
         $rule_tree = $parser->parse($syntax);
         // Turn the parse tree into a map of expressions:
         return (new RuleVisitor)->visit($rule_tree);

@@ -21,7 +21,7 @@ class Not extends Composite
     
     public function match($text, $pos, $parser)
     {
-        $node = $parser->apply($this->members[0]);
+        $node = $parser->apply($this->members[0], $pos);
         if (!$node) {
             return new Node($this->name, $text, $pos, $pos);
         }

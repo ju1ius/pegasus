@@ -7,23 +7,32 @@ use ju1ius\Pegasus\Expression;
 
 class LRParser extends Parser
 {
-    public function __construct($source, $options)
+    protected
+        $heads,
+        $lr_stack;
+
+    public function parse($source, $pos=0)
     {
-        parent::__construct($source, $options);
         $this->heads = [];
         $this->lr_stack = new \SplStack();
+
+        return parent::parse($source, $pos);
     }
 
-    protected function apply(Expression $expr)
+    public function apply(Expression $expr, $pos)
     {
+        $this->pos = $pos;
         $start_pos = $this->pos;
         if ($m = $this->memo_lr($expr, $start_pos)) {
             return $this->recall($m, $expr);
         }
-        $lr = new LR(false, $expr, null);
+        // Create a new LR and push it onto the rule invocation stack.
+        $lr = new LR($expr);
         $this->lr_stack->push($lr);
+        // Memoize $lr, then evaluate $expr.
         $m = $this->inject_memo($expr, $start_pos, $lr, $start_pos);
         $result = $this->evaluate($expr);
+        // Pop $lr off the rule invocation stack.
         $this->lr_stack->pop();
         if ($lr->head) {
             $m->end = $this->pos;

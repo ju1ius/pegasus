@@ -2,6 +2,8 @@
 
 namespace ju1ius\Pegasus\Exception;
 
+use ju1ius\Pegasus\Utils\LineCounter;
+
 
 /**
  * A call to Expression::parse() or match() didn't match.
@@ -13,6 +15,7 @@ class ParseError extends \Exception
         $this->text = $text;
         $this->pos = $pos;
         $this->expr = $expr;
+        $this->counter = new LineCounter($this->text);
 
         parent::__construct();
     }
@@ -24,24 +27,32 @@ class ParseError extends \Exception
             : (string) $this->expr
         ;
         return sprintf(
-            '%s: rule "%s" didn\'t match on line %s, column %s ("%s").',
+            '%s: rule "%s" didn\'t match on line %s, column %s ("%s").'
+            . "\n%s",
             __CLASS__,
             $rule_name,
-            $this->line(),
-            $this->column(),
-            substr($this->text, $this->pos, $this->pos + 20)
+            $this->counter->line($this->pos) + 1,
+            $this->counter->column($this->pos) + 1,
+            substr($this->text, $this->pos, $this->pos + 20),
+            $this->getTraceAsString()
         );
     }
 
     public function line()
     {
-        return substr_count($this->text, "\n", 0, $this->pos) + 1;
+        return 0 === $this->pos
+            ? 0
+            : substr_count($this->text, "\n", 0, $this->pos) + 1
+        ;
     }
 
     public function column()
     {
+        if (0 === $this->pos) return 0;
         $i = strrpos($this->text, "\n", -(strlen($this->text) - $this->pos));
-        if (false === $i) return $this->pos + 1;
-        return $this->pos - $i;
+        return false === $i
+            ? $this->pos + 1
+            : $this->pos - $i
+        ;
     }
 }

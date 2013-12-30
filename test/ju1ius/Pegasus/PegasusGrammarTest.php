@@ -3,6 +3,7 @@
 require_once __DIR__.'/../../Pegasus_TestCase.php';
 
 use ju1ius\Pegasus\PegasusGrammar;
+use ju1ius\Pegasus\Packrat\Parser;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Node\Regex as RegexNode;
 

@@ -23,7 +23,7 @@ class OneOf extends Composite
     public function match($text, $pos, $parser)
     {
         foreach ($this->members as $member) {
-            $node = $parser->apply($member);
+            $node = $parser->apply($member, $pos);
             if($node) {
                 // Wrap the succeeding child in a node representing the OneOf
                 return new Node($this->name, $text, $pos, $node->end, [$node]);

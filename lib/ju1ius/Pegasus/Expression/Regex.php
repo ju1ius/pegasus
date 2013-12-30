@@ -22,7 +22,11 @@ class Regex extends Expression
         parent::__construct($name);
         $this->pattern = $pattern;
         $this->flags = array_unique(array_merge($flags, ['S', 'x']));
-        $this->compiled_pattern = sprintf('/\G%s/%s', $this->pattern, implode('', $flags));
+        $this->compiled_pattern = sprintf(
+            '/\G%s/%s',
+            $this->pattern,
+            implode('', $this->flags)
+        );
     }
 
     public function asRhs()

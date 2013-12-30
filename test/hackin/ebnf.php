@@ -3,6 +3,7 @@
 require_once __DIR__.'/../../vendor/autoload.php';
 
 use ju1ius\Pegasus\PegasusGrammar;
+use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Packrat\Parser;
 use ju1ius\Pegasus\RuleVisitor;
 use ju1ius\Pegasus\Expression\Literal;
@@ -14,6 +15,7 @@ use ju1ius\Pegasus\Expression\Sequence;
 use ju1ius\Pegasus\Expression\OneOf;
 use ju1ius\Pegasus\Expression\Not;
 use ju1ius\Pegasus\Expression\Lookahead;
+use ju1ius\Pegasus\Expression\EOF;
 
 // just for docs ...
 $string_pattern = '@\G
@@ -36,42 +38,59 @@ $regex_pattern = '@\G
     ([ilmsux]*)?    # Optional flags
 @x';
 
-//$regex = new Regex('\/((?:(?:\\\\.)|[^\/])*)\/([ilmsux]*)?');
-//$rx_rule = <<<'EOS'
-///\/((?:(?:\\.)|[^\/])*)\/([ilmsux]*)?/
-//EOS;
-//$node = $regex->match($rx_rule);
-//$rx_rx = new Regex($node->match[1][0]);
-//$node = $rx_rx->match('/foo\/bar/i');
-//var_dump($node);
+$comment = new Regex('\#([^\r\n]*)', 'comment');
+$ws = new Regex('\s+', 'ws');
+$ws_or_comment = new OneOf([$ws, $comment], 'ws_or_comment');
+$_ = new ZeroOrMore([$ws_or_comment], '_');
+$identifier = new Sequence([
+    new Regex('[a-zA-Z_][\w]*'),
+    $_
+], 'identifier');
+$literal = new Sequence([
+    new Regex('(["\'])((?:(?:\\\\.)|(?:(?!\1).))*)\1', 'literal_rx'),
+    $_
+], 'literal');
+$regex = new Sequence([
+    new Regex('\/((?:(?:\\\\.)|[^\/])*)\/([ilmsux]*)?', 'regex_rx'),
+    $_
+], 'regex');
+$quantifier = new Sequence([
+    new Regex('([*+?])|(?:\{(\d+)(?:,(\d*))?\})', 'quantifier_rx'),
+    $_
+], 'quantifier');
 
-//$metagrammar = PegasusGrammar::build();
-//$my_syntax = <<<'EOS'
-//some_rule = ('foo' 'bar')
-    //| ('bar' 'baz')
-    //| ('foo')
-//EOS;
-//$tree = $metagrammar->parse($my_syntax);
-//list($rules, $default) = (new RuleVisitor)->visit($tree);
-//var_dump($rules);
+$equals = new Sequence([new Literal('=', 'eq'), $_], 'equals');
+$reference = new Sequence([
+    $identifier,
+    new Not([$equals], 'no_eq')
+], 'reference');
 
-//$_ = new Regex('\s*', '_');
-//$id = new Regex('\w+', 'id');
-//$eq = new Literal ('=', 'eq');
-//$expr = new Sequence([
-    //$id, $_, $eq, $_, $id, $_
-//], 'expr');
-//$rules = new Sequence([
-    //$_, new OneOrMore([$expr], 'expr+')
-//], 'rules');
-//
-$rules = PegasusGrammar::getRules();
-$parser = new Parser($rules);
-$test = <<<'EOS'
-myrule = 'foo'
-other = 'bar'
-EOS;
-var_dump(strlen($test));
-$tree = $parser->parse($test);
-var_dump($tree);
+$atom = new OneOf([$reference, $literal, $regex], 'atom');
+$quantified = new Sequence([$atom, $quantifier], 'quantified');
+
+$term = new OneOf([$quantified, $atom], 'term');
+$not_term = new Sequence([new Literal('!', 'bang'), $term, $_], 'not_term');
+array_unshift($term->members, $not_term);
+
+$sequence = new Sequence([$term, new OneOrMore([$term], 'term+')], 'sequence');
+$or_term = new Sequence([new Literal('|', 'pipe'), $_, $term], 'or_term');
+$ored = new Sequence([$term, new OneOrMore([$or_term], 'or_term+')], 'ored');
+$expression = new OneOf([$ored, $sequence, $term], 'expression');
+$rule = new Sequence([
+    $identifier,
+    $equals,
+    $expression
+    //new OneOrMore([$expression])
+], 'rule');
+$rules = new Sequence([
+    $_,
+    new OneOrMore([$rule], 'rule+')
+], 'rules');
+
+
+$peg = PegasusGrammar::build();
+//$parser = new Parser(PegasusGrammar::getRules());
+//$tree = $parser->parse(PegasusGrammar::SYNTAX);
+////if ($tree) echo $tree->treeView(), "\n";
 //$result = (new RuleVisitor)->visit($tree);
+var_dump($peg);

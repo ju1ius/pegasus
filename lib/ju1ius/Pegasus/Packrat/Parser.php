@@ -52,27 +52,28 @@ class Parser
         // then parent composite rules, etc...
         // ATM we just pass $this to the Expression::match method,
         // and let expressions call $parser->apply for their children.
-        $result = $this->apply($rule);
+        $result = $this->apply($rule, $pos);
         if (!$result) {
             throw $this->error;
         }
         return $result;
     }
 
-    public function apply(Expression $expr)
+    public function apply(Expression $expr, $pos=0)
     {
-        echo __METHOD__, '@', $this->pos, ': ',
-            $expr, "\n";
+        //echo __METHOD__, ' @', $this->pos, ': trying ',
+            //$expr, "\n";
 
-        $start_pos = $this->pos;
+        $start_pos = $pos;
+        $this->pos = $pos;
         $this->updateError($expr);
-        //if ($memo = $this->memo($expr, $start_pos)) {
-            ////if (!$memo->result) $this->updateError($expr);
-            //return $this->recall($memo, $expr);
-        //}
+        if ($memo = $this->memo($expr, $start_pos)) {
+            return $this->recall($memo, $expr);
+        }
         $memo = $this->inject_fail($expr, $start_pos);
-        $result = $this->evaluate($expr);
-        //if (!$result) $this->updateError($expr);
+        //$result = $this->evaluate($expr);
+        $result = $expr->match($this->source, $start_pos, $this);
+        //if ($result) echo "MATCHED!\n";
         return $this->save($memo, $result);
     }
 
@@ -108,24 +109,21 @@ class Parser
 
     protected function save($memo, $result)
     {
-        echo __METHOD__, '@', $this->pos, ': ',
-            $result, "\n";
-        if (null === $result) {
-            $memo->end = $this->pos;
-        } else {
-            $memo->end = $result->end;
+        //echo __METHOD__, '@', $this->pos, ': ',
+            //$result ?: 'NULL', "\n";
+        if ($result) {
             $this->pos = $result->end;
         }
+        $memo->end = $this->pos;
         $memo->result = $result;
         return $result;
     }
 
     protected function recall(MemoEntry $memo, Expression $expr)
     {
-        echo __METHOD__, '@', $this->pos, ': ',
-            $expr, "\n";
+        //echo __METHOD__, '@', $this->pos, ': ',
+            //$expr, "\n";
         $this->pos = $memo->end;
         return $memo->result;
     }
-    
 }

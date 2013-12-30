@@ -27,10 +27,10 @@ class LR
      * @param Expression $rule
      * @param Head $head
      **/ 
-    public function __construct(Node $seed, Expression $rule, Head $head)
+    public function __construct(Expression $rule, Node $seed=null, Head $head=null)
     {
-        $this->seed = $seed;
         $this->rule = $rule;
+        $this->seed = $seed;
         $this->head = $head;
     }
 }

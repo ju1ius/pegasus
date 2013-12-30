@@ -1,9 +1,8 @@
 <?php
-
 require_once __DIR__.'/../vendor/autoload.php';
 
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Packrat\Parser;
+use ju1ius\Pegasus\Packrat\LRParser;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\NodeVisitor;
 
@@ -66,6 +65,12 @@ class Calculator extends NodeVisitor
         return $expression;
     }
 
+    public function visit_primary($node, $children)
+    {
+        echo $node->treeview(), "\n";
+    }
+    
+
     public function visit_number($node, $children)
     {
         return $children[0];
@@ -82,24 +87,26 @@ class Calculator extends NodeVisitor
     }
 }
 
-
 $syntax = <<<'EOS'
-# grammar: Calculator
+expr = (expr "+" term)
+        | (expr "-" term)
+        | term
 
-expression = term _ (('+'|'-') _ term _)*
-term = factor _ (('*'|'/') _ factor _)*
-factor = number | parenthesized
-parenthesized = '(' _ expression _ ')'
+term = (term "*" primary)
+        | (term "/" primary)
+        | primary
+
+primary = ("(" expr ")")
+        | number
+
 number = float | int
 float = /-?[0-9]*\.[0-9]+/
 int = /-?[0-9]+/
-_ = /\s*/
 EOS;
 
 $grammar = new Grammar($syntax);
-$parser = new Parser($grammar);
+$parser = new LRParser($grammar);
 $tree = $parser->parse($argv[1]);
 $calculator = new Calculator();
 $result = $calculator->visit($tree);
 echo "Result: ", $result, "\n";
-echo "Mem peak: ", memory_get_peak_usage(), "\n";

@@ -38,19 +38,6 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
         $rules = [],
         $default_rule = null;
 
-    public static function fromString($syntax, $default_rule=null)
-    {
-        list($expressions, $first) = static::expressionsFromSyntax($syntax);
-        $grammar = (new static)->merge($expressions);
-        $grammar->setDefault($default_rule ? $expressions[$default_rule] : $first);
-        return $grammar;
-    }
-
-    public static function fromExpression(Expression $expr)
-    {
-        //TODO
-    }
-
     /**
      * @param string $peg          The grammar definition
      * @param string $default_rule The name of the rule invoked when you call parse() on the grammar.
@@ -58,7 +45,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      **/
     public function __construct($rules, $default_rule=null)
     {
-        list($exprs, $first) = static::expressionsFromSyntax($rules);
+        list($exprs, $first) = $this->expressionsFromSyntax($rules);
         $this->rules = array_merge($this->rules, $exprs);
         $this->default_rule = $default_rule ? $exprs[$default_rule] : $first;
     }
@@ -70,6 +57,11 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
     public function getDefault()
     {
         return $this->default_rule;
+    }
+
+    public function parse($syntax)
+    {
+        return (new Packrat\Parser($this))->parse($syntax);
     }
     
     public function __toString()
@@ -126,7 +118,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      * and that root is the starting symbol for parsing,
      * but there's nothing saying you can't have multiple roots.
      **/
-    protected static function expressionsFromSyntax($syntax)
+    protected function expressionsFromSyntax($syntax)
     {
         $tree = PegasusGrammar::build()->parse($syntax);
         return (new RuleVisitor)->visit($tree);

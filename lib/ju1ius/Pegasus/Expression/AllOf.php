@@ -17,7 +17,7 @@ class AllOf extends Composite
     public function match($text, $pos, $parser)
     {
         foreach ($this->members as $member) {
-            $node = $parser->apply($this);
+            $node = $parser->apply($this, $pos);
             if(!$node) return;
         }
         return new Node($this->name, $text, $pos, $node->end, [$node]);
