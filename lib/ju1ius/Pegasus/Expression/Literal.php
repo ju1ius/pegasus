@@ -18,16 +18,29 @@ class Literal extends Expression
      * @var string
      */
     public $literal;
+
     /**
      * @var int
      */
     protected $length;
 
+    protected $has_ref;
+
+    const BACKREF_RX = '/\$\{(\w+)\}/';
+
     public function __construct($literal, $name='')
     {
         parent::__construct($name);
         $this->literal = $literal;
-        $this->length = strlen($literal);
+        $this->setup();
+    }
+
+    public function setup()
+    {
+        $this->has_ref = preg_match(self::BACKREF_RX, $this->literal);
+        if (!$this->has_ref) {
+            $this->length = strlen($this->literal);
+        }
     }
 
     public function asRhs()
@@ -38,8 +51,18 @@ class Literal extends Expression
 
     public function match($text, $pos, ParserInterface $parser)
     {
-        if ($pos === strpos($text, $this->literal, $pos)) {
-            return new Node($this->name, $text, $pos, $pos + $this->length);
+        $value = $this->literal;
+        $length = $this->length;
+
+        if ($this->has_ref) {
+            $value = preg_replace_callback(self::BACKREF_RX, function($matches) use($parser) {
+                $result = $parser->getReference($matches[1]);
+                return (string) $result;
+            }, $this->literal);
+            $length = strlen($value);
+        }
+        if ($pos === strpos($text, $value, $pos)) {
+            return new Node($this->name, $text, $pos, $pos + $length);
         }
     }
 }

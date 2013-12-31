@@ -40,12 +40,39 @@ class Packrat implements ParserInterface
         $this->grammar = $grammar;
     }
 
+    /**
+     * Return the parse tree matching this expression at the given position,
+     * not necessarily extending all the way to the end of $text.
+     *
+     * @throw ParseError if there's no match there
+     *
+     * @return Node
+     */
+    public function parseAll($source, $rule=null)
+    {
+        $result = $this->parse($source, 0, $rule);
+        if ($this->pos < strlen($source)) {
+            throw new IncompleteParseError($source, $this->pos, $rule);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Return the parse tree matching this expression at the given position,
+     * not necessarily extending all the way to the end of $text.
+     *
+     * @throw ParseError if there's no match there
+     *
+     * @return Node | null
+     */
     public function parse($source, $pos=0, $rule=null)
     {
         $this->source = $source;
         $this->pos = $pos;
         $this->memo = [];
         $this->error = new ParseError($source);
+        $this->refmap = [];
 
         if (!$rule) {
             $rule = $this->default_rule;
@@ -91,6 +118,9 @@ class Packrat implements ParserInterface
             $this->pos = $m->end;
             return $m->result;
         }
+
+        $this->refmap[$expr->name] = [$expr->id, $pos];
+
         // Store a result of FAIL in the memo table
         // before it evaluates the body of a rule.
         // This has the effect of making all left-recursive applications
@@ -102,6 +132,7 @@ class Packrat implements ParserInterface
         // update the result in the memo table
         $m->result = $result;
         $m->end = $this->pos;
+
         return $result;
     }
 
@@ -130,4 +161,14 @@ class Packrat implements ParserInterface
             : null
         ;
     }
+
+    public function getReference($name)
+    {
+        // search the references map for an expression with the same name.
+        if (!isset($this->refmap[$name])) return '';
+        list($id, $pos) = $this->refmap[$name];
+        $memo = $this->memo[$id][$pos];
+        return (string) $memo->result;
+    }
+    
 }

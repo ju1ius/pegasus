@@ -17,12 +17,12 @@ class LRPackrat extends Packrat
         $heads,
         $lr_stack;
 
-    public function parse($source, $pos=0)
+    public function parse($source, $pos=0, $start_rule=null)
     {
         $this->heads = [];
         $this->lr_stack = new \SplStack();
 
-        return parent::parse($source, $pos);
+        return parent::parse($source, $pos, $start_rule);
     }
 
     public function apply(Expression $expr, $pos)
@@ -31,6 +31,10 @@ class LRPackrat extends Packrat
         $this->error->expr = $expr;
 
         if (!$m = $this->recall($expr, $pos)) {
+            // Store the expression in backreferences table,
+            // just enough info to retrieve the result from the memo table.
+            $this->refmap[$expr->name] = [$expr->id, $pos];
+
             // Create a new LR and push it onto the rule invocation stack.
             $lr = new LR($expr);
             $this->lr_stack->push($lr);
