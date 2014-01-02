@@ -30,38 +30,38 @@ class PegasusGrammar extends Grammar
 # Ignored things (represented by _) are typically hung off the end of the
 # leafmost kinds of nodes. Literals like "|" count as leaves.
 
-rules = _ rule+
-rule = identifier equals expression
+rules          = _ rule+
+rule           = identifier equals expression
 
-expression = ored | sequence | term
-ored = term or_term+
-sequence = term term+
-term = not_term | lookahead_term | quantified | atom
-labeled = label term
-or_term = "|" _ term
-not_term = "!" term _
+expression     = ored | sequence | term
+ored           = term or_term+
+sequence       = term term+
+term           = not_term | lookahead_term | quantified | atom
+labeled        = label term
+or_term        = "|" _ term
+not_term       = "!" term _
 lookahead_term = "&" term _
-quantified = atom quantifier
-atom = reference | literal | regex | parenthesized
-regex = / \/ ((?: (?:\\.)|[^\/] )*) \/ ([ilmsux]*)? / _
-parenthesized = "(" _ expression ")" _
-quantifier = / ([*+?]) | (?: \{(\d+)(?:,(\d*))?\} ) / _
+quantified     = atom quantifier
+atom           = reference | literal | regex | parenthesized
+regex          = / \/ ((?: (?:\\.)|[^\/] )*) \/ ([ilmsux]*)? / _
+parenthesized  = "(" _ expression ")" _
+quantifier     = / ([*+?]) | (?: \{(\d+)(?:,(\d*))?\} ) / _
 
-literal = / (["\']) ((?: (?:\\.)|(?:(?!\1).) )*) \1 / _
+literal        = / (["\']) ((?: (?:\\.)|(?:(?!\1).) )*) \1 / _
 
 # A subsequent equal sign is the only thing that distinguishes an identifier
 # (which begins a new rule) from a reference (which is just a pointer to a
 # rule defined somewhere else):
 
-reference = identifier !equals
-equals = "=" _
-label = identifier ':'
-identifier = /[a-zA-Z_][\w]*/ _
+reference     = identifier !equals
+equals        = "                  = " _
+label         = identifier ':'
+identifier    = /[a-zA-Z_][\w]*/ _
 
-_ = ws_or_comment*
+_             = ws_or_comment*
 ws_or_comment = ws | comment
-ws = /\s+/
-comment = / \#([^\r\n]*) /
+ws            = /\s+/
+comment       = / \#([^\r\n]*) /
 EOS;
 
     static private $GRAMMAR = null;

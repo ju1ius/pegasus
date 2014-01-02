@@ -34,6 +34,6 @@ class Sequence extends Composite
             $new_pos += $len;
             $seq_len += $len;
         }
-        return new Node($this->name, $text, $pos, $pos + $seq_len, $children);
+        return Node::fromExpression($this, $text, $pos, $pos + $seq_len, $children);
     }
 }

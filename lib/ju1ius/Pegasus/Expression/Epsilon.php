@@ -16,11 +16,11 @@ class Epsilon extends Expression
 {
     public function asRhs()
     {
-        return 'E';
+        return '𝝴';
     }
 
     public function match($text, $pos, ParserInterface $parser)
     {
-        return new Node($this->name, $text, $pos, $pos);
+        return Node::fromExpression($this, $text, $pos, $pos);
     }
 }

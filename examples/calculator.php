@@ -3,8 +3,7 @@
 require_once __DIR__.'/../vendor/autoload.php';
 
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Packrat\Parser;
-use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\Parser\Packrat as Parser;
 use ju1ius\Pegasus\NodeVisitor;
 
 
@@ -73,12 +72,12 @@ class Calculator extends NodeVisitor
 
     public function visit_int($node, $children)
     {
-        return (int) $node->match[0];
+        return (int) $node->matches[0];
     }
 
     public function visit_float($node, $children)
     {
-        return (float) $node->match[0];
+        return (float) $node->matches[0];
     }
 }
 

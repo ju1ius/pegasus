@@ -2,7 +2,8 @@
 
 namespace ju1ius\Pegasus\Node;
 
-use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\Node\Terminal;
+
 
 /**
  * Node returned from a ``Regex`` expression
@@ -11,21 +12,21 @@ use ju1ius\Pegasus\Node;
  * capturing groups, etc. 
  *
  */
-class Regex extends Node
+class Regex extends Terminal
 {
     /**
-     * @var array $match Array of regex matches, as returned by
-     * preg_match with PREG_OFFSET_CAPTURE
+     * @var array Array of regex matches, as returned preg_match.
      */
-    public $match;
+    public $matches;
 
-    public function __construct($expr_name, $full_text, $start, $end, $children=[], $match=[])
+    public function __construct($expr_name, $full_text, $start, $end, $matches=[])
     {
-        parent::__construct($expr_name, $full_text, $start, $end, $children);
-        $this->match = $match;
+        parent::__construct($expr_name, $full_text, $start, $end, $matches);
+        $this->matches = $matches;
     }
+
     public function __toString()
     {
-        return $this->match[0];
+        return $this->matches[0];
     }
 }

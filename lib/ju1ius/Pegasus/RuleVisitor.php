@@ -20,11 +20,9 @@ class RuleVisitor extends NodeVisitor
 
     public function __construct()
     {
-        $actions = [
-            '_' => 'ignore',
-            'equals' => 'ignore'
-        ];
-        parent::__construct($actions);
+        parent::__construct([
+            'ignore' => ['_', 'equals']
+        ]);
     }
     
     /**
@@ -107,12 +105,12 @@ class RuleVisitor extends NodeVisitor
     public function visit_quantified($quantified, $visited_children)
     {
         list($atom, $quantifier) = $visited_children;
-        if ($quantifier->match[1]) {
-            $class = self::$QUANTIFIER_CLASSES[$quantifier->match[1]];
+        if ($quantifier->matches[1]) {
+            $class = self::$QUANTIFIER_CLASSES[$quantifier->matches[1]];
             return new $class([$atom]);
         }
-        $min = (int) $quantifier->match[2];
-        $max = $quantifier->match[3] ? (int) $quantifier->match[3] : null;
+        $min = (int) $quantifier->matches[2];
+        $max = $quantifier->matches[3] ? (int) $quantifier->matches[3] : null;
         return new Expression\Quantifier([$atom], '', $min, $max);
     }
     
@@ -215,7 +213,7 @@ class RuleVisitor extends NodeVisitor
     public function visit_identifier($node, $visited_children)
     {
         list($name) = $visited_children;
-        return $name->match[0];
+        return $name->matches[0];
     }
 
     /**
@@ -239,8 +237,8 @@ class RuleVisitor extends NodeVisitor
     public function visit_regex($node, $visited_children)
     {
         list($regex) = $visited_children;
-        $pattern = $regex->match[1];
-        $flags = str_split($regex->match[2]);
+        $pattern = $regex->matches[1];
+        $flags = str_split($regex->matches[2]);
         return new Expression\Regex($pattern, '', $flags);
     }
 
@@ -255,8 +253,8 @@ class RuleVisitor extends NodeVisitor
     public function visit_literal($literal, $visited_children)
     {
         list($regex) = $visited_children;
-        $quote_char = $regex->match[1];
-        $str = $regex->match[2];
+        $quote_char = $regex->matches[1];
+        $str = $regex->matches[2];
         return new Expression\Literal($str);
     }
 

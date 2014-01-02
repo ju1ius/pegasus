@@ -4,7 +4,7 @@ namespace ju1ius\Pegasus\Expression;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Parser\ParserInterface;
-use ju1ius\Pegasus\Node\Regex as RegexNode;
+use ju1ius\Pegasus\Node;
 
 
 /**
@@ -40,7 +40,7 @@ class Regex extends Expression
         if(preg_match($this->compiled_pattern, $text, $matches, 0, $pos)) {
             $match = $matches[0];
             $length = strlen($match);
-            $node = new RegexNode($this->name, $text, $pos, $pos + $length, [], $matches);
+            $node = Node::fromExpression($this, $text, $pos, $pos + $length, $matches);
             return $node;
         }
     }

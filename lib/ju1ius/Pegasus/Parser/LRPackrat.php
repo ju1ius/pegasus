@@ -42,6 +42,7 @@ class LRPackrat extends Packrat
             $m = new MemoEntry($lr, $pos);
             $this->memo[$expr->id][$pos] = $m;
             $result = $this->evaluate($expr, $pos);
+            \Psy\Shell::debug(['this' => &$this]);
             // Pop $lr off the invocation stack
             $this->lr_stack->pop();
             $m->end = $this->pos;
@@ -88,7 +89,7 @@ class LRPackrat extends Packrat
         while (true) {
             $this->pos = $pos;
             $head->eval = $head->involved;
-            $result = $this->evaluate($expr, $this->pos);
+            $result = $this->evaluate($expr);
             if (!$result || $this->pos <= $m->end) {
                 break;
             }

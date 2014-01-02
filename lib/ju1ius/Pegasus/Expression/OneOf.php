@@ -26,7 +26,7 @@ class OneOf extends Composite
             $node = $parser->apply($member, $pos);
             if($node) {
                 // Wrap the succeeding child in a node representing the OneOf
-                return new Node($this->name, $text, $pos, $node->end, [$node]);
+                return Node::fromExpression($this, $text, $pos, $node->end, [$node]);
             }
         }
     }

@@ -6,6 +6,7 @@ use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Exception\ParseError;
+use ju1ius\Pegasus\Exception\IncompleteParseError;
 
 
 /**

@@ -20,7 +20,7 @@ class EOF extends Expression
     public function match($text, $pos, ParserInterface $parser)
     {
         if (!isset($text[$pos])) {
-            return new Node('EOF', $text, $pos, $pos);
+            return Node::fromExpression($this, $text, $pos, $pos);
         }
     }
 

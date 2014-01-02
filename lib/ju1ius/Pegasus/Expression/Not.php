@@ -24,7 +24,7 @@ class Not extends Composite
     {
         $node = $parser->apply($this->members[0], $pos);
         if (!$node) {
-            return new Node($this->name, $text, $pos, $pos);
+            return Node::fromExpression($this, $text, $pos, $pos);
         }
     }
 }

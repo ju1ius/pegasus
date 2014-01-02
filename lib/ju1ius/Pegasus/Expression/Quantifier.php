@@ -43,22 +43,22 @@ class Quantifier extends Composite
         $new_pos = $pos;
         $children = [];
         $match_count = 0;
-        while(true) {
+        while (true) {
 
             $node = $parser->apply($this->members[0], $new_pos);
-            if(!$node) break;
+            if (!$node) break;
             $match_count++;
 
             $children[] = $node;
             $length = $node->end - $node->start;
-            if(!$length) break;
+            if (!$length) break;
 
             $new_pos += $length;
 
             if ($match_count === $this->max) break;
         }
-        if($match_count >= $this->min) {
-            return new Node($this->name, $text, $pos, $new_pos, $children);
+        if ($match_count >= $this->min) {
+            return Node::fromExpression($this, $text, $pos, $new_pos, $children);
         }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace ju1ius\Pegasus;
 
+
 /**
  * A parse tree node
  *
@@ -18,31 +19,77 @@ namespace ju1ius\Pegasus;
  * another. 
  *
  **/
-class Node
+abstract class Node
 {
-    public
-        $expr_name,
-        $full_text,
-        $start,
-        $end,
-        $children;
+    /**
+     * @var string The name of the expression that generated this node.
+     */
+    public $expr_name;
 
     /**
-     * @param string $expr_name The name of the expression that generated me
+     * @var string The class of the expression that generated this node.
+     */
+    public $expr_class;
+
+    /**
+     * @var string The full text fed to the parser.
+     */
+    public $full_text;
+
+    /**
+     * @var string The position in the text where the expression started matching.
+     */
+    public $start;
+
+    /**
+     * @var string The position after start where the expression first didn't match.
+     */
+    public $end;
+
+    /**
+     * @param string $expr_name The name of the expression that generated this node.
      * @param string $full_text The full text fed to the parser
      * @param int    $start     The position in the text where that expr started matching
      * @param int    $end       The position after start where the expr first didn't match.
-     * @param array  $children  List of child parse tree nodes
      **/
-    public function __construct($expr_name, $full_text, $start, $end, $children=[])
+    public function __construct($expr_name, $full_text, $start, $end)
     {
         $this->expr_name = $expr_name;
         $this->full_text = $full_text;
         $this->start = $start;
         $this->end = $end;
-        $this->children = $children;
     }
 
+    /**
+     * Generator yielding all terminal (leaf) nodes
+     */
+    abstract public function terminals();
+
+    /**
+     * Factory method to return a node depending on the expression class.
+     *
+     * @param Expression    $expr
+     * @param string        $text
+     * @param int           $start
+     * @param int           $end
+     * @param array         $children
+     *
+     * @return Node
+     */
+    public static function fromExpression(Expression $expr, $text, $start, $end, $children=[])
+    {
+        $expr_name = $expr->name;
+        if ($expr instanceof Expression\Composite) {
+            $node = new Node\Composite($expr_name, $text, $start, $end, $children);
+        } else if ($expr instanceof Expression\Regex) {
+            $node = new Node\Regex($expr_name, $text, $start, $end, $children);
+        } else {
+            $node = new Node\Terminal($expr_name, $text, $start, $end);
+        }
+        $node->expr_class = get_class($expr);
+        return $node;
+    }
+    
     public function __toString()
     {
         return $this->getText();
@@ -50,7 +97,9 @@ class Node
 
     /**
      * Returns the text this node matched
-     **/
+     *
+     * @return string
+     */
     public function getText()
     {
         return (string) substr($this->full_text, $this->start, $this->end - $this->start);
@@ -59,11 +108,10 @@ class Node
     public function equals($other=null)
     {
         return $other instanceof $this
-            && $this->expr_name === $other->name
+            && $this->expr_name === $other->expr_name
             && $this->full_text === $other->full_text
             && $this->start === $other->start
             && $this->end === $other->end
-            && $this->children === $other->children
         ;
     }
 
@@ -72,35 +120,15 @@ class Node
         return !$this->equals($other);
     }
 
-    /**
-     * Generator yielding all leaf nodes
-     */
-    public function leaves()
-    {
-        if (!$this->children) {
-            yield $this;
-            return;
-        }
-        foreach ($this->children as $child) {
-            foreach ($child->leaves() as $leaf) {
-                yield $leaf;
-            }
-        }
-    }
-
     public function treeview($error=null)
     {
-        $ret = [sprintf(
+        return sprintf(
             '<%s "%s" matching "%s">%s',
             get_class($this),
-            $this->expr_name ?: '',
+            $this->expr_name ?: $this->expr_class ?: '',
             $this->getText(),
             $error === $this ? '  <-- *** We were here. ***' : ''
-        )];
-        foreach($this->children as $child) {
-            $ret[] = self::indent($child->treeview($error));
-        }
-        return implode("\n", $ret);
+        );
     }
     
     static protected function indent($text)

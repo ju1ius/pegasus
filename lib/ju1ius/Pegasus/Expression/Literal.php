@@ -62,7 +62,7 @@ class Literal extends Expression
             $length = strlen($value);
         }
         if ($pos === strpos($text, $value, $pos)) {
-            return new Node($this->name, $text, $pos, $pos + $length);
+            return Node::fromExpression($this, $text, $pos, $pos + $length);
         }
     }
 }

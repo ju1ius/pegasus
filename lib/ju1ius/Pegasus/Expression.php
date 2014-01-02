@@ -44,5 +44,17 @@ abstract class Expression
 
         return $this->asRhs();
     }
-
+    
+    /**
+     * Documentation for equals
+     *
+     * @param Expression $other
+     * @return void
+     */
+    public function equals(Expression $other)
+    {
+        return $other instanceof $this
+            && $other->id === $this->id;
+    }
+    
 }

@@ -3,6 +3,8 @@
 namespace ju1ius\Pegasus;
 
 use ju1ius\Pegasus\Exception\VisitationError;
+use ju1ius\Pegasus\Node\Composite;
+use ju1ius\Pegasus\Node\Terminal;
 
 
 /**
@@ -30,9 +32,9 @@ class NodeVisitor
     protected $actions = [];
     protected $ignored = [];
 
-    public function __construct(array $actions=[])
+    public function __construct(array $config=[])
     {
-        $this->actions = $this->getActions($actions);
+        $this->actions = $this->getActions($config);
         $this->visitors = $this->getVisitors();
     }
 
@@ -47,11 +49,15 @@ class NodeVisitor
             // ignored rule
             if (!$node || isset($this->ignored[$node->expr_name])) return null;
 
-            // filter dropped (null) nodes before visiting
-            $children = array_map([$this, 'visit'], $node->children);
-            $children = array_values(array_filter($children, function($child) {
-                return $child !== null;
-            }));
+            $children = [];
+            if ($node instanceof Composite) {
+                // visit children
+                $children = array_map([$this, 'visit'], $node->children);
+                // filter ignored (null) nodes 
+                $children = array_values(array_filter($children, function($child) {
+                    return $child !== null;
+                }));
+            }
 
             if (isset($this->actions[$node->expr_name])) {
                 $actions = $this->actions[$node->expr_name];
@@ -78,9 +84,9 @@ class NodeVisitor
      * Default visitor method
      *
      * Return the node verbatim, so it maintains the parse tree's structure.
-     * Non-generic visitor methods can then use or ignore this at their
-     * discretion. This works out well regardless of whether a subclass is
-     * trying to make another tree, a flat string, or whatever.
+     * Non-generic visitor methods can then use or ignore this at their discretion.
+     * This works out well regardless of whether a subclass is trying
+     * to make another tree, a flat string, or whatever.
      *
      * @param Node  $node             The node we're visiting
      * @param array $visited_children The results of visiting the children of that node
@@ -95,7 +101,7 @@ class NodeVisitor
     {
         if (!$children) return;
         foreach ($children as $child) {
-            if (!$child instanceof Node) {
+            if (!$child instanceof Composite) {
                 yield $child;
             } else {
                 foreach ($this->leaves($child, $child->children) as $leaf) {
@@ -123,7 +129,7 @@ class NodeVisitor
 
     public function liftChildren($node, $children)
     {
-        return $children ?: $node;
+        return $children;
     }
 
     public function join($node, $children)
@@ -167,16 +173,15 @@ class NodeVisitor
      */
     private function getActions(array $config)
     {
+        if (isset($config['ignore'])) {
+            $this->ignored = array_combine($config['ignore'], array_fill(0, count($config['ignore']), true));
+        }
         $result = [];
-        foreach ($config as $expr_name => $actions) {
+        if (!isset($config['actions'])) return $result;
+        foreach ($config['actions'] as $expr_name => $actions) {
             // actions are chainable, so make it an array
             if (!is_array($actions)) {
                 $actions = [$actions];
-            }
-            // ignore action override any others
-            if (in_array('ignore', $actions)) {
-                $this->ignored[$expr_name] = true;
-                continue;
             }
             foreach ($actions as $action) {
                 if ($action instanceof \Closure) {
