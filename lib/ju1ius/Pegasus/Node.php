@@ -61,9 +61,13 @@ abstract class Node
     }
 
     /**
-     * Generator yielding all terminal (leaf) nodes
+     * Generator recursively yielding all terminal (leaf) nodes
      */
     abstract public function terminals();
+    /**
+     * Generator recursively yielding this node and it's children
+     */
+    abstract public function iter();
 
     /**
      * Factory method to return a node depending on the expression class.

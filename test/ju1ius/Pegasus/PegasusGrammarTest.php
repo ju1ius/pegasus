@@ -4,8 +4,9 @@ require_once __DIR__.'/../../Pegasus_TestCase.php';
 
 use ju1ius\Pegasus\PegasusGrammar;
 use ju1ius\Pegasus\Parser\Packrat;
-use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Node\Regex as RegexNode;
+use ju1ius\Pegasus\Node\Terminal as Term;
+use ju1ius\Pegasus\Node\Composite as Comp;
+use ju1ius\Pegasus\Node\Regex as Rx;
 
 
 class PegasusGrammarTest extends Pegasus_TestCase
@@ -28,7 +29,7 @@ class PegasusGrammarTest extends Pegasus_TestCase
      */
     public function testComment($input, $expected)
     {
-        $this->assertEquals(
+        $this->assertNodeEquals(
             $expected,
             $this->parse('comment', $input)
         );
@@ -38,14 +39,14 @@ class PegasusGrammarTest extends Pegasus_TestCase
         return [
             [
                 '# A comment',
-                new RegexNode('comment', '# A comment', 0, 11, [], [
+                new Rx('comment', '# A comment', 0, 11, [
                     '# A comment',
                     ' A comment'
                 ])
             ],
             [
                 "# ends with line\n",
-                new RegexNode('comment', "# ends with line\n", 0, 16, [], [
+                new Rx('comment', "# ends with line\n", 0, 16, [
                     '# ends with line',
                     ' ends with line'
                 ])
@@ -154,31 +155,31 @@ class PegasusGrammarTest extends Pegasus_TestCase
     public function testLiteral($input, $expected)
     {
         $node = $this->parse('literal', $input);
-        $this->assertEquals($expected, $node);
+        $this->assertNodeEquals($expected, $node);
     }
     public function testLiteralProvider()
     {
         return [
             [
                 '"qstring\"esc"',
-                new Node('literal', '"qstring\"esc"', 0, 14, [
-                    new RegexNode('', '"qstring\"esc"', 0, 14, [], [
+                new Comp('literal', '"qstring\"esc"', 0, 14, [
+					new Rx('', '"qstring\"esc"', 0, 14, [
                         '"qstring\"esc"',
                         '"',
                         'qstring\"esc'
                     ]),
-                    new Node('_', '"qstring\"esc"', 14, 14)
+                    new Comp('_', '"qstring\"esc"', 14, 14, [])
                 ])
             ],
             [
                 "'qstring\'esc'",
-                new Node('literal', "'qstring\'esc'", 0, 14, [
-                    new RegexNode('', "'qstring\'esc'", 0, 14, [], [
+                new Comp('literal', "'qstring\'esc'", 0, 14, [
+                    new Rx('', "'qstring\'esc'", 0, 14, [
                         "'qstring\'esc'",
                         "'",
                         "qstring\'esc"
                     ]),
-                    new Node('_', "'qstring\'esc'", 14, 14)
+                    new Comp('_', "'qstring\'esc'", 14, 14, [])
                 ])
             ]
         ];
@@ -189,7 +190,7 @@ class PegasusGrammarTest extends Pegasus_TestCase
      */
     public function testQuantifier($input, $expected)
     {
-        $this->assertEquals(
+        $this->assertNodeEquals(
             $expected,
             $this->parse('quantifier', $input)
         );
@@ -199,47 +200,47 @@ class PegasusGrammarTest extends Pegasus_TestCase
         return [
             [
                 '*',
-                new Node('quantifier', '*', 0, 1, [
-                    new RegexNode('', '*', 0, 1, [], [
+                new Comp('quantifier', '*', 0, 1, [
+                    new Rx('', '*', 0, 1, [
                         '*', '*'
                     ]),
-                    new Node('_', '*', 1, 1)
+                    new Comp('_', '*', 1, 1, [])
                 ])
             ],
             [
                 '+',
-                new Node('quantifier', '+', 0, 1, [
-                    new RegexNode('', '+', 0, 1, [], [
+                new Comp('quantifier', '+', 0, 1, [
+                    new Rx('', '+', 0, 1, [
                         '+', '+'
                     ]),
-                    new Node('_', '+', 1, 1)
+                    new Comp('_', '+', 1, 1, [])
                 ])
             ],
             [
                 '?',
-                new Node('quantifier', '?', 0, 1, [
-                    new RegexNode('', '?', 0, 1, [], [
+                new Comp('quantifier', '?', 0, 1, [
+                    new Rx('', '?', 0, 1, [
                         '?', '?'
                     ]),
-                    new Node('_', '?', 1, 1)
+                    new Comp('_', '?', 1, 1, [])
                 ])
             ],
             [
                 '{1,2}',
-                new Node('quantifier', '{1,2}', 0, 5, [
-                    new RegexNode('', '{1,2}', 0, 5, [], [
+                new Comp('quantifier', '{1,2}', 0, 5, [
+                    new Rx('', '{1,2}', 0, 5, [
                         '{1,2}', '', '1', '2'
                     ]),
-                    new Node('_', '{1,2}', 5, 5)
+                    new Comp('_', '{1,2}', 5, 5, [])
                 ])
             ],
             [
                 '{3,}',
-                new Node('quantifier', '{3,}', 0, 4, [
-                    new RegexNode('', '{3,}', 0, 4, [], [
+                new Comp('quantifier', '{3,}', 0, 4, [
+                    new Rx('', '{3,}', 0, 4, [
                         '{3,}', '', '3', ''
                     ]),
-                    new Node('_', '{3,}', 4, 4)
+                    new Comp('_', '{3,}', 4, 4, [])
                 ])
             ],
         ];

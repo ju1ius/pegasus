@@ -43,20 +43,20 @@ not_term       = "!" term _
 lookahead_term = "&" term _
 quantified     = atom quantifier
 atom           = reference | literal | regex | parenthesized
-regex          = / \/ ((?: (?:\\.)|[^\/] )*) \/ ([ilmsux]*)? / _
+regex          = / \/ ((?: (?:\\.) | [^\/] )*) \/ ([ilmsux]*)? / _
 parenthesized  = "(" _ expression ")" _
-quantifier     = / ([*+?]) | (?: \{(\d+)(?:,(\d*))?\} ) / _
+quantifier     = / ([*+?]) | (?: \{ (\d+)(?:,(\d*))? \} ) / _
 
-literal        = / (["\']) ((?: (?:\\.)|(?:(?!\1).) )*) \1 / _
+literal        = / (["\']) ((?: (?:\\.) | (?:(?!\1).) )*) \1 / _
 
 # A subsequent equal sign is the only thing that distinguishes an identifier
 # (which begins a new rule) from a reference (which is just a pointer to a
 # rule defined somewhere else):
 
 reference     = identifier !equals
-equals        = "                  = " _
+equals        = "=" _
 label         = identifier ':'
-identifier    = /[a-zA-Z_][\w]*/ _
+identifier    = /[a-zA-Z_]\w*/ _
 
 _             = ws_or_comment*
 ws_or_comment = ws | comment
@@ -87,7 +87,7 @@ EOS;
         $ws_or_comment = new OneOf([$ws, $comment], 'ws_or_comment');
         $_ = new ZeroOrMore([$ws_or_comment], '_');
         $identifier = new Sequence([
-            new Regex('[a-zA-Z_][\w]*'),
+            new Regex('[a-zA-Z_]\w*'),
             $_
         ], 'identifier');
         $literal = new Sequence([

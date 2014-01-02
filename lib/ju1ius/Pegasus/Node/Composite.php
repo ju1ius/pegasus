@@ -49,5 +49,15 @@ class Composite extends Node
             }
         }
     }
+
+    public function iter()
+    {
+        yield $this;
+        foreach ($this->children as $child) {
+            foreach ($child->iter() as $node) {
+                yield $node;
+            }
+        }
+    }
     
 }

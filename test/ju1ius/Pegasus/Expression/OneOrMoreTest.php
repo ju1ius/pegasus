@@ -4,8 +4,8 @@ require_once __DIR__.'/../ExpressionBase_TestCase.php';
 
 use ju1ius\Pegasus\Expression\OneOrMore;
 use ju1ius\Pegasus\Expression\Literal;
-use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Node\Regex as RegexNode;
+use ju1ius\Pegasus\Node\Terminal as Term;
+use ju1ius\Pegasus\Node\Composite as Comp;
 
 
 class OneOrMoreTest extends ExpressionBase_TestCase
@@ -16,7 +16,7 @@ class OneOrMoreTest extends ExpressionBase_TestCase
     public function testMatch($members, $match_args, $expected)
     {
         $expr = new OneOrMore($members);
-        $this->assertEquals(
+        $this->assertNodeEquals(
             $expected,
             call_user_func_array([$this, 'parse'], array_merge([$expr], $match_args))
         );
@@ -27,10 +27,10 @@ class OneOrMoreTest extends ExpressionBase_TestCase
             [
                 [new Literal('x')],
                 ['xxx'],
-                new Node('', 'xxx', 0, 3, [
-                    new Node('', 'xxx', 0, 1),
-                    new Node('', 'xxx', 1, 2),
-                    new Node('', 'xxx', 2, 3),
+                new Comp('', 'xxx', 0, 3, [
+                    new Term('', 'xxx', 0, 1),
+                    new Term('', 'xxx', 1, 2),
+                    new Term('', 'xxx', 2, 3),
                 ])
             ],
         ];

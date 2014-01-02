@@ -3,7 +3,7 @@
 require_once __DIR__.'/../ExpressionBase_TestCase.php';
 
 use ju1ius\Pegasus\Expression\Regex;
-use ju1ius\Pegasus\Node\Regex as Node;
+use ju1ius\Pegasus\Node\Regex as Rx;
 
 
 class RegexTest extends ExpressionBase_TestCase
@@ -14,7 +14,7 @@ class RegexTest extends ExpressionBase_TestCase
     public function testMatch($args, $match_args, $expected)
     {
         $expr = $this->expr('Regex', $args);
-        $this->assertEquals(
+        $this->assertNodeEquals(
             $expected,
             call_user_func_array([$this, 'parse'], array_merge([$expr], $match_args))
         );
@@ -24,14 +24,14 @@ class RegexTest extends ExpressionBase_TestCase
         // [ [pattern(,name(,flags))], text, [name, text, start, end, children, matches] ]
         return [
             // simple literals
-            [['foo'], ['foo'], new Node('', 'foo', 0, 3, [], ['foo'])],
-            [['bar'], ['foobar', 3], new Node('', 'foobar', 3, 6, [], ['bar'])],
+			[['foo'], ['foo'], new Rx('', 'foo', 0, 3, ['foo'])],
+			[['bar'], ['foobar', 3], new Rx('', 'foobar', 3, 6, ['bar'])],
 
-            [['fo+'], ['fooooobar!'], new Node('', 'fooooobar!', 0, 6, [], ['fooooo'])],
+			[['fo+'], ['fooooobar!'], new Rx('', 'fooooobar!', 0, 6, ['fooooo'])],
             [
                 ['"((?:(?:\\\\.)|[^"])*)"'],
                 ['"quoted\\"stri\\ng"'],
-                new Node('', '"quoted\\"stri\\ng"', 0, 17, [], [
+				new Rx('', '"quoted\\"stri\\ng"', 0, 17, [
                     '"quoted\\"stri\\ng"',
                     'quoted\\"stri\\ng'
                 ])

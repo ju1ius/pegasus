@@ -11,4 +11,8 @@ class Terminal extends Node
     {
         yield $this;
     }
+    public function iter()
+    {
+        yield $this;
+    }
 }

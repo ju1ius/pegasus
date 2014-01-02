@@ -4,8 +4,8 @@ require_once __DIR__.'/../ExpressionBase_TestCase.php';
 
 use ju1ius\Pegasus\Expression\Quantifier;
 use ju1ius\Pegasus\Expression\Literal;
-use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Node\Regex as RegexNode;
+use ju1ius\Pegasus\Node\Terminal as Term;
+use ju1ius\Pegasus\Node\Composite as Comp;
 
 
 class QuantifierTest extends ExpressionBase_TestCase
@@ -16,7 +16,7 @@ class QuantifierTest extends ExpressionBase_TestCase
     public function testMatch($args, $match_args, $expected)
     {
         $expr = $this->expr('Quantifier', $args);
-        $this->assertEquals(
+        $this->assertNodeEquals(
             $expected,
             call_user_func_array([$this, 'parse'], array_merge([$expr], $match_args))
         );
@@ -28,59 +28,59 @@ class QuantifierTest extends ExpressionBase_TestCase
             [
                 [[new Literal('x')], '', 1, 1],
                 ['x'],
-                new Node('', 'x', 0, 1, [new Node('', 'x', 0, 1)])
+                new Comp('', 'x', 0, 1, [new Term('', 'x', 0, 1)])
             ],
             [
                 [[new Literal('x')], '', 3, 3],
                 ['xxx'],
-                new Node('', 'xxx', 0, 3, [
-                    new Node('', 'xxx', 0, 1),
-                    new Node('', 'xxx', 1, 2),
-                    new Node('', 'xxx', 2, 3),
+                new Comp('', 'xxx', 0, 3, [
+                    new Term('', 'xxx', 0, 1),
+                    new Term('', 'xxx', 1, 2),
+                    new Term('', 'xxx', 2, 3),
                 ])
             ],
             // range of occurences, min > 0, max is finite
             [
                 [[new Literal('x')], '', 1, 3],
                 ['x'],
-                new Node('', 'x', 0, 1, [
-                    new Node('', 'x', 0, 1),
+                new Comp('', 'x', 0, 1, [
+                    new Term('', 'x', 0, 1),
                 ])
             ],
             [
                 [[new Literal('x')], '', 1, 3],
                 ['xxx'],
-                new Node('', 'xxx', 0, 3, [
-                    new Node('', 'xxx', 0, 1),
-                    new Node('', 'xxx', 1, 2),
-                    new Node('', 'xxx', 2, 3),
+                new Comp('', 'xxx', 0, 3, [
+                    new Term('', 'xxx', 0, 1),
+                    new Term('', 'xxx', 1, 2),
+                    new Term('', 'xxx', 2, 3),
                 ])
             ],
             // range of occurences, min > 0, max is infinite
             [
                 [[new Literal('x')], '', 1, null],
                 ['xxx'],
-                new Node('', 'xxx', 0, 3, [
-                    new Node('', 'xxx', 0, 1),
-                    new Node('', 'xxx', 1, 2),
-                    new Node('', 'xxx', 2, 3),
+                new Comp('', 'xxx', 0, 3, [
+                    new Term('', 'xxx', 0, 1),
+                    new Term('', 'xxx', 1, 2),
+                    new Term('', 'xxx', 2, 3),
                 ])
             ],
             // range of occurences, min === 0
             [
                 [[new Literal('x')], '', 0, 1],
                 ['foo'],
-                new Node('', 'foo', 0, 0)
+                new Comp('', 'foo', 0, 0, [])
             ],
             [
                 [[new Literal('x')], '', 0, null],
                 ['foo'],
-                new Node('', 'foo', 0, 0)
+                new Comp('', 'foo', 0, 0, [])
             ],
             [
                 [[new Literal('x')], '', 0, null],
                 ['xoo'],
-                new Node('', 'xoo', 0, 1, [new Node('', 'xoo', 0, 1)])
+                new Comp('', 'xoo', 0, 1, [new Term('', 'xoo', 0, 1)])
             ],
         ];
     }

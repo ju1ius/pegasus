@@ -3,7 +3,7 @@
 require_once __DIR__.'/../ExpressionBase_TestCase.php';
 
 use ju1ius\Pegasus\Expression\Literal;
-use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\Node\Terminal as Node;
 
 
 class LiteralTest extends ExpressionBase_TestCase
@@ -14,7 +14,7 @@ class LiteralTest extends ExpressionBase_TestCase
     public function testMatch($literal, $params, $expected)
     {
         $expr = new Literal($literal);
-        $this->assertEquals(
+        $this->assertNodeEquals(
             $expected,
             call_user_func_array([$this, 'parse'], array_merge([$expr], $params))
         );

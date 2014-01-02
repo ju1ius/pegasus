@@ -4,7 +4,8 @@ require_once __DIR__.'/../ExpressionBase_TestCase.php';
 
 use ju1ius\Pegasus\Expression\Not;
 use ju1ius\Pegasus\Expression\Literal;
-use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\Node\Terminal as Term;
+use ju1ius\Pegasus\Node\Composite as Comp;
 
 
 class NotTest extends ExpressionBase_TestCase
@@ -15,7 +16,7 @@ class NotTest extends ExpressionBase_TestCase
     public function testMatch($members, $match_args, $expected)
     {
         $expr = new Not($members);
-        $this->assertEquals(
+        $this->assertNodeEquals(
             $expected,
             call_user_func_array([$this, 'parse'], array_merge([$expr], $match_args))
         );
@@ -26,17 +27,17 @@ class NotTest extends ExpressionBase_TestCase
             [
                 [new Literal('foo')],
                 ['barbaz'],
-                new Node('', 'barbaz', 0, 0)
+                new Comp('', 'barbaz', 0, 0, [])
             ],
             [
                 [new Literal('bar')],
                 ['foobar'],
-                new Node('', 'foobar', 0, 0)
+                new Comp('', 'foobar', 0, 0, [])
             ],
             [
                 [new Literal('foo')],
                 ['foobar', 3],
-                new Node('', 'foobar', 3, 3)
+                new Comp('', 'foobar', 3, 3, [])
             ],
         ];
     }
