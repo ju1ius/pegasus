@@ -3,7 +3,7 @@
 require_once __DIR__.'/../../Pegasus_TestCase.php';
 
 use ju1ius\Pegasus\PegasusGrammar;
-use ju1ius\Pegasus\Parser\Packrat;
+use ju1ius\Pegasus\Parser\Packrat as Parser;
 use ju1ius\Pegasus\Node\Terminal as Term;
 use ju1ius\Pegasus\Node\Composite as Comp;
 use ju1ius\Pegasus\Node\Regex as Rx;
@@ -16,7 +16,7 @@ class PegasusGrammarTest extends Pegasus_TestCase
     public static function setUpBeforeClass()
     {
         $grammar = PegasusGrammar::build();
-        self::$parser = new Packrat($grammar);
+        self::$parser = new Parser($grammar);
     }
 
     protected function parse($rule_name, $text, $pos=0)
@@ -383,11 +383,33 @@ class PegasusGrammarTest extends Pegasus_TestCase
      */  
     public function testRule($input, $expected)
     {
-       $this->markTestIncomplete('Test not implemented');
+        $this->assertNodeEquals(
+            $expected,
+            $this->parse('rule', $input)
+        );
     }
     public function testRuleProvider()
     {
-        return [[null, null]];
+		return [
+			[
+				"x = 'y' 'z' | 't'",
+				new Comp('rule', "x = 'y' 'z' | 't'", 0, 12, [
+					new Comp('identifier', "x = 'y' 'z' | 't'", 0, 2, [
+						new Rx('', "x = 'y' 'z' | 't'", 0, 1, ['x']),
+						new Comp('_', "x = 'y' 'z' | 't'", 1, 2, [])
+					]),
+					new Comp('equals', "x = 'y' 'z' | 't'", 2, 4, [
+						new Term('', "x = 'y' 'z' | 't'", 2, 3),
+						new Comp('_', "x = 'y' 'z' | 't'", 3, 4, [])
+					]),
+					new Comp('expression', "x = 'y' 'z' | 't'", 4, 12, [
+						new Comp('ored', "x = 'y' 'z' | 't'", 4, 12, [
+							
+						])
+					])
+				])
+			]
+		];
     }
 
     /**
