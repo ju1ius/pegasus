@@ -1,6 +1,9 @@
 <?php
 require_once __DIR__.'/../../../vendor/autoload.php';
 
+use ju1ius\Pegasus\Exception\UndefinedLabelException;
+
+use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Expression\Regex;
 use ju1ius\Pegasus\Expression\Optional;
@@ -55,23 +58,25 @@ primary		= '(' expression ')'
 			
 atom		= literal | regex | reference
 
-equals = / \s* = \s* /
+equals		= / \s* = \s* /
 
-reference = / (?>([a-zA-Z]\w*)) (?>\s*) (?>(?!=)) /
+reference	= / (?>([a-zA-Z]\w*)) (?>\s*) (?>(?!=)) /
 
-quantifier     = / ([*+?]) | (?: \{ (\d+)(?:,(\d*))? \} ) / _
+quantifier  = / ([*+?]) | (?: \{ (\d+)(?:,(\d*))? \} ) / _
 
-literal = / (["\']) ((?: (?:\\.) | (?:(?!\1).) )*) \1 /
+regex		= / \/ ((?: (?:\\\\.) | [^\/] )*) \/ ([ilmsux]*)? /
 
-label = / ([a-zA-Z]\w*): /
+literal		= / (["\']) ((?: (?:\\.) | (?:(?!\1).) )*) \1 /
 
-identifier = / [a-zA-Z]\w* /
+label		= / ([a-zA-Z]\w*): /
 
-_ = (ws | comment)*
+identifier	= / [a-zA-Z]\w* /
 
-comment = / \# ([^\r\n]*) /
+_			= (ws | comment)*
 
-ws = /\s+/
+comment		= / \# ([^\r\n]*) /
+
+ws			= /\s+/
 EOS;
 
 
@@ -98,7 +103,7 @@ $quantifier = new Sequence([
 	new Regex('(?> ([*+?]) | (?: \{ (\d+) (?:,(\d*))?\} ) )', 'quantifier_rx'),
 	$_
 ], 'quantifier');
-$reference = new Regex('(?>([a-zA-Z]\w*))(?>\s*)(?>(?!=))', 'reference');
+$reference = new Regex('(?>([a-zA-Z_]\w*))(?>\s*)(?>(?!=))', 'reference');
 $equals = new Regex('\s*=\s*', 'equals');
 $OR = new Regex('\s*\|\s*', 'OR');
 
@@ -164,40 +169,47 @@ class MyVisitor extends NodeVisitor
 {
 	public function generic_visit($node, $children)
 	{
-		if ($node->expr_class === 'ju1ius\Pegasus\Expression\OneOf') {
-			return $children[0];
-		}
 		$num_children = count($children);
 		return $num_children > 1
 			? $children
 			: $num_children === 1 ? $children[0] : $node
 		;	
-		return $node instanceof Composite
-			? $children
-			: $node;//$children ?: $node;   
 	}
+
 	public function visit_identifier($node, $children)
 	{
 		return $children[0]->matches[0];
 	}
+
 	public function visit_literal($node, $children)
 	{
 		$quote = $children[0]->matches[1];
 		$str = $children[0]->matches[2];
 		return new Literal($str);
 	}
+
+	public function visit_regex($node, $children)
+	{
+		$regex = $children[0];
+		list(, $pattern, $flags) = $regex->matches;
+		return new Regex($pattern, '', str_split($flags));
+	}
+	
 	public function visit_reference($node, $children)
 	{
 		return new LazyReference($node->matches[1]);
 	}
+
 	public function visit_atom($node, $children)
 	{
 		return $children[0];
 	}
+
 	public function visit_primary($node, $children)
 	{
 	    return $children[0];
 	}
+
 	public function visit_parenthesized($node, $children)
 	{
 		list($lp, $expr, $rp) = $children;
@@ -208,30 +220,36 @@ class MyVisitor extends NodeVisitor
 	{
 	    return $children[0];
 	}
+
 	public function visit_rule($node, $children)
 	{
 		list($identifier, $expression) = $children;
 		$expression->name = $identifier;
 		return $expression;
 	}
+
 	public function visit_term($node, $children)
 	{
 	    return $children[0];
 	}
+
 	public function visit_labeled($node, $children)
 	{
 		list($label, $labelable) = $children;
 		$labelable->label = $label;
 		return $labelable;
 	}
+
 	public function visit_labelable($node, $children)
 	{
 		return $children[0];
 	}
+
 	public function visit_prefixed($node, $children)
 	{
 	    return $children[0];
 	}
+
 	public function visit_prefixable($node, $children)
 	{
 		return $children[0];
@@ -242,15 +260,16 @@ class MyVisitor extends NodeVisitor
 		list($bang, $prefixable) = $children;
 		return new Not([$prefixable]);
 	}
+
 	public function visit_lookahead($node, $children)
 	{
 		list($amp, $prefixable) = $children;
 		return new Lookahead([$prefixable]);
 	}
+
 	public function visit_suffixed($node, $children)
 	{
 		list($suffixable, $quantifier) = $children;
-		var_dump($children);
 		if (!empty($quantifier->matches[1])) {
 			switch ($quantifier->matches[1]) {
 				case '?':
@@ -267,14 +286,6 @@ class MyVisitor extends NodeVisitor
 		$max = isset($quantifier->matches[3]) ? (int) $quantifier->matches[3] : null;
         return new Quantifier([$suffixable], '', $min, $max);
 	}
-	public function visit_rules($node, $children)
-	{
-		$rules = [];
-		foreach ($children as $expr) {
-			$rules[$expr->name] = $expr;
-		}
-		return $rules;
-	}
 	
 	public function visit_sequence($node, $children)
 	{
@@ -282,27 +293,116 @@ class MyVisitor extends NodeVisitor
 		return new Sequence(array_merge([$terms], [$term]));
 		return $node;
 	}
+
 	public function visit_choice($node, $children)
 	{
 		list($expr, $terms) = $children;
 		return new OneOf([$expr, $terms]);
 	}
+
+	public function visit_rules($node, $children)
+	{
+		$rules = $children;
+		$rule_map = [];
+		foreach ($children as $expr) {
+			$rule_map[$expr->name] = $expr;
+		}
+        // Resolve references. This tolerates forward references.
+        $names = array_keys($rule_map);
+        $unwalked_names = array_combine($names, $names);
+        while (list($rule_name,) = each($unwalked_names)) {
+            $rule_map[$rule_name] = $this->_resolveRefs($rule_map, $rule_map[$rule_name], $unwalked_names, [$rule_name]);
+            unset($unwalked_names[$rule_name]);
+        }
+        $default = $rules[0] instanceof Expression\LazyReference
+            ? $rule_map[$rules[0]->identifier]
+            : $rules[0]
+        ;
+        return [$rule_map, $default];
+	}
+
+    /**
+     * Return an expression with all its lazy references recursively resolved.
+     *
+     * Resolve any lazy references in the expression ``expr``,
+     * recursing into all subexpressions.
+     * Populate $rule_map with any other rules (named expressions)
+     * resolved along the way.
+     * Remove from $unwalked_names any which were resolved.
+     *
+     * @param $walking_names: The stack of labels we are currently recursing through.
+     * This prevents infinite recursion for circular refs.
+     *
+     * @param $rule_map, $expr, $unwalked_names, $walking_names
+     * @return void
+     */
+    protected function _resolveRefs(array $rule_map, $expr, array &$unwalked_names, array $walking_names)
+    {
+        // If it's a top-level (named) expression and we've already walked it,
+        // don't walk it again:
+        if ($expr->name && !isset($unwalked_names[$expr->name])) {
+            // $unwalked_names started out with all the rule names in it, so,
+            // if this is a named expr and it isn't in there,
+            // it must have been resolved.
+            return $rule_map[$expr->name];
+        }
+        // If not, resolve it:
+        if ($expr instanceof LazyReference) {
+            //$label = (string) $expr;
+            $label = $expr->identifier;
+            if (!isset($walking_names[$label])) {
+                // We aren't already working on traversing this label:
+                if (!isset($rule_map[$label])) {
+                    throw new UndefinedLabelException($label);
+                }
+                $reffed_expr = $rule_map[$label];
+                $walking_names[] = $label;
+                $rule_map[$label] = $this->_resolveRefs(
+                    $rule_map,
+                    $reffed_expr,
+                    $unwalked_names,
+                    $walking_names 
+                );
+                // If we recurse into a compound expression, removal happens in there.
+                // But if this label points to a non-compound expression,
+                // like a literal or a regex or another lazy reference,
+                // we need to do this here:
+                unset($unwalked_names[$label]);
+            }
+            return $rule_map[$label];
+        }
+        $members = $expr instanceof Composite ? $expr->members : [];
+        if ($members) {
+            $expr->members = [];
+            foreach ($members as $member) {
+                $expr->members[] = $this->_resolveRefs($rule_map, $member, $unwalked_names, $walking_names);
+            }
+        }
+        if ($expr->name) {
+            unset($unwalked_names[$expr->name]);
+        }
+        return $expr;
+    }
 }
 
 
 $parser = new Parser\LRPackrat($grammar);
 
-$tree = $parser->parse(<<<'EOS'
-hello = rule ("other" | &rule)
-rule = oneofus+ | !hello
-oneofus = "you"{1} | "me"?
-EOS
-);
+//$tree = $parser->parse(<<<'EOS'
+//hello = rule ("other" | &rule)
+//rule = oneofus+ | !hello
+//oneofus = "you"{1} | "me"?
+//EOS
+//);
+$tree = $parser->parse($syntax);
 $visitor = new MyVisitor([
 	'ignore' => ['_', 'OR', 'equals']
 ]);
-$new_tree = $visitor->visit($tree);
-foreach ($new_tree as $name => $rule) {
+list($rules, $start) = $visitor->visit($tree);
+foreach ($rules as $name => $rule) {
+	if (!method_exists($rule, 'asRule')) {
+		var_dump($rule);
+	}
 	echo $rule->asRule(), "\n";
 }
 
