@@ -27,6 +27,7 @@ class LRPackrat extends Packrat
 
     public function apply(Expression $expr, $pos)
     {
+        $this->pos = $pos;
         $this->error->pos = $pos;
         $this->error->expr = $expr;
 

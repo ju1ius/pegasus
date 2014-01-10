@@ -34,6 +34,7 @@ class RuleVisitor extends NodeVisitor
      */
     public function generic_visit($node, $visited_children)
     {
+        return $visited_children ?: $node;
         return $node instanceof Composite
             ? $visited_children ?: null
             : $node;
@@ -80,49 +81,6 @@ class RuleVisitor extends NodeVisitor
         list($identifier, $expr) = $visited_children;
         $expr->name = $identifier;
         return $expr;
-    }
-    
-    /**
-     * Treat a parenthesized subexpression as just its contents.
-     *
-     * Its position in the tree suffices to maintain its grouping semantics.
-     * $visited_children = ['(', _1, $expr, ')', _2]
-     */
-    public function visit_parenthesized($node, $visited_children)
-    {
-        list($lparen, $expr, $rparen) = $visited_children;
-        return $expr;
-    }
-
-    /**
-     * Turn a quantifier into just its symbol-matching node.
-     * 
-     * @param $visited_children [symbol, _]
-     * @return Expression
-     **/
-    public function visit_quantifier($node, $visited_children)
-    {
-        list($regex) = $visited_children;
-        return $regex;
-    }
-    
-    /**
-     * Documentation for visit_quantified
-     *
-     * @param $quantified, $visited_children
-     * @return void
-     */
-    public function visit_quantified($node, $visited_children)
-    {
-        list($atom, $quantifier) = $visited_children;
-        var_dump($atom);
-        if ($quantifier->matches[1]) {
-            $class = self::$QUANTIFIER_CLASSES[$quantifier->matches[1]];
-            return new $class([$atom]);
-        }
-        $min = (int) $quantifier->matches[2];
-        $max = $quantifier->matches[3] ? (int) $quantifier->matches[3] : null;
-        return new Expression\Quantifier([$atom], '', $min, $max);
     }
     
     /**
@@ -204,18 +162,47 @@ class RuleVisitor extends NodeVisitor
         list($atom) = $visited_children;
         return $atom;
     }
-
+    
     /**
-     * Documentation for visit_reference
+     * Treat a parenthesized subexpression as just its contents.
      *
-     * @param $reference, $visited_children
+     * Its position in the tree suffices to maintain its grouping semantics.
+     * $visited_children = ['(', _1, $expr, ')', _2]
+     */
+    public function visit_parenthesized($node, $visited_children)
+    {
+        list($lparen, $expr, $rparen) = $visited_children;
+        return $expr;
+    }
+    
+    /**
+     * Documentation for visit_quantified
+     *
+     * @param $quantified, $visited_children
      * @return void
      */
-    public function visit_reference($reference, $visited_children)
+    public function visit_quantified($node, $visited_children)
     {
-        //list($identifier, $not_equals) = $visited_children;
-        list($identifier) = $visited_children;
-        return new Expression\LazyReference($identifier);
+        list($atom, $quantifier) = $visited_children;
+        if ($quantifier->matches[1]) {
+            $class = self::$QUANTIFIER_CLASSES[$quantifier->matches[1]];
+            return new $class([$atom]);
+        }
+        $min = (int) $quantifier->matches[2];
+        $max = $quantifier->matches[3] ? (int) $quantifier->matches[3] : null;
+        return new Expression\Quantifier([$atom], '', $min, $max);
+    }
+
+    /**
+     * Turn a quantifier into just its symbol-matching node.
+     * 
+     * @param $visited_children [symbol, _]
+     * @return Expression
+     **/
+    public function visit_quantifier($node, $visited_children)
+    {
+        list($regex) = $visited_children;
+        return $regex;
     }
 
     /**
@@ -246,6 +233,19 @@ class RuleVisitor extends NodeVisitor
         $quote_char = $regex->matches[1];
         $str = $regex->matches[2];
         return new Expression\Literal($str);
+    }
+
+    /**
+     * Documentation for visit_reference
+     *
+     * @param $reference, $visited_children
+     * @return void
+     */
+    public function visit_reference($reference, $visited_children)
+    {
+        list($identifier, $not_equals) = $visited_children;
+        //list($identifier) = $visited_children;
+        return new Expression\LazyReference($identifier);
     }
 
     /**

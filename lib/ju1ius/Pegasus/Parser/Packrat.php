@@ -23,7 +23,7 @@ class Packrat implements ParserInterface
     protected $grammar = null;
     protected $memo = [];
     protected $source = null;
-    protected $pos = 0;
+    public $pos = 0;
     protected $error = null;
 
     public function __construct($grammar)

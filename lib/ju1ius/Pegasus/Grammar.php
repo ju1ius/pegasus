@@ -44,11 +44,13 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      * @param string $default_rule The name of the rule invoked when you call parse() on the grammar.
      *                             Defaults to the first rule.
      **/
-    public function __construct($rules, $default_rule=null)
+    public function __construct($rules=null, $default_rule=null)
     {
-        list($exprs, $first) = $this->expressionsFromSyntax($rules);
-        $this->rules = array_merge($this->rules, $exprs);
-        $this->default_rule = $default_rule ? $exprs[$default_rule] : $first;
+        if ($rules) {
+            list($exprs, $first) = $this->expressionsFromSyntax($rules);
+            $this->rules = array_merge($this->rules, $exprs);
+            $this->default_rule = $default_rule ? $exprs[$default_rule] : $first;
+        }
     }
 
     public function setDefault($name)

@@ -45,6 +45,7 @@ class Quantifier extends Composite
         $match_count = 0;
         while (true) {
 
+            //$node = $this->members[0]->match($text, $new_pos, $parser);
             $node = $parser->apply($this->members[0], $new_pos);
             if (!$node) break;
             $match_count++;
@@ -60,5 +61,6 @@ class Quantifier extends Composite
         if ($match_count >= $this->min) {
             return Node::fromExpression($this, $text, $pos, $new_pos, $children);
         }
+        //$parser->pos = $pos;
     }
 }
