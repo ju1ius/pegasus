@@ -167,6 +167,19 @@ $grammar = new Sequence([
 
 class MyVisitor extends NodeVisitor
 {
+    static protected $QUANTIFIER_CLASSES = [
+        '?' => 'ju1ius\Pegasus\Expression\Optional',
+        '*' => 'ju1ius\Pegasus\Expression\ZeroOrMore',
+        '+' => 'ju1ius\Pegasus\Expression\OneOrMore'
+    ];
+
+    public function __construct()
+    {
+        parent::__construct([
+            'ignore' => ['_', 'OR', 'equals']
+        ]);
+    }
+
 	public function generic_visit($node, $children)
 	{
 		$num_children = count($children);
@@ -191,7 +204,7 @@ class MyVisitor extends NodeVisitor
 	public function visit_regex($node, $children)
 	{
 		$regex = $children[0];
-		list(, $pattern, $flags) = $regex->matches;
+		list($match, $pattern, $flags) = $regex->matches;
 		return new Regex($pattern, '', str_split($flags));
 	}
 	
@@ -271,16 +284,8 @@ class MyVisitor extends NodeVisitor
 	{
 		list($suffixable, $quantifier) = $children;
 		if (!empty($quantifier->matches[1])) {
-			switch ($quantifier->matches[1]) {
-				case '?':
-					return new Optional([$suffixable]);
-				case '*':
-					return new ZeroOrMore([$suffixable]);
-				case '+':
-					return new OneOrMore([$suffixable]);
-				default:
-					throw new \LogicException('Unknown quantifier: '.$quantifier->matches[1]);
-			}
+            $class = self::$QUANTIFIER_CLASSES[$quantifier->matches[1]];
+            return new $class([$suffixable]);
 		}
         $min = (int) $quantifier->matches[2];
 		$max = isset($quantifier->matches[3]) ? (int) $quantifier->matches[3] : null;
