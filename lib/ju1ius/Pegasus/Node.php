@@ -111,11 +111,12 @@ abstract class Node
 
     public function equals($other=null)
     {
-        return $other instanceof $this
+        return $other
+            && $this instanceof $other
             && $this->expr_name === $other->expr_name
-            && $this->full_text === $other->full_text
             && $this->start === $other->start
             && $this->end === $other->end
+            && $this->full_text === $other->full_text
         ;
     }
 

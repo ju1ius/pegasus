@@ -53,7 +53,7 @@ class Packrat implements ParserInterface
     {
         $result = $this->parse($source, 0, $rule);
         if ($this->pos < strlen($source)) {
-            throw new IncompleteParseError($source, $this->pos, $rule);
+            throw new IncompleteParseError($source, $this->pos, $this->error->expr);
         }
 
         return $result;

@@ -41,6 +41,20 @@ class Composite extends Node
         return implode("\n", $ret);
     }
 
+    public function toArray()
+    {
+        $res = [];
+        foreach ($this->children as $child) {
+            if ($child instanceof Composite) {
+                $res[] = $child->toArray();   
+                continue;
+            }
+            $res[] = $child->getText();
+        }
+        return $res;
+    }
+    
+
     public function terminals()
     {
         foreach ($this->children as $child) {
