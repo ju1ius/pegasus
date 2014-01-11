@@ -54,6 +54,8 @@ abstract class Expression
     public function equals(Expression $other)
     {
         return $other instanceof $this
-            && $other->id === $this->id;
+            && $other->id === $this->id
+            && $other->name === $this->name
+        ;
     }
 }

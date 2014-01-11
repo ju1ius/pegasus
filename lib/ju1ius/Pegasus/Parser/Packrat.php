@@ -26,18 +26,8 @@ class Packrat implements ParserInterface
     public $pos = 0;
     protected $error = null;
 
-    public function __construct($grammar)
+    public function __construct(Grammar $grammar)
     {
-        if ($grammar instanceof Grammar) {
-            $this->default_rule = $grammar->getDefault();
-        } else if ($grammar instanceof Expression) {
-            $this->default_rule = $grammar;
-        } else {
-            throw new \InvalidArgumentException(sprintf(
-                'Argument #1 of %s must be instance of Grammar or Expression, got %s',
-                __METHOD__, get_class($grammar)
-            ));
-        }
         $this->grammar = $grammar;
     }
 
@@ -76,11 +66,9 @@ class Packrat implements ParserInterface
         $this->refmap = [];
 
         if (!$rule) {
-            $rule = $this->default_rule;
-        } else if ($this->grammar instanceof Grammar) {
-            $rule = $this->grammar[$rule];
+            $rule = $this->grammar->getStartRule();
         } else {
-            // throw something
+            $rule = $this->grammar[$rule];
         }
 
         //FIXME: how to do this ?

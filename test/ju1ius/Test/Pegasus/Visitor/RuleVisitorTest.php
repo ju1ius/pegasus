@@ -1,11 +1,11 @@
 <?php
 
-require_once __DIR__.'/../../Pegasus_TestCase.php';
+use ju1ius\Test\Pegasus\PegasusTestCase;
 
 use ju1ius\Pegasus\Grammar;
 
 
-class RuleVisitorTest extends Pegasus_TestCase
+class RuleVisitorTest extends PegasusTestCase
 {
     public function testDefaultRuleIsNotAReference()
     {

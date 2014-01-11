@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__.'/../ExpressionBase_TestCase.php';
+use ju1ius\Test\Pegasus\ExpressionTestCase;
 
 use ju1ius\Pegasus\Expression\Quantifier;
 use ju1ius\Pegasus\Expression\Literal;
@@ -8,7 +8,7 @@ use ju1ius\Pegasus\Node\Terminal as Term;
 use ju1ius\Pegasus\Node\Composite as Comp;
 
 
-class QuantifierTest extends ExpressionBase_TestCase
+class QuantifierTest extends ExpressionTestCase
 {
     /**
      * @dataProvider testMatchProvider

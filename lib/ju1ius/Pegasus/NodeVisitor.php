@@ -52,11 +52,12 @@ class NodeVisitor
             $children = [];
             if ($node instanceof Composite) {
                 // visit children
-                $children = array_map([$this, 'visit'], $node->children);
-                // filter ignored (null) nodes 
-                $children = array_values(array_filter($children, function($child) {
-                    return $child !== null;
-                }));
+				foreach ($node->children as $child) {
+					$child_node = $this->visit($child);
+					// filter ignored (null) nodes 
+					if (null === $child_node) continue;
+					$children[] = $child_node;
+				}
             }
 
             //if (isset($this->actions[$node->expr_name])) {

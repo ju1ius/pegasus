@@ -4,7 +4,7 @@ namespace ju1ius\Pegasus;
 
 
 /**
- * A parse tree node
+ * Abstract class for parse tree nodes.
  *
  * Consider these immutable once constructed. As a side effect of a
  * memory-saving strategy in the cache, multiple references to a single

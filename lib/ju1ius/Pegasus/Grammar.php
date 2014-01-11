@@ -2,30 +2,46 @@
 
 namespace ju1ius\Pegasus;
 
+use ju1ius\Pegasus\Exception\GrammarException;
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Parser\LRPackrat as Parser;
+use ju1ius\Pegasus\Visitor\RuleVisitor;
+use ju1ius\Pegasus\Visitor\ExpressionTraverser;
+use ju1ius\Pegasus\Visitor\ReferenceResolver;
+use ju1ius\Pegasus\Visitor\RuleCollector;
 
 
 /**
  * A collection of expressions that describe a language.
  *
- * You can start parsing from the default expression
- * by calling Grammar::parse():
- *
- * $grammar = new Grammar(<<<'EOS'
+ * <code>
+ * use ju1ius\Pegasus\Grammar;
+ * use ju1ius\Pegasus\Parser\Packrat as Parser;
+ * // or if the grammar is left-recursive:
+ * // use ju1ius\Pegasus\Parser\LRPackrat as Parser
+ * 
+ * $syntax = <<<'EOS'
  * polite_greeting = greeting ", my good sir"
  * greeting = Hi / Hello
  * EOS;
- * );
- * $parse_tree = $grammar->parse('Hello, my good sir');
+ * 
+ * $grammar = Grammar::fromSyntax($syntax);
+ * $parse_tree = (new Parser($grammar))->parse('Hello, my good sir');
+ * </code>
  *
  * Or start parsing from any of the other expressions.
  * You can pull them out of the grammar as if it were an associative array:
  *
- * $grammar['greeting']->parse('Hi');
+ * <code>
+ * $parse_tree = (new Parser($grammar['greeting']))->parse('Hi');
+ * </code>
  *
- * You could also just construct a bunch of Expression objects yourself
- * and stitch them together into a language, but using a Grammar has some
- * important advantages:
+ * You can also just construct a bunch of Expression objects yourself
+ * and stitch them together into a language by using:
+ * <code>
+ * Grammar::fromExpression($my_expression);
+ * </code>
+ * But using a Grammar has some important advantages:
  *
  * - Languages are much easier to define in the nice syntax it provides.
  * - Circular references aren't a pain.
@@ -33,97 +49,63 @@ use ju1ius\Pegasus\Expression;
  *   factoring up repeated subexpressions into a single object,
  *   which should increase cache hit ratio.
  */
-class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
+class Grammar extends AbstractGrammar
 {
-    protected
-        $rules = [],
-        $default_rule = null;
+	/**
+	 * Protected Grammar constructor.
+	 *
+	 * You must use Grammar::fromSyntax or Grammar::fromExpression
+	 * to build Grammar objects.
+	 *
+	 * @param Expression[]	$rules		An array of ['rule_name' => $expression].
+	 * @param Expression	$start_rule	The top level expression of this grammar.
+	 **/
+	public function __construct(array $rules=[], Expression $start_rule=null)
+	{
+		$this->rules = $rules;
+		$this->default_rule = $start_rule;
+	}
 
-    /**
-     * @param string $peg          The grammar definition
-     * @param string $default_rule The name of the rule invoked when you call parse() on the grammar.
-     *                             Defaults to the first rule.
-     **/
-    public function __construct($rules=null, $default_rule=null)
-    {
-        if ($rules) {
-            list($exprs, $first) = $this->expressionsFromSyntax($rules);
-            $this->rules = array_merge($this->rules, $exprs);
-            $this->default_rule = $default_rule ? $exprs[$default_rule] : $first;
-        }
-    }
+	/**
+	 * Factory method that constructs a Grammar object from a syntax string.
+	 *
+	 * @param string	$syntax
+	 *
+	 * @return Grammar
+	 */
+	public static function fromSyntax($syntax)
+	{
+		$metagrammar = MetaGrammar::create();
+		$tree = (new Parser($metagrammar))->parse($syntax);
+		list($rules, $start) = (new RuleVisitor)->visit($tree);
 
-    public function setDefault($name)
-    {
-        $this->default_rule = $this->rules[$name];
-    }
-    public function getDefault()
-    {
-        return $this->default_rule;
-    }
+		$grammar = new static($rules, $start);
+		$grammar->resolveReferences();
+		return $grammar;
+	}
 
-    public function parse($syntax)
-    {
-        return (new Parser\Packrat($this))->parse($syntax);
-    }
-    
-    public function __toString()
-    {
-        $exprs = [$this->default_rule];
-        foreach ($this->rules as $name => $expr) {
-            if ($expr === $this->default_rule) continue;
-            $exprs[] = $expr;
-        }
-        return implode("\n", array_map(function($expr) {
-            return $expr->asRule();
-        }, $exprs));
-    }
+	/**
+	 * Factory method that constructs a Grammar object from an Expression.
+	 *
+	 * @param Expression $expr
+	 *
+	 * @return Grammar
+	 */
+	public static function fromExpression(Expression $expr)
+	{
+		if (!$expr->name) {
+			throw new GrammarException(
+				'Top level expression must have a name.'
+			);
+		}
+		$grammar = new static();
+		$traverser = (new ExpressionTraverser)
+			->addVisitor(new RuleCollector($grammar))
+			->addVisitor(new ReferenceResolver($grammar))
+		;
+		$expr = $traverser->traverse($expr);
+		$grammar->setStartRule($expr->name);
 
-    public function merge($grammar)
-    {
-        foreach ($grammar as $name => $rule) {
-            $this->rules[$name] = $rule;
-        }
-
-        return $this;
-    }
-
-    public function offsetExists($index)
-    {
-        return isset($this->rules[$index]);
-    }
-    public function offsetGet($index)
-    {
-        return $this->rules[$index];
-    }
-    public function offsetSet($index, $value)
-    {
-        $this->rules[$index] = $value;
-    }
-    public function offsetUnset($index)
-    {
-        unset($this->rules[$index]);
-    }
-    public function count()
-    {
-        return count($this->rules);
-    }
-    public function getIterator()
-    {
-        return new \ArrayIterator($this->rules);
-    }
-
-    /**
-     * Return a dict of rule names pointing to their expressions.
-     *
-     * It's a web of expressions, all referencing each other.
-     * Typically, there's a single root to the web of references,
-     * and that root is the starting symbol for parsing,
-     * but there's nothing saying you can't have multiple roots.
-     **/
-    protected function expressionsFromSyntax($syntax)
-    {
-        $tree = PegasusGrammar::build()->parse($syntax);
-        return (new RuleVisitor)->visit($tree);
-    }
+		return $grammar;
+	}
 }

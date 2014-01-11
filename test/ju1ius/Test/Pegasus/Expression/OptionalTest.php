@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__.'/../ExpressionBase_TestCase.php';
+use ju1ius\Test\Pegasus\ExpressionTestCase;
 
 use ju1ius\Pegasus\Expression\Optional;
 use ju1ius\Pegasus\Expression\Literal;
@@ -10,7 +10,7 @@ use ju1ius\Pegasus\Node\Terminal as Term;
 use ju1ius\Pegasus\Node\Composite as Comp;
 
 
-class OptionalTest extends ExpressionBase_TestCase
+class OptionalTest extends ExpressionTestCase
 {
     /**
      * @dataProvider testMatchProvider

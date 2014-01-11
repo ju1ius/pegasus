@@ -1,12 +1,15 @@
 <?php
 
-require_once __DIR__.'/../../Pegasus_TestCase.php';
+namespace ju1ius\Test\Pegasus;
+
+use ju1ius\Test\Pegasus\PegasusTestCase;
 
 use ju1ius\Pegasus\Parser\Packrat;
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Grammar;
 
 
-class ExpressionBase_TestCase extends Pegasus_TestCase
+class ExpressionTestCase extends PegasusTestCase
 {
     protected function expr($class, array $args)
     {
@@ -16,8 +19,9 @@ class ExpressionBase_TestCase extends Pegasus_TestCase
 
     protected function parse(Expression $expr, $text, $pos=0)
     {
-        $parser = new Packrat($expr);
+		$name = $expr->name ?: $expr->id;
+		$g = new Grammar([$name => $expr], $expr);
+        $parser = new Packrat($g);
         return $parser->parse($text, $pos);
     }
-    
 }

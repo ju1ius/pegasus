@@ -14,31 +14,36 @@ use ju1ius\Pegasus\Node;
  **/
 class Literal extends Expression
 {
+	use HasBackReferenceTrait;
+
     /**
      * @var string
      */
     public $literal;
+
+	/**
+	 * @var string
+	 */
+	public $quotechar;
 
     /**
      * @var int
      */
     protected $length;
 
-    protected $has_ref;
 
-    const BACKREF_RX = '/\$\{(\w+)\}/';
-
-    public function __construct($literal, $name='')
+	public function __construct($literal, $name='', $quotechar='"')
     {
         parent::__construct($name);
-        $this->literal = $literal;
+		$this->literal = $literal;
+		$this->quotechar = $quotechar;
         $this->setup();
     }
 
     public function setup()
     {
-        $this->has_ref = preg_match(self::BACKREF_RX, $this->literal);
-        if (!$this->has_ref) {
+		$this->splitSubject($this->literal);
+		if (!$this->hasBackReference) {
             $this->length = strlen($this->literal);
         }
     }
@@ -54,11 +59,8 @@ class Literal extends Expression
         $value = $this->literal;
         $length = $this->length;
 
-        if ($this->has_ref) {
-            $value = preg_replace_callback(self::BACKREF_RX, function($matches) use($parser) {
-                $result = $parser->getReference($matches[1]);
-                return (string) $result;
-            }, $this->literal);
+        if ($this->hasBackReference) {
+			$value = $this->replaceSubject([$parser, 'getReference']);
             $length = strlen($value);
         }
         if ($pos === strpos($text, $value, $pos)) {

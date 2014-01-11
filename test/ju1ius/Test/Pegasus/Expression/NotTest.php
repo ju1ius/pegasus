@@ -1,21 +1,21 @@
 <?php
 
-require_once __DIR__.'/../ExpressionBase_TestCase.php';
+use ju1ius\Test\Pegasus\ExpressionTestCase;
 
-use ju1ius\Pegasus\Expression\Sequence;
+use ju1ius\Pegasus\Expression\Not;
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Node\Terminal as Term;
 use ju1ius\Pegasus\Node\Composite as Comp;
 
 
-class SequenceTest extends ExpressionBase_TestCase
+class NotTest extends ExpressionTestCase
 {
     /**
      * @dataProvider testMatchProvider
      */
     public function testMatch($members, $match_args, $expected)
     {
-        $expr = new Sequence($members);
+        $expr = new Not($members);
         $this->assertNodeEquals(
             $expected,
             call_user_func_array([$this, 'parse'], array_merge([$expr], $match_args))
@@ -25,12 +25,19 @@ class SequenceTest extends ExpressionBase_TestCase
     {
         return [
             [
-                [new Literal('foo'), new Literal('bar')],
+                [new Literal('foo')],
+                ['barbaz'],
+                new Comp('', 'barbaz', 0, 0, [])
+            ],
+            [
+                [new Literal('bar')],
                 ['foobar'],
-                new Comp('', 'foobar', 0, 6, [
-                    new Term('', 'foobar', 0, 3),
-                    new Term('', 'foobar', 3, 6),
-                ])
+                new Comp('', 'foobar', 0, 0, [])
+            ],
+            [
+                [new Literal('foo')],
+                ['foobar', 3],
+                new Comp('', 'foobar', 3, 3, [])
             ],
         ];
     }
@@ -41,15 +48,15 @@ class SequenceTest extends ExpressionBase_TestCase
      */
     public function testMatchError($members, $match_args)
     {
-        $expr = new Sequence($members);
+        $expr = new Not($members);
         call_user_func_array([$this, 'parse'], array_merge([$expr], $match_args));
     }
     public function testMatchErrorProvider()
     {
         return [
             [
-                [new Literal('foo'), new Literal('bar')],
-                ['barbaz'],
+                [new Literal('bar')],
+                ['barbaz']
             ]
         ];
     }

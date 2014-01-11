@@ -1,21 +1,21 @@
 <?php
 
-require_once __DIR__.'/../ExpressionBase_TestCase.php';
+use ju1ius\Test\Pegasus\ExpressionTestCase;
 
-use ju1ius\Pegasus\Expression\OneOrMore;
+use ju1ius\Pegasus\Expression\Sequence;
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Node\Terminal as Term;
 use ju1ius\Pegasus\Node\Composite as Comp;
 
 
-class OneOrMoreTest extends ExpressionBase_TestCase
+class SequenceTest extends ExpressionTestCase
 {
     /**
      * @dataProvider testMatchProvider
      */
     public function testMatch($members, $match_args, $expected)
     {
-        $expr = new OneOrMore($members);
+        $expr = new Sequence($members);
         $this->assertNodeEquals(
             $expected,
             call_user_func_array([$this, 'parse'], array_merge([$expr], $match_args))
@@ -25,12 +25,11 @@ class OneOrMoreTest extends ExpressionBase_TestCase
     {
         return [
             [
-                [new Literal('x')],
-                ['xxx'],
-                new Comp('', 'xxx', 0, 3, [
-                    new Term('', 'xxx', 0, 1),
-                    new Term('', 'xxx', 1, 2),
-                    new Term('', 'xxx', 2, 3),
+                [new Literal('foo'), new Literal('bar')],
+                ['foobar'],
+                new Comp('', 'foobar', 0, 6, [
+                    new Term('', 'foobar', 0, 3),
+                    new Term('', 'foobar', 3, 6),
                 ])
             ],
         ];
@@ -42,16 +41,17 @@ class OneOrMoreTest extends ExpressionBase_TestCase
      */
     public function testMatchError($members, $match_args)
     {
-        $expr = new OneOrMore($members);
+        $expr = new Sequence($members);
         call_user_func_array([$this, 'parse'], array_merge([$expr], $match_args));
     }
     public function testMatchErrorProvider()
     {
         return [
             [
-                [new Literal('foo')],
+                [new Literal('foo'), new Literal('bar')],
                 ['barbaz'],
             ]
         ];
     }
+    
 }

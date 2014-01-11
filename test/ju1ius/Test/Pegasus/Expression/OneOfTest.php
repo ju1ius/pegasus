@@ -1,21 +1,21 @@
 <?php
 
-require_once __DIR__.'/../ExpressionBase_TestCase.php';
+use ju1ius\Test\Pegasus\ExpressionTestCase;
 
-use ju1ius\Pegasus\Expression\Not;
+use ju1ius\Pegasus\Expression\OneOf;
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Node\Terminal as Term;
 use ju1ius\Pegasus\Node\Composite as Comp;
 
 
-class NotTest extends ExpressionBase_TestCase
+class OneOfTest extends ExpressionTestCase
 {
     /**
      * @dataProvider testMatchProvider
      */
     public function testMatch($members, $match_args, $expected)
     {
-        $expr = new Not($members);
+        $expr = new OneOf($members);
         $this->assertNodeEquals(
             $expected,
             call_user_func_array([$this, 'parse'], array_merge([$expr], $match_args))
@@ -25,19 +25,19 @@ class NotTest extends ExpressionBase_TestCase
     {
         return [
             [
-                [new Literal('foo')],
-                ['barbaz'],
-                new Comp('', 'barbaz', 0, 0, [])
-            ],
-            [
-                [new Literal('bar')],
+                [new Literal('bar'), new Literal('foo')],
                 ['foobar'],
-                new Comp('', 'foobar', 0, 0, [])
+                new Comp('', 'foobar', 0, 3, [
+                    new Term('', 'foobar', 0, 3),
+                ])
             ],
+            # must return the first matched expression
             [
-                [new Literal('foo')],
-                ['foobar', 3],
-                new Comp('', 'foobar', 3, 3, [])
+                [new Literal('foo', 'FOO'), new Literal('foo', 'FOO2')],
+                ['foobar'],
+                new Comp('', 'foobar', 0, 3, [
+                    new Term('FOO', 'foobar', 0, 3),
+                ])
             ],
         ];
     }
@@ -48,15 +48,15 @@ class NotTest extends ExpressionBase_TestCase
      */
     public function testMatchError($members, $match_args)
     {
-        $expr = new Not($members);
+        $expr = new OneOf($members);
         call_user_func_array([$this, 'parse'], array_merge([$expr], $match_args));
     }
     public function testMatchErrorProvider()
     {
         return [
             [
-                [new Literal('bar')],
-                ['barbaz']
+                [new Literal('foo'), new Literal('doh')],
+                ['barbaz'],
             ]
         ];
     }
