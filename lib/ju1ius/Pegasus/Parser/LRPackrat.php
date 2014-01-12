@@ -27,6 +27,7 @@ class LRPackrat extends Packrat
 
     public function apply(Expression $expr, $pos)
     {
+        $this->pos = $pos;
         $this->error->pos = $pos;
         $this->error->expr = $expr;
 
@@ -42,7 +43,6 @@ class LRPackrat extends Packrat
             $m = new MemoEntry($lr, $pos);
             $this->memo[$expr->id][$pos] = $m;
             $result = $this->evaluate($expr, $pos);
-            \Psy\Shell::debug(['this' => &$this]);
             // Pop $lr off the invocation stack
             $this->lr_stack->pop();
             $m->end = $this->pos;
@@ -96,7 +96,7 @@ class LRPackrat extends Packrat
             $m->result = $result;
             $m->end = /*$result->end;*/$this->pos;
         }
-        $this->heads[$pos] = null;
+        unset($this->heads[$pos]);
         $this->pos = $m->end;
         return $m->result;
     }

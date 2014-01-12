@@ -28,7 +28,10 @@ class Sequence extends Composite
         $children = [];
         foreach ($this->members as $member) {
             $node = $parser->apply($member, $new_pos);
-            if (!$node) return;
+            //$node = $member->match($text, $new_pos, $parser);
+            if (!$node) {
+                return;
+            }
             $children[] = $node;
             $len = $node->end - $node->start;
             $new_pos += $len;

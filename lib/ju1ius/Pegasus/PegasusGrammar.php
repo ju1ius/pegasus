@@ -34,11 +34,14 @@ rules          = _ rule+
 rule           = identifier equals expression
 
 expression     = ored | sequence | term
-ored           = term or_term+
-sequence       = term term+
+ored           = sequence or_term+
+or_term        = "|" _ sequence
+#ored           = term or_term+
+#or_term        = "|" _ term
+#sequence       = term term+
+sequence       = term+
 term           = not_term | lookahead_term | quantified | atom
 labeled        = label term
-or_term        = "|" _ term
 not_term       = "!" term _
 lookahead_term = "&" term _
 quantified     = atom quantifier
@@ -116,9 +119,12 @@ EOS;
         $not_term = new Sequence([new Literal('!', 'bang'), $term, $_], 'not_term');
         array_unshift($term->members, $not_term);
 
-        $sequence = new Sequence([$term, new OneOrMore([$term], 'term+')], 'sequence');
-        $or_term = new Sequence([new Literal('|', 'pipe'), $_, $term], 'or_term');
-        $ored = new Sequence([$term, new OneOrMore([$or_term], 'or_term+')], 'ored');
+        //$sequence = new Sequence([$term, new OneOrMore([$term], 'term+')], 'sequence');
+        //$or_term = new Sequence([new Literal('|', 'pipe'), $_, $term], 'or_term');
+        //$ored = new Sequence([$term, new OneOrMore([$or_term], 'or_term+')], 'ored');
+        $sequence = new OneOrMore([$term], 'sequence');
+        $or_term = new Sequence([new Literal('|', 'pipe'), $_, $sequence], 'or_term');
+        $ored = new Sequence([$sequence, new OneOrMore([$or_term], 'or_term+')], 'ored');
         $expression = new OneOf([$ored, $sequence, $term], 'expression');
         $rule = new Sequence([
             $identifier,

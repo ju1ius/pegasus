@@ -77,33 +77,32 @@ class Calculator extends NodeVisitor
 }
 
 $syntax = <<<'EOS'
-expr = plus | minus | term
-term = mul | div | primary
-plus = expr _ '+' _ term _
-minus = expr _ '-' _ term _
-mul = term _ '*' _ primary _
-div = term _ '/' _ primary _
-primary = parenthesized | number
-parenthesized = '(' _ expr _ ')'
-number = float | int
-float = /-?[0-9]*\.[0-9]+/
-int = /-?[0-9]+/
-_ = /\s*/
+
 EOS;
 
 $syntax = <<<'EOS'
-expr = plus | minus | number
-term = mul | div | primary
-plus = expr _ '+' _ term
-minus = expr _ '-' _ term
-mul = term _ '*' _ primary
-div = term _ '/' _ primary
-primary = parenthesized | number
-parenthesized = '(' _ expr _ ')'
-number = float | int
-float = /-?[0-9]*\.[0-9]+/
-int = /-?[0-9]+/
-_ = /\s*/
+
+expr    = expr "+" term
+        | expr "-" term
+        | term
+
+term    = term "*" primary
+        | term "/" primary
+        | primary
+
+primary = '(' expr ')'
+        | num
+
+num     = expo | float | int
+
+float   = /-?[0-9]*\.[0-9]+/
+
+int     = /-?[0-9]+/
+
+expo    = (float | int) 'e' int
+
+_       = /\s*/
+
 EOS;
 
 

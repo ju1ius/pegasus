@@ -18,7 +18,7 @@ abstract class Expression
     public function __construct($name='')
     {
         $this->name = $name;
-        $this->id = \spl_object_hash($this);
+        $this->id = spl_object_hash($this);
     }
 
     abstract public function asRhs();
@@ -54,7 +54,8 @@ abstract class Expression
     public function equals(Expression $other)
     {
         return $other instanceof $this
-            && $other->id === $this->id;
+            && $other->id === $this->id
+            && $other->name === $this->name
+        ;
     }
-    
 }

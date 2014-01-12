@@ -44,7 +44,6 @@ class Quantifier extends Composite
         $children = [];
         $match_count = 0;
         while (true) {
-
             $node = $parser->apply($this->members[0], $new_pos);
             if (!$node) break;
             $match_count++;

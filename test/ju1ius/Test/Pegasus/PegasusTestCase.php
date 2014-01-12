@@ -1,15 +1,15 @@
 <?php
 
-require_once __DIR__.'/../vendor/autoload.php';
+namespace ju1ius\Test\Pegasus;
 
 use ju1ius\Pegasus\Node;
 
 
 /**
- * Class Pegasus_TestCase
+ * Class PegasusTestCase
  * @author ju1ius
  */
-class Pegasus_TestCase extends PHPUnit_Framework_TestCase
+class PegasusTestCase extends \PHPUnit_Framework_TestCase
 {
 	/**
 	 * Compares two nodes.

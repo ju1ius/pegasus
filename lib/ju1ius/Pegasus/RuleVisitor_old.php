@@ -4,6 +4,7 @@ namespace ju1ius\Pegasus;
 
 use ju1ius\Pegasus\Exception\UndefinedLabelException;
 use ju1ius\Pegasus\Exception\VisitationError;
+use ju1ius\Pegasus\Node\Composite;
 
 
 /**
@@ -34,6 +35,9 @@ class RuleVisitor extends NodeVisitor
     public function generic_visit($node, $visited_children)
     {
         return $visited_children ?: $node;
+        return $node instanceof Composite
+            ? $visited_children ?: null
+            : $node;
     }
 
     /**
@@ -71,47 +75,12 @@ class RuleVisitor extends NodeVisitor
         ;
         return [$rule_map, $default];
     }
-    
-    /**
-     * Treat a parenthesized subexpression as just its contents.
-     *
-     * Its position in the tree suffices to maintain its grouping semantics.
-     * $visited_children = ['(', _1, $expr, ')', _2]
-     */
-    public function visit_parenthesized($parenthesized, $visited_children)
-    {
-        list($lparen, $expr, $rparen) = $visited_children;
-        return $expr;
-    }
 
-    /**
-     * Turn a quantifier into just its symbol-matching node.
-     * 
-     * @param $visited_children [symbol, _]
-     * @return Expression
-     **/
-    public function visit_quantifier($node, $visited_children)
+    public function visit_rule($node, $visited_children)
     {
-        list($regex) = $visited_children;
-        return $regex;
-    }
-    
-    /**
-     * Documentation for visit_quantified
-     *
-     * @param $quantified, $visited_children
-     * @return void
-     */
-    public function visit_quantified($quantified, $visited_children)
-    {
-        list($atom, $quantifier) = $visited_children;
-        if ($quantifier->matches[1]) {
-            $class = self::$QUANTIFIER_CLASSES[$quantifier->matches[1]];
-            return new $class([$atom]);
-        }
-        $min = (int) $quantifier->matches[2];
-        $max = $quantifier->matches[3] ? (int) $quantifier->matches[3] : null;
-        return new Expression\Quantifier([$atom], '', $min, $max);
+        list($identifier, $expr) = $visited_children;
+        $expr->name = $identifier;
+        return $expr;
     }
     
     /**
@@ -120,7 +89,7 @@ class RuleVisitor extends NodeVisitor
      * @param $lookahead_term, $visited_children
      * @return void
      */
-    public function visit_lookahead_term($lookahead_term, $visited_children)
+    public function visit_lookahead_term($node, $visited_children)
     {
         list($ampersand, $term) = $visited_children;
         return new Expression\Lookahead([$term]);
@@ -132,7 +101,7 @@ class RuleVisitor extends NodeVisitor
      * @param $not_term, $visited_children
      * @return void
      */
-    public function visit_not_term($not_term, $visited_children)
+    public function visit_not_term($node, $visited_children)
     {
         list($excl_mark, $term) = $visited_children;
         return new Expression\Not([$term]);
@@ -143,27 +112,9 @@ class RuleVisitor extends NodeVisitor
         return $this->liftChild($node, $visited_children);
     }
 
-    public function visit_atom($node, $visited_children)
-    {
-        return $this->liftChild($node, $visited_children);
-    }
-
     public function visit_term($node, $visited_children)
     {
         return $this->liftChild($node, $visited_children);
-    }
-
-    /**
-     * Documentation for visit_rule
-     *
-     * @param $rule, $visited_children
-     * @return void
-     */
-    public function visit_rule($rule, $visited_children)
-    {
-        list($identifier, $expr) = $visited_children;
-        $expr->name = $identifier;
-        return $expr;
     }
 
     /**
@@ -173,10 +124,12 @@ class RuleVisitor extends NodeVisitor
      * @param $reference, $visited_children
      * @return void
      */
-    public function visit_sequence($sequence, $visited_children)
+    public function visit_sequence($node, $visited_children)
     {
-        list($term, $other_terms) = $visited_children;
-        return new Expression\Sequence(array_merge([$term], $other_terms));
+        //\Psy\Shell::debug(get_defined_vars());
+        return new Expression\Sequence($visited_children);
+        //list($term, $other_terms) = $visited_children;
+        //return new Expression\Sequence(array_merge([$term], $other_terms));
     }
 
     /**
@@ -200,32 +153,56 @@ class RuleVisitor extends NodeVisitor
      */
     public function visit_or_term($or_term, $visited_children)
     {
-        list($pipe, $term) = $visited_children;
-        return $term;
+        list($pipe, $terms) = $visited_children;
+        return $terms;
+    }
+
+    public function visit_atom($node, $visited_children)
+    {
+        list($atom) = $visited_children;
+        return $atom;
+    }
+    
+    /**
+     * Treat a parenthesized subexpression as just its contents.
+     *
+     * Its position in the tree suffices to maintain its grouping semantics.
+     * $visited_children = ['(', _1, $expr, ')', _2]
+     */
+    public function visit_parenthesized($node, $visited_children)
+    {
+        list($lparen, $expr, $rparen) = $visited_children;
+        return $expr;
+    }
+    
+    /**
+     * Documentation for visit_quantified
+     *
+     * @param $quantified, $visited_children
+     * @return void
+     */
+    public function visit_quantified($node, $visited_children)
+    {
+        list($atom, $quantifier) = $visited_children;
+        if ($quantifier->matches[1]) {
+            $class = self::$QUANTIFIER_CLASSES[$quantifier->matches[1]];
+            return new $class([$atom]);
+        }
+        $min = (int) $quantifier->matches[2];
+        $max = $quantifier->matches[3] ? (int) $quantifier->matches[3] : null;
+        return new Expression\Quantifier([$atom], '', $min, $max);
     }
 
     /**
-     * Documentation for visit_label
-     *
-     * @param $label, $visited_children
-     * @return void
-     */
-    public function visit_identifier($node, $visited_children)
+     * Turn a quantifier into just its symbol-matching node.
+     * 
+     * @param $visited_children [symbol, _]
+     * @return Expression
+     **/
+    public function visit_quantifier($node, $visited_children)
     {
-        list($name) = $visited_children;
-        return $name->matches[0];
-    }
-
-    /**
-     * Documentation for visit_reference
-     *
-     * @param $reference, $visited_children
-     * @return void
-     */
-    public function visit_reference($reference, $visited_children)
-    {
-        list($identifier, $not_equals) = $visited_children;
-        return new Expression\LazyReference($identifier);
+        list($regex) = $visited_children;
+        return $regex;
     }
 
     /**
@@ -256,6 +233,31 @@ class RuleVisitor extends NodeVisitor
         $quote_char = $regex->matches[1];
         $str = $regex->matches[2];
         return new Expression\Literal($str);
+    }
+
+    /**
+     * Documentation for visit_reference
+     *
+     * @param $reference, $visited_children
+     * @return void
+     */
+    public function visit_reference($reference, $visited_children)
+    {
+        list($identifier, $not_equals) = $visited_children;
+        //list($identifier) = $visited_children;
+        return new Expression\LazyReference($identifier);
+    }
+
+    /**
+     * Documentation for visit_label
+     *
+     * @param $label, $visited_children
+     * @return void
+     */
+    public function visit_identifier($node, $visited_children)
+    {
+        list($name) = $visited_children;
+        return $name->matches[0];
     }
 
     /**
@@ -311,7 +313,7 @@ class RuleVisitor extends NodeVisitor
         $members = $expr instanceof Expression\Composite ? $expr->members : [];
         if ($members) {
             $expr->members = [];
-            foreach ($members as $member){
+            foreach ($members as $member) {
                 $expr->members[] = $this->_resolveRefs($rule_map, $member, $unwalked_names, $walking_names);
             }
         }

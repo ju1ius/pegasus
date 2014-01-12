@@ -4,7 +4,7 @@ namespace ju1ius\Pegasus;
 
 
 /**
- * A parse tree node
+ * Abstract class for parse tree nodes.
  *
  * Consider these immutable once constructed. As a side effect of a
  * memory-saving strategy in the cache, multiple references to a single
@@ -111,11 +111,12 @@ abstract class Node
 
     public function equals($other=null)
     {
-        return $other instanceof $this
+        return $other
+            && $this instanceof $other
             && $this->expr_name === $other->expr_name
-            && $this->full_text === $other->full_text
             && $this->start === $other->start
             && $this->end === $other->end
+            && $this->full_text === $other->full_text
         ;
     }
 
@@ -127,10 +128,11 @@ abstract class Node
     public function treeview($error=null)
     {
         return sprintf(
-            '<%s "%s" matching "%s">%s',
+            '<%s "%s" matching "%s" (%s)>%s',
             get_class($this),
-            $this->expr_name ?: $this->expr_class ?: '',
+            $this->expr_name,
             $this->getText(),
+            $this->expr_class,
             $error === $this ? '  <-- *** We were here. ***' : ''
         );
     }

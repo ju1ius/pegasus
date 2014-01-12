@@ -1,12 +1,12 @@
 <?php
 
-require_once __DIR__.'/../ExpressionBase_TestCase.php';
+use ju1ius\Test\Pegasus\ExpressionTestCase;
 
 use ju1ius\Pegasus\Expression\Regex;
 use ju1ius\Pegasus\Node\Regex as Rx;
 
 
-class RegexTest extends ExpressionBase_TestCase
+class RegexTest extends ExpressionTestCase
 {
     /**
      * @dataProvider testMatchProvider

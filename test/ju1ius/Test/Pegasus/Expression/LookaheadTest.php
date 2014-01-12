@@ -1,21 +1,21 @@
 <?php
 
-require_once __DIR__.'/../ExpressionBase_TestCase.php';
+use ju1ius\Test\Pegasus\ExpressionTestCase;
 
-use ju1ius\Pegasus\Expression\OneOf;
+use ju1ius\Pegasus\Expression\Lookahead;
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Node\Terminal as Term;
 use ju1ius\Pegasus\Node\Composite as Comp;
 
 
-class OneOfTest extends ExpressionBase_TestCase
+class LookaheadTest extends ExpressionTestCase
 {
     /**
      * @dataProvider testMatchProvider
      */
     public function testMatch($members, $match_args, $expected)
     {
-        $expr = new OneOf($members);
+        $expr = new Lookahead($members);
         $this->assertNodeEquals(
             $expected,
             call_user_func_array([$this, 'parse'], array_merge([$expr], $match_args))
@@ -25,19 +25,14 @@ class OneOfTest extends ExpressionBase_TestCase
     {
         return [
             [
-                [new Literal('bar'), new Literal('foo')],
+                [new Literal('foo')],
                 ['foobar'],
-                new Comp('', 'foobar', 0, 3, [
-                    new Term('', 'foobar', 0, 3),
-                ])
+                new Comp('', 'foobar', 0, 0, [])
             ],
-            # must return the first matched expression
             [
-                [new Literal('foo', 'FOO'), new Literal('foo', 'FOO2')],
-                ['foobar'],
-                new Comp('', 'foobar', 0, 3, [
-                    new Term('FOO', 'foobar', 0, 3),
-                ])
+                [new Literal('bar')],
+                ['foobar', 3],
+                new Comp('', 'foobar', 3, 3, [])
             ],
         ];
     }
@@ -48,15 +43,15 @@ class OneOfTest extends ExpressionBase_TestCase
      */
     public function testMatchError($members, $match_args)
     {
-        $expr = new OneOf($members);
+        $expr = new Lookahead($members);
         call_user_func_array([$this, 'parse'], array_merge([$expr], $match_args));
     }
     public function testMatchErrorProvider()
     {
         return [
             [
-                [new Literal('foo'), new Literal('doh')],
-                ['barbaz'],
+                [new Literal('foo')],
+                ['barbaz']
             ]
         ];
     }

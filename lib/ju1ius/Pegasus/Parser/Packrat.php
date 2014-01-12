@@ -16,28 +16,18 @@ use ju1ius\Pegasus\Exception\IncompleteParseError;
  * For a full implementation of left-recursion,
  * use LRParser.
  *
- * @see docs/packrat-lr.pdf
+ * @see doc/algo/packrat-lr.pdf
  */
 class Packrat implements ParserInterface
 {
     protected $grammar = null;
     protected $memo = [];
     protected $source = null;
-    protected $pos = 0;
+    public $pos = 0;
     protected $error = null;
 
-    public function __construct($grammar)
+    public function __construct(Grammar $grammar)
     {
-        if ($grammar instanceof Grammar) {
-            $this->default_rule = $grammar->getDefault();
-        } else if ($grammar instanceof Expression) {
-            $this->default_rule = $grammar;
-        } else {
-            throw new \InvalidArgumentException(sprintf(
-                'Argument #1 of %s must be instance of Grammar or Expression, got %s',
-                __METHOD__, get_class($grammar)
-            ));
-        }
         $this->grammar = $grammar;
     }
 
@@ -53,7 +43,12 @@ class Packrat implements ParserInterface
     {
         $result = $this->parse($source, 0, $rule);
         if ($this->pos < strlen($source)) {
-            throw new IncompleteParseError($source, $this->pos, $rule);
+            echo $result->treeview(), "\n";
+            throw new IncompleteParseError(
+                $source,
+                $this->pos,
+                $this->error->expr
+            );
         }
 
         return $result;
@@ -76,11 +71,9 @@ class Packrat implements ParserInterface
         $this->refmap = [];
 
         if (!$rule) {
-            $rule = $this->default_rule;
-        } else if ($this->grammar instanceof Grammar) {
-            $rule = $this->grammar[$rule];
+            $rule = $this->grammar->getStartRule();
         } else {
-            // throw something
+            $rule = $this->grammar[$rule];
         }
 
         //FIXME: how to do this ?
@@ -144,7 +137,10 @@ class Packrat implements ParserInterface
     public function evaluate(Expression $expr)
     {
         $result = $expr->match($this->source, $this->pos, $this);
-        if ($result) $this->pos = $result->end;
+        if ($result) {
+            $this->pos = $result->end;
+            $this->error->node = $result;
+        }
         return $result;
     }
 
