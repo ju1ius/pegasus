@@ -28,6 +28,7 @@ class Sequence extends Composite
         $children = [];
         foreach ($this->members as $member) {
             $node = $parser->apply($member, $new_pos);
+            //$node = $member->match($text, $new_pos, $parser);
             if (!$node) {
                 return;
             }

@@ -46,23 +46,36 @@ class IniFileVisitor extends NodeVisitor
 }
 
 $syntax = <<<'EOS'
+
 config = section+
+
 section = header properties
+
 header = / \[ ([^\]]+) \] / ws eol
+
 properties = (property | comment | _)*
+
 property = key eq value eol
+
 key = /[^=\s]+/
+
 eq = ws '=' ws
+
 value = /[^\n]+/
+
 eol = /\r?\n/
+
 comment = /\#[^\n]*\n/
+
 ws = /[\x20\t]*/
+
 _ = /\s*/
+
 EOS;
 
 $start = microtime(true);
 
-$g = new Grammar($syntax);
+$g = Grammar::fromSyntax($syntax);
 $step_1 = microtime(true);
 echo "Generating grammar: ", $step_1 - $start, "s\n";
 

@@ -2,6 +2,7 @@
 
 namespace ju1ius\Pegasus;
 
+use ju1ius\Pegasus\Expression\Reference as Ref;
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Expression\Regex;
 use ju1ius\Pegasus\Expression\OneOrMore;
@@ -23,65 +24,65 @@ class MetaGrammar extends AbstractGrammar
 {
 	const SYNTAX = <<<'EOS'
 
-grammar = _ rules
+grammar			= _ rules
 	
-rules = rule+
+rules			= rule+
 
-rule = identifier equals expression
+rule			= identifier equals expression
 
-expression	= choice | sequence
+expression		= choice | terms
 
-choice		= expression OR terms 
-			| terms
+choice			= expression OR terms 
 			
-terms		= sequence | term
+terms			= sequence | term
 
-sequence	= terms term
+sequence		= terms term
 
-term		= labeled | labelable
+term			= labeled | labelable
 
-labeled		= label labelable
+labeled			= label labelable
 
-labelable	= prefixed | prefixable
+labelable		= prefixed | prefixable
 
-prefixed	= lookahead | not 
+prefixed		= lookahead | not 
 
-lookahead	= '&' prefixable
+lookahead		= '&' prefixable
 
-not			= '!' prefixable
+not				= '!' prefixable
 
-prefixable	= prefixed | suffixable | primary
+prefixable		= prefixed | suffixable | primary
 
-suffixable	= suffixed | primary
+suffixable		= suffixed | primary
 
-suffixed	= suffixable | quantifier
+suffixed		= suffixable | quantifier
 
-primary		= '(' _ expression _ ')' _
-			| atom
+primary			= parenthesized | atom
+
+parenthesized	= "(" _ expression _ ")" _
 			
-atom		= literal | regex | reference
+atom			= literal | regex | reference
 
-equals		= / \s* = \s* /
+equals			= "=" _
 
-reference	= / (?>([a-zA-Z_]\w*)) (?>\s*) (?>(?!=)) /
+reference		= identifier !equals
 
-quantifier  = / ([*+?]) | (?: \{ (\d+)(?:,(\d*))? \} ) / _
+quantifier		= /(?> ([*+?]) | (?: \{ (\d+)(?:,(\d*))? \} ) )/ _
 
-regex		= / \/ ((?: (?:\\\\.) | [^\/] )*) \/ ([ilmsux]*)? / _
+regex			= / \/ ((?: (?:\\\\.) | [^\/] )*) \/ ([ilmsux]*)? / _
 
-literal		= / (["\']) ((?: (?:\\.) | (?:(?!\1).) )*) \1 / _
+literal			= / (["\']) ((?: (?:\\.) | (?:(?!\1).) )*) \1 / _
 
-label		= / ([a-zA-Z_]\w*): /
+label			= / ([a-zA-Z_]\w*): /
 
-identifier	= / [a-zA-Z_]\w* / _
+identifier		= / [a-zA-Z_]\w* / _
 
-OR          = / \s* \| \s* /
+OR				= "|" _
 
-_			= (ws | comment)*
+_				= (ws | comment)*
 
-comment		= / \# ([^\r\n]*) /
+comment			= / \# ([^\r\n]*) /
 
-ws			= /\s+/
+ws				= /\s+/
 
 EOS;
 
@@ -106,108 +107,138 @@ EOS;
 	public static function create()
 	{
 		if (null === self::$instance) {
-			$expr = self::buildExpression();
-			$grammar = Grammar::fromExpression($expr);
+			$grammar = self::buildGrammar();
+			self::$instance = $grammar;
+			// FIXME: ATM this is a bit overkill to parse the syntax
+			// since it matches exactly the expression tree.
+			// we should find a way to simplify the expression tree in order
+			// to speedup the syntax parsing process.
 			$parser = new Parser($grammar);
-			$tree = $parser->parse(self::SYNTAX);
+			$tree = $parser->parseAll(self::SYNTAX);
 			list($rules, $default) = (new RuleVisitor)->visit($tree);
-
 			self::$instance = new Grammar($rules, $default);
-			self::$instance->resolveReferences();
+			self::$instance->finalize();
 		}
 
 		return self::$instance;
 	}
 
-	private static function buildExpression()
+	private static function buildGrammar()
 	{
-		$ws = new Regex('\s+', 'ws');
-		$ws_ = new Regex('\s*', 'ws_');
-		$comment = new Regex('\#([^\n]*)', 'comment');
-		$ws_com = new OneOf([$ws, $comment]);
-		$_ = new ZeroOrMore([$ws_com], '_');
-		$ident = new Regex('[a-zA-Z_]\w*', 'ident');
-		$label = new Regex('([a-zA-Z_]\w*):', 'label');
-		$identifier = new Sequence([
-			new Regex('[a-zA-Z_]\w*'),
-			$_
-		], 'identifier');
-		$literal = new Sequence([
-			new Regex('(["\'])((?:(?:\\\\.)|(?:(?!\1).))*)\1', 'literal_rx'),
-			$_
-		], 'literal');
-		$regex = new Sequence([
-			new Regex('\/((?:(?:\\\\.)|[^\/])*)\/([ilmsux]*)?', 'regex_rx'),
-			$_
-		], 'regex');
-		// the two following regexes must have atomic group in order to match properly
-		$quantifier = new Sequence([
-			new Regex('(?> ([*+?]) | (?: \{ (\d+) (?:,(\d*))?\} ) )', 'quantifier_rx'),
-			$_
-		], 'quantifier');
-		// TODO: see if this is really a performance improvement
-		// compared to adding a Not expression
-		$reference = new Regex('(?>([a-zA-Z_]\w*))(?>\s*)(?>(?!=))', 'reference');
-		$equals = new Regex('\s*=\s*', 'equals');
-		$OR = new Regex('\s*\|\s*', 'OR');
-
-		$atom = new OneOf([
-			//new Literal ('EOF', 'eof'),
-			//new Literal ('E', 'epsilon'),
-			$literal,
-			$regex,
-			$reference
-		], 'atom');
-
-		$expression = new OneOf([], 'expression');
-		$primary = new OneOf([
+		$g = new Grammar();
+		$g['grammar'] = new Sequence([
+			new Ref('_'), new Ref('rules')
+		]);
+		$g['rules'] = new OneOrMore([new Ref('rule')]);
+		$g['rule'] = new Sequence([
+			new Ref('identifier'),
+			new Ref('equals'),
+			new Ref('expression')
+		]);
+		$g['expression'] = new OneOf([
+			new Ref('choice'),
+			new Ref('terms')
+		]);
+		$g['choice'] = new Sequence([
+            new Ref('expression'),
+            new Ref('OR'),
+			new Ref('_'),
+            new Ref('terms')
+        ]);
+		$g['terms'] = new OneOf([
+            new Ref('sequence'),
+			new Ref('term')
+		]);
+        $g['sequence'] = new Sequence([
+			new Ref('terms'),
+			new Ref('term')
+		]);
+		$g['term'] = new OneOf([new Ref('labeled'), new Ref('labelable')]);
+		$g['labeled'] = new Sequence([
+			new Ref('label'),
+			new Ref('labelable'),
+			new Ref('_')
+		]);
+		$g['labelable'] = new OneOf([new Ref('prefixed'), new Ref('prefixable')]);
+		$g['prefixed'] = new OneOf([
+			new Sequence([
+				new Literal('&'), new Ref('prefixable')
+			], 'lookahead'),
+			new Sequence([
+				new Literal('!'), new Ref('prefixable')
+			], 'not')
+		]);
+		$g['prefixable'] = new OneOf([
+			new Ref('prefixed'),
+			new Ref('suffixable'),
+			new Ref('primary')
+		]);
+		$g['suffixable'] = new OneOf([
+			new Ref('suffixed'), new Ref('primary')
+		]);
+		$g['suffixed'] = new Sequence([
+			new Ref('suffixable'), new Ref('quantifier')
+		]);
+		$g['primary'] = new OneOf([
 			new Sequence([
 				new Literal('('),
-				$_,
-				$expression,
-				$_,
+				new Ref('_'),
+				new Ref('expression'),
+				new Ref('_'),
 				new Literal(')'),
-				$_
+				new Ref('_')
 			], 'parenthesized'),
-			$atom
+			new Ref('atom')
 		]);
+		$g['atom'] = new OneOf([
+			//new Literal ('EOF', 'eof'),
+			//new Literal ('E', 'epsilon'),
+			new Ref('literal'),
+			new Ref('regex'),
+			new Ref('reference')
+		]);
+		$g['OR'] = new Sequence([
+			new Literal('|'),
+			new Ref('_')
+		]);
+		$g['equals'] = new Sequence([
+			new Literal('='),
+			new Ref('_')
+		]);
+		// TODO: see if this is really a performance improvement
+		// compared to adding a Not expression
+		/*$g['reference'] = new Regex('(?>([a-zA-Z_]\w*))(?>\s*)(?>(?!=))');*/
+		$g['reference'] = new Sequence([
+			/*new Regex('(?>([a-zA-Z_]\w*))(?>\s*)(?>(?!=))'),
+			new Ref('_')*/
+			new Ref('identifier'),
+			new Not([new Ref('equals')])
+		]);
+		// the two following regexes must have atomic group in order to match properly
+		$g['quantifier'] = new Sequence([
+			new Regex('(?> ([*+?]) | (?: \{ (\d+) (?:,(\d*))?\} ) )'),
+			new Ref('_')
+		]);
+		$g['literal'] = new Sequence([
+			new Regex('(["\'])((?:(?:\\\\.)|(?:(?!\1).))*)\1'),
+			new Ref('_')
+		]);
+		$g['regex'] = new Sequence([
+			new Regex('\/((?:(?:\\\\.)|[^\/])*)\/([ilmSux]*)?'),
+			new Ref('_')
+		]);
+		$g['identifier'] = new Sequence([
+			new Regex('[a-zA-Z_]\w*'),
+			new Ref('_')
+		]);
+		$g['label'] = new Regex('([a-zA-Z_]\w*):');
+		$g['ident'] = new Regex('[a-zA-Z_]\w*');
+		$g['_'] = new ZeroOrMore([new Ref('ws_com')]);
+		$g['ws_com'] = new OneOf([new Ref('ws'), new Ref('comment')]);
+		$g['comment'] = new Regex('\#([^\n]*)');
+		$g['ws_'] = new Regex('\s*');
+		$g['ws'] = new Regex('\s+');
 
-		$suffixed = new Sequence([], 'suffixed');
-		$suffixable = new OneOf([], 'suffixable');
-		$suffixed->members = [$suffixable, $quantifier];
-		$suffixable->members = [$suffixed, $primary];
-
-		$prefixed = new OneOf([], 'prefixed');
-		$prefixable = new OneOf([$prefixed, $suffixable, $primary], 'prefixable');
-		$prefixed->members = [
-			new Sequence([
-				new Literal('!'), $prefixable
-			], 'not'),
-			new Sequence([
-				new Literal('&'), $prefixable
-			], 'lookahead')
-		];
-
-		$labelable = new OneOf([$prefixed, $prefixable], 'labelable');
-		$labeled = new Sequence([$label, $labelable, $_], 'labeled');
-		$term = new OneOf([$labeled, $labelable], 'term');
-		$terms = new OneOf([], 'terms');
-		$terms->members = [
-			new Sequence([$terms, $term], 'sequence'),
-			$term
-		];
-		$expression->members = [
-			new Sequence([$expression, $OR, $terms], 'choice'),
-			$terms
-		];
-		$rule = new Sequence([
-			$identifier, $equals, $expression
-		], 'rule');
-		$rules = new OneOrMore([$rule], 'rules');
-		$grammar = new Sequence([
-			$_, $rules
-		], 'grammar');
-
-		return $grammar;
+		return $g->finalize('grammar');
 	}
 }

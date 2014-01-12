@@ -13,10 +13,10 @@ class RuleVisitorTest extends PegasusTestCase
 x = y
 y = 'foo'
 EOS;
-        $g = new Grammar($s);
+        $g = Grammar::fromSyntax($s);
         $this->assertNotInstanceOf(
-            'ju1ius\Pegasus\Expression\LazyReference',
-            $g->getDefault()
+            'ju1ius\Pegasus\Expression\Reference',
+            $g->getStartRule()
         );
     }
     

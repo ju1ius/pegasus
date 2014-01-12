@@ -77,12 +77,6 @@ class ExpressionTraverser implements ExpressionTraverserInterface
 
 	protected function traverseExpression(Expression $expr)
 	{
-		// protect against recursive rules
-		if (isset($this->visited[$expr->id])) {
-			return $expr;
-		}
-		$this->visited[$expr->id] = true;
-
 		foreach ($this->visitors as $visitor) {
 			if (null !== $return = $visitor->enterNode($expr)) {
 				$expr = $return;
@@ -91,6 +85,13 @@ class ExpressionTraverser implements ExpressionTraverserInterface
 
 		if ($expr instanceof Composite) {
 			foreach ($expr->members as $i => $member) {
+				// protect against recursive rules
+				if (isset($this->visited[$member->id])) {
+					//return $member;
+					continue;
+				}
+				$this->visited[$member->id] = true;
+
 				if (null !== $result = $this->traverseExpression($member)) {
 					$expr->members[$i] = $result;
 				}

@@ -16,7 +16,7 @@ use ju1ius\Pegasus\Exception\IncompleteParseError;
  * For a full implementation of left-recursion,
  * use LRParser.
  *
- * @see docs/packrat-lr.pdf
+ * @see doc/algo/packrat-lr.pdf
  */
 class Packrat implements ParserInterface
 {
@@ -43,7 +43,12 @@ class Packrat implements ParserInterface
     {
         $result = $this->parse($source, 0, $rule);
         if ($this->pos < strlen($source)) {
-            throw new IncompleteParseError($source, $this->pos, $this->error->expr);
+            echo $result->treeview(), "\n";
+            throw new IncompleteParseError(
+                $source,
+                $this->pos,
+                $this->error->expr
+            );
         }
 
         return $result;
@@ -132,7 +137,10 @@ class Packrat implements ParserInterface
     public function evaluate(Expression $expr)
     {
         $result = $expr->match($this->source, $this->pos, $this);
-        if ($result) $this->pos = $result->end;
+        if ($result) {
+            $this->pos = $result->end;
+            $this->error->node = $result;
+        }
         return $result;
     }
 

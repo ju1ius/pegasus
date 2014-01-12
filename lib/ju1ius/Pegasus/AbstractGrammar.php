@@ -5,6 +5,7 @@ namespace ju1ius\Pegasus;
 use ju1ius\Pegasus\Exception\GrammarException;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Visitor\ExpressionTraverser;
+use ju1ius\Pegasus\Visitor\RuleCollector;
 use ju1ius\Pegasus\Visitor\ReferenceResolver;
 
 
@@ -20,7 +21,7 @@ class AbstractGrammar implements \ArrayAccess, \Countable, \IteratorAggregate
 	protected $rules = [];
 
 	/**
-	 * @var Expression The default start rule of the grammar.
+	 * @var string The default start rule of the grammar.
 	 */
 	protected $default_rule = null;
 
@@ -45,7 +46,8 @@ class AbstractGrammar implements \ArrayAccess, \Countable, \IteratorAggregate
 	public function setStartRule($name)
 	{
 		if (isset($this->rules[$name])) {
-			$this->default_rule = $this->rules[$name];
+			$this->default_rule = $name;
+
 			return $this;
 		}
 		throw new GrammarException(
@@ -60,7 +62,12 @@ class AbstractGrammar implements \ArrayAccess, \Countable, \IteratorAggregate
 	 */
 	public function getStartRule()
 	{
-		return $this->default_rule;
+		if (!$this->default_rule) {
+			throw new GrammarException(
+				'You must provide a start rule for the grammar.'
+			);
+		}
+		return $this->rules[$this->default_rule];
 	}
 
 	/**
@@ -82,19 +89,31 @@ class AbstractGrammar implements \ArrayAccess, \Countable, \IteratorAggregate
     }
 
 	/**
-	 * Resolves references to their corresponding expression.
+	 * Finalizes a hand crafted grammar
+	 * by collecting all named rules and resolving all references.
 	 *
 	 * This method MUST be called after constructing a grammar manually.
 	 * It is called under the hood by Grammar::fromSyntax and Grammar::fromExpression
 	 *
 	 * @return $this
 	 */
-	public function resolveReferences()
+	public function finalize($start_rule = null)
 	{
-		$traverser = new ExpressionTraverser();
-		$traverser->addVisitor(new ReferenceResolver($this));
+		$collector = new RuleCollector($this);
+		$traverser = (new ExpressionTraverser)->addVisitor($collector);
 		foreach ($this->rules as $name => $expr) {
 			$traverser->traverse($expr);
+		}
+
+		$traverser->removeVisitor($collector)
+			->addVisitor(new ReferenceResolver($this))
+		;
+		foreach ($this->rules as $name => $expr) {
+			$this->rules[$name] = $traverser->traverse($expr);
+		}
+
+	   	if ($start_rule) {
+			$this->setStartRule($start_rule);
 		}
 
 		return $this;
@@ -102,13 +121,16 @@ class AbstractGrammar implements \ArrayAccess, \Countable, \IteratorAggregate
     
     public function __toString()
     {
-		$exprs = [$this->default_rule->asRule()];
+		$start_rule = $this->getStartRule();
+		$exprs = [
+			$this->default_rule . ' = ' . $start_rule->asRhs()
+		];
 
         foreach ($this->rules as $name => $expr) {
-			if ($name === $this->default_rule->name) {
+			if ($name === $this->default_rule) {
 				continue;
 			}
-			$exprs[] = $expr->asRule();
+			$exprs[] = $name . ' = ' . $expr->asRhs();
         }
 
         return implode("\n", $exprs);
@@ -127,22 +149,24 @@ class AbstractGrammar implements \ArrayAccess, \Countable, \IteratorAggregate
     public function offsetSet($name, $expr)
     {
         if (!$expr instanceof Expression) {
-            throw new GrammarException(
-                'Value passed to %s::%s must be instance of ju1ius\Pegasus\Expression, "%s" given.',
-                __CLASS__,
+			throw new GrammarException(sprintf(
+                'Value passed to %s must be instance of ju1ius\Pegasus\Expression, "%s" given.',
                 __METHOD__,
                 is_object($expr) ? get_class($expr) : gettype($expr)
-            );
+            ));
         }
 		if (!$expr->name) {
 			$expr->name = $name;
 		} elseif ($expr->name !== $name) {
-			throw new GrammarException(sprintf(
-				'Index "%s" doesn\'t match expression name "%s"',
-				$name, $expr->name
-			));
+			//throw new GrammarException(sprintf(
+				//'Index "%s" doesn\'t match expression name "%s"',
+				//$name, $expr->name
+			//));
 		}
         $this->rules[$name] = $expr;
+		//if ($this->default_rule && $name === $this->default_rule->name) {
+			//$this->default_rule = $expr;
+		//}
     }
 
     public function offsetUnset($name)

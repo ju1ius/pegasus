@@ -60,7 +60,7 @@ class Grammar extends AbstractGrammar
 	 * @param Expression[]	$rules		An array of ['rule_name' => $expression].
 	 * @param Expression	$start_rule	The top level expression of this grammar.
 	 **/
-	public function __construct(array $rules=[], Expression $start_rule=null)
+	public function __construct(array $rules=[], $start_rule=null)
 	{
 		$this->rules = $rules;
 		$this->default_rule = $start_rule;
@@ -76,12 +76,11 @@ class Grammar extends AbstractGrammar
 	public static function fromSyntax($syntax)
 	{
 		$metagrammar = MetaGrammar::create();
-		$tree = (new Parser($metagrammar))->parse($syntax);
+		$tree = (new Parser($metagrammar))->parseAll($syntax);
 		list($rules, $start) = (new RuleVisitor)->visit($tree);
-
 		$grammar = new static($rules, $start);
-		$grammar->resolveReferences();
-		return $grammar;
+
+		return $grammar->finalize($start);
 	}
 
 	/**
@@ -98,14 +97,7 @@ class Grammar extends AbstractGrammar
 				'Top level expression must have a name.'
 			);
 		}
-		$grammar = new static();
-		$traverser = (new ExpressionTraverser)
-			->addVisitor(new RuleCollector($grammar))
-			->addVisitor(new ReferenceResolver($grammar))
-		;
-		$expr = $traverser->traverse($expr);
-		$grammar->setStartRule($expr->name);
-
-		return $grammar;
+		$grammar = new static([$expr->name => $expr], $expr->name);
+		return $grammar->finalize();
 	}
 }

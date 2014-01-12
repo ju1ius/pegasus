@@ -2,15 +2,27 @@
 require_once __DIR__.'/../../../vendor/autoload.php';
 
 use ju1ius\Pegasus\MetaGrammar;
+use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Parser\LRPackrat as Parser;
 
 
-$grammar = MetaGrammar::create();
-$parser = new Parser($grammar);
 
 $text = <<<'EOS'
-rule = "foo" | "bar"
+rule = foo | bar
+
+# disiz foo
+foo = 'foo'
+
+bar = 'bar'
 EOS;
 
-$tree = $parser->parse($text);
-echo $tree->treeview();
+//$grammar = MetaGrammar::create();
+//$parser = new Parser($grammar);
+//$tree = $parser->parseAll($text);
+
+
+$grammar = Grammar::fromSyntax($text);
+$parser = new Parser($grammar);
+$tree = $parser->parseAll('bar');
+
+echo $tree->treeview(), "\n";

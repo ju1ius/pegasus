@@ -115,7 +115,7 @@ class MetaGrammarTest extends PegasusTestCase
         return [
             ['=', '='],
             ['= ', '= '],
-            ["  \n= ", "  \n= "]
+			["=\n ", "=\n "]
         ];
     } 
 

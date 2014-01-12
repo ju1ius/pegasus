@@ -3,7 +3,10 @@
 require_once __DIR__.'/../../../vendor/autoload.php';
 
 
+use ju1ius\Pegasus\Grammar;
+use ju1ius\Pegasus\MetaGrammar;
 use ju1ius\Pegasus\Expression\Literal;
+use ju1ius\Pegasus\Expression\Reference as Ref;
 use ju1ius\Pegasus\Expression\Regex;
 use ju1ius\Pegasus\Expression\Sequence;
 use ju1ius\Pegasus\Expression\OneOf;
@@ -25,44 +28,53 @@ primary = '(' expr ')'
         | num
 
 num     = /[0-9]+/
+
 EOS;
 
-$expr = new OneOf([], 'expr');
-$term = new OneOf([], 'term');
-$num = new Regex('[0-9]+', 'num');
-$paren = new Sequence([
-    new Literal('(', 'LPAREN'),
-    $expr,
-    new Literal(')', 'RPAREN')
-], 'paren');
-$primary = new OneOf([$paren, $num], 'primary');
+$g = new Grammar();
+$g['expr'] = new OneOf([
+    new Sequence([
+        new Ref('expr'),
+        new Literal('+'),
+        new Ref('term')
+    ], 'plus'),
+    new Sequence([
+        new Ref('expr'),
+        new Literal('-'),
+        new Ref('term')
+    ], 'minus'),
+    new Ref('term')
+]);
+$g['term'] = new OneOf([
+    new Sequence([
+        new Ref('term'),
+        new Literal('*'),
+        new Ref('primary')
+    ], 'mul'),
+    new Sequence([
+        new Ref('term'),
+        new Literal('/'),
+        new Ref('primary')
+    ], 'div'),
+    new Ref('primary')
+]);
+$g['primary'] = new OneOf([
+    new Sequence([
+        new Literal('('),
+        new Ref('expr'),
+        new Literal(')')
+    ], 'parenthesized'),
+    new Ref('num')
+]);
+$g['num'] = new Regex('[0-9]+');
 
-$minus = new Sequence([
-    $expr,
-    new Literal('-', '-'),
-    $term
-], 'minus');
-$plus = new Sequence([
-    $expr,
-    new Literal('+', '+'),
-    $term
-], 'plus');
+$g->finalize('expr');
 
-$mul = new Sequence([
-    $term,
-    new Literal('*', '*'),
-    $primary
-], 'mul');
-$div = new Sequence([
-    $term,
-    new Literal('/', '/'),
-    $primary
-], 'div');
 
-$term->members = [$mul, $div, $primary];
-$expr->members = [$minus, $plus, $term];
+$g = Grammar::fromSyntax($syntax);
 
-$parser = new Parser\LRPackrat($expr);
+echo $g, "\n";
+$parser = new Parser\LRPackrat($g);
 $tree = $parser->parse('(1+(3*2)-7)/9');
 //$tree = $parser->parse('12/42+17*3-2');
 echo $tree->treeview();

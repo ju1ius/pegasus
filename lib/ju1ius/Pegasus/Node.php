@@ -128,10 +128,11 @@ abstract class Node
     public function treeview($error=null)
     {
         return sprintf(
-            '<%s "%s" matching "%s">%s',
+            '<%s "%s" matching "%s" (%s)>%s',
             get_class($this),
-            $this->expr_name ?: $this->expr_class ?: '',
+            $this->expr_name,
             $this->getText(),
+            $this->expr_class,
             $error === $this ? '  <-- *** We were here. ***' : ''
         );
     }

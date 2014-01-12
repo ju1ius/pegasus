@@ -15,20 +15,18 @@ class ReferenceResolver extends ExpressionVisitor
         $this->grammar = $grammar;
     }
 
-    public function leaveNode(Expression $expr)
+    public function enterNode(Expression $expr)
     {
         if ($expr instanceof Reference) {
             $label = $expr->identifier;
-            if (!isset($this->visited[$label])) {
-                if (!isset($this->grammar[$label])) {
-                    throw new GrammarException(sprintf(
-                        'Referenced rule "%s" is not defined in the grammar.',
-                        $label
-                    ));
-                }
-                $reffed_expr = $this->grammar[$label];
-                return $reffed_expr;
-            }
+			if (!isset($this->grammar[$label])) {
+				throw new GrammarException(sprintf(
+					'Referenced rule "%s" is not defined in the grammar.',
+					$label
+				));
+			}
+			$reffed_expr = $this->grammar[$label];
+			return $reffed_expr;
         }
     }
 }

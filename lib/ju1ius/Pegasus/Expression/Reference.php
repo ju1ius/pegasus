@@ -27,8 +27,8 @@ class Reference extends Expression
     public function match($text, $pos, ParserInterface $parser)
     {
 		throw new GrammarException(sprintf(
-			"Unresolved reference to rule '%s'.\n"
-			. "You must call Grammar::resolveReferences before parsing.",
+			"Unresolved reference to rule '%s'. "
+			. "You must call Grammar::finalize before parsing.",
 			$this->identifier
 		));
     }

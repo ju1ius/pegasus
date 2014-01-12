@@ -43,49 +43,19 @@ class RuleVisitor extends NodeVisitor
 		;	
 	}
 
-	public function visit_identifier($node, $children)
+	public function visit_rules($node, $children)
 	{
-		return $children[0]->matches[0];
-	}
-
-	public function visit_literal($node, $children)
-	{
-		$quote = $children[0]->matches[1];
-		$str = $children[0]->matches[2];
-		return new Literal($str);
-	}
-
-	public function visit_regex($node, $children)
-	{
-		$regex = $children[0];
-		list($match, $pattern, $flags) = $regex->matches;
-		return new Regex($pattern, '', str_split($flags));
-	}
-	
-	public function visit_reference($node, $children)
-	{
-		return new Reference($node->matches[1]);
-	}
-
-	public function visit_atom($node, $children)
-	{
-		return $children[0];
-	}
-
-	public function visit_primary($node, $children)
-	{
-	    return $children[0];
-	}
-
-	public function visit_parenthesized($node, $children)
-	{
-		list($lp, $expr, $rp) = $children;
-		return $expr;
-	}
-	
-	public function visit_expression($node, $children)
-	{
-	    return $children[0];
+		$rules = $children;
+		$rule_map = [];
+		foreach ($children as $expr) {
+			$rule_map[$expr->name] = $expr;
+		}
+        $default = $rules[0] instanceof Reference
+            ? $rule_map[$rules[0]->identifier]
+            : $rules[0]
+        ;
+		return [$rule_map, $rules[0]->name];
+		return [$rule_map, $default->name];
 	}
 
 	public function visit_rule($node, $children)
@@ -93,6 +63,27 @@ class RuleVisitor extends NodeVisitor
 		list($identifier, $expression) = $children;
 		$expression->name = $identifier;
 		return $expression;
+	}
+	
+	public function visit_expression($node, $children)
+	{
+	    return $children[0];
+	}
+
+	public function visit_choice($node, $children)
+	{
+		if (count($children) === 1) {
+			//var_dump($children);
+		}
+		list($expr, $terms) = $children;
+		return new OneOf([$expr, $terms]);
+	}
+	
+	public function visit_sequence($node, $children)
+	{
+		list($terms, $term) = $children;
+		return new Sequence(array_merge([$terms], [$term]));
+		return $node;
 	}
 
 	public function visit_term($node, $children)
@@ -107,31 +98,26 @@ class RuleVisitor extends NodeVisitor
 		return $labelable;
 	}
 
-	public function visit_labelable($node, $children)
-	{
-		return $children[0];
-	}
-
 	public function visit_prefixed($node, $children)
 	{
 	    return $children[0];
 	}
-
-	public function visit_prefixable($node, $children)
-	{
-		return $children[0];
-	}
 	
+	public function visit_lookahead($node, $children)
+	{
+		list($amp, $prefixable) = $children;
+		return new Lookahead([$prefixable]);
+	}
+
 	public function visit_not($node, $children)
 	{
 		list($bang, $prefixable) = $children;
 		return new Not([$prefixable]);
 	}
 
-	public function visit_lookahead($node, $children)
+	public function visit_prefixable($node, $children)
 	{
-		list($amp, $prefixable) = $children;
-		return new Lookahead([$prefixable]);
+		return $children[0];
 	}
 
 	public function visit_suffixed($node, $children)
@@ -145,31 +131,54 @@ class RuleVisitor extends NodeVisitor
 		$max = isset($quantifier->matches[3]) ? (int) $quantifier->matches[3] : null;
         return new Quantifier([$suffixable], '', $min, $max);
 	}
+
+	public function visit_labelable($node, $children)
+	{
+		return $children[0];
+	}
+
+	public function visit_primary($node, $children)
+	{
+	    return $children[0];
+	}
+
+	public function visit_parenthesized($node, $children)
+	{
+		list($lp, $expr, $rp) = $children;
+		return $expr;
+	}
+
+	public function visit_atom($node, $children)
+	{
+		return $children[0];
+	}
+
+	public function visit_quantifier($node, $children)
+	{
+	    return $children[0];
+	}
+
+	public function visit_literal($node, $children)
+	{
+		$quote = $children[0]->matches[1];
+		$str = $children[0]->matches[2];
+		return new Literal($str, '', $quote);
+	}
+
+	public function visit_regex($node, $children)
+	{
+		$regex = $children[0];
+		list($match, $pattern, $flags) = $regex->matches;
+		return new Regex($pattern, '', str_split($flags));
+	}
 	
-	public function visit_sequence($node, $children)
+	public function visit_reference($node, $children)
 	{
-		list($terms, $term) = $children;
-		return new Sequence(array_merge([$terms], [$term]));
-		return $node;
+		return new Reference($children[0]);
 	}
 
-	public function visit_choice($node, $children)
+	public function visit_identifier($node, $children)
 	{
-		list($expr, $terms) = $children;
-		return new OneOf([$expr, $terms]);
-	}
-
-	public function visit_rules($node, $children)
-	{
-		$rules = $children;
-		$rule_map = [];
-		foreach ($children as $expr) {
-			$rule_map[$expr->name] = $expr;
-		}
-        $default = $rules[0] instanceof Reference
-            ? $rule_map[$rules[0]->identifier]
-            : $rules[0]
-        ;
-        return [$rule_map, $default];
+		return $children[0]->matches[0];
 	}
 }
