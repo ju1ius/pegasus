@@ -2,6 +2,8 @@
 
 namespace ju1ius\Pegasus\Optimization;
 
+use ju1ius\Pegasus\Expression;
+
 
 class OptimizationSequence extends Optimization
 {

@@ -3,23 +3,8 @@
 namespace ju1ius\Pegasus\Visitor;
 
 use ju1ius\Pegasus\NodeVisitor;
-use ju1ius\Pegasus\Exception\UndefinedLabelException;
-
 use ju1ius\Pegasus\Node;
-
-use ju1ius\Pegasus\Expression\Composite;
-use ju1ius\Pegasus\Expression\Literal;
-use ju1ius\Pegasus\Expression\Regex;
-use ju1ius\Pegasus\Expression\Optional;
-use ju1ius\Pegasus\Expression\OneOrMore;
-use ju1ius\Pegasus\Expression\ZeroOrMore;
-use ju1ius\Pegasus\Expression\Quantifier;
-use ju1ius\Pegasus\Expression\Not;
-use ju1ius\Pegasus\Expression\Lookahead;
-use ju1ius\Pegasus\Expression\OneOf;
-use ju1ius\Pegasus\Expression\Sequence;
-use ju1ius\Pegasus\Expression\Reference;
-use ju1ius\Pegasus\Expression\Label;
+use ju1ius\Pegasus\Expression;
 
 
 class RuleVisitor extends NodeVisitor
@@ -45,7 +30,7 @@ class RuleVisitor extends NodeVisitor
             return null;
         } elseif ($node instanceof Node\Wrapper) {
             if (count($children) > 1) {
-                throw new \LogicException();
+                throw new \LogicException('Wrapper nodes cannot have more than one children.');
             }
             return $children[0];
         } elseif ($node instanceof Node\Composite) {
@@ -53,7 +38,7 @@ class RuleVisitor extends NodeVisitor
             return $children ?: null;
         }
         if ($children) {
-            throw new \LogicException();
+            throw new \LogicException('Shouldnt have reached here...');
         }
         return $node;
 	}
@@ -88,15 +73,14 @@ class RuleVisitor extends NodeVisitor
 	public function visit_choice(Node\Sequence $node, $children)
 	{
 		list($expr, $terms) = $children;
-        //var_dump($terms);
-		return new OneOf([$expr, $terms]);
+		return new Expression\OneOf([$expr, $terms]);
 	}
 	
 	public function visit_sequence(Node\Sequence $node, $children)
 	{
 		list($terms, $term) = $children;
         //var_dump($terms);
-		return new Sequence(array_merge([$terms], [$term]));
+		return new Expression\Sequence(array_merge([$terms], [$term]));
 	}
 
 	public function visit_term(Node\OneOf $node, $children)
@@ -107,7 +91,7 @@ class RuleVisitor extends NodeVisitor
 	public function visit_labeled(Node\Sequence $node, $children)
 	{
 		list($label, $labelable) = $children;
-		return new Label([$labelable], $label);
+		return new Expression\Label([$labelable], $label);
 	}
 
 	public function visit_prefixed(Node\OneOf $node, $children)
@@ -118,14 +102,20 @@ class RuleVisitor extends NodeVisitor
 	public function visit_lookahead(Node\Sequence $node, $children)
 	{
 		list($amp, $prefixable) = $children;
-		return new Lookahead([$prefixable]);
+		return new Expression\Lookahead([$prefixable]);
 	}
 
 	public function visit_not(Node\Sequence $node, $children)
 	{
 		list($bang, $prefixable) = $children;
-		return new Not([$prefixable]);
+		return new Expression\Not([$prefixable]);
 	}
+
+    public function visit_skip(Node\Skip $node, $children)
+    {
+        list($tilde, $prefixable) = $children;
+        return new Expression\Skip([$prefixable]);
+    }
 
 	public function visit_prefixable(Node\OneOf $node, $children)
 	{
@@ -141,7 +131,7 @@ class RuleVisitor extends NodeVisitor
 		}
         $min = (int) $quantifier->matches[2];
 		$max = isset($quantifier->matches[3]) ? (int) $quantifier->matches[3] : null;
-        return new Quantifier([$suffixable], '', $min, $max);
+        return new Expression\Quantifier([$suffixable], '', $min, $max);
 	}
 
 	public function visit_labelable(Node\OneOf $node, $children)
@@ -179,19 +169,19 @@ class RuleVisitor extends NodeVisitor
 	{
 		$quote = $children[0]->matches[1];
 		$str = $children[0]->matches[2];
-		return new Literal($str, '', $quote);
+		return new Expression\Literal($str, '', $quote);
 	}
 
 	public function visit_regex(Node\Sequence $node, $children)
 	{
 		$regex = $children[0];
 		list($match, $pattern, $flags) = $regex->matches;
-		return new Regex($pattern, '', str_split($flags));
+		return new Expression\Regex($pattern, '', str_split($flags));
 	}
 	
 	public function visit_reference(Node\Sequence $node, $children)
 	{
-		return new Reference($children[0]);
+		return new Expression\Reference($children[0]);
 	}
 
     public function visit_label(Node\Regex $node, $children)

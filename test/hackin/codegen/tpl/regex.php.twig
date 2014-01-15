@@ -1,0 +1,9 @@
+{% if not expr.hasBackReference %}
+if(preg_match('/\G{{expr.pattern}}/{{expr.flags|join}}', $text, $matches, 0, $this->pos)) {
+    $match = $matches[0];
+    $length = strlen($match);
+    $result = new Node\Regex('{{expr.name}}', $text, $pos, $pos + $length, $matches);
+} else {
+    $result = null;
+}
+{% endif %}

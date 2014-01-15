@@ -2,6 +2,8 @@
 
 namespace ju1ius\Pegasus\Optimization;
 
+use ju1ius\Pegasus\Expression;
+
 
 trait FlattenerTrait
 {
@@ -27,5 +29,7 @@ trait FlattenerTrait
         }
         $class = get_class($expr);
         $new_expr = new $class($children, $expr->name);
+
+        return $new_expr;
     }
 }

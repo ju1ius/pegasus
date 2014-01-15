@@ -2,10 +2,17 @@
 
 namespace ju1ius\Pegasus\Optimization;
 
+use ju1ius\Pegasus\Expression;
+
 
 class Optimization
 {
-    protected $applies_to_cache = new \SplObjectStorage();
+    protected $applies_to_cache = [];
+
+    public function add(Optimization $other)
+    {
+        return new OptimizationSequence($this, $other);
+    }
 
     public function apply(Expression $expr)
     {
@@ -17,9 +24,10 @@ class Optimization
 
     public function appliesTo(Expression $expr)
     {
-        if (!$this->applies_to_cache->contains($expr)) {
-            $this->applies_to_cache->attach($expr, $this->_appliesTo($expr));
+        $key = spl_object_hash($expr);
+        if (!isset($this->applies_to_cache[$key])) {
+            $this->applies_to_cache[$key] = $this->_appliesTo($expr);
         }
-        return $this->applies_to_cache[$expr];
+        return $this->applies_to_cache[$key];
     }
 }
