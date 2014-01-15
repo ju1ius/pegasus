@@ -20,7 +20,7 @@ use ju1ius\Pegasus\Visitor\RuleVisitor;
  * capable of parsing other grammars.
  *
  */
-class MetaGrammar extends AbstractGrammar
+class MetaGrammar
 {
 	const SYNTAX = <<<'EOS'
 
@@ -44,7 +44,9 @@ labeled			= label labelable
 
 labelable		= prefixed | prefixable
 
-prefixed		= lookahead | not 
+prefixed		= skip | lookahead | not
+
+skip            = '~' prefixable
 
 lookahead		= '&' prefixable
 
@@ -54,11 +56,11 @@ prefixable		= prefixed | suffixable | primary
 
 suffixable		= suffixed | primary
 
-suffixed		= suffixable | quantifier
+suffixed		= suffixable quantifier
 
 primary			= parenthesized | atom
 
-parenthesized	= "(" _ expression _ ")" _
+parenthesized	= "(" _ expression ")" _
 			
 atom			= literal | regex | reference
 
@@ -91,6 +93,8 @@ EOS;
 	 */
 	private static $instance = null;
 
+    private static $grammar = null;
+
 	/**
 	 * Private constructor.
 	 *
@@ -102,13 +106,12 @@ EOS;
 	/**
 	 * Factory method for MetaGrammar.
 	 *
-	 * @return MetaGrammar
+     * @return Grammar
 	 */
 	public static function create()
 	{
 		if (null === self::$instance) {
-			$grammar = self::buildGrammar();
-			self::$instance = $grammar;
+            $grammar = self::getGrammar();
 			// FIXME: ATM this is a bit overkill to parse the syntax
 			// since it matches exactly the expression tree.
 			// we should find a way to simplify the expression tree in order
@@ -122,6 +125,21 @@ EOS;
 
 		return self::$instance;
 	}
+
+    /**
+     * Returns the unique instance of the base grammar
+     * used to parse the MetaGrammar syntax.
+     *
+     * @return Grammar
+     */
+    public static function getGrammar()
+    {
+        if (null === self::$grammar) {
+            self::$grammar = self::buildGrammar();
+        }
+
+        return self::$grammar;
+    }
 
 	private static function buildGrammar()
 	{
@@ -153,14 +171,23 @@ EOS;
 			new Ref('terms'),
 			new Ref('term')
 		]);
-		$g['term'] = new OneOf([new Ref('labeled'), new Ref('labelable')]);
+        $g['term'] = new OneOf([
+            new Ref('labeled'),
+            new Ref('labelable')
+        ]);
 		$g['labeled'] = new Sequence([
 			new Ref('label'),
 			new Ref('labelable'),
 			new Ref('_')
 		]);
-		$g['labelable'] = new OneOf([new Ref('prefixed'), new Ref('prefixable')]);
+        $g['labelable'] = new OneOf([
+            new Ref('prefixed'),
+            new Ref('prefixable')
+        ]);
 		$g['prefixed'] = new OneOf([
+			new Sequence([
+				new Literal('~'), new Ref('prefixable')
+			], 'skip'),
 			new Sequence([
 				new Literal('&'), new Ref('prefixable')
 			], 'lookahead'),
@@ -180,16 +207,17 @@ EOS;
 			new Ref('suffixable'), new Ref('quantifier')
 		]);
 		$g['primary'] = new OneOf([
-			new Sequence([
+			new Ref('parenthesized'),
+			new Ref('atom')
+		]);
+        $g['parenthesized'] = new Sequence([
 				new Literal('('),
 				new Ref('_'),
 				new Ref('expression'),
-				new Ref('_'),
+				//new Ref('_'),
 				new Literal(')'),
 				new Ref('_')
-			], 'parenthesized'),
-			new Ref('atom')
-		]);
+        ]);
 		$g['atom'] = new OneOf([
 			//new Literal ('EOF', 'eof'),
 			//new Literal ('E', 'epsilon'),
@@ -205,16 +233,10 @@ EOS;
 			new Literal('='),
 			new Ref('_')
 		]);
-		// TODO: see if this is really a performance improvement
-		// compared to adding a Not expression
-		/*$g['reference'] = new Regex('(?>([a-zA-Z_]\w*))(?>\s*)(?>(?!=))');*/
 		$g['reference'] = new Sequence([
-			/*new Regex('(?>([a-zA-Z_]\w*))(?>\s*)(?>(?!=))'),
-			new Ref('_')*/
 			new Ref('identifier'),
 			new Not([new Ref('equals')])
 		]);
-		// the two following regexes must have atomic group in order to match properly
 		$g['quantifier'] = new Sequence([
 			new Regex('(?> ([*+?]) | (?: \{ (\d+) (?:,(\d*))?\} ) )'),
 			new Ref('_')
@@ -236,9 +258,10 @@ EOS;
 		$g['_'] = new ZeroOrMore([new Ref('ws_com')]);
 		$g['ws_com'] = new OneOf([new Ref('ws'), new Ref('comment')]);
 		$g['comment'] = new Regex('\#([^\n]*)');
-		$g['ws_'] = new Regex('\s*');
 		$g['ws'] = new Regex('\s+');
 
-		return $g->finalize('grammar');
+        $g->finalize('grammar');
+
+        return $g;
 	}
 }
