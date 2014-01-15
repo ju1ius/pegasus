@@ -29,7 +29,7 @@ class Head
     public function involves(Expression $rule)
     {
         //return $this->rule->id === $rule->id
-        return $this->rule->equals($rule->id)
+        return $this->rule->id === $rule->id
             || isset($this->involved[$rule->id]);
     }
 }

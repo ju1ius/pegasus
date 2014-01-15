@@ -2,7 +2,7 @@
 
 namespace ju1ius\Pegasus\Parser;
 
-use ju1ius\Pegasus\Grammar;
+use ju1ius\Pegasus\GrammarInterface;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Exception\ParseError;
@@ -26,7 +26,7 @@ class Packrat implements ParserInterface
     public $pos = 0;
     protected $error = null;
 
-    public function __construct(Grammar $grammar)
+    public function __construct(GrammarInterface $grammar)
     {
         $this->grammar = $grammar;
     }
@@ -70,6 +70,10 @@ class Packrat implements ParserInterface
         $this->error = new ParseError($source);
         $this->refmap = [];
 
+        if (!$folded = $this->grammar->isFolded()) {
+            $this->grammar->fold();
+        }
+
         if (!$rule) {
             $rule = $this->grammar->getStartRule();
         } else {
@@ -83,9 +87,17 @@ class Packrat implements ParserInterface
         // ATM we just pass $this to the Expression::match method,
         // and let expressions call $parser->apply for their children.
         $result = $this->apply($rule, $pos);
+
+        if (!$folded) {
+            // grammar wasn't folded before parsing, so we unfold it
+            // to restore it's original state.
+            $this->grammar->unfold();
+        }
+
         if (!$result) {
             throw $this->error;
         }
+
         return $result;
     }
 
