@@ -2,7 +2,6 @@
 
 namespace ju1ius\Pegasus\Expression;
 
-use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Parser\ParserInterface;
 use ju1ius\Pegasus\Node;
 
@@ -10,7 +9,7 @@ use ju1ius\Pegasus\Node;
 /**
  * An expression wrapper like the {n, n+i} quantifier in regexes
  */
-class Quantifier extends Composite
+class Quantifier extends Wrapper
 {
     public $min;
     public $max;
@@ -28,11 +27,16 @@ class Quantifier extends Composite
         parent::__construct($members, $name);    
     }
 
+    public function hasVariableCaptureCount()
+    {
+        return true;
+    }
+
     public function asRhs()
     {
         return sprintf(
             '(%s){%s,%s}',
-            $this->_stringMembers()[0],
+            $this->stringMembers(),
             $this->min,
             $this->max
         );
@@ -57,7 +61,7 @@ class Quantifier extends Composite
             if ($match_count === $this->max) break;
         }
         if ($match_count >= $this->min) {
-            return Node::fromExpression($this, $text, $pos, $new_pos, $children);
+            return new Node\Quantifier($this, $text, $pos, $new_pos, $children);
         }
     }
 }

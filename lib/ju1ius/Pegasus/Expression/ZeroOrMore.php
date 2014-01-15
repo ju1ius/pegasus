@@ -6,7 +6,8 @@ use ju1ius\Pegasus\Expression\Quantifier;
 
 
 /**
- * An expression wrapper like the * quantifier in regexes 
+ * An expression wrapper like the * quantifier in regexes.
+ *
  **/
 class ZeroOrMore extends Quantifier
 {
@@ -17,6 +18,6 @@ class ZeroOrMore extends Quantifier
     
     public function asRhs()
     {
-        return sprintf('(%s)*', $this->_stringMembers()[0]);
+        return sprintf('(%s)*', $this->stringMembers());
     }
 }

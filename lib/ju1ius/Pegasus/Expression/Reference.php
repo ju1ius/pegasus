@@ -9,7 +9,7 @@ use ju1ius\Pegasus\Exception\GrammarException;
 
 /**
  * A reference to a named rule,
- * which we resolve after grokking all the rules.
+ * which we must be resolved before matching.
  */
 class Reference extends Expression
 {
@@ -21,7 +21,9 @@ class Reference extends Expression
     
     public function asRhs()
     {
-        return "<Reference to {$this->identifier}>";
+        return $this->name
+            ? "<{$this->name} (reference to {$this->identifier})>"
+            : "<Reference to {$this->identifier}>";
     }
 
     public function match($text, $pos, ParserInterface $parser)

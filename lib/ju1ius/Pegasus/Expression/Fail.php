@@ -2,7 +2,6 @@
 
 namespace ju1ius\Pegasus\Expression;
 
-use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Parser\ParserInterface;
 use ju1ius\Pegasus\Node;
 
@@ -12,11 +11,16 @@ use ju1ius\Pegasus\Node;
  *
  * This can be used to signal malformed input. 
  **/
-class Fail extends Expression
+class Fail extends Terminal
 {
     public function asRhs()
     {
 		return 'FAIL';
+    }
+
+    public function isCapturing()
+    {
+        return false;
     }
 
     public function match($text, $pos, ParserInterface $parser)

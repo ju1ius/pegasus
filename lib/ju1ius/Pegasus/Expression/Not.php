@@ -2,7 +2,6 @@
 
 namespace ju1ius\Pegasus\Expression;
 
-use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Parser\ParserInterface;
 use ju1ius\Pegasus\Node;
 
@@ -13,18 +12,28 @@ use ju1ius\Pegasus\Node;
  * In any case, it never consumes any characters;
  * it's a negative lookahead.
  **/
-class Not extends Composite
+class Not extends Wrapper
 {
     public function asRhs()
     {
-        return sprintf('!(%s)', $this->_stringMembers()[0]);
+        return sprintf('!(%s)', $this->stringMembers());
+    }
+
+    public function isCapturing()
+    {
+        return false;
+    }
+
+    public function isCapturingDecidable()
+    {
+        return true;
     }
     
     public function match($text, $pos, ParserInterface $parser)
     {
         $node = $parser->apply($this->members[0], $pos);
         if (!$node) {
-            return Node::fromExpression($this, $text, $pos, $pos);
+            return new Node\Not($this, $text, $pos, $pos);
         }
     }
 }

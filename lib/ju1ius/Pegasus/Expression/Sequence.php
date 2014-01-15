@@ -2,7 +2,6 @@
 
 namespace ju1ius\Pegasus\Expression;
 
-use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Parser\ParserInterface;
 use ju1ius\Pegasus\Node;
 
@@ -18,7 +17,19 @@ class Sequence extends Composite
 {
     public function asRhs()
     {
-        return implode(' ', $this->_stringMembers());
+        return implode(' ', $this->stringMembers());
+    }
+
+    public function getCaptureCount()
+    {
+        $capturing = 0;
+        foreach ($this->members as $child) {
+            if ($child->isCapturing()) {
+                $capturing++;
+            }
+        }
+
+        return $capturing;
     }
     
     public function match($text, $pos, ParserInterface $parser)
@@ -28,7 +39,6 @@ class Sequence extends Composite
         $children = [];
         foreach ($this->members as $member) {
             $node = $parser->apply($member, $new_pos);
-            //$node = $member->match($text, $new_pos, $parser);
             if (!$node) {
                 return;
             }
@@ -37,6 +47,6 @@ class Sequence extends Composite
             $new_pos += $len;
             $seq_len += $len;
         }
-        return Node::fromExpression($this, $text, $pos, $pos + $seq_len, $children);
+        return new Node\Sequence($this, $text, $pos, $pos + $seq_len, $children);
     }
 }

@@ -17,7 +17,23 @@ class OneOf extends Composite
 {
     public function asRhs()
     {
-        return implode(' | ', $this->_stringMembers());
+        return implode(' | ', $this->stringMembers());
+    }
+
+    public function isCapturingDecidable()
+    {
+        $capturing_children = 0;
+        foreach ($this->members as $child) {
+            if (!$child->isCapturingDecidable()) {
+                return false;
+            }
+            if ($child->isCapturing()) {
+                $capturing_children++;
+            }   
+        }
+        return 0 === $capturing_children
+            || $capturing_children === count($this->members)
+        ;
     }
     
     public function match($text, $pos, ParserInterface $parser)
@@ -26,7 +42,7 @@ class OneOf extends Composite
             $node = $parser->apply($member, $pos);
             if($node) {
                 // Wrap the succeeding child in a node representing the OneOf
-                return Node::fromExpression($this, $text, $pos, $node->end, [$node]);
+                return new Node\OneOf($this, $text, $pos, $node->end, [$node]);
             }
         }
     }

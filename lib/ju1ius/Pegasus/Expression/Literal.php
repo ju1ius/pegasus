@@ -2,7 +2,6 @@
 
 namespace ju1ius\Pegasus\Expression;
 
-use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Parser\ParserInterface;
 use ju1ius\Pegasus\Node;
 
@@ -12,7 +11,7 @@ use ju1ius\Pegasus\Node;
  *
  * Use these if you can; they're the fastest.
  **/
-class Literal extends Expression
+class Literal extends Terminal
 {
 	use HasBackReferenceTrait;
 
@@ -64,7 +63,7 @@ class Literal extends Expression
             $length = strlen($value);
         }
         if ($pos === strpos($text, $value, $pos)) {
-            return Node::fromExpression($this, $text, $pos, $pos + $length);
+            return new Node\Literal($this, $text, $pos, $pos + $length);
         }
     }
 }

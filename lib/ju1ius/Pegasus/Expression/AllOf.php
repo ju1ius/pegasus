@@ -20,6 +20,6 @@ class AllOf extends Composite
             $node = $parser->apply($this, $pos);
             if(!$node) return;
         }
-        return Node::fromExpression($this, $text, $pos, $node->end, [$node]);
+        return new Node\AllOf($this, $text, $pos, $node->end, [$node]);
     }
 }

@@ -22,14 +22,9 @@ namespace ju1ius\Pegasus;
 abstract class Node
 {
     /**
-     * @var string The name of the expression that generated this node.
+     * @var string The expression that generated this node.
      */
-    public $expr_name;
-
-    /**
-     * @var string The class of the expression that generated this node.
-     */
-    public $expr_class;
+    public $expr;
 
     /**
      * @var string The full text fed to the parser.
@@ -52,9 +47,9 @@ abstract class Node
      * @param int    $start     The position in the text where that expr started matching
      * @param int    $end       The position after start where the expr first didn't match.
      **/
-    public function __construct($expr_name, $full_text, $start, $end)
+    public function __construct($expr, $full_text, $start, $end)
     {
-        $this->expr_name = $expr_name;
+        $this->expr = $expr;
         $this->full_text = $full_text;
         $this->start = $start;
         $this->end = $end;
@@ -69,31 +64,6 @@ abstract class Node
      */
     abstract public function iter();
 
-    /**
-     * Factory method to return a node depending on the expression class.
-     *
-     * @param Expression    $expr
-     * @param string        $text
-     * @param int           $start
-     * @param int           $end
-     * @param array         $children
-     *
-     * @return Node
-     */
-    public static function fromExpression(Expression $expr, $text, $start, $end, $children=[])
-    {
-        $expr_name = $expr->name;
-        if ($expr instanceof Expression\Composite) {
-            $node = new Node\Composite($expr_name, $text, $start, $end, $children);
-        } else if ($expr instanceof Expression\Regex) {
-            $node = new Node\Regex($expr_name, $text, $start, $end, $children);
-        } else {
-            $node = new Node\Terminal($expr_name, $text, $start, $end);
-        }
-        $node->expr_class = get_class($expr);
-        return $node;
-    }
-    
     public function __toString()
     {
         return $this->getText();
@@ -113,7 +83,7 @@ abstract class Node
     {
         return $other
             && $this instanceof $other
-            && $this->expr_name === $other->expr_name
+            && $this->expr->id === $other->expr->id
             && $this->start === $other->start
             && $this->end === $other->end
             && $this->full_text === $other->full_text
@@ -128,19 +98,18 @@ abstract class Node
     public function treeview($error=null)
     {
         return sprintf(
-            '<%s "%s" matching "%s" (%s)>%s',
-            get_class($this),
-            $this->expr_name,
+            '+ %s, Rule=> %s Match=> "%s" %s',
+            str_replace('ju1ius\Pegasus\\', '', get_class($this)),
+            $this->expr->name ?: $this->expr->asRhs(),
             $this->getText(),
-            $this->expr_class,
-            $error === $this ? '  <-- *** We were here. ***' : ''
+            $error === $this ? '    <-- *** We were here. ***' : ''
         );
     }
     
     static protected function indent($text)
     {
         return implode("\n", array_map(function($line) {
-            return '    ' . $line;
+            return '+---' . $line;
         }, explode("\n", $text)));
     }
 }

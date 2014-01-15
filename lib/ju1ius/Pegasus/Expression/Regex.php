@@ -2,7 +2,6 @@
 
 namespace ju1ius\Pegasus\Expression;
 
-use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Parser\ParserInterface;
 use ju1ius\Pegasus\Node;
 
@@ -13,7 +12,7 @@ use ju1ius\Pegasus\Node;
  * Use these as much as you can and jam as much into each one as you can;
  * they're fast.
  **/
-class Regex extends Expression
+class Regex extends Terminal
 {
     public $pattern;
     protected $compiled_pattern;
@@ -40,7 +39,7 @@ class Regex extends Expression
         if(preg_match($this->compiled_pattern, $text, $matches, 0, $pos)) {
             $match = $matches[0];
             $length = strlen($match);
-            $node = Node::fromExpression($this, $text, $pos, $pos + $length, $matches);
+            $node = new Node\Regex($this, $text, $pos, $pos + $length, $matches);
             return $node;
         }
     }
