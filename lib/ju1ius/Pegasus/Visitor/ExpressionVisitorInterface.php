@@ -31,7 +31,7 @@ interface ExpressionVisitorInterface
      *
      * @return mixed
      */
-    public function enterNode(Expression $expr);
+    public function enterExpression(Expression $expr);
 
     /**
      * Called when leaving a node.
@@ -46,7 +46,7 @@ interface ExpressionVisitorInterface
      *
      * @return mixed
      */
-    public function leaveNode(Expression $expr);
+    public function leaveExpression(Expression $expr);
 
     /**
      * Called once after traversal.
