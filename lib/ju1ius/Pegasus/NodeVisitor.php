@@ -47,16 +47,16 @@ class NodeVisitor
     {
         try {
             // ignored rule
-            if (!$node || isset($this->ignored[$node->expr_name])) return null;
+            if (!$node || isset($this->ignored[$node->expr->name])) return null;
 
             $children = [];
             if ($node instanceof Composite) {
                 // visit children
 				foreach ($node->children as $child) {
-					$child_node = $this->visit($child);
 					// filter ignored (null) nodes 
-					if (null === $child_node) continue;
-					$children[] = $child_node;
+                    if (null !== $result = $this->visit($child)) {
+                        $children[] = $result;
+                    }
 				}
             }
 
@@ -69,8 +69,8 @@ class NodeVisitor
                 //return $res;
             //}
 
-            $visitor = isset($this->visitors[$node->expr_name])
-                ? $this->visitors[$node->expr_name]
+            $visitor = isset($this->visitors[$node->expr->name])
+                ? $this->visitors[$node->expr->name]
                 : 'generic_visit';
 
             return $this->$visitor($node, $children);

@@ -1,0 +1,26 @@
+<?php
+
+use ju1ius\Pegasus\Node;
+
+
+class {{grammar.name}}NodeVisitor extends ju1ius\Pegasus\NodeVisitor
+{
+    public function generic_visit(Node $node, $children)
+    {
+        return $node;
+    }
+    {% for rule in grammar.rules %}
+    /**
+     * Visitor for grammar rule {{rule.name}}.
+     *
+     * @param {{rule.nodeClass}} $node The currently visited node.
+     * @param mixed $children The result of this node's children visitation.
+     *
+     * @return mixed The result of this node's visitation.
+     */
+    public function visit_{{rule.name}}({{rule.nodeClass}} $node, $children)
+    {
+        return $node;
+    }
+    {% endfor %}
+}

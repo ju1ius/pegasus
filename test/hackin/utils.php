@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__.'/../../vendor/autoload.php';
 
 /**
  * Returns a string representation of current function's caller.

@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__.'/../../vendor/autoload.php';
+require_once __DIR__.'/../../../vendor/autoload.php';
 
 
 use ju1ius\Pegasus\Grammar;
@@ -14,17 +14,12 @@ use ju1ius\Pegasus\Visitor\ReferenceResolver;
 
 $g = new Grammar();
 
-$g['start'] = new OneOf([
-    new Ref('foo'),
-    new Ref('bar')
-], 'start');
-$g['foo'] = new Literal('FOO', 'foo');
-$g['bar'] = new Sequence([
-    new Ref('baz'), new Literal('w00t')
-], 'bar');
-$g['baz'] = new Literal('baz', 'baz');
+$g['start'] = new Ref('foobars');
+$g['foobars'] = new OneOf([
 
-$g->resolveReferences();
+]);
+
+$g->finalize();
 
 foreach ($g as $name => $expr) {
 	echo $expr->asRule(), "\n";

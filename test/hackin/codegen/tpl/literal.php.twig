@@ -1,0 +1,7 @@
+{% if not expr.hasBackReference %}
+if ($pos === strpos($text, '{{expr.value}}', $pos)) {
+    $result = new Terminal($text, $pos, $pos + {{expr.length}});
+} else {
+    $result = null;
+}
+{% endif %}
