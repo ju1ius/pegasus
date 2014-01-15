@@ -98,6 +98,8 @@ class Packrat implements ParserInterface
             throw $this->error;
         }
 
+        unset($this->memo);
+
         return $result;
     }
 

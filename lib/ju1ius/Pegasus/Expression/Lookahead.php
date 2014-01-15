@@ -16,6 +16,16 @@ class Lookahead extends Wrapper
     {
         return sprintf('&(%s)', $this->stringMembers());
     }
+
+    public function isCapturing()
+    {
+        return false;
+    }
+
+    public function isCapturingDecidable()
+    {
+        return true;
+    }
     
     public function match($text, $pos, ParserInterface $parser)
     {

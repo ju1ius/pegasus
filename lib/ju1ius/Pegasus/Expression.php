@@ -109,13 +109,11 @@ abstract class Expression
      * Returns true if it can be determined statically whether the expression
      * returns parse results on success.
      *
-     * @param type $param
-     * 
-     * @return void
+     * @return bool
      */
     public function isCapturingDecidable()
     {
-        
+        return true;
     }
     
 

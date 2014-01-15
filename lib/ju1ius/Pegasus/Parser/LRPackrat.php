@@ -22,7 +22,11 @@ class LRPackrat extends Packrat
         $this->heads = [];
         $this->lr_stack = new \SplStack();
 
-        return parent::parse($source, $pos, $start_rule);
+        $result = parent::parse($source, $pos, $start_rule);
+
+        unset($this->heads, $this->lr_stack);
+
+        return $result;
     }
 
     public function apply(Expression $expr, $pos)

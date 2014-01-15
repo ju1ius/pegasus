@@ -6,4 +6,5 @@ if(preg_match('/\G{{expr.pattern}}/{{expr.flags|join}}', $text, $matches, 0, $th
 } else {
     $result = null;
 }
+{% else %}
 {% endif %}
