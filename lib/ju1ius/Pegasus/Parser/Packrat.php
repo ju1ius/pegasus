@@ -5,8 +5,6 @@ namespace ju1ius\Pegasus\Parser;
 use ju1ius\Pegasus\GrammarInterface;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Exception\ParseError;
-use ju1ius\Pegasus\Exception\IncompleteParseError;
 
 
 /**
@@ -60,9 +58,9 @@ class Packrat extends RecursiveDescent
         $this->error->expr = $expr;
 
         if (isset($this->memo[$expr->id][$pos])) {
-            $m = $this->memo[$expr->id][$pos];
-            $this->pos = $m->end;
-            return $m->result;
+            $memo = $this->memo[$expr->id][$pos];
+            $this->pos = $memo->end;
+            return $memo->result;
         }
 
         $this->refmap[$expr->name] = [$expr->id, $pos];
@@ -71,13 +69,13 @@ class Packrat extends RecursiveDescent
         // before it evaluates the body of a rule.
         // This has the effect of making all left-recursive applications
         // (both direct and indirect) fail.
-        $m = new MemoEntry(null, $pos);
-        $this->memo[$expr->id][$pos] = $m;
+        $memo = new MemoEntry(null, $pos);
+        $this->memo[$expr->id][$pos] = $memo;
         // evaluate expression
         $result = $this->evaluate($expr);
         // update the result in the memo table
-        $m->result = $result;
-        $m->end = $this->pos;
+        $memo->result = $result;
+        $memo->end = $this->pos;
 
         return $result;
     }

@@ -35,7 +35,7 @@ class LRPackrat extends Packrat
         $this->error->pos = $pos;
         $this->error->expr = $expr;
 
-        if (!$m = $this->recall($expr, $pos)) {
+        if (!$memo = $this->recall($expr, $pos)) {
             // Store the expression in backreferences table,
             // just enough info to retrieve the result from the memo table.
             $this->refmap[$expr->name] = [$expr->id, $pos];
@@ -44,25 +44,25 @@ class LRPackrat extends Packrat
             $lr = new LR($expr);
             $this->lr_stack->push($lr);
             // Memoize $lr, then evaluate $expr.
-            $m = new MemoEntry($lr, $pos);
-            $this->memo[$expr->id][$pos] = $m;
+            $memo = new MemoEntry($lr, $pos);
+            $this->memo[$expr->id][$pos] = $memo;
             $result = $this->evaluate($expr, $pos);
             // Pop $lr off the invocation stack
             $this->lr_stack->pop();
-            $m->end = $this->pos;
+            $memo->end = $this->pos;
             if (!$lr->head) {
-                $m->result = $result;
+                $memo->result = $result;
                 return $result;
             }
             $lr->seed = $result;
-            return $this->lr_answer($expr, $pos, $m);
+            return $this->lr_answer($expr, $pos, $memo);
         }
-        $this->pos = $m->end;
-        if ($m->result instanceof LR) {
-            $this->setup_lr($expr, $m->result);
-            return $m->result->seed;
+        $this->pos = $memo->end;
+        if ($memo->result instanceof LR) {
+            $this->setup_lr($expr, $memo->result);
+            return $memo->result->seed;
         }
-        return $m->result;
+        return $memo->result;
     }
     
     protected function setup_lr(Expression $expr, LR $lr)
@@ -71,52 +71,61 @@ class LRPackrat extends Packrat
             $lr->head = new Head($expr);
         }
         foreach ($this->lr_stack as $item) {
-            if ($item->head === $lr->head) return;
+            if ($item->head === $lr->head) {
+                return;
+            }
             $lr->head->involved[$item->rule->id] = $item->rule;
         }
     }
     
-    protected function lr_answer(Expression $expr, $pos, MemoEntry $m)
+    protected function lr_answer(Expression $expr, $pos, MemoEntry $memo)
     {
-        $head = $m->result->head;
+        $head = $memo->result->head;
         if ($head->rule->id !== $expr->id) {
-            return $m->result->seed;
+            return $memo->result->seed;
         }
-        $m->result = $m->result->seed;
-        if (!$m->result) return;
-        return $this->grow_lr($expr, $pos, $m, $head);
+        $memo->result = $memo->result->seed;
+        if (!$memo->result) {
+            return;
+        }
+        return $this->grow_lr($expr, $pos, $memo, $head);
     }
 
-    protected function grow_lr(Expression $expr, $pos, MemoEntry $m, Head $head)
+    protected function grow_lr(Expression $expr, $pos, MemoEntry $memo, Head $head)
     {
         $this->heads[$pos] = $head;
         while (true) {
             $this->pos = $pos;
             $head->eval = $head->involved;
             $result = $this->evaluate($expr);
-            if (!$result || $this->pos <= $m->end) {
+            if (!$result || $this->pos <= $memo->end) {
                 break;
             }
-            $m->result = $result;
-            $m->end = /*$result->end;*/$this->pos;
+            $memo->result = $result;
+            $memo->end = $this->pos;  /*$result->end;*/
         }
         unset($this->heads[$pos]);
-        $this->pos = $m->end;
-        return $m->result;
+        $this->pos = $memo->end;
+        return $memo->result;
     }
 
     protected function recall(Expression $expr, $pos)
     {
-        $m = $this->memo($expr, $pos);
+        // inline this to save a method call...
+        //$memo = $this->memo($expr, $pos);
+        $memo = isset($this->memo[$expr->id][$start_pos])
+            ? $this->memo[$expr->id][$start_pos]
+            : null
+        ;
         // If not growing a seed parse,
         // just return what is stored in the memo table.
         if (!isset($this->heads[$pos])) {
-            return $m;
+            return $memo;
         }
         $h = $this->heads[$pos];
         // Do not evaluate any rule
         // that is not involved in this left recursion.
-        if (!$m && !$head->involves($expr)) {
+        if (!$memo && !$head->involves($expr)) {
             return new MemoEntry(null, $pos);
         }
         // Allow involved rules to be evaluated,
@@ -124,9 +133,9 @@ class LRPackrat extends Packrat
         if (isset($h->eval[$expr->id])) {
             unset($h->eval[$expr->id]);
             $result = $this->evaluate($expr, $pos);
-            $m->result = $result;
-            $m->end = $this->pos;
+            $memo->result = $result;
+            $memo->end = $this->pos;
         }
-        return $m;
+        return $memo;
     }    
 }
