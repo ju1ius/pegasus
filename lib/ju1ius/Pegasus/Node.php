@@ -95,7 +95,7 @@ abstract class Node
         return !$this->equals($other);
     }
 
-    public function treeview($error=null)
+    public function inspect($error=null)
     {
         return sprintf(
             '+ %s, Rule=> %s Match=> "%s" %s',

@@ -49,4 +49,4 @@ EOS;
 $grammar = new Grammar($syntax);
 $parser = new LR_1Parser($grammar);
 $tree = $parser->parse('1-2-3');
-echo $tree->treeview(), "\n";
+echo $tree->inspect(), "\n";

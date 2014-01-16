@@ -45,6 +45,6 @@ $xxx->children = [
 
 $parser = new Parser\LRPackrat($xxx);
 $tree = $parser->parse('xxxx');
-//echo $tree->treeview();
+//echo $tree->inspect();
 $visited = (new XXXVisitor)->visit($tree);
 var_export($visited);

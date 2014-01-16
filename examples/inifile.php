@@ -115,4 +115,4 @@ $step_3 = microtime(true);
 echo "Visiting parse tree: ", $step_3-$step, "s\n";
 echo "Total time: ", $step_3-$start, "s\n";
 //var_dump($config);
-//echo $tree->treeview(), "\n";
+//echo $tree->inspect(), "\n";

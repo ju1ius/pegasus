@@ -33,7 +33,7 @@ class VisitationError extends \RuntimeException
             "%s: %s\n\nParse tree:\n%s\n",
             get_class($this->getPrevious()),
             (string) $this->getPrevious(),
-            $this->node->treeview($this->node)
+            $this->node->inspect($this->node)
         );
     }
     

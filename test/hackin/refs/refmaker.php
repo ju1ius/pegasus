@@ -20,7 +20,7 @@ use ju1ius\Pegasus\Parser\LRPackrat as Parser;
 //$g['foobar'] = $foobar;
 //$g->setStartRule('foobars');
 //$res = $p->parse('foofoobarbarbarfoobarbarfoo');
-//echo $res->treeview(), "\n";
+//echo $res->inspect(), "\n";
 
 
 $g = Grammar::fromSyntax('

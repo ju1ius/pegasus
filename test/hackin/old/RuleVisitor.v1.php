@@ -148,7 +148,7 @@ class RuleVisitor extends NodeVisitor
 	{
         if (count($children) !== 3) {
             //print_r($children);
-            //echo $node->treeview(), "\n";
+            //echo $node->inspect(), "\n";
         }
 		list($lp, $expr, $rp) = $children;
 		return $expr;

@@ -23,7 +23,7 @@ function get_caller()
 
 function dump_node($node)
 {
-    echo $node->treeview(), "\n";
+    echo $node->inspect(), "\n";
 }
 
 function debug()

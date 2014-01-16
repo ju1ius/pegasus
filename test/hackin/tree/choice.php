@@ -41,7 +41,7 @@ EOS;
 $mem_start = memory_get_usage();
 
 $tree = parse_syntax($syntax, $g);
-//echo $tree->treeview(), "\n";
+//echo $tree->inspect(), "\n";
 
 $mem_total = memory_get_usage() - $mem_start;
 $mem_peak = memory_get_peak_usage();

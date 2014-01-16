@@ -78,7 +78,7 @@ EOS;
 
 
 $tree = parse_syntax($syntax, $g);
-//echo $tree->treeview(), "\n";
+//echo $tree->inspect(), "\n";
 list($rules, $start) = (new MyVisitor)->visit($tree);
 var_dump($rules);
 

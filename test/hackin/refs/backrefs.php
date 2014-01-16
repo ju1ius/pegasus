@@ -70,4 +70,4 @@ EOS;
 $grammar = new Grammar($syntax);
 $parser = new Parser($grammar);
 $tree = $parser->parse('###w00t### ~omy~');
-echo $tree->treeview(), "\n";
+echo $tree->inspect(), "\n";

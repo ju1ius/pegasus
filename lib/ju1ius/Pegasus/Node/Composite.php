@@ -34,11 +34,11 @@ class Composite extends Node
         ;
     }
 
-    public function treeview($error=null)
+    public function inspect($error=null)
     {
-        $ret = [parent::treeview($error)];
+        $ret = [parent::inspect($error)];
         foreach($this->children as $child) {
-            $ret[] = self::indent($child->treeview($error));
+            $ret[] = self::indent($child->inspect($error));
         }
         return implode("\n", $ret);
     }

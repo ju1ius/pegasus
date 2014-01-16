@@ -25,4 +25,4 @@ $grammar = Grammar::fromSyntax($text);
 $parser = new Parser($grammar);
 $tree = $parser->parseAll('bar');
 
-echo $tree->treeview(), "\n";
+echo $tree->inspect(), "\n";
