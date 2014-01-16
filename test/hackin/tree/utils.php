@@ -16,7 +16,7 @@ use ju1ius\Pegasus\Parser\LRPackrat;
 use ju1ius\Pegasus\Visitor\RuleVisitor;
 
 use ju1ius\Pegasus\Debug\ExpressionPrinter;
-use ju1ius\Pegasus\Debug\GrammarTreePrinter;
+use ju1ius\Pegasus\Debug\GrammarPrinter;
 
 
 function parse_syntax($syntax, Grammar $g=null)
@@ -43,7 +43,7 @@ function print_expr($tree)
 function print_grammar($grammar)
 {
     $trav = new GrammarTraverser(false);
-    $trav->addVisitor(new GrammarTreePrinter);
+    $trav->addVisitor(new GrammarPrinter);
     $trav->traverse($grammar);
 }
 

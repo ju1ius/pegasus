@@ -44,13 +44,13 @@ class Calculator extends NodeVisitor
     public function visit_minus($node, $children)
     {
         list($lhs, $op, $rhs) = $children;
-        \Psy\Shell::debug(get_defined_vars());
+        //\Psy\Shell::debug(get_defined_vars());
         return $lhs - $rhs;
     }
     public function visit_mul($node, $children)
     {
         list($lhs, $op, $rhs) = $children;
-        \Psy\Shell::debug(get_defined_vars());
+        //\Psy\Shell::debug(get_defined_vars());
         return $lhs * $rhs;
     }
     public function visit_div($node, $children)

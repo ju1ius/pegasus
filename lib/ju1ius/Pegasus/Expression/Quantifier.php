@@ -35,10 +35,10 @@ class Quantifier extends Wrapper
     public function asRhs()
     {
         return sprintf(
-            '(%s){%s,%s}',
+            '(%s){%s%s}',
             $this->stringMembers(),
             $this->min,
-            $this->max
+            $this->max === -1 ? '' : ','.$this->max
         );
     }
 

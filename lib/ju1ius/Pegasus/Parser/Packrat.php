@@ -70,9 +70,9 @@ class Packrat implements ParserInterface
         $this->error = new ParseError($source);
         $this->refmap = [];
 
-        if (!$folded = $this->grammar->isFolded()) {
-            $this->grammar->fold();
-        }
+        //if (!$folded = $this->grammar->isFolded()) {
+            //$this->grammar->fold();
+        //}
 
         if (!$rule) {
             $rule = $this->grammar->getStartRule();
@@ -88,11 +88,11 @@ class Packrat implements ParserInterface
         // and let expressions call $parser->apply for their children.
         $result = $this->apply($rule, $pos);
 
-        if (!$folded) {
-            // grammar wasn't folded before parsing, so we unfold it
-            // to restore it's original state.
-            $this->grammar->unfold();
-        }
+        //if (!$folded) {
+            //// grammar wasn't folded before parsing, so we unfold it
+            //// to restore it's original state.
+            //$this->grammar->unfold();
+        //}
 
         if (!$result) {
             throw $this->error;
@@ -117,6 +117,11 @@ class Packrat implements ParserInterface
      */
     public function apply(Expression $expr, $pos=0)
     {
+        // runtime reference resolving
+        if ($expr instanceof Expression\Reference) {
+            $expr = $this->grammar[$expr->identifier];
+        }
+
         $this->pos = $pos;
         $this->error->pos = $pos;
         $this->error->expr = $expr;

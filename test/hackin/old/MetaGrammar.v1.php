@@ -5,7 +5,6 @@ namespace ju1ius\Pegasus;
 use ju1ius\Pegasus\Expression\Reference as Ref;
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Expression\Regex;
-use ju1ius\Pegasus\Expression\Quantifier;
 use ju1ius\Pegasus\Expression\OneOrMore;
 use ju1ius\Pegasus\Expression\ZeroOrMore;
 use ju1ius\Pegasus\Expression\Not;
@@ -13,7 +12,7 @@ use ju1ius\Pegasus\Expression\OneOf;
 use ju1ius\Pegasus\Expression\Sequence;
 
 use ju1ius\Pegasus\Parser\LRPackrat as Parser;
-use ju1ius\Pegasus\Visitor\MetaGrammarNodeVisitor;
+use ju1ius\Pegasus\Visitor\RuleVisitor;
 
 
 /**
@@ -25,27 +24,19 @@ class MetaGrammar
 {
 	const SYNTAX = <<<'EOS'
 
-grammar			= _ directives rules
-
-########### Directives ##########
-directives      = directive*
-directive       = ws_directive | ci_directive
-ws_directive    = "%whitespace" _ equals expression
-ci_directive    = "%case_insensitive" _
+grammar			= _ rules
 	
-########### Rules ##########
-
 rules			= rule+
 
 rule			= identifier equals expression
 
-expression		= choice | sequence | term
+expression		= choice | terms
 
-choice			= alternative (OR alternative)+
+choice			= expression OR terms 
 			
-alternative		= sequence | term
+terms			= sequence | term
 
-sequence		= term{2}
+sequence		= terms term
 
 term			= labeled | labelable
 
@@ -127,10 +118,9 @@ EOS;
 			// to speedup the syntax parsing process.
 			$parser = new Parser($grammar);
 			$tree = $parser->parseAll(self::SYNTAX);
-			list($rules, $default) = (new MetaGrammarNodeVisitor)->visit($tree);
+			list($rules, $default) = (new RuleVisitor)->visit($tree);
 			self::$instance = new Grammar($rules, $default);
-            //echo self::$instance, "\n";
-            self::$instance->finalize();
+			self::$instance->finalize();
 		}
 
 		return self::$instance;
@@ -165,23 +155,22 @@ EOS;
 		]);
 		$g['expression'] = new OneOf([
 			new Ref('choice'),
+			new Ref('terms')
+		]);
+		$g['choice'] = new Sequence([
+            new Ref('expression'),
+            new Ref('OR'),
+			new Ref('_'),
+            new Ref('terms')
+        ]);
+		$g['terms'] = new OneOf([
             new Ref('sequence'),
 			new Ref('term')
 		]);
-		$g['choice'] = new Sequence([
-            new Ref('alternative'),
-            new OneOrMore([
-                new Sequence([
-                    new Ref('OR'),
-                    new Ref('alternative')
-                ])
-            ])
-        ]);
-        $g['alternative'] = new OneOf([
-            new Ref('sequence'),
-            new Ref('term')
-        ]);
-        $g['sequence'] = new Quantifier([new Ref('term')], '', 2, null);
+        $g['sequence'] = new Sequence([
+			new Ref('terms'),
+			new Ref('term')
+		]);
         $g['term'] = new OneOf([
             new Ref('labeled'),
             new Ref('labelable')

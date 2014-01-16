@@ -31,6 +31,11 @@ class LRPackrat extends Packrat
 
     public function apply(Expression $expr, $pos)
     {
+        // runtime reference resolving
+        if ($expr instanceof Expression\Reference) {
+            $expr = $this->grammar[$expr->identifier];
+        }
+
         $this->pos = $pos;
         $this->error->pos = $pos;
         $this->error->expr = $expr;

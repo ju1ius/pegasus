@@ -6,7 +6,7 @@ use ju1ius\Pegasus\Exception\GrammarException;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Traverser\GrammarTraverser;
 use ju1ius\Pegasus\Visitor\GrammarVisitor;
-use ju1ius\Pegasus\Visitor\RuleVisitor;
+use ju1ius\Pegasus\Visitor\MetaGrammarNodeVisitor;
 use ju1ius\Pegasus\Parser\LRPackrat as Parser;
 
 
@@ -96,7 +96,7 @@ class Grammar implements GrammarInterface
 	{
 		$metagrammar = MetaGrammar::create();
 		$tree = (new Parser($metagrammar))->parseAll($syntax);
-		list($rules, $start) = (new RuleVisitor)->visit($tree);
+		list($rules, $start) = (new MetaGrammarNodeVisitor)->visit($tree);
         if (null === $start_rule) {
             $start_rule = $start;
         }

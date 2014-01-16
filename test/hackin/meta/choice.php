@@ -43,22 +43,12 @@ class MyVisitor extends RuleVisitor
 $meta = MetaGrammar::getGrammar();
 $g = $meta->copy(true)->unfold();
 $g['expression'] = new OneOf([
-    new Ref('choice_2'), 
+    new Ref('choice'), 
     new Ref('sequence'), 
     new Ref('term'), 
 ]);
-// choice v1
-$g['choice_1'] = new Sequence([
-    new Ref('terms'),
-    new OneOrMore([
-        new Sequence([
-            new Ref('OR'),
-            new Ref('terms')
-        ])
-    ])
-]);
 // choice v2
-$g['choice_2'] = new Sequence([
+$g['choice'] = new Sequence([
     new Ref('alternative'),
     new OneOrMore([
         new Sequence([
