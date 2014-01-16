@@ -51,7 +51,7 @@ Time to get:    %0.12f
 Memory:         %d
 ", $time_to_fill, $time_to_search, $time_to_get, $mem_used);
 
-unset($arr);
+unset($arr, $r);
 
 //SplObjectStorage
 $sos = new SplObjectStorage();
@@ -88,3 +88,5 @@ Time to check:  %s
 Time to get:    %s
 Memory:         %d
 ", $time_to_fill, $time_to_search, $time_to_get, $mem_used);
+
+unset($sos, $r);
