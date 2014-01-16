@@ -310,11 +310,11 @@ class RuleVisitor extends NodeVisitor
             }
             return $rule_map[$label];
         }
-        $members = $expr instanceof Expression\Composite ? $expr->members : [];
-        if ($members) {
-            $expr->members = [];
-            foreach ($members as $member) {
-                $expr->members[] = $this->_resolveRefs($rule_map, $member, $unwalked_names, $walking_names);
+        $children = $expr instanceof Expression\Composite ? $expr->children : [];
+        if ($children) {
+            $expr->children = [];
+            foreach ($children as $child) {
+                $expr->children[] = $this->_resolveRefs($rule_map, $child, $unwalked_names, $walking_names);
             }
         }
         if ($expr->name) {

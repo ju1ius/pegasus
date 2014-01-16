@@ -38,7 +38,7 @@ class XXXVisitor extends NodeVisitor
 
 $xxx = new OneOf([], 'xxx');
 $x = new Literal('x', 'x');
-$xxx->members = [
+$xxx->children = [
     new Sequence([$xxx, $x], 'xxx_x'),
     $x
 ];

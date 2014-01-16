@@ -16,7 +16,7 @@ class Skip extends Wrapper
 {
     public function asRhs()
     {
-        return sprintf('~(%s)', $this->stringMembers()[0]);
+        return sprintf('~(%s)', $this->stringMembers());
     }
 
     public function isCapturing()
@@ -31,7 +31,7 @@ class Skip extends Wrapper
     
     public function match($text, $pos, ParserInterface $parser)
     {
-        if ($node = $parser->apply($this->members[0], $pos)) {
+        if ($node = $parser->apply($this->children[0], $pos)) {
             return new Node\Skip($this, $text, $node->start, $node->end);
         }
     }

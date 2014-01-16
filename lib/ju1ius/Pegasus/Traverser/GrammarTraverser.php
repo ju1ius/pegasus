@@ -153,9 +153,9 @@ class GrammarTraverser implements GrammarTraverserInterface
         }
 
         if ($expr instanceof Expression\Composite) {
-            foreach ($expr->members as $i => $member) {
-                if (null !== $result = $this->traverseExpression($grammar, $member)) {
-                    $expr->members[$i] = $result;
+            foreach ($expr->children as $i => $child) {
+                if (null !== $result = $this->traverseExpression($grammar, $child)) {
+                    $expr->children[$i] = $result;
                 }
             }
         }

@@ -23,7 +23,7 @@ class OneOf extends Composite
     public function isCapturingDecidable()
     {
         $capturing_children = 0;
-        foreach ($this->members as $child) {
+        foreach ($this->children as $child) {
             if (!$child->isCapturingDecidable()) {
                 return false;
             }
@@ -32,14 +32,14 @@ class OneOf extends Composite
             }   
         }
         return 0 === $capturing_children
-            || $capturing_children === count($this->members)
+            || $capturing_children === count($this->children)
         ;
     }
     
     public function match($text, $pos, ParserInterface $parser)
     {
-        foreach ($this->members as $member) {
-            $node = $parser->apply($member, $pos);
+        foreach ($this->children as $child) {
+            $node = $parser->apply($child, $pos);
             if($node) {
                 // Wrap the succeeding child in a node representing the OneOf
                 return new Node\OneOf($this, $text, $pos, $node->end, [$node]);

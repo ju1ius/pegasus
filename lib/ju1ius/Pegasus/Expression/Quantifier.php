@@ -14,17 +14,15 @@ class Quantifier extends Wrapper
     public $min;
     public $max;
 
-    public function __construct(array $members, $name='', $min=0, $max=null)
+    public function __construct(array $children, $min, $max, $name='')
     {
         $this->min = abs((int) $min);
-        if (null === $max) {
-            $max = -1;
-        } else if ($max < $min) {
-            throw new \InvalidArgumentException('$max must be null or > $min');
+        if ($max < $min) {
+            throw new \InvalidArgumentException('$max must be >= $min');
         }
-        $this->max = (int) $max;
+        $this->max = $max === INF ? $max : (int) $max;
 
-        parent::__construct($members, $name);    
+        parent::__construct($children, $name);    
     }
 
     public function hasVariableCaptureCount()
@@ -35,10 +33,10 @@ class Quantifier extends Wrapper
     public function asRhs()
     {
         return sprintf(
-            '(%s){%s%s}',
+            '(%s){%s,%s}',
             $this->stringMembers(),
             $this->min,
-            $this->max === -1 ? '' : ','.$this->max
+            $this->max === INF ? '' : $this->max
         );
     }
 
@@ -48,7 +46,7 @@ class Quantifier extends Wrapper
         $children = [];
         $match_count = 0;
         while (true) {
-            $node = $parser->apply($this->members[0], $new_pos);
+            $node = $parser->apply($this->children[0], $new_pos);
             if (!$node) break;
             $match_count++;
 

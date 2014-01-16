@@ -14,7 +14,7 @@ use ju1ius\Pegasus\Parser\LRPackrat as Parser;
 //$bar_l = new Literal('bar');
 //$foobar = new OneOf([$foo_l, $bar_l], 'foobar');
 //$foobars = new OneOf([], 'foobars');
-//$foobars->members = [$foobars, $foobar];
+//$foobars->children = [$foobars, $foobar];
 //$g = new Grammar();
 //$g['foobars'] = $foobars;
 //$g['foobar'] = $foobar;
@@ -46,7 +46,7 @@ function test_traversal($expr, $level=0)
 {
 	$ident = str_repeat('    ', $level);
 	if (!$expr instanceof Composite) return;
-	foreach ($expr->members as $m) {
+	foreach ($expr->children as $m) {
 	    test_traversal($m, $level+1);
 	}
 }

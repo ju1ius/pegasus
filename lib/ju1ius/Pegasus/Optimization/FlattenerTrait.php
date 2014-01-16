@@ -9,7 +9,7 @@ trait FlattenerTrait
 {
     protected function _appliesTo(Expression $expr)
     {
-        foreach ($expr->members as $child) {
+        foreach ($expr->children as $child) {
             if ($this->isEligibleChild($child)) {
                 return true;
             }
@@ -20,9 +20,9 @@ trait FlattenerTrait
     protected function _apply(Expression $expr)
     {
         $children = [];
-        foreach ($expr->members as $child) {
+        foreach ($expr->children as $child) {
             if ($this->isEligibleChild($child)) {
-                $children = array_merge($children, $child->members);
+                $children = array_merge($children, $child->children);
             } else {
                 $children[] = $child;
             }

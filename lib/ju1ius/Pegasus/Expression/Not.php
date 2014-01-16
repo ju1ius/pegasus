@@ -31,7 +31,7 @@ class Not extends Wrapper
     
     public function match($text, $pos, ParserInterface $parser)
     {
-        $node = $parser->apply($this->members[0], $pos);
+        $node = $parser->apply($this->children[0], $pos);
         if (!$node) {
             return new Node\Not($this, $text, $pos, $pos);
         }

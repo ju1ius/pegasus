@@ -119,7 +119,7 @@ class MetaGrammarNodeVisitor extends NodeVisitor
 		return new Expression\Not([$prefixable]);
 	}
 
-    public function visit_skip(Node\Skip $node, $children)
+    public function visit_skip(Node\Sequence $node, $children)
     {
         list($tilde, $prefixable) = $children;
         return new Expression\Skip([$prefixable]);
@@ -138,8 +138,8 @@ class MetaGrammarNodeVisitor extends NodeVisitor
             return new $class([$suffixable]);
 		}
         $min = (int) $quantifier->matches[2];
-		$max = isset($quantifier->matches[3]) ? (int) $quantifier->matches[3] : null;
-        return new Expression\Quantifier([$suffixable], '', $min, $max);
+		$max = isset($quantifier->matches[3]) ? (int) $quantifier->matches[3] : INF;
+        return new Expression\Quantifier([$suffixable], $min, $max);
 	}
 
 	public function visit_labelable(Node\OneOf $node, $children)
@@ -154,10 +154,6 @@ class MetaGrammarNodeVisitor extends NodeVisitor
 
 	public function visit_parenthesized(Node\Sequence $node, $children)
 	{
-        if (count($children) !== 3) {
-            //print_r($children);
-            //echo $node->treeview(), "\n";
-        }
 		list($lp, $expr, $rp) = $children;
 		return $expr;
 	}

@@ -13,8 +13,8 @@ class OptimizationTestCase extends PegasusTestCase
     protected function apply(Optimization $optim, Expression $expr)
     {
         if ($expr instanceof Composite) {
-            foreach ($expr->members as $i => $child) {
-                $expr->members[$i] = $this->apply($optim, $child);
+            foreach ($expr->children as $i => $child) {
+                $expr->children[$i] = $this->apply($optim, $child);
             }
         }
         return $optim->apply($expr);

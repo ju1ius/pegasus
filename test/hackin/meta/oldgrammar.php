@@ -26,11 +26,11 @@ function oldgram()
         //new OneOrMore([$expression])
     ]);
     $g['expression'] = new OneOf([
-        new Ref('ored'),
+        new Ref('choice'),
         new Ref('sequence'),
         new Ref('term')
     ]);
-    $g['ored'] = new Sequence([
+    $g['choice'] = new Sequence([
         new Ref('sequence'),
         new OneOrMore([new Ref('or_term')])
     ]);

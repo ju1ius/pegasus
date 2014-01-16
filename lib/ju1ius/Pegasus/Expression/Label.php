@@ -14,9 +14,9 @@ class Label extends Wrapper
 {
     public $label;
 
-    public function __construct($members, $label)
+    public function __construct($children, $label)
     {
-        parent::__construct($members);
+        parent::__construct($children);
         $this->label = $label;
     }
     
@@ -27,17 +27,17 @@ class Label extends Wrapper
 
     public function isCapturing()
     {
-        return $this->members[0]->isCapturing();
+        return $this->children[0]->isCapturing();
     }
 
     public function isCapturingDecidable()
     {
-        return $this->members[0]->isCapturingDecidable();
+        return $this->children[0]->isCapturingDecidable();
     }
     
     public function match($text, $pos, ParserInterface $parser)
     {
-        $node = $parser->apply($this->members[0], $pos);
+        $node = $parser->apply($this->children[0], $pos);
         if ($node) {
             return new Node\Label($this, $text, $node->start, $node->end, [$node]);
         }

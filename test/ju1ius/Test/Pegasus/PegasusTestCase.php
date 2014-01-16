@@ -39,7 +39,7 @@ class PegasusTestCase extends \PHPUnit_Framework_TestCase
         $unset_id = function ($expr) use (&$unset_id) {
             $expr->id = '';
             if ($expr instanceof Expression\Composite) {
-                foreach ($expr->members as $child) {
+                foreach ($expr->children as $child) {
                     $unset_id($child);   
                 }
             }

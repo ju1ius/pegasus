@@ -11,9 +11,9 @@ use ju1ius\Pegasus\Expression\Quantifier;
  **/
 class ZeroOrMore extends Quantifier
 {
-    public function __construct(array $members=[], $name='')
+    public function __construct(array $children=[], $name='')
     {
-        parent::__construct($members, $name, 0, null);
+        parent::__construct($children, 0, INF, $name);
     }
     
     public function asRhs()

@@ -13,9 +13,9 @@ class NotTest extends ExpressionTestCase
     /**
      * @dataProvider testMatchProvider
      */
-    public function testMatch($members, $match_args, $expected)
+    public function testMatch($children, $match_args, $expected)
     {
-        $expr = new Not($members);
+        $expr = new Not($children);
         $this->assertNodeEquals(
             $expected,
             call_user_func_array([$this, 'parse'], array_merge([$expr], $match_args))
@@ -46,9 +46,9 @@ class NotTest extends ExpressionTestCase
      * @dataProvider testMatchErrorProvider
      * @expectedException ju1ius\Pegasus\Exception\ParseError
      */
-    public function testMatchError($members, $match_args)
+    public function testMatchError($children, $match_args)
     {
-        $expr = new Not($members);
+        $expr = new Not($children);
         call_user_func_array([$this, 'parse'], array_merge([$expr], $match_args));
     }
     public function testMatchErrorProvider()

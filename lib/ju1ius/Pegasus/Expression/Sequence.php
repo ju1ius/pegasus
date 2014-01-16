@@ -23,7 +23,7 @@ class Sequence extends Composite
     public function getCaptureCount()
     {
         $capturing = 0;
-        foreach ($this->members as $child) {
+        foreach ($this->children as $child) {
             if ($child->isCapturing()) {
                 $capturing++;
             }
@@ -37,8 +37,8 @@ class Sequence extends Composite
         $new_pos = $pos;
         $seq_len = 0;
         $children = [];
-        foreach ($this->members as $member) {
-            $node = $parser->apply($member, $new_pos);
+        foreach ($this->children as $child) {
+            $node = $parser->apply($child, $new_pos);
             if (!$node) {
                 return;
             }

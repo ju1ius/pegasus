@@ -71,9 +71,9 @@ $g['sequence'] = new Quantifier([new Ref('term')], '', 2);
 
 
 $syntax = <<<'EOS'
-#foo = "a" | 'b' | 'c' | "d"
+foo = "a" | 'b' 'c' | "d"
 #foobar = 'foo' 'bar'
-foo = 'foo' 'bar' | 'foobar'
+#foo = 'foo' 'bar' | 'foobar'
 EOS;
 
 

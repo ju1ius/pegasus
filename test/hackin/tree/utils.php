@@ -58,8 +58,8 @@ function exp_tree_map($expr, $callback, $visited=null)
     $callback($expr);
     $visited->attach($expr);
     if ($expr instanceof Composite) {
-        foreach ($expr->members as $member) {
-            exp_tree_map($member, $callback, $visited);
+        foreach ($expr->children as $child) {
+            exp_tree_map($child, $callback, $visited);
         }
     }
 }

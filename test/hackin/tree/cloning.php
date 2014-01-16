@@ -99,16 +99,16 @@ class UnsafeTraverser implements ExpressionTraverserInterface
 		}
 
 		if ($expr instanceof Composite) {
-			foreach ($expr->members as $i => $member) {
+			foreach ($expr->children as $i => $child) {
 				// protect against recursive rules
-                //if (isset($this->visited[$member->id])) {
+                //if (isset($this->visited[$child->id])) {
                     //continue;
                 //}
-                //$this->visited[$member->id] = true;
+                //$this->visited[$child->id] = true;
 
-				if (null !== $result = $this->traverseExpression($member)) {
-                    $expr->members[$i] = $result;
-                    //$member = $result;
+				if (null !== $result = $this->traverseExpression($child)) {
+                    $expr->children[$i] = $result;
+                    //$child = $result;
 				}
 			}
 		}
@@ -125,7 +125,7 @@ class UnsafeTraverser implements ExpressionTraverserInterface
 
 $term = new Literal('w00w', 'term');
 $terms = new Sequence([], 'terms');
-$terms->members = [$terms, $term];
+$terms->children = [$terms, $term];
 $choice = new Sequence([
     $terms,
     new OneOrMore([

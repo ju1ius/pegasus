@@ -17,12 +17,12 @@ abstract class Composite extends Expression
      *
      * @var array
      */
-    public $members;
+    public $children;
 
-    public function __construct(array $members=[], $name='')
+    public function __construct(array $children=[], $name='')
     {
         parent::__construct($name);
-        $this->members = array_values($members);
+        $this->children = array_values($children);
     }
 
     public function equals(Expression $other)
@@ -30,11 +30,11 @@ abstract class Composite extends Expression
         if (!parent::equals($other)) {
             return false;
         }
-        foreach ($this->members as $i => $member) {
-            if (!isset($other->members[$i])) {
+        foreach ($this->children as $i => $child) {
+            if (!isset($other->children[$i])) {
                 return false;
             }
-            if (!$member->equals($other->members[$i])) {
+            if (!$child->equals($other->children[$i])) {
                 return false;
             }
         }
@@ -43,7 +43,7 @@ abstract class Composite extends Expression
 
     public function isCapturing()
     {
-        foreach ($this->members as $child) {
+        foreach ($this->children as $child) {
             if ($child->isCapturing()) {
                 return true;
             }   
@@ -53,7 +53,7 @@ abstract class Composite extends Expression
 
     public function isCapturingDecidable()
     {
-        foreach ($this->members as $child) {
+        foreach ($this->children as $child) {
             if (!$child->isCapturingDecidable()) {
                 return false;
             }   
@@ -69,11 +69,11 @@ abstract class Composite extends Expression
      */
     protected function stringMembers()
     {
-        return array_map(function($member) {
-            if ($member instanceof Reference) {
-                return $member->asRhs();
+        return array_map(function($child) {
+            if ($child instanceof Reference) {
+                return $child->asRhs();
             }
-            return $member->name ?: $member->asRhs();
-        }, $this->members);
+            return $child->name ?: $child->asRhs();
+        }, $this->children);
     }
 }

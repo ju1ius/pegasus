@@ -167,8 +167,8 @@ class Analysis
         if ($expr instanceof Expression\Reference) {
             yield $expr->identifier;
         } elseif ($expr instanceof Expression\Composite) {
-            foreach ($expr->members as $member) {
-                foreach ($this->directReferences($member) as $ref) {
+            foreach ($expr->children as $child) {
+                foreach ($this->directReferences($child) as $ref) {
                     yield $ref;
                 }
             }
@@ -183,13 +183,13 @@ class Analysis
         if ($expr instanceof Expression\Reference) {
             yield $expr->identifier;
         } elseif ($expr instanceof Expression\OneOf) {
-            foreach ($expr->members as $member) {
-                foreach ($this->directLeftReferences($member) as $ref) {
+            foreach ($expr->children as $child) {
+                foreach ($this->directLeftReferences($child) as $ref) {
                     yield $ref;
                 }
             }
         } elseif ($expr instanceof Expression\Composite) {
-            foreach ($this->directLeftReferences($expr->members[0]) as $ref) {
+            foreach ($this->directLeftReferences($expr->children[0]) as $ref) {
                 yield $ref;
             }
         }

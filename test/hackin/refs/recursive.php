@@ -11,8 +11,8 @@ $foobars = new OneOf([], 'foobars');
 $foobar = new OneOf([], 'foobar');
 $foo = new Literal('foo', 'foo');
 $bar = new Literal('bar', 'bar');
-$foobar->members = [$foo, $bar];
-$foobars->members = [$foobars, $foobar];
+$foobar->children = [$foo, $bar];
+$foobars->children = [$foobars, $foobar];
 
 
 class MyVisitor extends ExpressionVisitor

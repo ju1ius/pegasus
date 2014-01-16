@@ -181,7 +181,7 @@ EOS;
             new Ref('sequence'),
             new Ref('term')
         ]);
-        $g['sequence'] = new Quantifier([new Ref('term')], '', 2, null);
+        $g['sequence'] = new Quantifier([new Ref('term')], 2, INF);
         $g['term'] = new OneOf([
             new Ref('labeled'),
             new Ref('labelable')

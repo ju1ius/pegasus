@@ -117,7 +117,7 @@ EOS;
 
         $term = new OneOf([$quantified, $atom], 'term');
         $not_term = new Sequence([new Literal('!', 'bang'), $term, $_], 'not_term');
-        array_unshift($term->members, $not_term);
+        array_unshift($term->children, $not_term);
 
         //$sequence = new Sequence([$term, new OneOrMore([$term], 'term+')], 'sequence');
         //$or_term = new Sequence([new Literal('|', 'pipe'), $_, $term], 'or_term');
