@@ -181,5 +181,4 @@ class Packrat implements ParserInterface
         $memo = $this->memo[$id][$pos];
         return (string) $memo->result;
     }
-    
 }

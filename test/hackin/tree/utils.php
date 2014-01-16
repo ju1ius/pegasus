@@ -5,11 +5,19 @@ use ju1ius\Pegasus\MetaGrammar;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Composite;
-use ju1ius\Pegasus\Visitor\ExpressionTraverser;
+
+use ju1ius\Pegasus\Traverser\GrammarTraverser;
+use ju1ius\Pegasus\Traverser\ExpressionTraverser;
+use ju1ius\Pegasus\Visitor\GrammarVisitor;
 use ju1ius\Pegasus\Visitor\ExpressionVisitor;
-use ju1ius\Pegasus\Visitor\RuleVisitor;
+
 use ju1ius\Pegasus\Parser\Packrat;
 use ju1ius\Pegasus\Parser\LRPackrat;
+use ju1ius\Pegasus\Visitor\RuleVisitor;
+
+use ju1ius\Pegasus\Debug\ExpressionPrinter;
+use ju1ius\Pegasus\Debug\GrammarTreePrinter;
+
 
 function parse_syntax($syntax, Grammar $g=null)
 {
@@ -18,45 +26,6 @@ function parse_syntax($syntax, Grammar $g=null)
     return $p->parse($syntax);
 }
 
-
-class ExprTreePrinter extends ExpressionVisitor
-{
-    public function beforeTraverse(Expression $node)
-    {
-        $this->level = 0;
-    }
-    private function indent()
-    {
-        return str_repeat('+---', $this->level);
-    }
-    public function enterNode(Expression $node)
-    {
-        $hash = spl_object_hash($node);
-        $clash = $node->id !== $hash;
-        if ($clash) {
-            $hash = sprintf('CLASH: id => %s / hash => %s', $node->id, $hash);
-        }
-        echo sprintf(
-            "%s+<%s(%s) = %s> [id => %s]\n",
-            $this->indent(),
-            $node->name ? "{$node->name} ": '',
-            str_replace('ju1ius\Pegasus\Expression\\', '', get_class($node)),
-            $node->asRhs(),
-            $hash
-        );
-        if ($node instanceof Composite) {
-            $this->level++;
-        }
-    }
-    public function leaveNode(Expression $node)
-    {
-        if ($node instanceof Composite) {
-            $this->level--;
-        }
-    }
-}
-
-
 function grammar_from_tree($tree)
 {
     list($rules, $start) = (new RuleVisitor)->visit($tree);
@@ -64,19 +33,20 @@ function grammar_from_tree($tree)
     return $grammar;
 }
 
-function print_expr_tree($tree)
+function print_expr($tree)
 {
     $trav = new ExpressionTraverser();
-    $trav->addVisitor(new ExprTreePrinter);
-    if ($tree instanceof Grammar) {
-        foreach ($grammar as $name => $expr) {
-            echo "Rule: $name\n====================\n";
-            $trav->traverse($expr);
-        }
-    } else {
-        $trav->traverse($tree);
-    }
+    $trav->addVisitor(new ExpressionPrinter);
+    $trav->traverse($tree);
 }
+
+function print_grammar($grammar)
+{
+    $trav = new GrammarTraverser(false);
+    $trav->addVisitor(new GrammarTreePrinter);
+    $trav->traverse($grammar);
+}
+
 function exp_tree_map($expr, $callback, $visited=null)
 {
     if (null === $visited) {
