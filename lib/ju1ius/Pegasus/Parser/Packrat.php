@@ -18,41 +18,9 @@ use ju1ius\Pegasus\Exception\IncompleteParseError;
  *
  * @see doc/algo/packrat-lr.pdf
  */
-class Packrat implements ParserInterface
+class Packrat extends RecursiveDescent
 {
-    protected $grammar = null;
     protected $memo = [];
-    protected $source = null;
-    public $pos = 0;
-    protected $error = null;
-
-    public function __construct(GrammarInterface $grammar)
-    {
-        $this->grammar = $grammar;
-    }
-
-    /**
-     * Return the parse tree matching this expression at the given position,
-     * not necessarily extending all the way to the end of $text.
-     *
-     * @throw ParseError if there's no match there
-     *
-     * @return Node
-     */
-    public function parseAll($source, $rule=null)
-    {
-        $result = $this->parse($source, 0, $rule);
-        if ($this->pos < strlen($source)) {
-            echo $result->treeview(), "\n";
-            throw new IncompleteParseError(
-                $source,
-                $this->pos,
-                $this->error->expr
-            );
-        }
-
-        return $result;
-    }
 
     /**
      * Return the parse tree matching this expression at the given position,
@@ -64,42 +32,11 @@ class Packrat implements ParserInterface
      */
     public function parse($source, $pos=0, $rule=null)
     {
-        $this->source = $source;
-        $this->pos = $pos;
         $this->memo = [];
-        $this->error = new ParseError($source);
-        $this->refmap = [];
-        // fold the grammar
-        $was_folded = $this->grammar->isFolded();
-        if (!$was_folded) {
-            $this->grammar->fold();
-        }
 
-        if (!$rule) {
-            $rule = $this->grammar->getStartRule();
-        } else {
-            $rule = $this->grammar[$rule];
-        }
+        $result = parent::parse($source, $pos, $rule);
 
-        //FIXME: how to do this ?
-        // maybe write a generator that recursively yields subexpressions ?
-        // it would need to yield depth-first, ie terminal rules,
-        // then parent composite rules, etc...
-        // ATM we just pass $this to the Expression::match method,
-        // and let expressions call $parser->apply for their children.
-        $result = $this->apply($rule, $pos);
-
-        if (!$was_folded) {
-            // grammar wasn't folded before parsing, so we unfold it
-            // to restore it's original state.
-            $this->grammar->unfold();
-        }
-
-        if (!$result) {
-            throw $this->error;
-        }
-
-        unset($this->memo);
+        $this->memo = [];
 
         return $result;
     }
@@ -146,20 +83,6 @@ class Packrat implements ParserInterface
     }
 
     /**
-     * Evaluates an expression & updates current position on success.
-     *
-     */
-    public function evaluate(Expression $expr)
-    {
-        $result = $expr->match($this->source, $this->pos, $this);
-        if ($result) {
-            $this->pos = $result->end;
-            $this->error->node = $result;
-        }
-        return $result;
-    }
-
-    /**
      * Fetches the memo entry corresponding
      * to the given expression at the given position.
      *
@@ -172,14 +95,5 @@ class Packrat implements ParserInterface
             ? $this->memo[$expr->id][$start_pos]
             : null
         ;
-    }
-
-    public function getReference($name)
-    {
-        // search the references map for an expression with the same name.
-        if (!isset($this->refmap[$name])) return '';
-        list($id, $pos) = $this->refmap[$name];
-        $memo = $this->memo[$id][$pos];
-        return (string) $memo->result;
     }
 }

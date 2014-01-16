@@ -4,8 +4,9 @@ use ju1ius\Test\Pegasus\ExpressionTestCase;
 
 use ju1ius\Pegasus\Expression\Quantifier;
 use ju1ius\Pegasus\Expression\Literal;
-use ju1ius\Pegasus\Node\Terminal as Term;
-use ju1ius\Pegasus\Node\Composite as Comp;
+
+use ju1ius\Pegasus\Node\Literal as Lit;
+use ju1ius\Pegasus\Node\Quantifier as Quant;
 
 
 class QuantifierTest extends ExpressionTestCase
@@ -26,61 +27,61 @@ class QuantifierTest extends ExpressionTestCase
         return [
             // exact number of occurences
             [
-                [[new Literal('x')], '', 1, 1],
+                [[new Literal('x')], 1, 1],
                 ['x'],
-                new Comp('', 'x', 0, 1, [new Term('', 'x', 0, 1)])
+                new Quant('', 'x', 0, 1, [new Lit('', 'x', 0, 1)])
             ],
             [
-                [[new Literal('x')], '', 3, 3],
+                [[new Literal('x')], 3, 3],
                 ['xxx'],
-                new Comp('', 'xxx', 0, 3, [
-                    new Term('', 'xxx', 0, 1),
-                    new Term('', 'xxx', 1, 2),
-                    new Term('', 'xxx', 2, 3),
+                new Quant('', 'xxx', 0, 3, [
+                    new Lit('', 'xxx', 0, 1),
+                    new Lit('', 'xxx', 1, 2),
+                    new Lit('', 'xxx', 2, 3),
                 ])
             ],
             // range of occurences, min > 0, max is finite
             [
-                [[new Literal('x')], '', 1, 3],
+                [[new Literal('x')], 1, 3],
                 ['x'],
-                new Comp('', 'x', 0, 1, [
-                    new Term('', 'x', 0, 1),
+                new Quant('', 'x', 0, 1, [
+                    new Lit('', 'x', 0, 1),
                 ])
             ],
             [
-                [[new Literal('x')], '', 1, 3],
+                [[new Literal('x')], 1, 3],
                 ['xxx'],
-                new Comp('', 'xxx', 0, 3, [
-                    new Term('', 'xxx', 0, 1),
-                    new Term('', 'xxx', 1, 2),
-                    new Term('', 'xxx', 2, 3),
+                new Quant('', 'xxx', 0, 3, [
+                    new Lit('', 'xxx', 0, 1),
+                    new Lit('', 'xxx', 1, 2),
+                    new Lit('', 'xxx', 2, 3),
                 ])
             ],
             // range of occurences, min > 0, max is infinite
             [
-                [[new Literal('x')], '', 1, null],
+                [[new Literal('x')], 1, INF],
                 ['xxx'],
-                new Comp('', 'xxx', 0, 3, [
-                    new Term('', 'xxx', 0, 1),
-                    new Term('', 'xxx', 1, 2),
-                    new Term('', 'xxx', 2, 3),
+                new Quant('', 'xxx', 0, 3, [
+                    new Lit('', 'xxx', 0, 1),
+                    new Lit('', 'xxx', 1, 2),
+                    new Lit('', 'xxx', 2, 3),
                 ])
             ],
             // range of occurences, min === 0
             [
-                [[new Literal('x')], '', 0, 1],
+                [[new Literal('x')], 0, 1],
                 ['foo'],
-                new Comp('', 'foo', 0, 0, [])
+                new Quant('', 'foo', 0, 0, [])
             ],
             [
-                [[new Literal('x')], '', 0, null],
+                [[new Literal('x')], 0, INF],
                 ['foo'],
-                new Comp('', 'foo', 0, 0, [])
+                new Quant('', 'foo', 0, 0, [])
             ],
             [
-                [[new Literal('x')], '', 0, null],
+                [[new Literal('x')], 0, INF],
                 ['xoo'],
-                new Comp('', 'xoo', 0, 1, [new Term('', 'xoo', 0, 1)])
+                new Quant('', 'xoo', 0, 1, [new Lit('', 'xoo', 0, 1)])
             ],
         ];
     }
@@ -98,11 +99,11 @@ class QuantifierTest extends ExpressionTestCase
     {
         return [
             [
-                [[new Literal('x')], '', 1, null],
+                [[new Literal('x')], 1, 1],
                 ['foo']
             ],
             [
-                [[new Literal('x')], '', 2, null],
+                [[new Literal('x')], 2, INF],
                 ['x_x']
             ]
         ];

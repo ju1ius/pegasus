@@ -4,8 +4,8 @@ use ju1ius\Test\Pegasus\ExpressionTestCase;
 
 use ju1ius\Pegasus\Expression\Not;
 use ju1ius\Pegasus\Expression\Literal;
-use ju1ius\Pegasus\Node\Terminal as Term;
-use ju1ius\Pegasus\Node\Composite as Comp;
+
+use ju1ius\Pegasus\Node\Not as NotNode;
 
 
 class NotTest extends ExpressionTestCase
@@ -27,17 +27,17 @@ class NotTest extends ExpressionTestCase
             [
                 [new Literal('foo')],
                 ['barbaz'],
-                new Comp('', 'barbaz', 0, 0, [])
+                new NotNode('', 'barbaz', 0, 0, [])
             ],
             [
                 [new Literal('bar')],
                 ['foobar'],
-                new Comp('', 'foobar', 0, 0, [])
+                new NotNode('', 'foobar', 0, 0, [])
             ],
             [
                 [new Literal('foo')],
                 ['foobar', 3],
-                new Comp('', 'foobar', 3, 3, [])
+                new NotNode('', 'foobar', 3, 3, [])
             ],
         ];
     }

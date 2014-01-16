@@ -3,7 +3,7 @@
 use ju1ius\Test\Pegasus\ExpressionTestCase;
 
 use ju1ius\Pegasus\Expression\Literal;
-use ju1ius\Pegasus\Node\Terminal as Node;
+use ju1ius\Pegasus\Node\Literal as Node;
 
 
 class LiteralTest extends ExpressionTestCase

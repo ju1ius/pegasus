@@ -23,10 +23,10 @@ class PegasusTestCase extends \PHPUnit_Framework_TestCase
 	public function assertNodeEquals(Node $expected, Node $actual)
 	{
 		foreach ($expected->iter() as $node) {
-			$node->expr_class = null;
+			$node->expr = null;
 		}
 		foreach ($actual->iter() as $node) {
-			$node->expr_class = null;
+			$node->expr = null;
 		}
 		return $this->assertEquals($expected, $actual);
 	}

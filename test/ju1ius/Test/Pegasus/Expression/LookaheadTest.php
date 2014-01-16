@@ -4,8 +4,8 @@ use ju1ius\Test\Pegasus\ExpressionTestCase;
 
 use ju1ius\Pegasus\Expression\Lookahead;
 use ju1ius\Pegasus\Expression\Literal;
-use ju1ius\Pegasus\Node\Terminal as Term;
-use ju1ius\Pegasus\Node\Composite as Comp;
+
+use ju1ius\Pegasus\Node\Lookahead as LA;
 
 
 class LookaheadTest extends ExpressionTestCase
@@ -27,12 +27,12 @@ class LookaheadTest extends ExpressionTestCase
             [
                 [new Literal('foo')],
                 ['foobar'],
-                new Comp('', 'foobar', 0, 0, [])
+                new LA('', 'foobar', 0, 0, [])
             ],
             [
                 [new Literal('bar')],
                 ['foobar', 3],
-                new Comp('', 'foobar', 3, 3, [])
+                new LA('', 'foobar', 3, 3, [])
             ],
         ];
     }

@@ -4,8 +4,9 @@ use ju1ius\Test\Pegasus\ExpressionTestCase;
 
 use ju1ius\Pegasus\Expression\OneOf;
 use ju1ius\Pegasus\Expression\Literal;
-use ju1ius\Pegasus\Node\Terminal as Term;
-use ju1ius\Pegasus\Node\Composite as Comp;
+
+use ju1ius\Pegasus\Node\OneOf as OneOfNode;
+use ju1ius\Pegasus\Node\Literal as LiteralNode;
 
 
 class OneOfTest extends ExpressionTestCase
@@ -27,16 +28,16 @@ class OneOfTest extends ExpressionTestCase
             [
                 [new Literal('bar'), new Literal('foo')],
                 ['foobar'],
-                new Comp('', 'foobar', 0, 3, [
-                    new Term('', 'foobar', 0, 3),
+                new OneOfNode('', 'foobar', 0, 3, [
+                    new LiteralNode('', 'foobar', 0, 3),
                 ])
             ],
             # must return the first matched expression
             [
                 [new Literal('foo', 'FOO'), new Literal('foo', 'FOO2')],
                 ['foobar'],
-                new Comp('', 'foobar', 0, 3, [
-                    new Term('FOO', 'foobar', 0, 3),
+                new OneOfNode('', 'foobar', 0, 3, [
+                    new LiteralNode('FOO', 'foobar', 0, 3),
                 ])
             ],
         ];
