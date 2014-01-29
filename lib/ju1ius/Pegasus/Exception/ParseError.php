@@ -3,6 +3,7 @@
 namespace ju1ius\Pegasus\Exception;
 
 use ju1ius\Pegasus\Utils\LineCounter;
+use ju1ius\Pegasus\Expression;
 
 
 /**

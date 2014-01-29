@@ -19,9 +19,9 @@ class Regex extends Terminal
      */
     public $matches;
 
-    public function __construct($expr_name, $full_text, $start, $end, $matches=[])
+    public function __construct($expr, $full_text, $start, $end, $matches=[])
     {
-        parent::__construct($expr_name, $full_text, $start, $end, $matches);
+        parent::__construct($expr, $full_text, $start, $end, $matches);
         $this->matches = $matches;
     }
 

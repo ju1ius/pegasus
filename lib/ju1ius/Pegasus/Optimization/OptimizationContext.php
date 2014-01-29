@@ -2,6 +2,9 @@
 
 namespace ju1ius\Pegasus\Optimization;
 
+use ju1ius\Pegasus\Grammar;
+use ju1ius\Pegasus\Grammar\Analysis;
+
 
 class OptimizationContext
 {

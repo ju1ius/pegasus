@@ -28,7 +28,7 @@ class Literal extends Terminal
     /**
      * @var int
      */
-    protected $length;
+    public $length;
 
 
 	public function __construct($literal, $name='', $quotechar='"')

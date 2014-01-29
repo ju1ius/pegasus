@@ -22,30 +22,40 @@ namespace ju1ius\Pegasus;
 abstract class Node
 {
     /**
-     * @var string The expression that generated this node.
+     * The expression (or it's string representation when used in a generated parser)
+     * that generated this node.
+     *
+     * @var string
      */
     public $expr;
 
     /**
-     * @var string The full text fed to the parser.
+     * The full text fed to the parser.
+     *
+     * @var string
      */
     public $full_text;
 
     /**
-     * @var string The position in the text where the expression started matching.
+     * The position in the text where the expression started matching.
+     *
+     * @var string
      */
     public $start;
 
     /**
-     * @var string The position after start where the expression first didn't match.
+     * The position after start where the expression first didn't match.
+     *
+     * @var string
      */
     public $end;
 
     /**
-     * @param string $expr_name The name of the expression that generated this node.
-     * @param string $full_text The full text fed to the parser
-     * @param int    $start     The position in the text where that expr started matching
-     * @param int    $end       The position after start where the expr first didn't match.
+     * @param string|Expression $expr       The expression (or it's string representation when used in a generated parser)
+     *                                      that generated this node.
+     * @param string            $full_text  The full text fed to the parser
+     * @param int               $start      The position in the text where that expr started matching
+     * @param int               $end        The position after start where the expr first didn't match.
      **/
     public function __construct($expr, $full_text, $start, $end)
     {
@@ -83,7 +93,7 @@ abstract class Node
     {
         return $other
             && $this instanceof $other
-            && $this->expr->id === $other->expr->id
+            && $this->expr === $other->expr
             && $this->start === $other->start
             && $this->end === $other->end
             && $this->full_text === $other->full_text
@@ -97,10 +107,14 @@ abstract class Node
 
     public function inspect($error=null)
     {
+        $rule = $this->expr instanceof Expression
+            ? $this->expr->name ?: $this->expr->asRhs()
+            : (string) $this->expr
+        ;
         return sprintf(
             '+ %s, Rule=> %s Match=> "%s" %s',
             str_replace('ju1ius\Pegasus\\', '', get_class($this)),
-            $this->expr->name ?: $this->expr->asRhs(),
+            $rule,
             $this->getText(),
             $error === $this ? '    <-- *** We were here. ***' : ''
         );

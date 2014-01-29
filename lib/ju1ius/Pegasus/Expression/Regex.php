@@ -23,7 +23,7 @@ class Regex extends Terminal
         $this->pattern = $pattern;
         $this->flags = array_unique(array_merge($flags, ['S', 'x']));
         $this->compiled_pattern = sprintf(
-            '/\G%s/%s',
+            '/\G %s /%s',
             $this->pattern,
             implode('', $this->flags)
         );

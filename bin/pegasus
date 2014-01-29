@@ -1,0 +1,14 @@
+#! /usr/bin/env php
+<?php
+
+require_once __DIR__.'/../vendor/autoload.php';
+
+use ju1ius\Pegasus\Command\GenerateParserCommand;
+use ju1ius\Pegasus\Command\GenerateVisitorCommand;
+
+use Symfony\Component\Console\Application;
+
+$app = new Application();
+$app->add(new GenerateParserCommand);
+$app->add(new GenerateVisitorCommand);
+$app->run();

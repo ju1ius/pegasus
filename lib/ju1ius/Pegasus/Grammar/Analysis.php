@@ -1,6 +1,6 @@
 <?php
 
-namespace ju1ius\Pegasus\Optimization;
+namespace ju1ius\Pegasus\Grammar;
 
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Expression;
