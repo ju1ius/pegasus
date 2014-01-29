@@ -1,0 +1,13 @@
+{% set id = varid() %}
+{% set subres_var = '$result' ~ id %}
+{% set child = expr.children[0] %}
+/**
+ * matching {{expr.asRhs()}}
+ */
+{{result_var}} = null;
+{% include expr_tpl(child) with {'expr': child, 'result_var': subres_var} only %} 
+if (!{{subres_var}}) {
+    {{result_var}} = new Node\Not('{{expr.name}}', $this->text, $this->pos, $this->pos);
+} else {
+{{macros.error(expr) | indent}}
+}

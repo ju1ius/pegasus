@@ -1,0 +1,14 @@
+/**
+ * matching: {{ expr.asRhs() }}
+ */
+{% if not expr.hasBackReference %}
+if(preg_match('/\G{{expr.pattern}}/{{expr.flags|join}}', $this->text, $matches, 0, $this->pos)) {
+    $match = $matches[0];
+    $length = strlen($match);
+    {{result_var}} = new Node\Regex('{{expr.name}}', $this->text, $this->pos, $this->pos + $length, $matches); 
+    $this->pos = {{result_var}}->end;
+} else {
+{{macros.error(expr) | indent}}
+}
+{% else %}
+{% endif %}

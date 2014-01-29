@@ -76,9 +76,6 @@ class Calculator extends NodeVisitor
     }
 }
 
-$syntax = <<<'EOS'
-
-EOS;
 
 $syntax = <<<'EOS'
 

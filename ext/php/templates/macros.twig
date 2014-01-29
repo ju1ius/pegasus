@@ -1,0 +1,4 @@
+{% macro error(expr, pos='$this->pos') -%}
+$this->error->expr = '{{expr}}';
+$this->error->pos = {{pos}};
+{%- endmacro %}

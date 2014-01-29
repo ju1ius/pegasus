@@ -1,0 +1,21 @@
+
+expr    = expr "+" term
+        | expr "-" term
+        | term
+
+term    = term "*" primary
+        | term "/" primary
+        | primary
+
+primary = '(' expr ')'
+        | num
+
+num     = expo | float | int
+
+float   = /-?[0-9]*\.[0-9]+/
+
+int     = /-?[0-9]+/
+
+expo    = (float | int) 'e' int
+
+_       = /\s*/

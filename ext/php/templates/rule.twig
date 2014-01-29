@@ -1,0 +1,12 @@
+
+/**
+ * {{expr.asRule()}}
+ */
+public function match_{{expr.name}}()
+{
+    $result = null;
+{% filter indent -%}
+{% include expr_tpl(expr) with {'expr': expr, 'result_var': '$result'} only %}
+{%- endfilter %}
+    return $result; 
+}

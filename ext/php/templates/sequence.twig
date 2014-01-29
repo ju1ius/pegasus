@@ -1,0 +1,28 @@
+{% set id = varid() %}
+{% set subres_var = '$result' ~ id %}
+/**
+ * matching {{expr.asRhs()}}
+ */
+$match{{id}} = true;
+$pos{{id}} = $this->pos;
+$children{{id}} = [];
+do {
+{% for child in expr.children %}
+    {{subres_var}} = null;
+{% filter indent -%}
+{% include expr_tpl(child) with {'expr': child, 'result_var': subres_var} only %} 
+{%- endfilter %}
+    if (!{{subres_var}}) {
+        $match{{id}} = false;
+        break;
+    } else {
+        $children{{id}}[] = {{subres_var}};
+    }
+{% endfor %}
+} while(0);
+if (${{id}} === true) {
+    {{result_var}} = new Node\Sequence('{{expr.name}}', $this->text, $pos{{id}}, $this->pos, $children{{id}});
+} else {
+    {{result_var}} = null;
+    $this->pos = $pos{{id}};
+}

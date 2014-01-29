@@ -1,0 +1,12 @@
+/**
+ * matching: {{ expr.asRhs() }}
+ */
+{% if not expr.hasBackReference %}
+if (strpos($this->text, '{{expr.literal}}', $this->pos) === $this->pos) {
+    {{result_var}} = new Node\Literal('{{expr.name}}', $this->text, $this->pos, $this->pos + {{expr.length}});
+    $this->pos = {{result_var}}->end;
+} else {
+{{macros.error(expr) | indent}}
+}
+{% else %}
+{% endif %}

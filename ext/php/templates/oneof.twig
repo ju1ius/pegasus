@@ -1,0 +1,25 @@
+{% set id = varid() %}
+{% set subres_var = '$result' ~ id %}
+/**
+ * matching {{expr.asRhs()}}
+ */
+$match{{id}} = false;
+do {
+    $pos{{id}} = $this->pos;
+{% for child in expr.children %}
+    {{subres_var}} = null;
+{% filter indent -%}
+{% include expr_tpl(child) with {'expr': child, 'result_var': subres_var} only %} 
+{%- endfilter %}
+    if ({{subres_var}}) {
+        $match{{id}} = true;
+        break;
+    }
+    $this->pos = $pos{{id}};
+{% endfor %}
+} while (0);
+if ($match{{id}} === true) {
+    {{result_var}} = new Node\OneOf('{{expr.name}}', $this->text, $pos{{id}}, $this->pos, [{{subres_var}}]);
+} else {
+{{macros.error(expr, '$pos'~id) | indent}}
+}

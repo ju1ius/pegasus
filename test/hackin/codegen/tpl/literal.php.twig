@@ -1,8 +1,0 @@
-{% if not expr.hasBackReference %}
-if ($pos === strpos($text, '{{expr.value}}', $pos)) {
-    $result = new Node\Literal('{{expr.name}}', $text, $pos, $pos + {{expr.length}});
-} else {
-    $result = null;
-}
-{% else %}
-{% endif %}
