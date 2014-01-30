@@ -1,11 +1,12 @@
-{% set id = varid() %}
-{% set subres_var = '$result' ~ id %}
+{% set result_var = '$result_' ~ expr.id %}
 {% set child = expr.children[0] %}
+{% set subres_var = '$result_' ~ child.id %}
 /**
  * matching {{expr.asRhs()}}
  */
 {{result_var}} = null;
-{% include expr_tpl(child) with {'expr': child, 'result_var': subres_var} only %} 
+{{subres_var}} = null;
+{% include expr_tpl(child) with {'expr': child} only %} 
 if (!{{subres_var}}) {
     {{result_var}} = new Node\Not('{{expr.name}}', $this->text, $this->pos, $this->pos);
 } else {

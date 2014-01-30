@@ -5,6 +5,14 @@ namespace ju1ius\Pegasus\Utils;
 
 class String
 {
+    const BACKREF_SPLIT_RX = <<<'EOS'
+@
+	((?: \\. | [^\$] )*?)	# Any escaped char or not $
+	\$\{ ([a-zA-Z_]\w*) \}	# ${identifier}
+	((?: \\. | [^\$] )*)	# Any escaped char or not $
+@Sx
+EOS;
+
 	const ESCAPES_REPLACE_RX = <<<'EOS'
 @
 	(?<!\\\\)\\\\((?:\\\\\\\\)*)	# odd number of backslashes
@@ -15,6 +23,7 @@ class String
 	)
 @Sx
 EOS;
+
 	const BACKSLASH_REPLACE_RX = <<<'EOS'
 @
 	(?<!\\\\)((?:\\\\\\\\)+)	# even number of backslashes
@@ -25,6 +34,26 @@ EOS;
 	)
 @Sx
 EOS;
+
+    public static function splitBackrefSubject($subject)
+    {
+		if (preg_match_all(self::BACKREF_SPLIT_RX, $subject, $matches, PREG_SET_ORDER)) {
+			return $matches;
+		}
+    }
+
+    public static function replaceBackrefSubject(array $subjectParts, callable $callback, $regex = false)
+    {
+		$output = '';
+        foreach ($subjectParts as $part) {
+            $replaced = $callback($part[2]);
+            if ($regex && $replaced) {
+                $replaced = preg_quote($replaced, '/');
+            }
+			$output .= $part[1] . ($replaced ?: '') . $part[3];
+		}
+		return $output;
+    }
 
 	public static function convertEscapeSequences($str)
     {

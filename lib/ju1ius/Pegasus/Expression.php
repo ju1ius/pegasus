@@ -37,8 +37,8 @@ abstract class Expression
     public function __construct($name='')
     {
         $this->name = $name;
-        $this->id = spl_object_hash($this);
-        //$this->id = ++self::$UID;
+        //$this->id = spl_object_hash($this);
+        $this->id = ++self::$UID;
     }
 
     abstract public function asRhs();
@@ -119,11 +119,13 @@ abstract class Expression
 
     public function __clone()
     {
-        $this->id = spl_object_hash($this);
+        //$this->id = spl_object_hash($this);
+        $this->id = ++self::$UID;
     }
     
     public function __wakeup()
     {
-        $this->id = spl_object_hash($this);
+        //$this->id = spl_object_hash($this);
+        $this->id = ++self::$UID;
     }
 }

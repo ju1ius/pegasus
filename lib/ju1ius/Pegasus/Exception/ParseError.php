@@ -32,7 +32,7 @@ class ParseError extends \Exception
             . "\n%s",
             __CLASS__,
             $rule_name,
-            $this->counter->line($this->pos) + 1,
+            $this->counter->line($this->pos),
             $this->counter->column($this->pos) + 1,
             substr($this->text, $this->pos, $this->pos + 20),
             $this->getTraceAsString()

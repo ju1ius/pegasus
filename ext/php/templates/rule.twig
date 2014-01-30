@@ -1,12 +1,12 @@
-
+{% set result_var = '$result_' ~ expr.id %}
 /**
  * {{expr.asRule()}}
  */
 public function match_{{expr.name}}()
 {
-    $result = null;
+    {{result_var}} = null;
 {% filter indent -%}
-{% include expr_tpl(expr) with {'expr': expr, 'result_var': '$result'} only %}
+{% include expr_tpl(expr) with {'expr': expr} only %}
 {%- endfilter %}
-    return $result; 
+    return {{result_var}};
 }

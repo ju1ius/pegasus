@@ -63,7 +63,6 @@ class Packrat extends RecursiveDescent
             return $memo->result;
         }
 
-        $this->refmap[$expr->name] = [$expr->id, $pos];
 
         // Store a result of FAIL in the memo table
         // before it evaluates the body of a rule.

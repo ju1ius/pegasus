@@ -5,8 +5,7 @@ use ju1ius\Test\Pegasus\PegasusTestCase;
 use ju1ius\Pegasus\MetaGrammar;
 
 use ju1ius\Pegasus\Parser\LRPackrat as Parser;
-use ju1ius\Pegasus\Node\Terminal as Term;
-use ju1ius\Pegasus\Node\Composite as Comp;
+use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Node\Regex as Rx;
 
 
@@ -157,6 +156,8 @@ class MetaGrammarTest extends PegasusTestCase
     public function testLiteral($input, $expected)
     {
         $node = $this->parse('literal', $input);
+        // test only the regex results
+        $node = $node->children[0];
         $this->assertNodeEquals($expected, $node);
     }
     public function testLiteralProvider()
@@ -164,25 +165,19 @@ class MetaGrammarTest extends PegasusTestCase
         return [
             [
                 '"qstring\"esc"',
-                new Comp('literal', '"qstring\"esc"', 0, 14, [
-					new Rx('', '"qstring\"esc"', 0, 14, [
-                        '"qstring\"esc"',
-                        '"',
-                        'qstring\"esc'
-                    ]),
-                    new Comp('_', '"qstring\"esc"', 14, 14, [])
-                ])
+                new Rx('', '"qstring\"esc"', 0, 14, [
+                    '"qstring\"esc"',
+                    '"',
+                    'qstring\"esc'
+                ]),
             ],
             [
                 "'qstring\'esc'",
-                new Comp('literal', "'qstring\'esc'", 0, 14, [
-                    new Rx('', "'qstring\'esc'", 0, 14, [
-                        "'qstring\'esc'",
-                        "'",
-                        "qstring\'esc"
-                    ]),
-                    new Comp('_', "'qstring\'esc'", 14, 14, [])
-                ])
+                new Rx('', "'qstring\'esc'", 0, 14, [
+                    "'qstring\'esc'",
+                    "'",
+                    "qstring\'esc"
+                ]),
             ]
         ];
     }
@@ -192,58 +187,43 @@ class MetaGrammarTest extends PegasusTestCase
      */
     public function testQuantifier($input, $expected)
     {
-        $this->assertNodeEquals(
-            $expected,
-            $this->parse('quantifier', $input)
-        );
+        $node = $this->parse('quantifier', $input);
+        // test only the regex results
+        $node = $node->children[0];
+        $this->assertNodeEquals($expected, $node);
     }
     public function testQuantifierProvider()
     {
         return [
             [
                 '*',
-                new Comp('quantifier', '*', 0, 1, [
-                    new Rx('', '*', 0, 1, [
-                        '*', '*'
-                    ]),
-                    new Comp('_', '*', 1, 1, [])
-                ])
+                new Rx('', '*', 0, 1, [
+                    '*', '*'
+                ]),
             ],
             [
                 '+',
-                new Comp('quantifier', '+', 0, 1, [
-                    new Rx('', '+', 0, 1, [
-                        '+', '+'
-                    ]),
-                    new Comp('_', '+', 1, 1, [])
-                ])
+                new Rx('', '+', 0, 1, [
+                    '+', '+'
+                ]),
             ],
             [
                 '?',
-                new Comp('quantifier', '?', 0, 1, [
-                    new Rx('', '?', 0, 1, [
-                        '?', '?'
-                    ]),
-                    new Comp('_', '?', 1, 1, [])
-                ])
+                new Rx('', '?', 0, 1, [
+                    '?', '?'
+                ]),
             ],
             [
                 '{1,2}',
-                new Comp('quantifier', '{1,2}', 0, 5, [
-                    new Rx('', '{1,2}', 0, 5, [
-                        '{1,2}', '', '1', '2'
-                    ]),
-                    new Comp('_', '{1,2}', 5, 5, [])
-                ])
+                new Rx('', '{1,2}', 0, 5, [
+                    '{1,2}', '', '1', '2'
+                ]),
             ],
             [
                 '{3,}',
-                new Comp('quantifier', '{3,}', 0, 4, [
-                    new Rx('', '{3,}', 0, 4, [
-                        '{3,}', '', '3', ''
-                    ]),
-                    new Comp('_', '{3,}', 4, 4, [])
-                ])
+                new Rx('', '{3,}', 0, 4, [
+                    '{3,}', '', '3', ''
+                ]),
             ],
         ];
     }
@@ -386,35 +366,10 @@ class MetaGrammarTest extends PegasusTestCase
     public function testRule($input, $expected)
     {
         $this->markTestIncomplete('Test not implemented');
-        return
-        $this->assertNodeEquals(
-            $expected,
-            $this->parse('rule', $input)
-        );
     }
     public function testRuleProvider()
     {
         return [[null, null]];
-		//return [
-            //[
-                //"x = 'y' 'z' | 't'",
-                //new Comp('rule', "x = 'y' 'z' | 't'", 0, 12, [
-                    //new Comp('identifier', "x = 'y' 'z' | 't'", 0, 2, [
-                        //new Rx('', "x = 'y' 'z' | 't'", 0, 1, ['x']),
-                        //new Comp('_', "x = 'y' 'z' | 't'", 1, 2, [])
-                    //]),
-                    //new Comp('equals', "x = 'y' 'z' | 't'", 2, 4, [
-                        //new Term('', "x = 'y' 'z' | 't'", 2, 3),
-                        //new Comp('_', "x = 'y' 'z' | 't'", 3, 4, [])
-                    //]),
-                    //new Comp('expression', "x = 'y' 'z' | 't'", 4, 12, [
-                        //new Comp('ored', "x = 'y' 'z' | 't'", 4, 12, [
-                            
-                        //])
-                    //])
-                //])
-            //]
-		//];
     }
 
     /**

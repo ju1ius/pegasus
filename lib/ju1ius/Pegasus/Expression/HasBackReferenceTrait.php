@@ -9,16 +9,16 @@ namespace ju1ius\Pegasus\Expression;
  */
 trait HasBackReferenceTrait
 {
-	protected static $BACKREF_REGEX = <<<'EOS'
+	public static $BACKREF_REGEX = <<<'EOS'
 /
 	((?: \\. | [^\$] )*?)	# Any escaped char or not $
-	\$\{ ([a-zA-Z_]\w+) \}	# ${identifier}
+	\$\{ ([a-zA-Z_]\w*) \}	# ${identifier}
 	((?: \\. | [^\$] )*)	# Any escaped char or not $
 /Sx
 EOS;
 
-	protected $hasBackReference = false;
-	protected $subjectParts = [];
+	public $hasBackReference = false;
+	public $subjectParts = [];
 
 	protected function splitSubject($subject)
 	{

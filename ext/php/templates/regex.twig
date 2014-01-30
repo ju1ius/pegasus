@@ -1,14 +1,23 @@
+{% set result_var = '$result_' ~ expr.id %}
 /**
  * matching: {{ expr.asRhs() }}
  */
-{% if not expr.hasBackReference %}
-if(preg_match('/\G{{expr.pattern}}/{{expr.flags|join}}', $this->text, $matches, 0, $this->pos)) {
-    $match = $matches[0];
-    $length = strlen($match);
-    {{result_var}} = new Node\Regex('{{expr.name}}', $this->text, $this->pos, $this->pos + $length, $matches); 
+{% if expr.hasBackReference -%}
+
+{% collect 'properties' %}
+protected $backref_replacements_{{expr.id}} = {{ repr(expr.subjectParts) }};
+{% endcollect %}
+$pattern = '/\G' . $this->replaceBackrefSubject($backref_replacements_{{expr.id}}, true) . '/{{expr.compiled_flags}}';
+
+{%- else -%}
+
+$pattern = '{{expr.compiled_pattern}}';
+
+{%- endif %}
+
+if(preg_match($pattern, $this->text, $matches, 0, $this->pos)) {
+    {{result_var}} = new Node\Regex('{{expr.name}}', $this->text, $this->pos, $this->pos + strlen($matches[0]), $matches); 
     $this->pos = {{result_var}}->end;
 } else {
 {{macros.error(expr) | indent}}
 }
-{% else %}
-{% endif %}

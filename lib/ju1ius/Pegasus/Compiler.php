@@ -4,8 +4,9 @@ namespace ju1ius\Pegasus;
 
 use Twig_Loader_Filesystem;
 use Twig_Environment;
+use Twig_Extension_Debug;
 
-use ju1ius\Pegasus\Compiler\PegasusTwigExtension;
+use ju1ius\Pegasus\Twig\Extension\PegasusTwigExtension;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Analysis;
 
@@ -56,8 +57,12 @@ class Compiler
         $this->language = $name;
         $def = $this->getLanguageDefinition($name);
         $loader = new Twig_Loader_Filesystem($def['templates_dirs']);
-        $this->twig = new Twig_Environment($loader, ['autoescape' => false]);
+        $this->twig = new Twig_Environment($loader, [
+            'autoescape' => false,
+            'debug' => true
+        ]);
         $this->twig->addExtension(new PegasusTwigExtension);
+        $this->twig->addExtension(new Twig_Extension_Debug);
     }
 
     public function addExtensionDirectory($dir)

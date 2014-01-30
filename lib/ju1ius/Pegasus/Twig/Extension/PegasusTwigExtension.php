@@ -1,8 +1,10 @@
 <?php
 
-namespace ju1ius\Pegasus\Compiler;
+namespace ju1ius\Pegasus\Twig\Extension;
 
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Twig\DataCollector;
+use ju1ius\Pegasus\Twig\TokenParser\CollectorTokenParser;
 
 use Twig_Extension;
 use Twig_Environment;
@@ -19,6 +21,7 @@ class PegasusTwigExtension extends Twig_Extension
     {
         parent::initRuntime($env);
         $this->environment = $env;
+        $this->collector = new DataCollector();
     }
 
     public function getName()
@@ -31,15 +34,23 @@ class PegasusTwigExtension extends Twig_Extension
         // make macros available globally
         $macros = $this->environment->loadTemplate('macros.twig');
         return [
-            'macros' => $macros
+            'macros' => $macros,
+            'data_collector' => $this->collector 
         ];   
+    }
+
+    public function getTokenParsers()
+    {
+        return [
+            new CollectorTokenParser()
+        ];
     }
 
     public function getFunctions()
     {
         return [
             new Twig_SimpleFunction('expr_tpl', [$this, 'expr_tpl']),
-            new Twig_SimpleFunction('varid', [$this, 'varid'])
+            new Twig_SimpleFunction('repr', [$this, 'repr'])
         ];
     }
 
@@ -48,11 +59,6 @@ class PegasusTwigExtension extends Twig_Extension
         return [
             new Twig_SimpleFilter('indent', [$this, 'indent'])
         ];
-    }
-
-    public function varid()
-    {
-        return '_' . self::$VARID++;
     }
     
     public function indent($text, $prefix='    ', callable $predicate=null)
@@ -67,6 +73,25 @@ class PegasusTwigExtension extends Twig_Extension
         }
 
         return $out;
+    }
+
+    public function repr($value)
+    {
+        if (null === $value) {
+            return 'null'; 
+        } elseif (is_int($value) || is_float($value)) {
+            return $value;
+        } elseif (is_array($value)) {
+            $out = '[';
+            $first = true;
+            foreach ($value as $k => $v) {
+                if (!$first) $out .= ', ';
+                $first = false;
+                $out .= $this->repr($k) . ' => ' . $this->repr($v);
+            }
+            return $out . ']';
+        }
+        return sprintf('"%s"', addcslashes($value, "\0\t\"\$\\"));
     }
 
     public function expr_tpl(Expression $expr)

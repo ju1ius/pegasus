@@ -57,6 +57,12 @@ class GenerateParserCommand extends Command
                 InputOption::VALUE_REQUIRED,
                 'The output directory of the generated parser.'
             )
+            ->addOption(
+                'stdout',
+                null,
+                InputOption::VALUE_NONE,
+                'Outputs to stdout'
+            )
         ;
     }
 
@@ -82,9 +88,13 @@ class GenerateParserCommand extends Command
             'class' => $name,
         ]);
 
-        file_put_contents(
-            "$output_dir/$name.{$language_def['extension']}",
-            $parser_code
-        );
+        if ($input->getOption('stdout')) {
+            echo $parser_code, "\n";
+        } else {
+            file_put_contents(
+                "$output_dir/$name.{$language_def['extension']}",
+                $parser_code
+            );
+        }
     }
 }

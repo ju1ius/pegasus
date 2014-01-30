@@ -1,12 +1,25 @@
+{% set result_var = '$result_' ~ expr.id %}
 /**
  * matching: {{ expr.asRhs() }}
  */
-{% if not expr.hasBackReference %}
-if (strpos($this->text, '{{expr.literal}}', $this->pos) === $this->pos) {
-    {{result_var}} = new Node\Literal('{{expr.name}}', $this->text, $this->pos, $this->pos + {{expr.length}});
+{% if expr.hasBackReference -%}
+
+{% collect 'properties' %}
+protected $backref_replacements_{{expr.id}} = {{ repr(expr.subjectParts) }};
+{% endcollect %}
+$value = $this->replaceBackrefSubject($backref_replacements_{{expr.id}});
+$length = strlen($value);
+
+{%- else -%}
+
+$value = '{{expr.literal}}';
+$length = {{expr.length}};
+
+{%- endif %}
+
+if (strpos($this->text, $value, $this->pos) === $this->pos) {
+    {{result_var}} = new Node\Literal('{{expr.name}}', $this->text, $this->pos, $this->pos + $length);
     $this->pos = {{result_var}}->end;
 } else {
 {{macros.error(expr) | indent}}
 }
-{% else %}
-{% endif %}

@@ -1,0 +1,42 @@
+<?php
+
+namespace ju1ius\Pegasus\Twig\TokenParser;
+
+use Twig_TokenParser;
+use Twig_Token;
+
+use ju1ius\Pegasus\Twig\Node\CollectorNode;
+
+
+/**
+ * Token parser for collector nodes.
+ * 
+ * {% collect 'key' %}
+ *     Collected data...
+ * {% endcollect %}
+ */
+class CollectorTokenParser extends Twig_TokenParser
+{
+    public function parse(Twig_Token $token)
+    {
+        $lineno = $token->getLine();
+        $stream = $this->parser->getStream();
+
+        $key = $stream->expect(Twig_Token::STRING_TYPE)->getValue();
+        $stream->expect(Twig_Token::BLOCK_END_TYPE);
+        $body = $this->parser->subparse([$this, 'checkTokenEnd'], true);
+        $stream->expect(Twig_Token::BLOCK_END_TYPE);
+
+        return new CollectorNode($key, $body, $lineno, $this->getTag());
+    }
+
+    public function getTag()
+    {
+        return 'collect';
+    }
+
+    public function checkTokenEnd(Twig_Token $token)
+    {
+        return $token->test('endcollect');   
+    }
+}

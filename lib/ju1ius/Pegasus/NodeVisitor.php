@@ -3,8 +3,7 @@
 namespace ju1ius\Pegasus;
 
 use ju1ius\Pegasus\Exception\VisitationError;
-use ju1ius\Pegasus\Node\Composite;
-use ju1ius\Pegasus\Node\Terminal;
+use ju1ius\Pegasus\Node;
 
 
 /**
@@ -47,10 +46,18 @@ class NodeVisitor
     {
         try {
             // ignored rule
-            if (!$node || isset($this->ignored[$node->expr->name])) return null;
+            if (!$node) return;
+            $label = is_string($node->expr)
+                ? $node->expr
+                : $node instanceof Node\Label
+                    ? $node->expr->label
+                    : $node->expr->name
+            ;
+            if (isset($this->ignored[$label])) return;
 
+            // visit children before visiting node.
             $children = [];
-            if ($node instanceof Composite) {
+            if ($node instanceof Node\Composite) {
                 // visit children
 				foreach ($node->children as $child) {
 					// filter ignored (null) nodes 
@@ -69,9 +76,10 @@ class NodeVisitor
                 //return $res;
             //}
 
-            $visitor = isset($this->visitors[$node->expr->name])
-                ? $this->visitors[$node->expr->name]
-                : 'generic_visit';
+            $visitor = isset($this->visitors[$label])
+                ? $this->visitors[$label]
+                : 'generic_visit'
+            ;
 
             return $this->$visitor($node, $children);
 
@@ -103,7 +111,7 @@ class NodeVisitor
     {
         if (!$children) return;
         foreach ($children as $child) {
-            if (!$child instanceof Composite) {
+            if (!$child instanceof Node\Composite) {
                 yield $child;
             } else {
                 foreach ($this->leaves($child, $child->children) as $leaf) {

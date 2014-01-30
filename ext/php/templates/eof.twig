@@ -1,4 +1,4 @@
 // matching EOF
 if (!isset($this->text[$this->pos])) {
-    {{result_var}} = new Node\EOF('{{expr.name}}', $this->text, $this->pos, $this->pos);
+    $result_{{expr.id}} = new Node\EOF('{{expr.name}}', $this->text, $this->pos, $this->pos);
 }

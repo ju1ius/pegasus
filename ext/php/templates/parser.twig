@@ -17,9 +17,14 @@ class {{class}} extends {{base_class}}
      * @var string
      */
     protected $start_rule = '{{grammar.getStartRule().name}}';
+
 {% for rule in grammar %}
 {% filter indent -%}
 {% include 'rule.twig' with {'expr': rule} only %}    
 {%- endfilter %}
 {% endfor %}
+
+{% filter indent -%}
+{{ data_collector.retrieve('properties') | join }}
+{%- endfilter %}
 }

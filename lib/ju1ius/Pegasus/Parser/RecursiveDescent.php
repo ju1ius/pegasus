@@ -57,6 +57,7 @@ class RecursiveDescent implements ParserInterface
         $this->pos = $pos;
         $this->error = new ParseError($source);
         $this->refmap = [];
+        $this->labels = [];
         // fold the grammar
         $was_folded = $this->grammar->isFolded();
         if (!$was_folded) {
@@ -110,6 +111,14 @@ class RecursiveDescent implements ParserInterface
     {
         $result = $expr->match($this->source, $this->pos, $this);
         if ($result) {
+            // store labels and named expressions for backreferences
+            if ($expr instanceof Expression\Label) {
+                $this->labels[$expr->label] = $result;
+            }
+            if ($expr->name) {
+                $this->refmap[$expr->name] = $result;
+            }
+            // update parser position
             $this->pos = $result->end;
             $this->error->node = $result;
         }
@@ -122,9 +131,11 @@ class RecursiveDescent implements ParserInterface
      */
     public function getReference($name)
     {
-        if (!isset($this->refmap[$name])) return '';
-        list($id, $pos) = $this->refmap[$name];
-        $memo = $this->memo[$id][$pos];
-        return (string) $memo->result;
+        if (isset($this->labels[$name])) {
+            return (string) $this->labels[$name]; 
+        } elseif (isset($this->refmap[$name])) {
+            return (string) $this->refmap[$name]; 
+        }
+        return '';
     }
 }

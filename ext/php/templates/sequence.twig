@@ -1,28 +1,30 @@
-{% set id = varid() %}
-{% set subres_var = '$result' ~ id %}
+{% set result_var = '$result_' ~ expr.id %}
+{% set match_var = '$match_' ~ expr.id %}
+{% set pos_var = '$pos_' ~ expr.id %}
+{% set children_var = '$children_' ~ expr.id %}
 /**
  * matching {{expr.asRhs()}}
  */
-$match{{id}} = true;
-$pos{{id}} = $this->pos;
-$children{{id}} = [];
+{{match_var}} = true;
+{{pos_var}} = $this->pos;
+{{children_var}} = [];
 do {
 {% for child in expr.children %}
-    {{subres_var}} = null;
+    $result_{{child.id}} = null;
 {% filter indent -%}
-{% include expr_tpl(child) with {'expr': child, 'result_var': subres_var} only %} 
+{% include expr_tpl(child) with {'expr': child} only %} 
 {%- endfilter %}
-    if (!{{subres_var}}) {
-        $match{{id}} = false;
+    if (!$result_{{child.id}}) {
+        {{match_var}} = false;
         break;
     } else {
-        $children{{id}}[] = {{subres_var}};
+        {{children_var}}[] = $result_{{child.id}};
     }
 {% endfor %}
 } while(0);
-if (${{id}} === true) {
-    {{result_var}} = new Node\Sequence('{{expr.name}}', $this->text, $pos{{id}}, $this->pos, $children{{id}});
+if (true === {{match_var}}) {
+    {{result_var}} = new Node\Sequence('{{expr.name}}', $this->text, {{pos_var}}, $this->pos, {{children_var}});
 } else {
     {{result_var}} = null;
-    $this->pos = $pos{{id}};
+    $this->pos = {{pos_var}};
 }

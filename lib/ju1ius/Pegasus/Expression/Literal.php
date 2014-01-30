@@ -4,6 +4,7 @@ namespace ju1ius\Pegasus\Expression;
 
 use ju1ius\Pegasus\Parser\ParserInterface;
 use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\Utils\String;
 
 
 /**
@@ -13,8 +14,6 @@ use ju1ius\Pegasus\Node;
  **/
 class Literal extends Terminal
 {
-	use HasBackReferenceTrait;
-
     /**
      * @var string
      */
@@ -30,6 +29,15 @@ class Literal extends Terminal
      */
     public $length;
 
+    /**
+     * @var boolean
+     */
+    public $hasBackReference = false;
+
+    /**
+     * @var array
+     */
+    public $subjectParts = [];
 
 	public function __construct($literal, $name='', $quotechar='"')
     {
@@ -41,8 +49,11 @@ class Literal extends Terminal
 
     public function setup()
     {
-		$this->splitSubject($this->literal);
-		if (!$this->hasBackReference) {
+        $parts = String::splitBackrefSubject($this->literal);
+        if ($parts) {
+            $this->hasBackReference = true;
+            $this->subjectParts = $parts;
+        } else {
             $this->length = strlen($this->literal);
         }
     }
@@ -59,7 +70,7 @@ class Literal extends Terminal
         $length = $this->length;
 
         if ($this->hasBackReference) {
-			$value = $this->replaceSubject([$parser, 'getReference']);
+            $value = String::replaceBackrefSubject($this->subjectParts, [$parser, 'getReference']);
             $length = strlen($value);
         }
         if ($pos === strpos($text, $value, $pos)) {

@@ -28,8 +28,10 @@ class MetaGrammar
 grammar			= _ directives rules
 
 ########### Directives ##########
+
 directives      = directive*
-directive       = ws_directive | ci_directive
+directive       = name_directive | ws_directive | ci_directive
+name_directive  = "%name" _ identifier
 ws_directive    = "%whitespace" _ equals expression
 ci_directive    = "%case_insensitive" _
 	
