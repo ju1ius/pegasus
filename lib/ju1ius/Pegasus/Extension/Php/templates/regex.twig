@@ -5,13 +5,13 @@
 {% if expr.hasBackReference -%}
 
 {% collect 'properties' %}
-protected $backref_replacements_{{expr.id}} = {{ repr(expr.subjectParts) }};
+protected $backref_replacements_{{expr.id}} = {{repr(expr.subjectParts)}};
 {% endcollect %}
 $pattern = '/\G' . $this->replaceBackrefSubject($backref_replacements_{{expr.id}}, true) . '/{{expr.compiled_flags}}';
 
 {%- else -%}
 
-$pattern = '{{expr.compiled_pattern}}';
+$pattern = {{rxrepr(expr.compiled_pattern)}};
 
 {%- endif %}
 

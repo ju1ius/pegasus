@@ -1,4 +1,13 @@
 <?php
+/*
+ * This file is part of Pegasus
+ *
+ * (c) 2014 Jules Bernable 
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 
 namespace ju1ius\Pegasus;
 
@@ -25,14 +34,13 @@ use ju1ius\Pegasus\Parser\LRPackrat as Parser;
  * EOS;
  * 
  * $grammar = Grammar::fromSyntax($syntax);
- * $parse_tree = (new Parser($grammar))->parse('Hello, my good sir');
+ * $parse_tree = (new Parser($grammar))->parseAll('Hello, my good sir');
  * </code>
  *
  * Or start parsing from any of the other expressions.
- * You can pull them out of the grammar as if it were an associative array:
  *
  * <code>
- * $parse_tree = (new Parser($grammar['greeting']))->parse('Hi');
+ * $parse_tree = (new Parser($grammar))->parseAll('Hi', 'greeting');
  * </code>
  *
  * You can also just construct a bunch of Expression objects yourself
@@ -42,11 +50,6 @@ use ju1ius\Pegasus\Parser\LRPackrat as Parser;
  * </code>
  * But using a Grammar has some important advantages:
  *
- * - Languages are much easier to define in the nice syntax it provides.
- * - Circular references aren't a pain.
- * - It does all kinds of whizzy space- and time-saving optimizations, like
- *   factoring up repeated subexpressions into a single object,
- *   which should increase cache hit ratio.
  */
 class Grammar implements GrammarInterface
 {
@@ -65,25 +68,30 @@ class Grammar implements GrammarInterface
      */
     protected $folded = true;
 
+    /**
+     * @var string The name of the grammar
+     */
+    protected $name = '';
+
 	/**
-	 * Grammar constructor.
-	 *
-     * Grammar not constructed by one of the factory methods
-     * must call their finalize method before parsing.
+	 * Factory method that constructs a Grammar object from an associative array of rules.
 	 *
 	 * @param Expression[]	$rules		An array of ['rule_name' => $expression].
 	 * @param Expression	$start_rule	The top level expression of this grammar.
 	 **/
-	public function __construct(array $rules=[], $start_rule=null)
-	{
-		$this->rules = $rules;
-		$this->default_rule = $start_rule;
-
-        if ($rules) {
-            $this->unfold();
+    public static function fromArray(array $rules, $start_rule = null)
+    {
+        $g = new static();
+        foreach ($rules as $name => $rule) {
+            $g[$name] = $rule;
         }
-	}
+        if ($start_rule) {
+            $g->setStartRule($start_rule);
+        }
 
+        return $g->unfold();
+    }
+    
 	/**
 	 * Factory method that constructs a Grammar object from a syntax string.
 	 *
@@ -96,13 +104,12 @@ class Grammar implements GrammarInterface
 	{
 		$metagrammar = MetaGrammar::create();
 		$tree = (new Parser($metagrammar))->parseAll($syntax);
-		list($rules, $start) = (new MetaGrammarNodeVisitor)->visit($tree);
-        if (null === $start_rule) {
-            $start_rule = $start;
+		$grammar = (new MetaGrammarNodeVisitor)->visit($tree);
+        if ($start_rule) {
+            $grammar->setStartRule($start_rule);
         }
-		$grammar = new static($rules, $start_rule);
 
-		return $grammar;
+        return $grammar->unfold();
 	}
 
 	/**
@@ -115,17 +122,36 @@ class Grammar implements GrammarInterface
 	 */
 	public static function fromExpression(Expression $expr, $start_rule=null)
     {
-        if (null === $start_rule) {
+        if (!$start_rule) {
             $start_rule = $expr->name;
         }
 		if (!$start_rule) {
 			throw new GrammarException(
                 'Top level expression must have a name.'
 			);
-		}
-        $grammar = new static([$expr->name => $expr], $start_rule);
+        }
+        $grammar = new static(); 
+        $grammar[$start_rule] = $expr;
 		return $grammar->unfold();
 	}
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    
+        return $this;
+    }
 
     /**
      * {@inheritDoc}
@@ -251,19 +277,19 @@ class Grammar implements GrammarInterface
      */
     public function __toString()
     {
-		$start_rule = $this->getStartRule();
-		$rules = [
-			$this->default_rule . ' = ' . $start_rule->asRhs()
-		];
+        $out = '';
+        if ($name = $this->getName()) {
+            $out .= "%name $name\n";
+        }
+        $start_rule = $this->getStartRule();
+        $out .= "%start {$this->default_rule}\n";
 
+        $out .= "\n";
         foreach ($this->rules as $name => $expr) {
-			if ($name === $this->default_rule) {
-				continue;
-			}
-			$rules[] = $name . ' = ' . $expr->asRhs();
+            $out .= sprintf("%s = %s\n", $name, $expr->asRhs());
         }
 
-        return implode("\n", $rules);
+        return $out;
     }
 
     public function offsetExists($name)

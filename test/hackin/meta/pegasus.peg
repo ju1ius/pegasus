@@ -1,0 +1,73 @@
+%name Pegasus
+
+grammar			= _ directives rules
+
+########### Directives ##########
+
+directives      = directive*
+directive       = name_directive | ws_directive | ci_directive
+name_directive  = "%name" _ identifier
+ws_directive    = "%whitespace" _ equals expression
+ci_directive    = "%case_insensitive" _
+	
+########### Rules ##########
+
+rules			= rule+
+
+rule			= identifier equals expression
+
+expression		= choice | sequence | term
+
+choice			= alternative (OR alternative)+
+			
+alternative		= sequence | term
+
+sequence		= term{2,}
+
+term			= labeled | labelable
+
+labeled			= label labelable
+
+labelable		= prefixed | prefixable
+
+prefixed		= skip | lookahead | not
+
+skip            = '~' prefixable
+
+lookahead		= '&' prefixable
+
+not				= '!' prefixable
+
+prefixable		= prefixed | suffixable | primary
+
+suffixable		= suffixed | primary
+
+suffixed		= suffixable quantifier
+
+primary			= parenthesized | atom
+
+parenthesized	= "(" _ expression ")" _
+			
+atom			= literal | regex | reference
+
+equals			= "=" _
+
+reference		= identifier !equals
+
+quantifier		= /(?> ([*+?]) | (?: \{ (\d+)(?:,(\d*))? \} ) )/ _
+
+regex			= / \/ ((?: (?:\\.) | [^\/] )*) \/ ([ilmsux]*)? / _
+
+literal			= / (["']) ((?: (?:\\.) | (?:(?!\1).) )*) \1 / _
+
+label			= / ([a-zA-Z_]\w*): /
+
+identifier		= / [a-zA-Z_]\w* / _
+
+OR				= "|" _
+
+_				= (ws | comment)*
+
+comment			= / \# ([^\r\n]*) /
+
+ws				= /\s+/

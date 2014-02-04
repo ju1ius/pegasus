@@ -1,4 +1,13 @@
 <?php
+/*
+ * This file is part of Pegasus
+ *
+ * (c) 2014 Jules Bernable 
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 
 namespace ju1ius\Pegasus\Twig\Extension;
 
@@ -10,6 +19,7 @@ use Twig_Extension;
 use Twig_Environment;
 use Twig_SimpleFilter;
 use Twig_SimpleFunction;
+use Twig_Error_Loader;
 
 
 class PegasusTwigExtension extends Twig_Extension
@@ -31,12 +41,17 @@ class PegasusTwigExtension extends Twig_Extension
 
     public function getGlobals()
     {
-        // make macros available globally
-        $macros = $this->environment->loadTemplate('macros.twig');
-        return [
-            'macros' => $macros,
+        $globals = [
             'data_collector' => $this->collector 
-        ];   
+        ];
+        try {
+            // if a template named macros exists,
+            // make it available globally
+            $macros = $this->environment->loadTemplate('macros.twig');
+            $globals['macros'] = $macros;
+        } catch (Twig_Error_Loader $e) {}
+
+        return $globals;   
     }
 
     public function getTokenParsers()
@@ -50,7 +65,6 @@ class PegasusTwigExtension extends Twig_Extension
     {
         return [
             new Twig_SimpleFunction('expr_tpl', [$this, 'expr_tpl']),
-            new Twig_SimpleFunction('repr', [$this, 'repr'])
         ];
     }
 
@@ -73,25 +87,6 @@ class PegasusTwigExtension extends Twig_Extension
         }
 
         return $out;
-    }
-
-    public function repr($value)
-    {
-        if (null === $value) {
-            return 'null'; 
-        } elseif (is_int($value) || is_float($value)) {
-            return $value;
-        } elseif (is_array($value)) {
-            $out = '[';
-            $first = true;
-            foreach ($value as $k => $v) {
-                if (!$first) $out .= ', ';
-                $first = false;
-                $out .= $this->repr($k) . ' => ' . $this->repr($v);
-            }
-            return $out . ']';
-        }
-        return sprintf('"%s"', addcslashes($value, "\0\t\"\$\\"));
     }
 
     public function expr_tpl(Expression $expr)

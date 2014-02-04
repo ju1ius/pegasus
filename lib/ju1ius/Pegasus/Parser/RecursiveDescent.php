@@ -1,4 +1,13 @@
 <?php
+/*
+ * This file is part of Pegasus
+ *
+ * (c) 2014 Jules Bernable 
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 
 namespace ju1ius\Pegasus\Parser;
 
@@ -32,7 +41,7 @@ class RecursiveDescent implements ParserInterface
     {
         $result = $this->parse($source, 0, $rule);
         if ($this->pos < strlen($source)) {
-            //echo $result->inspect(), "\n";
+            echo $result->inspect(), "\n";
             throw new IncompleteParseError(
                 $source,
                 $this->pos,

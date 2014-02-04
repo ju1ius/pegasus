@@ -1,9 +1,19 @@
 <?php
+/*
+ * This file is part of Pegasus
+ *
+ * (c) 2014 Jules Bernable 
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 
 namespace ju1ius\Pegasus\Visitor;
 
 use ju1ius\Pegasus\NodeVisitor;
 use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Expression;
 
 
@@ -45,17 +55,64 @@ class MetaGrammarNodeVisitor extends NodeVisitor
 
     public function visit_grammar(Node\Sequence $node, $children)
     {
-        return $children[0];
+        list($directives, $rules) = $children;
+        $grammar = new Grammar();
+        // add rules
+		foreach ($rules as $expr) {
+			$grammar[$expr->name] = $expr;
+        }
+        // add directives
+        if (isset($directives['name'])) {
+            $grammar->setName($directives['name']);
+        }
+        if (isset($directives['start'])) {
+            $grammar->setStartRule($directives['start']);
+        }
+        if (isset($directives['case_insensitive'])) {
+            $grammar->setCaseInsensitive(true);
+        }
+        return $grammar;
     }
 
+    // ----------- Directives
+
+    public function visit_directives(Node\Quantifier $node, $children)
+    {
+        $directives = [];
+        foreach ($children as list($name, $value)) {
+            $directives[$name] = $value;   
+        }
+        return $directives;
+    }
+
+    public function visit_name_directive(Node\Sequence $node, $children)
+    {
+        list($dir, $name) = $children;
+        return ['name', $name];
+    }
+
+    public function visit_start_directive(Node\Sequence $node, $children)
+    {
+        list($dir, $name) = $children;
+        return ['start', $name];
+    }
+
+    public function visit_ci_directive(Node\Sequence $node, $children)
+    {
+        return ['case_insensitive', true];   
+    }
+
+    public function visit_ws_directive(Node\Sequence $node, $children)
+    {
+        list($dir, $expr) = $children;
+        return ['whitespace' => $expr];
+    }
+
+    // ---------- Rules
+
 	public function visit_rules(Node\Quantifier $node, $children)
-	{
-		$rules = $children;
-		$rule_map = [];
-		foreach ($children as $expr) {
-			$rule_map[$expr->name] = $expr;
-		}
-		return [$rule_map, $rules[0]->name];
+    {
+        return $children;
 	}
 
 	public function visit_rule(Node\Sequence $node, $children)
@@ -138,7 +195,7 @@ class MetaGrammarNodeVisitor extends NodeVisitor
             return new $class([$suffixable]);
 		}
         $min = (int) $quantifier->matches[2];
-		$max = isset($quantifier->matches[3]) ? (int) $quantifier->matches[3] : INF;
+		$max = !empty($quantifier->matches[3]) ? (int) $quantifier->matches[3] : INF;
         return new Expression\Quantifier([$suffixable], $min, $max);
 	}
 
@@ -163,6 +220,16 @@ class MetaGrammarNodeVisitor extends NodeVisitor
 		return $children[0];
 	}
 
+    public function visit_eof(Node\Sequence $node, $children)
+    {
+        return new Expression\EOF();
+    }
+    
+    public function visit_epsilon(Node\Sequence $node, $children)
+    {
+        return new Expression\Epsilon();
+    }
+    
 	public function visit_quantifier(Node\Sequence $node, $children)
     {
         // quantifier is handled in visit_suffixed

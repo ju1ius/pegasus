@@ -1,4 +1,13 @@
 <?php
+/*
+ * This file is part of Pegasus
+ *
+ * (c) 2014 Jules Bernable 
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 
 namespace ju1ius\Pegasus;
 
@@ -25,13 +34,16 @@ class MetaGrammar
 {
 	const SYNTAX = <<<'EOS'
 
+%name Pegasus
+
 grammar			= _ directives rules
 
 ########### Directives ##########
 
 directives      = directive*
-directive       = name_directive | ws_directive | ci_directive
+directive       = name_directive | start_directive | ws_directive | ci_directive
 name_directive  = "%name" _ identifier
+start_directive = "%start" _ identifier
 ws_directive    = "%whitespace" _ equals expression
 ci_directive    = "%case_insensitive" _
 	
@@ -47,7 +59,7 @@ choice			= alternative (OR alternative)+
 			
 alternative		= sequence | term
 
-sequence		= term{2}
+sequence		= term{2,}
 
 term			= labeled | labelable
 
@@ -73,17 +85,21 @@ primary			= parenthesized | atom
 
 parenthesized	= "(" _ expression ")" _
 			
-atom			= literal | regex | reference
+atom			= eof | epsilon | literal | regex | reference
 
 equals			= "=" _
 
 reference		= identifier !equals
 
+eof             = / EOF\b / _
+
+epsilon         = / E\b / _
+
 quantifier		= /(?> ([*+?]) | (?: \{ (\d+)(?:,(\d*))? \} ) )/ _
 
-regex			= / \/ ((?: (?:\\\\.) | [^\/] )*) \/ ([ilmsux]*)? / _
+regex			= / \/ ((?: (?:\\.) | [^\/] )*) \/ ([ilmSux]*)? / _
 
-literal			= / (["\']) ((?: (?:\\.) | (?:(?!\1).) )*) \1 / _
+literal			= / (["']) ((?: (?:\\.) | (?:(?!\1).) )*) \1 / _
 
 label			= / ([a-zA-Z_]\w*): /
 
@@ -123,14 +139,13 @@ EOS;
 	{
 		if (null === self::$instance) {
             $grammar = self::getGrammar();
-			// FIXME: ATM this is a bit overkill to parse the syntax
+			// FIXME: ATM this is completely overkill to parse the syntax
 			// since it matches exactly the expression tree.
 			// we should find a way to simplify the expression tree in order
 			// to speedup the syntax parsing process.
 			$parser = new Parser($grammar);
 			$tree = $parser->parseAll(self::SYNTAX);
-			list($rules, $default) = (new MetaGrammarNodeVisitor)->visit($tree);
-			self::$instance = new Grammar($rules, $default);
+            self::$instance = (new MetaGrammarNodeVisitor)->visit($tree);
             //echo self::$instance, "\n";
             self::$instance->finalize();
 		}
@@ -157,8 +172,38 @@ EOS;
 	{
 		$g = new Grammar();
 		$g['grammar'] = new Sequence([
-			new Ref('_'), new Ref('rules')
+            new Ref('_'),
+            new Ref('directives'),
+            new Ref('rules')
 		]);
+        // directives
+        $g['directives'] = new ZeroOrMore([new Ref('directive')]);
+        $g['directive'] = new OneOf([
+            new Ref('name_directive'),
+            new Ref('start_directive'),
+            new Ref('ws_directive'),
+            new Ref('ci_directive')
+        ]);
+        $g['name_directive'] = new Sequence([
+            new Literal('%name'),
+            new Ref('_'),
+            new Ref('identifier')
+        ]);
+        $g['start_directive'] = new Sequence([
+            new Literal('%start'),
+            new Ref('_'),
+            new Ref('identifier')
+        ]);
+        $g['ws_directive'] = new Sequence([
+            new Literal('%whitespace'),
+            new Ref('equals'),
+            new Ref('expression')
+        ]);
+        $g['ci_directive'] = new Sequence([
+            new Literal('%case_insensitive'),
+            new Ref('_')
+        ]);
+        // rules
 		$g['rules'] = new OneOrMore([new Ref('rule')]);
 		$g['rule'] = new Sequence([
 			new Ref('identifier'),
@@ -232,8 +277,8 @@ EOS;
 				new Ref('_')
         ]);
 		$g['atom'] = new OneOf([
-			//new Literal ('EOF', 'eof'),
-			//new Literal ('E', 'epsilon'),
+            new Ref('eof'),
+            new Ref('epsilon'),
 			new Ref('literal'),
 			new Ref('regex'),
 			new Ref('reference')
@@ -246,12 +291,13 @@ EOS;
 			new Literal('='),
 			new Ref('_')
 		]);
+        // ATOMS
 		$g['reference'] = new Sequence([
 			new Ref('identifier'),
 			new Not([new Ref('equals')])
 		]);
 		$g['quantifier'] = new Sequence([
-			new Regex('(?> ([*+?]) | (?: \{ (\d+) (?:,(\d*))?\} ) )'),
+			new Regex('(?> ([*+?]) | (?: \{ (\d+) (?:,(\d*))? \} ) )'),
 			new Ref('_')
 		]);
 		$g['literal'] = new Sequence([
@@ -261,15 +307,28 @@ EOS;
 		$g['regex'] = new Sequence([
 			new Regex('\/((?:(?:\\\\.)|[^\/])*)\/([ilmSux]*)?'),
 			new Ref('_')
-		]);
+        ]);
+        $g['eof'] = new Sequence([
+            new Regex('EOF\b'),
+            new Ref('_')
+        ]);
+        $g['epsilon'] = new Sequence([
+            new Regex('E\b'),
+            new Ref('_')
+        ]);
+        // TOKENS
 		$g['identifier'] = new Sequence([
 			new Regex('[a-zA-Z_]\w*'),
 			new Ref('_')
 		]);
 		$g['label'] = new Regex('([a-zA-Z_]\w*):');
-		$g['ident'] = new Regex('[a-zA-Z_]\w*');
-		$g['_'] = new ZeroOrMore([new Ref('ws_com')]);
-		$g['ws_com'] = new OneOf([new Ref('ws'), new Ref('comment')]);
+        // WHITESPACE
+        $g['_'] = new ZeroOrMore([
+            new OneOf([
+                new Ref('ws'),
+                new Ref('comment')
+            ])
+        ]);
 		$g['comment'] = new Regex('\#([^\n]*)');
 		$g['ws'] = new Regex('\s+');
 

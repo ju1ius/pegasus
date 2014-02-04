@@ -1,4 +1,13 @@
 <?php
+/*
+ * This file is part of Pegasus
+ *
+ * (c) 2014 Jules Bernable 
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 
 namespace ju1ius\Pegasus\Command;
 
@@ -30,6 +39,12 @@ class GenerateParserCommand extends Command
                 null,
                 InputOption::VALUE_REQUIRED,
                 'The class name of the generated parser.'
+            )
+            ->addOption(
+                'extension',
+                'e',
+                InputOption::VALUE_REQUIRED|InputOption::VALUE_IS_ARRAY,
+                'Add a directory to lookup for extensions.'
             )
             ->addOption(
                 'language',
@@ -70,6 +85,11 @@ class GenerateParserCommand extends Command
     {
         $syntax_path = $input->getArgument('grammar');
         $language = $input->getOption('language');
+        $extension_dirs = array_merge(
+            [__DIR__.'/../../../../extensions'],
+            $input->getOption('extension')
+        );
+
         if (!$output_dir = $input->getOption('output-dir')) {
             $output_dir = dirname($syntax_path);
         }
@@ -78,14 +98,14 @@ class GenerateParserCommand extends Command
             $name = ucfirst($fn);
         }
 
-        $compiler = new Compiler([__DIR__.'/../../../../ext']);
+        $compiler = new Compiler($extension_dirs);
         $compiler->setLanguage($language);
         $language_def = $compiler->getLanguageDefinition();
 
         $syntax = file_get_contents($syntax_path);
         $parser_code = $compiler->compileSyntax($syntax, [
             'namespace' => $input->getOption('namespace'),
-            'class' => $name,
+            'name' => $name,
         ]);
 
         if ($input->getOption('stdout')) {
