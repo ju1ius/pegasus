@@ -20,7 +20,7 @@ class ExpressionTestCase extends PegasusTestCase
     protected function parse(Expression $expr, $text, $pos=0)
     {
 		$name = $expr->name ?: $expr->id;
-        $g = new Grammar([$name => $expr], $name);
+        $g = Grammar::fromArray([$name => $expr]);
         $result = (new RecursiveDescent($g))->parse($text, $pos);
         // unset Node->expr so we can test it easily
         $result->expr = null;
