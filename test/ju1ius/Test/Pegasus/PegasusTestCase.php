@@ -4,6 +4,7 @@ namespace ju1ius\Test\Pegasus;
 
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Grammar;
 
 
 /**
@@ -36,16 +37,28 @@ class PegasusTestCase extends \PHPUnit_Framework_TestCase
      */
     public function assertExpressionEquals(Expression $expected, Expression $actual)
     {
-        $unset_id = function ($expr) use (&$unset_id) {
-            $expr->id = '';
-            if ($expr instanceof Expression\Composite) {
-                foreach ($expr->children as $child) {
-                    $unset_id($child);   
-                }
-            }
-        };
-        $unset_id($expected);
-        $unset_id($actual);
+        $this->cleanupExpr($expected);
+        $this->cleanupExpr($actual);
         return $this->assertEquals($expected, $actual);
+    }
+
+    public function assertGrammarEquals(Grammar $expected, Grammar $actual)
+    {
+        $expected->unfold();
+        $actual->unfold();
+        foreach ($expected as $name => $expr) {
+            $this->assertArrayHasKey($name, $actual);
+            $this->assertExpressionEquals($expr, $actual[$name]);   
+        }
+    }
+
+    protected function cleanupExpr(Expression $expr)
+    {
+        $expr->id = null;
+        if ($expr instanceof Expression\Composite) {
+            foreach ($expr->children as $child) {
+                $this->cleanupExpr($child);   
+            }
+        }
     }
 }

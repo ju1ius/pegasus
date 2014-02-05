@@ -1,12 +1,14 @@
 %name Pegasus
+%start grammar
 
 grammar			= _ directives rules
 
 ########### Directives ##########
 
 directives      = directive*
-directive       = name_directive | ws_directive | ci_directive
+directive       = name_directive | start_directive | ws_directive | ci_directive
 name_directive  = "%name" _ identifier
+start_directive = "%start" _ identifier
 ws_directive    = "%whitespace" _ equals expression
 ci_directive    = "%case_insensitive" _
 	
@@ -48,15 +50,19 @@ primary			= parenthesized | atom
 
 parenthesized	= "(" _ expression ")" _
 			
-atom			= literal | regex | reference
+atom			= eof | epsilon | literal | regex | reference
 
 equals			= "=" _
 
 reference		= identifier !equals
 
+eof             = / EOF\b / _
+
+epsilon         = / E\b / _
+
 quantifier		= /(?> ([*+?]) | (?: \{ (\d+)(?:,(\d*))? \} ) )/ _
 
-regex			= / \/ ((?: (?:\\.) | [^\/] )*) \/ ([ilmsux]*)? / _
+regex			= / \/ ((?: (?:\\.) | [^\/] )*) \/ ([ilmSux]*)? / _
 
 literal			= / (["']) ((?: (?:\\.) | (?:(?!\1).) )*) \1 / _
 
@@ -70,4 +76,5 @@ _				= (ws | comment)*
 
 comment			= / \# ([^\r\n]*) /
 
-ws				= /\s+/
+    ws				= /\s+/
+

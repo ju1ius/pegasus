@@ -85,7 +85,7 @@ primary			= parenthesized | atom
 
 parenthesized	= "(" _ expression ")" _
 			
-atom			= eof | epsilon | literal | regex | reference
+atom			= eof | epsilon | fail | literal | regex | reference
 
 equals			= "=" _
 
@@ -95,9 +95,11 @@ eof             = / EOF\b / _
 
 epsilon         = / E\b / _
 
+fail            = / FAIL\b / _
+
 quantifier		= /(?> ([*+?]) | (?: \{ (\d+)(?:,(\d*))? \} ) )/ _
 
-regex			= / \/ ((?: (?:\\.) | [^\/] )*) \/ ([ilmSux]*)? / _
+regex			= / \/ ((?: (?:\\.) | [^\/] )*) \/ ([imsuUX]*)? / _
 
 literal			= / (["']) ((?: (?:\\.) | (?:(?!\1).) )*) \1 / _
 
@@ -143,11 +145,14 @@ EOS;
 			// since it matches exactly the expression tree.
 			// we should find a way to simplify the expression tree in order
 			// to speedup the syntax parsing process.
+            /*
 			$parser = new Parser($grammar);
 			$tree = $parser->parseAll(self::SYNTAX);
             self::$instance = (new MetaGrammarNodeVisitor)->visit($tree);
             //echo self::$instance, "\n";
             self::$instance->finalize();
+            */
+            self::$instance = $grammar;
 		}
 
 		return self::$instance;
@@ -279,6 +284,7 @@ EOS;
 		$g['atom'] = new OneOf([
             new Ref('eof'),
             new Ref('epsilon'),
+            new Ref('fail'),
 			new Ref('literal'),
 			new Ref('regex'),
 			new Ref('reference')
@@ -305,7 +311,7 @@ EOS;
 			new Ref('_')
 		]);
 		$g['regex'] = new Sequence([
-			new Regex('\/((?:(?:\\\\.)|[^\/])*)\/([ilmSux]*)?'),
+            new Regex('\/((?:(?:\\\\.)|[^\/])*)\/([imsuUX]*)?'),
 			new Ref('_')
         ]);
         $g['eof'] = new Sequence([
@@ -314,6 +320,10 @@ EOS;
         ]);
         $g['epsilon'] = new Sequence([
             new Regex('E\b'),
+            new Ref('_')
+        ]);
+        $g['fail'] = new Sequence([
+            new Regex('FAIL\b'),
             new Ref('_')
         ]);
         // TOKENS
