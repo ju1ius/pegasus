@@ -114,6 +114,7 @@ abstract class Expression
     {
         return false;
     }
+
     /**
      * Returns true if it can be determined statically whether the expression
      * returns parse results on success.
@@ -124,7 +125,6 @@ abstract class Expression
     {
         return true;
     }
-    
 
     public function __clone()
     {

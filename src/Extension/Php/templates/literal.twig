@@ -5,6 +5,11 @@
 {% if expr.hasBackReference -%}
 
 {% collect 'properties' %}
+/**
+ * Back reference replacements for rule {{expr.name}}
+ *
+ * @var array
+ */
 protected $backref_replacements_{{expr.id}} = {{ repr(expr.subjectParts) }};
 {% endcollect %}
 $value = $this->replaceBackrefSubject($backref_replacements_{{expr.id}});

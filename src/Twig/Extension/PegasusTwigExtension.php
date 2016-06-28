@@ -11,6 +11,7 @@
 
 namespace ju1ius\Pegasus\Twig\Extension;
 
+use ju1ius\Pegasus\Compiler;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Twig\DataCollector;
 use ju1ius\Pegasus\Twig\TokenParser\CollectorTokenParser;
@@ -26,6 +27,13 @@ class PegasusTwigExtension extends Twig_Extension
 {
     protected static $VARID = 0;
     protected $environment = null;
+    protected $compiler = null;
+    protected $collector = null;
+
+    public function __construct(Compiler $compiler)
+    {
+        $this->compiler = $compiler;
+    }
 
     public function initRuntime(Twig_Environment $env)
     {
@@ -65,6 +73,8 @@ class PegasusTwigExtension extends Twig_Extension
     {
         return [
             new Twig_SimpleFunction('expr_tpl', [$this, 'expr_tpl']),
+            new Twig_SimpleFunction('render_expr', [$this, 'renderExpression']),
+            new Twig_SimpleFunction('retrieve', [$this->collector, 'retrieve']),
         ];
     }
 
@@ -87,6 +97,11 @@ class PegasusTwigExtension extends Twig_Extension
         }
 
         return $out;
+    }
+
+    public function renderExpression(Expression $expr)
+    {
+        return $this->compiler->renderExpression($expr);
     }
 
     public function expr_tpl(Expression $expr)

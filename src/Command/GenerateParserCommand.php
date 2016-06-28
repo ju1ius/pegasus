@@ -17,10 +17,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use Twig_Loader_Filesystem;
-use Twig_Environment;
-
-use ju1ius\Pegasus\Compiler;
+use ju1ius\Pegasus\ExtensionManager;
 
 
 class GenerateParserCommand extends Command
@@ -41,7 +38,7 @@ class GenerateParserCommand extends Command
                 'The class name of the generated parser.'
             )
             ->addOption(
-                'extension',
+                'extension-dir',
                 'e',
                 InputOption::VALUE_REQUIRED|InputOption::VALUE_IS_ARRAY,
                 'Add a directory to lookup for extensions.'
@@ -87,34 +84,24 @@ class GenerateParserCommand extends Command
         $language = $input->getOption('language');
         $extension_dirs = array_merge(
             [__DIR__.'/../../../../extensions'],
-            $input->getOption('extension')
+            $input->getOption('extension-dir')
         );
 
-        if (!$output_dir = $input->getOption('output-dir')) {
-            $output_dir = dirname($syntax_path);
-        }
-        if(!$name = $input->getOption('name')) {
-            $fn = explode('.', basename($syntax_path))[0];
-            $name = ucfirst($fn);
-        }
-
-        $compiler = new Compiler($extension_dirs);
-        $compiler->setLanguage($language);
-        $language_def = $compiler->getLanguageDefinition();
-
-        $syntax = file_get_contents($syntax_path);
-        $parser_code = $compiler->compileSyntax($syntax, [
-            'namespace' => $input->getOption('namespace'),
-            'name' => $name,
-        ]);
-
         if ($input->getOption('stdout')) {
-            echo $parser_code, "\n";
-        } else {
-            file_put_contents(
-                "$output_dir/$name.{$language_def['extension']}",
-                $parser_code
-            );
+            $input->setOption('output-dir', 'php://stdout');
         }
+
+        $manager = new ExtensionManager($extension_dirs);
+        $extension = $manager->getExtension($language);
+        $compiler = $extension->getCompiler();
+
+        $compiler->compileFile(
+            $syntax_path,
+            $input->getOption('output-dir'),
+            [
+                'namespace' => $input->getOption('namespace'),
+                'name' => $input->getOption('name'),
+            ]
+        );
     }
 }

@@ -100,9 +100,9 @@ class NodeVisitor
     }
 
     /**
-     * Default visitor method
+     * Default visitor method.
      *
-     * Return the node verbatim, so it maintains the parse tree's structure.
+     * Returns the node verbatim, so it maintains the parse tree's structure.
      * Non-generic visitor methods can then use or ignore this at their discretion.
      * This works out well regardless of whether a subclass is trying
      * to make another tree, a flat string, or whatever.
@@ -193,10 +193,15 @@ class NodeVisitor
     private function getActions(array $config)
     {
         if (isset($config['ignore'])) {
-            $this->ignored = array_combine($config['ignore'], array_fill(0, count($config['ignore']), true));
+            $this->ignored = array_combine(
+                $config['ignore'],
+                array_fill(0, count($config['ignore']), true)
+            );
         }
         $result = [];
-        if (!isset($config['actions'])) return $result;
+        if (!isset($config['actions'])) {
+            return $result;
+        }
         foreach ($config['actions'] as $expr_name => $actions) {
             // actions are chainable, so make it an array
             if (!is_array($actions)) {

@@ -9,9 +9,7 @@
  */
 
 
-namespace ju1ius\Pegasus\Parser;
-
-use ju1ius\Pegasus\Expression;
+namespace ju1ius\Pegasus\Parser\Generated;
 
 
 /**
@@ -27,26 +25,28 @@ class Head
     /**
      * The head rule of the left recursion.
      *
-     * @var ju1ius\Pegasus\Expression
+     * @var string
      */
     public $rule;
+
     /**
      * The set of rules involved in the left recursion.
      *
-     * @var ju1ius\Pegasus\Expression[]
+     * @var string[]
      */
     public $involved;
+
     /**
      * The subset of the involved rules that may still
      * be evaluated during the current growth cycle.
      *
-     * @var ju1ius\Pegasus\Expression[]
+     * @var string[]
      */
     public $eval;
 
-    public function __construct(Expression $rule)
+    public function __construct($rule_name)
     {
-        $this->rule = $rule;
+        $this->rule = $rule_name;
         $this->involved = [];
         $this->eval = [];
     }
@@ -58,11 +58,10 @@ class Head
      *
      * @return bool
      */
-    public function involves(Expression $rule)
+    public function involves($rule_name)
     {
-        //return $this->rule->id === $rule->id
-        return $this->rule->id === $rule->id
-            || isset($this->involved[$rule->id])
+        return $this->rule === $rule_name
+            || isset($this->involved[$rule_name])
         ;
     }
 }

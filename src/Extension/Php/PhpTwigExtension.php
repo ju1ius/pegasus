@@ -12,6 +12,7 @@
 namespace ju1ius\Pegasus\Extension\Php;
 
 use Twig_Extension;
+use Twig_SimpleFilter;
 use Twig_SimpleFunction;
 
 
@@ -26,7 +27,14 @@ class PhpTwigExtension extends Twig_Extension
     {
         return [
             new Twig_SimpleFunction('repr', [$this, 'repr']),
-            new Twig_SimpleFunction('rxrepr', [$this, 'rxrepr'])
+            new Twig_SimpleFunction('rxrepr', [$this, 'rxrepr']),
+        ];
+    }
+
+    public function getFilters()
+    {
+        return [
+            new Twig_SimpleFilter('escape_comment', [$this, 'escapeComment'])
         ];
     }
     
@@ -54,4 +62,10 @@ class PhpTwigExtension extends Twig_Extension
         $pattern = str_replace('\\\\', '\\\\\\\\', $pattern);
         return sprintf("'%s'", addcslashes($pattern, "'"));
     }
+
+    public function escapeComment($value)
+    {
+        return str_replace('*/', '*\\/', $value);
+    }
+    
 }
