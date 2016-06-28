@@ -1,4 +1,6 @@
-vendor/
-composer.lock
+/.idea/
+/composer.lock
+
+/vendor/
 cache/
-test/coverage/
+/test/
