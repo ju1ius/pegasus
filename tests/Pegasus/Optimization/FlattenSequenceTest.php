@@ -1,6 +1,6 @@
 <?php
 
-namespace ju1ius\Test\Pegasus\Optimization;
+namespace ju1ius\Pegasus\Tests\Optimization;
 
 use ju1ius\Pegasus\Optimization\FlattenSequence;
 use ju1ius\Pegasus\Optimization\FlattenMatchingSequence;

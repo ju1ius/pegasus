@@ -1,9 +1,8 @@
 <?php
 
-use ju1ius\Test\Pegasus\PegasusTestCase;
+namespace ju1ius\Pegasus\Tests;
 
 use ju1ius\Pegasus\MetaGrammar;
-
 use ju1ius\Pegasus\Parser\LRPackrat as Parser;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Node\Regex as Rx;
@@ -53,7 +52,7 @@ class MetaGrammarTest extends PegasusTestCase
             ],
         ];
     }
-    
+
     /**
      * @depends testComment
      * @dataProvider test_Provider
@@ -79,7 +78,7 @@ class MetaGrammarTest extends PegasusTestCase
             ],
         ];
     }
- 
+
     /**
      * @depends test_
      * @dataProvider testIdentifierProvider
@@ -116,7 +115,7 @@ class MetaGrammarTest extends PegasusTestCase
             ['= ', '= '],
 			["=\n ", "=\n "]
         ];
-    } 
+    }
 
     /**
      * @depends testIdentifier
@@ -227,10 +226,10 @@ class MetaGrammarTest extends PegasusTestCase
             ],
         ];
     }
-    
+
     /**
      * @dataProvider testQuantifiedProvider
-     */  
+     */
     public function testQuantified($input, $expected)
     {
        $this->markTestIncomplete('Test not implemented');
@@ -242,7 +241,7 @@ class MetaGrammarTest extends PegasusTestCase
 
     /**
      * @dataProvider testRegexProvider
-     */  
+     */
     public function testRegex($input, $expected)
     {
        $this->markTestIncomplete('Test not implemented');
@@ -254,7 +253,7 @@ class MetaGrammarTest extends PegasusTestCase
 
     /**
      * @dataProvider testAtomProvider
-     */  
+     */
     public function testAtom($input, $expected)
     {
        $this->markTestIncomplete('Test not implemented');
@@ -266,7 +265,7 @@ class MetaGrammarTest extends PegasusTestCase
 
     /**
      * @dataProvider testParenthesizedProvider
-     */  
+     */
     public function testParenthesized($input, $expected)
     {
        $this->markTestIncomplete('Test not implemented');
@@ -278,7 +277,7 @@ class MetaGrammarTest extends PegasusTestCase
 
     /**
      * @dataProvider testTermProvider
-     */  
+     */
     public function testTerm($input, $expected)
     {
        $this->markTestIncomplete('Test not implemented');
@@ -290,7 +289,7 @@ class MetaGrammarTest extends PegasusTestCase
 
     /**
      * @dataProvider testLookaheadTermProvider
-     */  
+     */
     public function testLookaheadTerm($input, $expected)
     {
        $this->markTestIncomplete('Test not implemented');
@@ -302,7 +301,7 @@ class MetaGrammarTest extends PegasusTestCase
 
     /**
      * @dataProvider testNotTermProvider
-     */  
+     */
     public function testNotTerm($input, $expected)
     {
        $this->markTestIncomplete('Test not implemented');
@@ -314,7 +313,7 @@ class MetaGrammarTest extends PegasusTestCase
 
     /**
      * @dataProvider testSequenceProvider
-     */  
+     */
     public function testSequence($input, $expected)
     {
        $this->markTestIncomplete('Test not implemented');
@@ -326,7 +325,7 @@ class MetaGrammarTest extends PegasusTestCase
 
     /**
      * @dataProvider testOredProvider
-     */  
+     */
     public function testOred($input, $expected)
     {
        $this->markTestIncomplete('Test not implemented');
@@ -338,7 +337,7 @@ class MetaGrammarTest extends PegasusTestCase
 
     /**
      * @dataProvider testOrTermProvider
-     */  
+     */
     public function testOrTerm($input, $expected)
     {
        $this->markTestIncomplete('Test not implemented');
@@ -350,7 +349,7 @@ class MetaGrammarTest extends PegasusTestCase
 
     /**
      * @dataProvider testExpressionProvider
-     */  
+     */
     public function testExpression($input, $expected)
     {
        $this->markTestIncomplete('Test not implemented');
@@ -362,7 +361,7 @@ class MetaGrammarTest extends PegasusTestCase
 
     /**
      * @dataProvider testRuleProvider
-     */  
+     */
     public function testRule($input, $expected)
     {
         $this->markTestIncomplete('Test not implemented');
@@ -374,7 +373,7 @@ class MetaGrammarTest extends PegasusTestCase
 
     /**
      * @dataProvider testRulesProvider
-     */  
+     */
     public function testRules($input, $expected)
     {
        $this->markTestIncomplete('Test not implemented');

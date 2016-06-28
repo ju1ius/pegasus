@@ -1,22 +1,23 @@
 <phpunit
     colors="true"
-    bootstrap="./test/bootstrap.php">
+    bootstrap="./tests/bootstrap.php"
+>
     <testsuites>
         <testsuite name="Expressions">
-            <file>test/ju1ius/Test/Pegasus/Expression/LiteralTest.php</file>
-            <file>test/ju1ius/Test/Pegasus/Expression/RegexTest.php</file>
-            <file>test/ju1ius/Test/Pegasus/Expression/QuantifierTest.php</file>
-            <directory>test/ju1ius/Test/Pegasus/Expression</directory>
+            <file>tests/Pegasus/Expression/LiteralTest.php</file>
+            <file>tests/Pegasus/Expression/RegexTest.php</file>
+            <file>tests/Pegasus/Expression/QuantifierTest.php</file>
+            <directory>tests/Pegasus/Expression</directory>
         </testsuite>
         <testsuite name="Grammar">
-            <directory>test/ju1ius/Test/Pegasus/Grammar</directory>
-            <file>test/ju1ius/Test/Pegasus/MetaGrammarTest.php</file>
+            <directory>tests/Pegasus/Grammar</directory>
+            <file>tests/Pegasus/MetaGrammarTest.php</file>
         </testsuite>
         <testsuite name="Parsers">
-            <directory>test/ju1ius/Test/Pegasus/Parser</directory>
+            <directory>tests/Pegasus/Parser</directory>
         </testsuite>
         <testsuite name="Optimizations">
-            <directory>test/ju1ius/Test/Pegasus/Optimization</directory>
+            <directory>tests/Pegasus/Optimization</directory>
         </testsuite>
     </testsuites>
 </phpunit>

@@ -1,6 +1,6 @@
 <?php
 
-namespace ju1ius\Test\Pegasus;
+namespace ju1ius\Pegasus\Tests;
 
 use ju1ius\Test\Pegasus\PegasusTestCase;
 

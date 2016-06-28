@@ -1,6 +1,6 @@
 <?php
 
-namespace ju1ius\Test\Pegasus\Grammar;
+namespace ju1ius\Pegasus\Tests\Grammar;
 
 use ju1ius\Test\Pegasus\PegasusTestCase;
 
