@@ -2,18 +2,16 @@
 /*
  * This file is part of Pegasus
  *
- * (c) 2014 Jules Bernable 
+ * (c) 2014 Jules Bernable
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-
 namespace ju1ius\Pegasus\Parser\Generated;
 
 use ju1ius\Pegasus\Parser\MemoEntry;
 use ju1ius\Pegasus\Node;
-
 
 /**
  * A packrat parser implementing Wrath, Douglass & Millstein's
@@ -26,6 +24,9 @@ use ju1ius\Pegasus\Node;
  */
 class Packrat extends RecursiveDescent
 {
+    /**
+     * @var array
+     */
     protected $memo = [];
 
     /**
@@ -36,7 +37,7 @@ class Packrat extends RecursiveDescent
      *
      * @return Node | null
      */
-    public function parse($text, $pos=0, $rule=null)
+    public function parse($text, $pos = 0, $rule = null)
     {
         $this->memo = [];
 
@@ -58,27 +59,31 @@ class Packrat extends RecursiveDescent
      * Otherwise, APPLY-RULE evaluates the rule,
      * stores the result in the memo table,
      * and returns the corresponding parse tree node.
+     *
+     * @param string $ruleName
+     * @param int    $pos
+     *
+     * @return Node|null
      */
-    public function apply($rule_name, $pos=0)
+    public function apply($ruleName, $pos = 0)
     {
         $this->pos = $pos;
-        $this->error->pos = $pos;
-        $this->error->expr = $rule_name;
+        $this->error->position = $pos;
+        $this->error->expr = $ruleName;
 
-        if (isset($this->memo[$rule_name][$pos])) {
-            $memo = $this->memo[$rule_name][$pos];
+        if (isset($this->memo[$ruleName][$pos])) {
+            $memo = $this->memo[$ruleName][$pos];
             $this->pos = $memo->end;
+
             return $memo->result;
         }
 
-        // Store a result of FAIL in the memo table
-        // before it evaluates the body of a rule.
-        // This has the effect of making all left-recursive applications
-        // (both direct and indirect) fail.
+        // Store a result of FAIL in the memo table before it evaluates the body of a rule.
+        // This has the effect of making all left-recursive applications (both direct and indirect) fail.
         $memo = new MemoEntry(null, $pos);
-        $this->memo[$rule_name][$pos] = $memo;
+        $this->memo[$ruleName][$pos] = $memo;
         // evaluate expression
-        $result = $this->evaluate($rule_name);
+        $result = $this->evaluate($ruleName);
         // update the result in the memo table
         $memo->result = $result;
         $memo->end = $this->pos;
@@ -90,14 +95,15 @@ class Packrat extends RecursiveDescent
      * Fetches the memo entry corresponding
      * to the given expression at the given position.
      *
-     * @param string    $rule_name
-     * @param int       $pos
-     */    
-    protected function memo($rule_name, $start_pos)
+     * @param string $ruleName
+     * @param int    $startPos
+     *
+     * @return MemoEntry|null
+     */
+    protected function memo($ruleName, $startPos)
     {
-        return isset($this->memo[$rule_name][$start_pos])
-            ? $this->memo[$rule_name][$start_pos]
-            : null
-        ;
+        return isset($this->memo[$ruleName][$startPos])
+            ? $this->memo[$ruleName][$startPos]
+            : null;
     }
 }

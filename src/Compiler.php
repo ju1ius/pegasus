@@ -33,7 +33,7 @@ abstract class Compiler
     abstract public function getParserClass();
     abstract public function getExtendedParserClass();
     abstract public function getNodeVisitorClass();
-    abstract protected function renderParser($output_dir, $args);
+    abstract protected function renderParser($outputDirectory, $args);
     
     public function getTwigEnvironment()
     {

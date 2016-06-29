@@ -2,18 +2,16 @@
 /*
  * This file is part of Pegasus
  *
- * (c) 2014 Jules Bernable 
+ * (c) 2014 Jules Bernable
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-
 namespace ju1ius\Pegasus\Optimization;
 
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Analysis;
-
 
 class OptimizationContext
 {
@@ -22,7 +20,7 @@ class OptimizationContext
 
     protected static $cache = [];
 
-    public static function create(Grammar $grammar, $type=self::TYPE_CAPTURING)
+    public static function create(Grammar $grammar, $type = self::TYPE_CAPTURING)
     {
         //FIXME is this really needed ?
         $key = md5(serialize([spl_object_hash($grammar), $type]));
@@ -30,6 +28,7 @@ class OptimizationContext
             $ctx = new OptimizationContext($grammar, $type);
             self::$cache[$key] = $ctx;
         }
+
         return self::$cache[$key];
     }
 
@@ -64,7 +63,7 @@ class OptimizationContext
     {
         return $this->type === self::TYPE_CAPTURING;
     }
-    
+
     public function isMatching()
     {
         return $this->type === self::TYPE_MATCHING;

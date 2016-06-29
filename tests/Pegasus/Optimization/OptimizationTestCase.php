@@ -2,7 +2,7 @@
 
 namespace ju1ius\Pegasus\Tests\Optimization;
 
-use ju1ius\Test\Pegasus\PegasusTestCase;
+use ju1ius\Pegasus\Tests\PegasusTestCase;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Optimization\Optimization;

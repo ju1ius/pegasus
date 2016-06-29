@@ -2,6 +2,7 @@
 
 namespace ju1ius\Pegasus\Tests\Optimization;
 
+use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Optimization\FlattenSequence;
 use ju1ius\Pegasus\Optimization\FlattenMatchingSequence;
 use ju1ius\Pegasus\Optimization\FlattenCapturingSequence;
@@ -14,7 +15,7 @@ class FlattenSequenceTest extends OptimizationTestCase
     /**
      * @dataProvider testApplyProvider
      */
-    public function testApply($input, $expected)
+    public function testApply($input, Expression $expected)
     {
         $opt = new FlattenSequence(
             new FlattenMatchingSequence,
@@ -22,7 +23,7 @@ class FlattenSequenceTest extends OptimizationTestCase
         );
         $result = $this->apply($opt, $input);
         $this->assertExpressionEquals($expected, $result);
-        $this->assertEquals($expected->asRhs(), $result->asRightHandSide());
+        $this->assertEquals($expected->asRightHandSide(), $result->asRightHandSide());
     }
     public function testApplyProvider()
     {

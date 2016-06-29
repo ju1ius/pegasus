@@ -1,6 +1,8 @@
 <?php
 
-use ju1ius\Test\Pegasus\PegasusTestCase;
+namespace ju1ius\Pegasus\Tests\Visitor;
+
+use ju1ius\Pegasus\Tests\PegasusTestCase;
 
 use ju1ius\Pegasus\Grammar;
 
@@ -19,5 +21,5 @@ EOS;
             $g->getStartRule()
         );
     }
-    
+
 }

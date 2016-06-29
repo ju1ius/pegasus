@@ -27,6 +27,11 @@ use ju1ius\Pegasus\Node;
 class VisitationError extends \RuntimeException
 {
     /**
+     * @var Node
+     */
+    protected $node;
+
+    /**
      * @param \Exception $exc  What went wrong. We wrap this and add more info.
      * @param Node       $node The node at which the error occurred
      */

@@ -2,18 +2,15 @@
 
 namespace ju1ius\Pegasus\Tests;
 
-use ju1ius\Test\Pegasus\PegasusTestCase;
-
-use ju1ius\Pegasus\Parser\RecursiveDescent;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar;
-
+use ju1ius\Pegasus\Parser\RecursiveDescent;
 
 class ExpressionTestCase extends PegasusTestCase
 {
     protected function expr($class, array $args)
     {
-        $class = "ju1ius\Pegasus\Expression\\$class";
+        $class = "ju1ius\\Pegasus\\Expression\\{$class}";
         return (new \ReflectionClass($class))->newInstanceArgs($args);
     }
 

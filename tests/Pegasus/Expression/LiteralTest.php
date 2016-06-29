@@ -1,10 +1,10 @@
 <?php
 
-use ju1ius\Test\Pegasus\ExpressionTestCase;
+namespace ju1ius\Pegasus\Tests\Expression;
 
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Node\Literal as Node;
-
+use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class LiteralTest extends ExpressionTestCase
 {
@@ -19,6 +19,7 @@ class LiteralTest extends ExpressionTestCase
             call_user_func_array([$this, 'parse'], array_merge([$expr], $params))
         );
     }
+
     public function testMatchProvider()
     {
         return [

@@ -10,6 +10,9 @@ use ju1ius\Pegasus\Node\Regex as Rx;
 
 class MetaGrammarTest extends PegasusTestCase
 {
+    /**
+     * @var Parser
+     */
     protected static $parser;
 
     public static function setUpBeforeClass()

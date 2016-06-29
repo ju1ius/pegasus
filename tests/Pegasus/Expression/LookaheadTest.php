@@ -1,6 +1,8 @@
 <?php
 
-use ju1ius\Test\Pegasus\ExpressionTestCase;
+namespace ju1ius\Pegasus\Tests\Expression;
+
+use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 use ju1ius\Pegasus\Expression\Lookahead;
 use ju1ius\Pegasus\Expression\Literal;
@@ -55,5 +57,5 @@ class LookaheadTest extends ExpressionTestCase
             ]
         ];
     }
-    
+
 }

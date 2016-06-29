@@ -2,34 +2,54 @@
 /*
  * This file is part of Pegasus
  *
- * (c) 2014 Jules Bernable 
+ * (c) 2014 Jules Bernable
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-
 namespace ju1ius\Pegasus\Grammar;
 
-use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Expression;
-
+use ju1ius\Pegasus\Expression\Composite;
+use ju1ius\Pegasus\Expression\OneOf;
+use ju1ius\Pegasus\Expression\Reference;
+use ju1ius\Pegasus\Grammar;
 
 /**
  * Static analysis of a Grammar.
  */
 class Analysis
 {
+    /**
+     * @var Grammar
+     */
     protected $grammar;
+
+    /**
+     * @var array
+     */
     protected $references;
-    protected $left_references;
-    protected $direct_references;
-    protected $direct_left_references;
+
+    /**
+     * @var array
+     */
+    protected $leftReferences;
+
+    /**
+     * @var array
+     */
+    protected $directReferences;
+
+    /**
+     * @var array
+     */
+    protected $directLeftReferences;
 
     /**
      * Warning: The grammar must be unfolded before analysis !
      *
-     * @param ju1ius\Pegasus\Grammar The grammar to analyse.
+     * @param Grammar $grammar
      */
     public function __construct(Grammar $grammar)
     {
@@ -40,142 +60,153 @@ class Analysis
         }
         $this->grammar = $grammar;
         $this->references = [];
-        $this->left_references = [];
-        $this->direct_references = [];
-        $this->direct_left_references = [];
+        $this->leftReferences = [];
+        $this->directReferences = [];
+        $this->directLeftReferences = [];
     }
 
     /**
      * Returns wheter a rule is regular (non-recursive).
      *
-     * @param string $rule_name The rule name to analyze.
-     * 
+     * @param string $ruleName The rule name to analyze.
+     *
      * @return bool
      */
-    public function isRegular($rule_name)
+    public function isRegular($ruleName)
     {
-        return !$this->isRecursive($rule_name);
+        return !$this->isRecursive($ruleName);
     }
-    
+
     /**
      * Returns wheter a rule is recursive (non-regular).
      *
-     * @param string $rule_name The rule name to analyze.
-     * 
+     * @param string $ruleName The rule name to analyze.
+     *
      * @return bool
      */
-    public function isRecursive($rule_name)
+    public function isRecursive($ruleName)
     {
-        return $this->isReferencedFrom($rule_name, $rule_name);
+        return $this->isReferencedFrom($ruleName, $ruleName);
     }
 
     /**
      * Returns whether a rule is left-recursive.
      *
-     * @param string $rule_name The rule name to analyze.
-     * 
+     * @param string $ruleName The rule name to analyze.
+     *
      * @return bool
      */
-    public function isLeftRecursive($rule_name)
+    public function isLeftRecursive($ruleName)
     {
-        return $this->isLeftReferencedFrom($rule_name, $rule_name);
+        return $this->isLeftReferencedFrom($ruleName, $ruleName);
     }
 
     /**
      * Returns whether a rule is referenced by other rules in the grammar.
      *
-     * @param string $rule_name The rule name to analyze.
-     * 
+     * @param string $ruleName The rule name to analyze.
+     *
      * @return bool
      */
-    public function isReferenced($rule_name)
+    public function isReferenced($ruleName)
     {
-        return $rule_name === $this->grammar->getStartRule()->name
-            || $this->isReferencedFrom($rule_name, $rule_name)
-        ;
+        return $ruleName === $this->grammar->getStartRule()->name || $this->isReferencedFrom($ruleName, $ruleName);
     }
-    
+
     /**
      * Returns wheter $referencer has references for $referencee.
      *
-     * @param string    $referencer The rule name to search in.
-     * @param string    $referencee The rule name to search for.
+     * @param string $referencer The rule name to search in.
+     * @param string $referencee The rule name to search for.
      *
      * @return bool
      */
     public function isReferencedFrom($referencer, $referencee)
     {
         $refs = $this->getReferencesFrom($referencer);
-        return isset($refs[$referencee]); 
+
+        return isset($refs[$referencee]);
     }
 
     /**
      * Returns wheter $referencer has left references for $referencee.
      *
-     * @param string    $referencer The rule name to search in.
-     * @param string    $referencee The rule name to search for.
+     * @param string $referencer The rule name to search in.
+     * @param string $referencee The rule name to search for.
      *
      * @return bool
      */
     public function isLeftReferencedFrom($referencer, $referencee)
     {
         $refs = $this->getLeftReferencesFrom($referencer);
-        return isset($refs[$referencee]); 
+
+        return isset($refs[$referencee]);
     }
 
     /**
      * Returns a list of references contained by the given rule.
      *
-     * @param string    $rule_name The rule name to search in.
+     * @param string $ruleName The rule name to search in.
      *
      * @return array    An array of reference names.
      */
-    public function getReferencesFrom($rule_name)
+    public function getReferencesFrom($ruleName)
     {
-        if (!isset($this->references[$rule_name])) {
+        if (!isset($this->references[$ruleName])) {
             $refs = [];
-            $this->traceReferences($rule_name, [$this, 'directReferences'], $refs);
-            $this->references[$rule_name] = $refs;
+            $this->traceReferences($ruleName, [$this, 'directReferences'], $refs);
+            $this->references[$ruleName] = $refs;
         }
-        return $this->references[$rule_name];
+
+        return $this->references[$ruleName];
     }
 
     /**
      * Returns a list of left references contained by the given rule.
      *
-     * @param string    $rule_name The rule name to search in.
+     * @param string $ruleName The rule name to search in.
      *
      * @return array    An array of reference names.
      */
-    public function getLeftReferencesFrom($rule_name)
+    public function getLeftReferencesFrom($ruleName)
     {
-        if (!isset($this->left_references[$rule_name])) {
+        if (!isset($this->leftReferences[$ruleName])) {
             $refs = [];
-            $this->traceReferences($rule_name, [$this, 'directLeftReferences'], $refs);
-            $this->left_references[$rule_name] = $refs;
+            $this->traceReferences($ruleName, [$this, 'directLeftReferences'], $refs);
+            $this->leftReferences[$ruleName] = $refs;
         }
-        return $this->left_references[$rule_name];
+
+        return $this->leftReferences[$ruleName];
     }
 
-    protected function traceReferences($rule_name, callable $method, &$refs)
+    /**
+     * @param string   $ruleName
+     * @param callable $tracer
+     * @param array    &$refs
+     */
+    protected function traceReferences($ruleName, callable $tracer, &$refs)
     {
-        $expr = $this->grammar[$rule_name];
-        foreach ($method($expr) as $ref) {
+        $expr = $this->grammar[$ruleName];
+        foreach ($tracer($expr) as $ref) {
             if (!isset($refs[$ref])) {
                 $refs[$ref] = $ref;
-                $this->traceReferences($ref, $method, $refs);
-            }   
+                $this->traceReferences($ref, $tracer, $refs);
+            }
         }
     }
 
     /**
      * Generator yielding all references in an expression.
+     *
+     * @param Expression $expr
+     *
+     * @return \Generator
      */
     protected function directReferences(Expression $expr)
     {
-        if ($expr instanceof Expression\Reference) {
+        if ($expr instanceof Reference) {
             yield $expr->identifier;
-        } elseif ($expr instanceof Expression\Composite) {
+        } elseif ($expr instanceof Composite) {
             foreach ($expr->children as $child) {
                 foreach ($this->directReferences($child) as $ref) {
                     yield $ref;
@@ -186,18 +217,22 @@ class Analysis
 
     /**
      * Generator yielding all left references in an expression.
+     *
+     * @param Expression $expr
+     *
+     * @return \Generator
      */
     protected function directLeftReferences(Expression $expr)
     {
-        if ($expr instanceof Expression\Reference) {
+        if ($expr instanceof Reference) {
             yield $expr->identifier;
-        } elseif ($expr instanceof Expression\OneOf) {
+        } elseif ($expr instanceof OneOf) {
             foreach ($expr->children as $child) {
                 foreach ($this->directLeftReferences($child) as $ref) {
                     yield $ref;
                 }
             }
-        } elseif ($expr instanceof Expression\Composite) {
+        } elseif ($expr instanceof Composite) {
             foreach ($this->directLeftReferences($expr->children[0]) as $ref) {
                 yield $ref;
             }

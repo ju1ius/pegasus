@@ -20,11 +20,11 @@ namespace ju1ius\Pegasus\Expression;
  */
 abstract class Wrapper extends Composite
 {
-    public function __construct(array $children, $name = '')
+    public function __construct(array $children = [], $name = '')
     {
-        if (count($children) !== 1) {
-            throw new \LogicException('Wrapper expressions must have exactly one child');
-        }
+        //if (count($children) !== 1) {
+        //    throw new \LogicException('Wrapper expressions must have exactly one child');
+        //}
         parent::__construct($children, $name);
     }
 

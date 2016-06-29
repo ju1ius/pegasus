@@ -1,13 +1,12 @@
 <?php
 
-use ju1ius\Test\Pegasus\ExpressionTestCase;
+namespace ju1ius\Pegasus\Tests\Expression;
 
-use ju1ius\Pegasus\Expression\OneOf;
 use ju1ius\Pegasus\Expression\Literal;
-
-use ju1ius\Pegasus\Node\OneOf as OneOfNode;
+use ju1ius\Pegasus\Expression\OneOf;
 use ju1ius\Pegasus\Node\Literal as LiteralNode;
-
+use ju1ius\Pegasus\Node\OneOf as OneOfNode;
+use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class OneOfTest extends ExpressionTestCase
 {
@@ -61,5 +60,5 @@ class OneOfTest extends ExpressionTestCase
             ]
         ];
     }
-    
+
 }

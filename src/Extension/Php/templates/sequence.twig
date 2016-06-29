@@ -3,28 +3,28 @@
 {% set pos_var = '$pos_' ~ expr.id %}
 {% set children_var = '$children_' ~ expr.id %}
 /**
- * matching {{expr.asRhs()}}
+ *  Matching: {{ expr.asRightHandSide() }}
  */
-{{match_var}} = true;
-{{pos_var}} = $this->pos;
-{{children_var}} = [];
+{{ match_var }} = true;
+{{ pos_var }} = $this->pos;
+{{ children_var }} = [];
 do {
 {% for child in expr.children %}
-    $result_{{child.id}} = null;
+    $result_{{ child.id }} = null;
 {% filter indent -%}
-{% include expr_tpl(child) with {'expr': child} only %} 
+{% include expr_tpl(child) with {expr: child} only %}
 {%- endfilter %}
-    if (!$result_{{child.id}}) {
-        {{match_var}} = false;
+    if (!$result_{{ child.id }}) {
+        {{ match_var }} = false;
         break;
     } else {
-        {{children_var}}[] = $result_{{child.id}};
+        {{ children_var }}[] = $result_{{ child.id }};
     }
 {% endfor %}
 } while(0);
-if (true === {{match_var}}) {
-    {{result_var}} = new Node\Sequence('{{expr.name}}', $this->text, {{pos_var}}, $this->pos, {{children_var}});
+if (true === {{ match_var }}) {
+    {{ result_var }} = new Node\Sequence('{{ expr.name }}', $this->text, {{ pos_var }}, $this->pos, {{ children_var }});
 } else {
-    {{result_var}} = null;
-    $this->pos = {{pos_var}};
+    {{ result_var }} = null;
+    $this->pos = {{ pos_var }};
 }

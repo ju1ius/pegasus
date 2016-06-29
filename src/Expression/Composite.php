@@ -31,6 +31,8 @@ abstract class Composite extends Expression
     /**
      * Composite constructor.
      *
+     * Subclasses MUST always respect this constructor parameter order.
+     *
      * @param Expression[]  $children
      * @param string $name
      */
@@ -96,7 +98,7 @@ abstract class Composite extends Expression
     {
         return array_map(function(Expression $child) {
             if ($child instanceof Reference) {
-                return $child->asRhs();
+                return $child->asRightHandSide();
             }
             return $child->name ?: $child->asRightHandSide();
         }, $this->children);

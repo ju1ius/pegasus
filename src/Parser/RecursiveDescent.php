@@ -2,27 +2,56 @@
 /*
  * This file is part of Pegasus
  *
- * (c) 2014 Jules Bernable 
+ * (c) 2014 Jules Bernable
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-
 namespace ju1ius\Pegasus\Parser;
 
 use ju1ius\Pegasus\Exception\ParseError;
 use ju1ius\Pegasus\Exception\IncompleteParseError;
+use ju1ius\Pegasus\Expression\Label;
 use ju1ius\Pegasus\GrammarInterface;
 use ju1ius\Pegasus\Expression;
-
+use ju1ius\Pegasus\Node;
 
 class RecursiveDescent implements ParserInterface
 {
-    protected $grammar = null;
-    protected $source = null;
+    /**
+     * @var GrammarInterface
+     */
+    protected $grammar;
+
+    /**
+     * @var string
+     */
+    protected $source;
+
+    /**
+     * @var int
+     */
     public $pos = 0;
-    protected $error = null;
+
+    /**
+     * @var ParseError
+     */
+    protected $error;
+
+    /**
+     * Map from label names to parse results, for resolving backreferences.
+     *
+     * @var array
+     */
+    protected $labels;
+
+    /**
+     * Map from rule names to parse results, for resolving backreferences.
+     *
+     * @var array
+     */
+    protected $refmap;
 
     public function __construct(GrammarInterface $grammar)
     {
@@ -33,11 +62,16 @@ class RecursiveDescent implements ParserInterface
      * Return the parse tree matching this expression at the given position,
      * not necessarily extending all the way to the end of $text.
      *
-     * @throw ParseError if there's no match there
+     * @param string      $source
+     * @param string|null $rule
      *
      * @return Node
+     *
+     * @throws IncompleteParseError
+     * @throws ParseError if there's no match there
+     * @throws null
      */
-    public function parseAll($source, $rule=null)
+    public function parseAll($source, $rule = null)
     {
         $result = $this->parse($source, 0, $rule);
         if ($this->pos < strlen($source)) {
@@ -56,11 +90,16 @@ class RecursiveDescent implements ParserInterface
      * Return the parse tree matching this expression at the given position,
      * not necessarily extending all the way to the end of $text.
      *
-     * @throw ParseError if there's no match there
+     * @param string $source
+     * @param int    $pos
+     * @param null   $rule
      *
-     * @return Node | null
+     * @return Node|null
+     *
+     * @throw ParseError if there's no match there
+     * @throws null
      */
-    public function parse($source, $pos=0, $rule=null)
+    public function parse($source, $pos = 0, $rule = null)
     {
         $this->source = $source;
         $this->pos = $pos;
@@ -100,10 +139,10 @@ class RecursiveDescent implements ParserInterface
         return $result;
     }
 
-    public function apply(Expression $expr, $pos=0)
+    public function apply(Expression $expr, $pos = 0)
     {
         $this->pos = $pos;
-        $this->error->pos = $pos;
+        $this->error->position = $pos;
         $this->error->expr = $expr;
 
         // evaluate expression
@@ -115,13 +154,16 @@ class RecursiveDescent implements ParserInterface
     /**
      * Evaluates an expression & updates current position on success.
      *
+     * @param Expression $expr
+     *
+     * @return Node|null
      */
     public function evaluate(Expression $expr)
     {
         $result = $expr->match($this->source, $this->pos, $this);
         if ($result) {
             // store labels and named expressions for backreferences
-            if ($expr instanceof Expression\Label) {
+            if ($expr instanceof Label) {
                 $this->labels[$expr->label] = $result;
             }
             if ($expr->name) {
@@ -131,6 +173,7 @@ class RecursiveDescent implements ParserInterface
             $this->pos = $result->end;
             $this->error->node = $result;
         }
+
         return $result;
     }
 
@@ -141,10 +184,12 @@ class RecursiveDescent implements ParserInterface
     public function getReference($name)
     {
         if (isset($this->labels[$name])) {
-            return (string) $this->labels[$name]; 
-        } elseif (isset($this->refmap[$name])) {
-            return (string) $this->refmap[$name]; 
+            return (string)$this->labels[$name];
         }
+        if (isset($this->refmap[$name])) {
+            return (string)$this->refmap[$name];
+        }
+
         return '';
     }
 }

@@ -1,28 +1,28 @@
 {% set result_var = '$result_' ~ expr.id %}
 /**
- * matching: {{ expr.asRhs() }}
+ * Matching: {{ expr.asRightHandSide() }}
  */
 {% if expr.hasBackReference -%}
 
 {% collect 'properties' %}
 /**
- * Back reference replacements for rule {{expr.name}}
+ * Back reference replacements for rule {{ expr.name }}
  *
  * @var array
  */
-protected $backref_replacements_{{expr.id}} = {{repr(expr.subjectParts)}};
+protected $backref_replacements_{{ expr.id }} = {{ repr(expr.subjectParts) }};
 {% endcollect %}
-$pattern = '/\G' . $this->replaceBackrefSubject($backref_replacements_{{expr.id}}, true) . '/{{expr.compiledFlags}}';
+$pattern = '/\G' . $this->replaceBackrefSubject($backref_replacements_{{ expr.id }}, true) . '/{{ expr.compiledFlags }}';
 
 {%- else -%}
 
-$pattern = {{rxrepr(expr.compiledPattern)}};
+$pattern = {{ repr_regexp(expr.compiledPattern) }};
 
 {%- endif %}
 
-if(preg_match($pattern, $this->text, $matches, 0, $this->pos)) {
-    {{result_var}} = new Node\Regex('{{expr.name}}', $this->text, $this->pos, $this->pos + strlen($matches[0]), $matches);
-    $this->pos = {{result_var}}->end;
+if (preg_match($pattern, $this->text, $matches, 0, $this->pos)) {
+    {{ result_var }} = new Node\Regex('{{ expr.name }}', $this->text, $this->pos, $this->pos + strlen($matches[0]), $matches);
+    $this->pos = {{ result_var }}->end;
 } else {
-{{macros.error(expr) | indent}}
+{{ macros.error(expr)|indent }}
 }

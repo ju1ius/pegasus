@@ -2,22 +2,21 @@
 
 namespace ju1ius\Pegasus\Tests\Optimization;
 
-use ju1ius\Pegasus\Optimization\FlattenChoice;
-use ju1ius\Pegasus\Expression\Composite;
-use ju1ius\Pegasus\Expression\OneOf;
+use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Literal;
-
+use ju1ius\Pegasus\Expression\OneOf;
+use ju1ius\Pegasus\Optimization\FlattenChoice;
 
 class FlattenChoiceTest extends OptimizationTestCase
 {
     /**
      * @dataProvider testApplyProvider
      */
-    public function testApply($input, $expected)
+    public function testApply($input, Expression $expected)
     {
         $result = $this->apply(new FlattenChoice, $input);
         $this->assertExpressionEquals($expected, $result);
-        $this->assertEquals($expected->asRhs(), $result->asRightHandSide());
+        $this->assertEquals($expected->asRightHandSide(), $result->asRightHandSide());
     }
     public function testApplyProvider()
     {

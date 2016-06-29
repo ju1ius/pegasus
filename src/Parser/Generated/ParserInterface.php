@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Parser;
+namespace ju1ius\Pegasus\Parser\Generated;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Node;
@@ -16,7 +16,7 @@ use ju1ius\Pegasus\Node;
 interface ParserInterface
 {
     /**
-     * Parse $text starting from position $pos, using start rule $startRule.
+     * Parse $text starting from position $pos, using start rule $start_rule.
      *
      * @param string $text
      * @param int    $pos
@@ -27,14 +27,13 @@ interface ParserInterface
     public function parse($text, $pos = 0, $startRule = null);
 
     /**
-     * Applies Expression $expr at position $pos.
+     * Applies $rule_name at position $pos.
      *
-     * This is called internally by Expression::match to parse sub-expressions.
      *
-     * @param Expression $expr
-     * @param int        $pos
+     * @param string $ruleName
+     * @param int    $pos
      *
      * @return Node|null
      */
-    public function apply(Expression $expr, $pos);
+    public function apply($ruleName, $pos);
 }

@@ -18,14 +18,14 @@ class Parser extends LRPackrat
             return $this->recall($m, $expr);
         }
         $lr = new LR($expr);
-        $this->lr_stack->push($lr);
+        $this->lrStack->push($lr);
         $m = $this->inject_memo($expr, $pos, $lr, $pos);
         $result = $this->evaluate($expr);
-        $this->lr_stack->pop();
+        $this->lrStack->pop();
         if ($lr->head) {
             $m->end = $this->pos;
             $lr->seed = $result;
-            return $this->lr_answer($expr, $pos, $m);
+            return $this->lrAnswer($expr, $pos, $m);
         }
         return $this->save($m, $result);
     }
@@ -46,33 +46,33 @@ class Parser extends LRPackrat
     public function recall(MemoEntry $m, Expression $expr)
     {
         if ($m->result instanceof LR) {
-            $this->setup_lr($expr, $m->result);
+            $this->setupLR($expr, $m->result);
             return $m->result->seed;
         }
         $this->pos = $m->end;
         return $m->result;
     }
-    public function setup_lr(Expression $expr, LR $lr)
+    public function setupLR(Expression $expr, LR $lr)
     {
         if (!$lr->head) {
             $lr->head = new Head($expr);
         }
-        foreach ($this->lr_stack as $item) {
+        foreach ($this->lrStack as $item) {
             if ($item->head === $lr->head) return;
             $lr->head->involved[$item->rule->id] = $item->rule;
         }
     }
-    public function lr_answer(Expression $expr, $pos, MemoEntry $m)
+    public function lrAnswer(Expression $expr, $pos, MemoEntry $m)
     {
         $head = $m->result->head;
         if ($head->rule->id === $expr->id) {
             $m->result = $m->result->seed;
             if (!$m->result) return;
-            return $this->grow_lr($expr, $pos, $m, $head);
+            return $this->growLR($expr, $pos, $m, $head);
         }
         return $this->save($m, $m->result->seed);
     }
-    public function grow_lr(Expression $expr, $pos, MemoEntry $m, Head $head)
+    public function growLR(Expression $expr, $pos, MemoEntry $m, Head $head)
     {
         $this->heads[$pos] = $head;
         while (true) {

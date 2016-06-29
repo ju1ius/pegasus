@@ -1,12 +1,11 @@
-{% set id = varid() %}
 {% set child = expr.children[0] %}
 {% set subres_var = '$result_' ~ child.id %}
 /**
- * matching {{expr.asRhs()}}
+ *  Matching: {{ expr.asRightHandSide() }}
  */
-$result_{{expr.id}} = null;
-{{subres_var}} = null;
-{% include expr_tpl(child) with {'expr': child} only %} 
-if ({{subres_var}}) {
-    $result_{{expr.id}} = new Node\Lookahead('{{expr.name}}', $this->text, $this->pos, $this->pos);
+$result_{{ expr.id }} = null;
+{{ subres_var }} = null;
+{% include expr_tpl(child) with {expr: child} only %}
+if ({{ subres_var }}) {
+    $result_{{ expr.id }} = new Node\Lookahead('{{ expr.name }}', $this->text, $this->pos, $this->pos);
 }

@@ -2,24 +2,39 @@
 /*
  * This file is part of Pegasus
  *
- * (c) 2014 Jules Bernable 
+ * (c) 2014 Jules Bernable
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-
 namespace ju1ius\Pegasus\Parser\Generated;
 
 use ju1ius\Pegasus\Exception\ParseError;
 use ju1ius\Pegasus\Exception\IncompleteParseError;
-
+use ju1ius\Pegasus\Node;
 
 class RecursiveDescent implements ParserInterface
 {
-    protected $text = null;
+    /**
+     * @var string
+     */
+    protected $text;
+
+    /**
+     * @var int
+     */
     public $pos = 0;
-    protected $error = null;
+
+    /**
+     * @var ParseError
+     */
+    protected $error;
+
+    /**
+     * @var
+     */
+    protected $refmap;
 
     /**
      * Return the parse tree matching this expression at the given position,
@@ -27,9 +42,15 @@ class RecursiveDescent implements ParserInterface
      *
      * @throw ParseError if there's no match there
      *
+     * @param string $text
+     * @param string $rule
+     *
      * @return Node
+     * @throws IncompleteParseError
+     * @throws ParseError
+     * @throws null
      */
-    public function parseAll($text, $rule=null)
+    public function parseAll($text, $rule = null)
     {
         $result = $this->parse($text, 0, $rule);
         if ($this->pos < strlen($text)) {
@@ -50,9 +71,15 @@ class RecursiveDescent implements ParserInterface
      *
      * @throw ParseError if there's no match there
      *
-     * @return Node | null
+     * @param string $text
+     * @param int    $pos
+     * @param string $rule
+     *
+     * @return Node|null
+     * @throws ParseError
+     * @throws null
      */
-    public function parse($text, $pos=0, $rule=null)
+    public function parse($text, $pos = 0, $rule = null)
     {
         $this->text = $text;
         $this->pos = $pos;
@@ -74,14 +101,14 @@ class RecursiveDescent implements ParserInterface
         return $result;
     }
 
-    public function apply($rule_name, $pos=0)
+    public function apply($ruleName, $pos = 0)
     {
         $this->pos = $pos;
-        $this->error->pos = $pos;
-        $this->error->expr = $rule_name;
+        $this->error->position = $pos;
+        $this->error->expr = $ruleName;
 
         // evaluate expression
-        $result = $this->evaluate($rule_name);
+        $result = $this->evaluate($ruleName);
 
         return $result;
     }
@@ -90,14 +117,15 @@ class RecursiveDescent implements ParserInterface
      * Evaluates an expression & updates current position on success.
      *
      */
-    public function evaluate($rule_name)
+    public function evaluate($ruleName)
     {
-        $match_method = "match_{$rule_name}";
-        $result = $this->$rule_name();
+        $match_method = "match_{$ruleName}";
+        $result = $this->{$ruleName}();
         if ($result) {
             $this->pos = $result->end;
             $this->error->node = $result;
         }
+
         return $result;
     }
 
@@ -107,9 +135,12 @@ class RecursiveDescent implements ParserInterface
      */
     public function getReference($name)
     {
-        if (!isset($this->refmap[$name])) return '';
+        if (!isset($this->refmap[$name])) {
+            return '';
+        }
         list($id, $pos) = $this->refmap[$name];
         $memo = $this->memo[$id][$pos];
-        return (string) $memo->result;
+
+        return (string)$memo->result;
     }
 }

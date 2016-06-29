@@ -2,12 +2,11 @@
 /*
  * This file is part of Pegasus
  *
- * (c) 2014 Jules Bernable 
+ * (c) 2014 Jules Bernable
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 
 namespace ju1ius\Pegasus\Twig\Extension;
 
@@ -15,20 +14,30 @@ use ju1ius\Pegasus\Compiler;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Twig\DataCollector;
 use ju1ius\Pegasus\Twig\TokenParser\CollectorTokenParser;
-
-use Twig_Extension;
 use Twig_Environment;
+use Twig_Error_Loader;
+use Twig_Extension;
 use Twig_SimpleFilter;
 use Twig_SimpleFunction;
-use Twig_Error_Loader;
-
 
 class PegasusTwigExtension extends Twig_Extension
 {
     protected static $VARID = 0;
-    protected $environment = null;
-    protected $compiler = null;
-    protected $collector = null;
+
+    /**
+     * @var Twig_Environment
+     */
+    private $environment;
+
+    /**
+     * @var Compiler
+     */
+    private $compiler;
+
+    /**
+     * @var DataCollector
+     */
+    private $collector;
 
     public function __construct(Compiler $compiler)
     {
@@ -50,29 +59,30 @@ class PegasusTwigExtension extends Twig_Extension
     public function getGlobals()
     {
         $globals = [
-            'data_collector' => $this->collector 
+            'data_collector' => $this->collector,
         ];
         try {
             // if a template named macros exists,
             // make it available globally
             $macros = $this->environment->loadTemplate('macros.twig');
             $globals['macros'] = $macros;
-        } catch (Twig_Error_Loader $e) {}
+        } catch (Twig_Error_Loader $e) {
+        }
 
-        return $globals;   
+        return $globals;
     }
 
     public function getTokenParsers()
     {
         return [
-            new CollectorTokenParser()
+            new CollectorTokenParser(),
         ];
     }
 
     public function getFunctions()
     {
         return [
-            new Twig_SimpleFunction('expr_tpl', [$this, 'expr_tpl']),
+            new Twig_SimpleFunction('expr_tpl', [$this, 'getTemplateForExpression']),
             new Twig_SimpleFunction('render_expr', [$this, 'renderExpression']),
             new Twig_SimpleFunction('retrieve', [$this->collector, 'retrieve']),
         ];
@@ -81,11 +91,11 @@ class PegasusTwigExtension extends Twig_Extension
     public function getFilters()
     {
         return [
-            new Twig_SimpleFilter('indent', [$this, 'indent'])
+            new Twig_SimpleFilter('indent', [$this, 'indent']),
         ];
     }
-    
-    public function indent($text, $prefix='    ', callable $predicate=null)
+
+    public function indent($text, $prefix = '    ', callable $predicate = null)
     {
         if (null === $predicate) {
             $predicate = 'trim';
@@ -104,7 +114,7 @@ class PegasusTwigExtension extends Twig_Extension
         return $this->compiler->renderExpression($expr);
     }
 
-    public function expr_tpl(Expression $expr)
+    public function getTemplateForExpression(Expression $expr)
     {
         $class = strtolower(str_replace('ju1ius\Pegasus\Expression\\', '', get_class($expr)));
         switch ($class) {
@@ -113,7 +123,7 @@ class PegasusTwigExtension extends Twig_Extension
             case 'optional':
                 return 'quantifier.twig';
             default:
-                return "$class.twig";
+                return "{$class}.twig";
         }
     }
 }

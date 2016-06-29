@@ -8,6 +8,14 @@
  * file that was distributed with this source code.
  */
 
-use ju1ius\Pegasus\Extension\Php\PhpLanguageDefinition;
+namespace ju1ius\Pegasus;
 
-return new PhpLanguageDefinition();
+
+abstract class Extension 
+{
+    abstract public function getName();
+
+    abstract public function getLanguage();
+
+    abstract public function getCompiler();    
+}

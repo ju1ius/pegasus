@@ -1,6 +1,8 @@
 <?php
 
-use ju1ius\Test\Pegasus\PegasusTestCase;
+namespace ju1ius\Pegasus\Tests\Parser;
+
+use ju1ius\Pegasus\Tests\PegasusTestCase;
 
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Parser\Packrat as Parser;

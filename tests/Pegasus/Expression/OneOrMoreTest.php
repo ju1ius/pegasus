@@ -1,13 +1,12 @@
 <?php
 
-use ju1ius\Test\Pegasus\ExpressionTestCase;
+namespace ju1ius\Pegasus\Tests\Expression;
 
-use ju1ius\Pegasus\Expression\OneOrMore;
 use ju1ius\Pegasus\Expression\Literal;
-
+use ju1ius\Pegasus\Expression\OneOrMore;
 use ju1ius\Pegasus\Node\Literal as Lit;
 use ju1ius\Pegasus\Node\Quantifier as Quant;
-
+use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class OneOrMoreTest extends ExpressionTestCase
 {

@@ -2,19 +2,16 @@
 /*
  * This file is part of Pegasus
  *
- * (c) 2014 Jules Bernable 
+ * (c) 2014 Jules Bernable
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-
 namespace ju1ius\Pegasus\Parser;
 
-use ju1ius\Pegasus\GrammarInterface;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Node;
-
 
 /**
  * A packrat parser implementing Wrath, Douglass & Millstein's
@@ -27,6 +24,9 @@ use ju1ius\Pegasus\Node;
  */
 class Packrat extends RecursiveDescent
 {
+    /**
+     * @var array
+     */
     protected $memo = [];
 
     /**
@@ -35,9 +35,14 @@ class Packrat extends RecursiveDescent
      *
      * @throw ParseError if there's no match there
      *
-     * @return Node | null
+     * @param string $source
+     * @param int    $pos
+     * @param null   $rule
+     *
+     * @return Node|null
+     * @throws \ju1ius\Pegasus\Exception\ParseError
      */
-    public function parse($source, $pos=0, $rule=null)
+    public function parse($source, $pos = 0, $rule = null)
     {
         $this->memo = [];
 
@@ -59,19 +64,24 @@ class Packrat extends RecursiveDescent
      * Otherwise, APPLY-RULE evaluates the rule,
      * stores the result in the memo table,
      * and returns the corresponding parse tree node.
+     *
+     * @param Expression $expr
+     * @param int        $pos
+     *
+     * @return Node|null
      */
-    public function apply(Expression $expr, $pos=0)
+    public function apply(Expression $expr, $pos = 0)
     {
         $this->pos = $pos;
-        $this->error->pos = $pos;
+        $this->error->position = $pos;
         $this->error->expr = $expr;
 
         if (isset($this->memo[$expr->id][$pos])) {
             $memo = $this->memo[$expr->id][$pos];
             $this->pos = $memo->end;
+
             return $memo->result;
         }
-
 
         // Store a result of FAIL in the memo table
         // before it evaluates the body of a rule.
@@ -93,13 +103,14 @@ class Packrat extends RecursiveDescent
      * to the given expression at the given position.
      *
      * @param Expression $expr
-     * @param int $pos
-     */    
-    protected function memo(Expression $expr, $start_pos)
+     * @param int        $startPosition
+     *
+     * @return MemoEntry|null
+     */
+    protected function memo(Expression $expr, $startPosition)
     {
-        return isset($this->memo[$expr->id][$start_pos])
-            ? $this->memo[$expr->id][$start_pos]
-            : null
-        ;
+        return isset($this->memo[$expr->id][$startPosition])
+            ? $this->memo[$expr->id][$startPosition]
+            : null;
     }
 }

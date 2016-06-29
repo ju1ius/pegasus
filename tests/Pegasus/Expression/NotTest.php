@@ -1,6 +1,8 @@
 <?php
 
-use ju1ius\Test\Pegasus\ExpressionTestCase;
+namespace ju1ius\Pegasus\Tests\Expression;
+
+use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 use ju1ius\Pegasus\Expression\Not;
 use ju1ius\Pegasus\Expression\Literal;
@@ -60,5 +62,5 @@ class NotTest extends ExpressionTestCase
             ]
         ];
     }
-    
+
 }

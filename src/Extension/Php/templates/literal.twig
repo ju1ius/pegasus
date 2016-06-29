@@ -1,30 +1,30 @@
 {% set result_var = '$result_' ~ expr.id %}
 /**
- * matching: {{ expr.asRhs() }}
+ * Matching: {{ expr.asRightHandSide() }}
  */
 {% if expr.hasBackReference -%}
 
 {% collect 'properties' %}
 /**
- * Back reference replacements for rule {{expr.name}}
+ * Back reference replacements for rule {{ expr.name }}
  *
  * @var array
  */
-protected $backref_replacements_{{expr.id}} = {{ repr(expr.subjectParts) }};
+protected $backref_replacements_{{ expr.id }} = {{ repr(expr.subjectParts) }};
 {% endcollect %}
-$value = $this->replaceBackrefSubject($backref_replacements_{{expr.id}});
+$value = $this->replaceBackrefSubject($backref_replacements_{{ expr.id }});
 $length = strlen($value);
 
 {%- else -%}
 
-$value = '{{expr.literal}}';
-$length = {{expr.length}};
+$value = '{{ expr.literal }}';
+$length = {{ expr.length }};
 
 {%- endif %}
 
 if (strpos($this->text, $value, $this->pos) === $this->pos) {
-    {{result_var}} = new Node\Literal('{{expr.name}}', $this->text, $this->pos, $this->pos + $length);
-    $this->pos = {{result_var}}->end;
+    {{ result_var }} = new Node\Literal('{{ expr.name }}', $this->text, $this->pos, $this->pos + $length);
+    $this->pos = {{ result_var }}->end;
 } else {
-{{macros.error(expr) | indent}}
+{{ macros.error(expr)|indent }}
 }

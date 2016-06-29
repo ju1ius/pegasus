@@ -2,7 +2,7 @@
 
 namespace ju1ius\Pegasus\Tests\Grammar;
 
-use ju1ius\Test\Pegasus\PegasusTestCase;
+use ju1ius\Pegasus\Tests\PegasusTestCase;
 
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Builder;
@@ -29,51 +29,31 @@ class BuilderTest extends PegasusTestCase
         return [
             [
                 [
-                    'start' => new Sequence([
-                        new Literal('foo'),
-                        new Ref('bar')
-                    ]),
-                    'bar' => new OneOf([
-                        new Literal('bar'),
-                        new Literal('baz')
-                    ])
+                    'start' => new Sequence([new Literal('foo'), new Ref('bar')]),
+                    'bar' => new OneOf([new Literal('bar'), new Literal('baz')])
                 ],
                 Builder::build()
-                    ->rule('start')
-                        ->seq()
-                            ->literal('foo')
-                            ->ref('bar')
-                    ->rule('bar')
-                        ->oneOf()
-                            ->literal('bar')
-                            ->literal('baz')
+                    ->rule('start')->seq()
+                        ->literal('foo')
+                        ->ref('bar')
+                    ->rule('bar')->oneOf()
+                        ->literal('bar')
+                        ->literal('baz')
                     ->getGrammar()
             ],
             [
                 [
                     'start' => new OneOf([
-                        new Sequence([
-                            new Literal('foo'),
-                            new Literal('bar'),
-                        ]),
-                        new Sequence([
-                            new Ref('beg'),
-                            new Ref('food'),
-                        ]),
+                        new Sequence([new Literal('foo'), new Literal('bar')]),
+                        new Sequence([new Ref('beg'), new Ref('food')]),
                     ]),
                     'beg' => new Sequence([
                         new Literal('Can'),
-                        new OneOf([
-                            new Literal('I'),
-                            new Literal('We'),
-                        ]),
+                        new OneOf([new Literal('I'), new Literal('We')]),
                         new Literal('haz')
                     ]),
                     'food' => new Sequence([
-                        new OneOf([
-                            new Literal('cheez'),
-                            new Literal('ham'),
-                        ]),
+                        new OneOf([new Literal('cheez'), new Literal('ham')]),
                         new Literal('burger')
                     ])
                 ],
@@ -104,12 +84,8 @@ class BuilderTest extends PegasusTestCase
             [
                 [
                     'start' => new Sequence([
-                        new Quantifier([
-                            new Literal('foo')
-                        ], 1, INF),
-                        new Quantifier([
-                            new Literal('bar')
-                        ], 1, INF),
+                        new Quantifier([new Literal('foo')], 1, INF),
+                        new Quantifier([new Literal('bar')], 1, INF),
                     ])
                 ],
                 Builder::build()
@@ -120,5 +96,5 @@ class BuilderTest extends PegasusTestCase
             ]
         ];
     }
-    
+
 }

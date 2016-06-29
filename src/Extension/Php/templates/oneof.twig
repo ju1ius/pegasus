@@ -1,25 +1,25 @@
 {% set result_var = '$result_' ~ expr.id %}
 {% set pos_var = '$pos_' ~ expr.id %}
 /**
- * matching {{expr.asRhs()}}
+ *  Matching: {{ expr.asRightHandSide() }}
  */
-{{result_var}} = null;
+{{ result_var }} = null;
 do {
-    {{pos_var}} = $this->pos;
+    {{ pos_var }} = $this->pos;
 {% for child in expr.children %}
-    $result_{{child.id}} = null;
+    $result_{{ child.id }} = null;
 {% filter indent -%}
-{% include expr_tpl(child) with {'expr': child} only %} 
+{% include expr_tpl(child) with {expr: child} only %}
 {%- endfilter %}
-    if ($result_{{child.id}}) {
-        {{result_var}} = $result_{{child.id}};
+    if ($result_{{ child.id }}) {
+        {{ result_var }} = $result_{{ child.id }};
         break;
     }
-    $this->pos = {{pos_var}};
+    $this->pos = {{ pos_var }};
 {% endfor %}
 } while (0);
-if ({{result_var}}) {
-    {{result_var}} = new Node\OneOf('{{expr.name}}', $this->text, {{pos_var}}, $this->pos, [{{result_var}}]);
+if ({{ result_var }}) {
+    {{ result_var }} = new Node\OneOf('{{ expr.name }}', $this->text, {{ pos_var }}, $this->pos, [{{ result_var }}]);
 } else {
-{{macros.error(expr, pos_var) | indent}}
+{{ macros.error(expr, pos_var)|indent }}
 }

@@ -1,10 +1,9 @@
 <?php
 
-use ju1ius\Test\Pegasus\ExpressionTestCase;
+namespace ju1ius\Pegasus\Tests\Expression;
 
-use ju1ius\Pegasus\Expression\Regex;
 use ju1ius\Pegasus\Node\Regex as Rx;
-
+use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class RegexTest extends ExpressionTestCase
 {

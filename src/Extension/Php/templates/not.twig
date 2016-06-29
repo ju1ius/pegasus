@@ -2,13 +2,13 @@
 {% set child = expr.children[0] %}
 {% set subres_var = '$result_' ~ child.id %}
 /**
- * matching {{expr.asRhs()}}
+ *  Matching: {{ expr.asRightHandSide() }}
  */
-{{result_var}} = null;
-{{subres_var}} = null;
-{% include expr_tpl(child) with {'expr': child} only %} 
-if (!{{subres_var}}) {
-    {{result_var}} = new Node\Not('{{expr.name}}', $this->text, $this->pos, $this->pos);
+{{ result_var }} = null;
+{{ subres_var }} = null;
+{% include expr_tpl(child) with {expr: child} only %}
+if (!{{ subres_var }}) {
+    {{ result_var }} = new Node\Not('{{ expr.name }}', $this->text, $this->pos, $this->pos);
 } else {
-{{macros.error(expr) | indent}}
+{{ macros.error(expr)|indent }}
 }

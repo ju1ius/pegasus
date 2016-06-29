@@ -18,7 +18,7 @@ use ju1ius\Pegasus\Grammar;
  *
  * @codeCoverageIgnore
  */
-abstract class GrammarVisitor implements GrammarVisitorInterface
+class GrammarVisitor implements GrammarVisitorInterface
 {
     /**
      * @inheritDoc

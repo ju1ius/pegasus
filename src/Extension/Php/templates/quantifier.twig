@@ -1,32 +1,32 @@
 {% set result_var = '$result_' ~ expr.id %}
 {% set pos_var = '$pos_' ~ expr.id %}
-{% set count_var = '$count_' ~ expr.id %} 
+{% set count_var = '$count_' ~ expr.id %}
 {% set children_var = '$children_' ~ expr.id %}
 {% set child = expr.children[0] %}
 {% set subres_var = '$result_' ~ child.id %}
 /**
- * matching {{expr.asRhs()}}
+ *  Matching: {{ expr.asRightHandSide() }}
  */
-{{pos_var}} = $this->pos;
-{{count_var}} = 0;
-{{children_var}} = [];
-while ({{count_var}} < {{expr.max}}) {
-    {{subres_var}} = null;
+{{ pos_var }} = $this->pos;
+{{ count_var }} = 0;
+{{ children_var }} = [];
+while ({{ count_var }} < {{ expr.max }}) {
+    {{ subres_var }} = null;
 {% filter indent -%}
-{% include expr_tpl(child) with {'expr': child} only %} 
+{% include expr_tpl(child) with {'expr': child} only %}
 {%- endfilter %}
-    if (!{{subres_var}}) {
+    if (!{{ subres_var }}) {
         break;
     }
-    {{count_var}}++;
-    {{children_var}}[] = {{subres_var}};
-    $length = {{subres_var}}->end - {{subres_var}}->start;
+    {{ count_var }}++;
+    {{ children_var }}[] = {{ subres_var }};
+    $length = {{ subres_var }}->end - {{ subres_var }}->start;
     if (!$length) {
         break;
     }
 }
-if ({{count_var}} >= {{expr.min}}) {
-    {{result_var}} = new Node\Quantifier('{{expr.name}}', $this->text, {{pos_var}}, $this->pos, {{children_var}});
+if ({{ count_var }} >= {{ expr.min }}) {
+    {{ result_var }} = new Node\Quantifier('{{ expr.name }}', $this->text, {{ pos_var }}, $this->pos, {{ children_var }});
 } else {
-    $this->pos = {{pos_var}};
+    $this->pos = {{ pos_var }};
 }

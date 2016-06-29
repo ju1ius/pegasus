@@ -2,7 +2,7 @@
 /*
  * This file is part of Pegasus
  *
- * (c) 2014 Jules Bernable 
+ * (c) 2014 Jules Bernable
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -10,9 +10,23 @@
 
 namespace ju1ius\Pegasus\Grammar;
 
+use ju1ius\Pegasus\Expression\Composite;
+use ju1ius\Pegasus\Expression\EOF;
+use ju1ius\Pegasus\Expression\Epsilon;
+use ju1ius\Pegasus\Expression\Fail;
+use ju1ius\Pegasus\Expression\Label;
+use ju1ius\Pegasus\Expression\Literal;
+use ju1ius\Pegasus\Expression\Lookahead;
+use ju1ius\Pegasus\Expression\Not;
+use ju1ius\Pegasus\Expression\OneOf;
+use ju1ius\Pegasus\Expression\Quantifier;
+use ju1ius\Pegasus\Expression\Reference;
+use ju1ius\Pegasus\Expression\Regex;
+use ju1ius\Pegasus\Expression\Sequence;
+use ju1ius\Pegasus\Expression\Skip;
+use ju1ius\Pegasus\Expression\Wrapper;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Expression;
-
 
 /**
  * This class provides a fluent interface for building grammars.
@@ -22,25 +36,42 @@ class Builder
 {
     /**
      * Current rule name.
+     *
+     * @var string
      */
-    protected $current_rule = null;
+    protected $currentRule;
 
     /**
      * Stack of added expressions.
+     *
+     * @var \SplStack<Expression>
      */
-    protected $expr_stack = null;
+    protected $exprStack = null;
 
+    /**
+     * Builder constructor.
+     *
+     * @param Grammar|null $grammar
+     */
     public function __construct(Grammar $grammar = null)
     {
         $this->grammar = $grammar ?: new Grammar();
-        $this->expr_stack = new \SplStack();
+        $this->exprStack = new \SplStack();
     }
 
+    /**
+     * @param Grammar|null $grammar
+     *
+     * @return Builder
+     */
     public static function build(Grammar $grammar = null)
     {
         return new self($grammar);
     }
 
+    /**
+     * @return Grammar
+     */
     public function getGrammar()
     {
         $this->end(true);
@@ -48,143 +79,237 @@ class Builder
         return $this->grammar;
     }
 
+    /**
+     * @param string $name
+     *
+     * @return $this
+     */
     public function rule($name)
     {
         $this->end(true);
-        $this->current_rule = $name;
+        $this->currentRule = $name;
 
         return $this;
     }
 
+    /**
+     * @param Expression $expr
+     *
+     * @return $this
+     */
     public function add(Expression $expr)
     {
         // stack is empty, we're at root
-        if ($this->expr_stack->isEmpty()) {
-            $this->expr_stack->push($expr);
+        if ($this->exprStack->isEmpty()) {
+            $this->exprStack->push($expr);
 
             return $this;
         }
 
-        $top = $this->expr_stack->top();
-        // if top expr is a wrapper and it has already one child
-        // end the top expr 
-        if ($top instanceof Expression\Wrapper && count($top->children) === 1) {
+        $top = $this->exprStack->top();
+        // if top expr is a wrapper and it has already one child, end the top expr
+        if ($top instanceof Wrapper && count($top->children) === 1) {
             $this->end();
-            $top = $this->expr_stack->top();
+            $top = $this->exprStack->top();
         }
 
-        if ($top instanceof Expression\Composite) {
+        if ($top instanceof Composite) {
             $top->children[] = $expr;
-            $this->expr_stack->push($expr);
+            $this->exprStack->push($expr);
         } else {
-            throw new \RuntimeException(sprintf(
-                'Cannot add child expression %s to non-composite expression %s. Did you forget to call Builder::end()?',
-                $expr,
-                $top
-            ));
+            throw new \RuntimeException(
+                sprintf(
+                    'Cannot add child expression %s to non-composite expression %s. Did you forget to call Builder::end()?',
+                    $expr,
+                    $top
+                )
+            );
         }
 
         return $this;
     }
 
+    /**
+     * @param bool $all
+     *
+     * @return $this
+     */
     public function end($all = false)
     {
         $expr = null;
 
         if ($all) {
-            while (!$this->expr_stack->isEmpty()) {
-                $expr = $this->expr_stack->pop();
+            while (!$this->exprStack->isEmpty()) {
+                $expr = $this->exprStack->pop();
             }
         } else {
-            $expr = $this->expr_stack->pop();
+            $expr = $this->exprStack->pop();
         }
 
-        if ($expr && $this->expr_stack->isEmpty()) {
-            $this->grammar[$this->current_rule] = $expr;
+        if ($expr && $this->exprStack->isEmpty()) {
+            $this->grammar[$this->currentRule] = $expr;
         }
 
         return $this;
     }
 
+    /**
+     * @param string $literal
+     *
+     * @return Builder
+     */
     public function literal($literal)
     {
-        $this->add(new Expression\Literal($literal));
+        $this->add(new Literal($literal));
 
         return $this->end();
     }
 
-    public function regex($pattern, $flags)
+    /**
+     * @param string $pattern
+     * @param array  $flags
+     *
+     * @return Builder
+     */
+    public function regex($pattern, array $flags = [])
     {
-        $this->add(new Expression\Regex($pattern, '', $flags));
+        $this->add(new Regex($pattern, '', $flags));
 
         return $this->end();
     }
 
+    /**
+     * @return Builder
+     */
     public function eof()
     {
-        $this->add(new Expression\EOF());
+        $this->add(new EOF());
 
         return $this->end();
     }
 
+    /**
+     * @return Builder
+     */
     public function e()
     {
-        $this->add(new Expression\Epsilon());
+        $this->add(new Epsilon());
 
         return $this->end();
     }
 
+    /**
+     * @return Builder
+     */
     public function fail()
     {
-        $this->add(new Expression\Fail());
+        $this->add(new Fail());
 
         return $this->end();
     }
 
+    /**
+     * @param string $name
+     *
+     * @return Builder
+     */
+    public function reference($name)
+    {
+        $this->add(new Reference($name));
+
+        return $this->end();
+    }
+
+    /**
+     * Alias of `reference`.
+     *
+     * @param string $name
+     *
+     * @return Builder
+     */
     public function ref($name)
     {
-        $this->add(new Expression\Reference($name));
-
-        return $this->end();
+        return $this->reference($name);
     }
 
+    /**
+     * @return Builder
+     */
+    public function sequence()
+    {
+        return $this->add(new Sequence());
+    }
+
+    /**
+     * Alias of `sequence`
+     *
+     * @return Builder
+     */
     public function seq()
     {
-        return $this->add(new Expression\Sequence());
+        return $this->sequence();
     }
 
+    /**
+     * @return Builder
+     */
     public function oneOf()
     {
-        return $this->add(new Expression\OneOf());
+        return $this->add(new OneOf());
     }
 
+    /**
+     * Alias of `oneOf`.
+     *
+     * @return Builder
+     */
     public function alt()
     {
         return $this->oneOf();
     }
 
+    /**
+     * @param int $min
+     * @param int $max
+     *
+     * @return Builder
+     */
     public function q($min = 0, $max = INF)
     {
-        return $this->add(new Expression\Quantifier([], $min, $max));
+        return $this->add(new Quantifier([], $min, $max));
     }
 
+    /**
+     * @param string $label
+     *
+     * @return Builder
+     */
     public function label($label)
     {
-        return $this->add(new Expression\Label([], $label));
+        return $this->add(new Label([], $label));
     }
 
+    /**
+     * @return Builder
+     */
     public function not()
     {
-        return $this->add(new Expression\Not());
+        return $this->add(new Not([]));
     }
 
+    /**
+     * @return Builder
+     */
     public function lookahead()
     {
-        return $this->add(new Expression\Lookahead());
+        return $this->add(new Lookahead([]));
     }
 
+    /**
+     * @return Builder
+     */
     public function skip()
     {
-        return $this->add(new Expression\Skip());
+        return $this->add(new Skip([]));
     }
 }
