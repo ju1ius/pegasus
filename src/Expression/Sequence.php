@@ -2,25 +2,21 @@
 /*
  * This file is part of Pegasus
  *
- * (c) 2014 Jules Bernable 
+ * (c) 2014 Jules Bernable
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-
 namespace ju1ius\Pegasus\Expression;
 
-use ju1ius\Pegasus\Parser\ParserInterface;
 use ju1ius\Pegasus\Node;
-
+use ju1ius\Pegasus\Parser\ParserInterface;
 
 /**
- * A series of expressions that must match contiguous,
- * ordered pieces of the text.
+ * A series of expressions that must match contiguous, ordered pieces of the text.
  *
- * In other words, it's a concatenation operator:
- * each piece has to match, one after another.
+ * In other words, it's a concatenation operator: each piece has to match, one after another.
  */
 class Sequence extends Composite
 {
@@ -40,7 +36,7 @@ class Sequence extends Composite
 
         return $capturing;
     }
-    
+
     public function match($text, $pos, ParserInterface $parser)
     {
         $new_pos = $pos;
@@ -56,6 +52,7 @@ class Sequence extends Composite
             $new_pos += $len;
             $seq_len += $len;
         }
+
         return new Node\Sequence($this, $text, $pos, $pos + $seq_len, $children);
     }
 }

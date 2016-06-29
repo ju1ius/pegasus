@@ -2,15 +2,13 @@
 /*
  * This file is part of Pegasus
  *
- * (c) 2014 Jules Bernable 
+ * (c) 2014 Jules Bernable
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-
 namespace ju1ius\Pegasus;
-
 
 /**
  * Abstract class for parse tree nodes.
@@ -25,7 +23,7 @@ namespace ju1ius\Pegasus;
  * the final rendered form of a wiki page (or the intermediate representation
  * of a programming language, or whatever) is going to be: you should be able
  * to parse once and render several representations from the tree, one after
- * another. 
+ * another.
  *
  **/
 abstract class Node
@@ -60,8 +58,8 @@ abstract class Node
     public $end;
 
     /**
-     * @param string|Expression $expr       The expression (or it's string representation when used in a generated parser)
-     *                                      that generated this node.
+     * @param string|Expression $expr       The expression (or it's string representation when used in a generated
+     *                                      parser) that generated this node.
      * @param string            $full_text  The full text fed to the parser
      * @param int               $start      The position in the text where that expr started matching
      * @param int               $end        The position after start where the expr first didn't match.
@@ -78,6 +76,7 @@ abstract class Node
      * Generator recursively yielding all terminal (leaf) nodes
      */
     abstract public function terminals();
+
     /**
      * Generator recursively yielding this node and it's children
      */
@@ -95,31 +94,30 @@ abstract class Node
      */
     public function getText()
     {
-        return (string) substr($this->full_text, $this->start, $this->end - $this->start);
+        return (string)substr($this->full_text, $this->start, $this->end - $this->start);
     }
 
-    public function equals($other=null)
+    public function equals(Node $other = null)
     {
         return $other
             && $this instanceof $other
             && $this->expr === $other->expr
             && $this->start === $other->start
             && $this->end === $other->end
-            && $this->full_text === $other->full_text
-        ;
+            && $this->full_text === $other->full_text;
     }
 
-    public function notEquals($other=null)
+    public function notEquals($other = null)
     {
         return !$this->equals($other);
     }
 
-    public function inspect($error=null)
+    public function inspect($error = null)
     {
         $rule = $this->expr instanceof Expression
-            ? $this->expr->name ?: $this->expr->asRhs()
-            : (string) $this->expr
-        ;
+            ? ($this->expr->name ?: $this->expr->asRhs())
+            : (string)$this->expr;
+
         return sprintf(
             '+ %s, Rule=> %s Match=> "%s" %s',
             str_replace('ju1ius\Pegasus\\', '', get_class($this)),
@@ -128,10 +126,10 @@ abstract class Node
             $error === $this ? '    <-- *** We were here. ***' : ''
         );
     }
-    
+
     static protected function indent($text)
     {
-        return implode("\n", array_map(function($line) {
+        return implode("\n", array_map(function ($line) {
             return '+---' . $line;
         }, explode("\n", $text)));
     }

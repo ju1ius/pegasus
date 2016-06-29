@@ -2,7 +2,7 @@
 /*
  * This file is part of Pegasus
  *
- * (c) 2014 Jules Bernable 
+ * (c) 2014 Jules Bernable
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -69,7 +69,7 @@ class NodeVisitor
             if ($node instanceof Node\Composite) {
                 // visit children
 				foreach ($node->children as $child) {
-					// filter ignored (null) nodes 
+					// filter ignored (null) nodes
                     if (null !== $result = $this->visit($child)) {
                         $children[] = $result;
                     }
@@ -165,7 +165,7 @@ class NodeVisitor
     {
         return (int) (string) $node;
     }
-    
+
     public function toFloat($node, $children)
     {
         return (float) (string) $node;
@@ -210,7 +210,7 @@ class NodeVisitor
             foreach ($actions as $action) {
                 if ($action instanceof \Closure) {
                     $result[$expr_name][] = $action->bindTo($this, $this);
-                } else if (method_exists($this, $action)) {
+                } elseif (method_exists($this, $action)) {
                     $result[$expr_name][] = [$this, $action];
                 }
             }

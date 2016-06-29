@@ -2,17 +2,13 @@
 /*
  * This file is part of Pegasus
  *
- * (c) 2014 Jules Bernable 
+ * (c) 2014 Jules Bernable
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-
 namespace ju1ius\Pegasus\Expression;
-
-use ju1ius\Pegasus\Expression\Quantifier;
-
 
 /**
  * An expression wrapper like the * quantifier in regexes.
@@ -20,11 +16,11 @@ use ju1ius\Pegasus\Expression\Quantifier;
  **/
 class ZeroOrMore extends Quantifier
 {
-    public function __construct(array $children=[], $name='')
+    public function __construct(array $children = [], $name = '')
     {
         parent::__construct($children, 0, INF, $name);
     }
-    
+
     public function asRhs()
     {
         return sprintf('(%s)*', $this->stringMembers());

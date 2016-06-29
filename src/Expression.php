@@ -2,7 +2,7 @@
 /*
  * This file is part of Pegasus
  *
- * (c) 2014 Jules Bernable 
+ * (c) 2014 Jules Bernable
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -10,8 +10,6 @@
 
 namespace ju1ius\Pegasus;
 
-use ju1ius\Pegasus\Exception\IncompleteParseError;
-use ju1ius\Pegasus\Exception\ParseError;
 use ju1ius\Pegasus\Parser\ParserInterface;
 
 
@@ -34,8 +32,9 @@ abstract class Expression
      * It MUST never be modified, as it is used by the Parser classes
      * for caching match results.
      *
+     * @var integer
+     * @readonly
      * @internal
-     * @var integer 
      */
     public $id;
 
@@ -48,6 +47,11 @@ abstract class Expression
         $this->id = ++self::$UID;
     }
 
+    /**
+     * Returns a string representation of this expression, suitable for the right-hand-side of a rule.
+     *
+     * @return string
+     */
     abstract public function asRhs();
 
     /**
@@ -57,18 +61,15 @@ abstract class Expression
      *
      * This method is for internal use only and should never be called directly.
      *
-     * @param string                    $text The full text of the match subject.
-     * @param int                       $pos The position at which this expression must the match.
-     * @param Parser\ParserInterface    $parser The parser used for this expression.
+     * @internal
+     *
+     * @param string          $text   The full text of the match subject.
+     * @param int             $pos    The position at which this expression must start matching.
+     * @param ParserInterface $parser The parser used for this expression.
      *
      * @return Node | null
      */
     abstract public function match($text, $pos, ParserInterface $parser);
-
-    public function __toString()
-    {
-        return sprintf('<%s: %s>', get_class($this), $this->asRule());
-    }
 
     public function asRule()
     {
@@ -78,12 +79,18 @@ abstract class Expression
 
         return $this->asRhs();
     }
-    
+
+    public function __toString()
+    {
+        return sprintf('<%s: %s>', get_class($this), $this->asRule());
+    }
+
     /**
-     * Documentation for equals
+     * Returns whether this expression is considered equal to another.
      *
      * @param Expression $other
-     * @return void
+     *
+     * @return boolean
      */
     public function equals(Expression $other)
     {
@@ -94,7 +101,7 @@ abstract class Expression
     }
 
     /**
-     * Returns  true if the expression returns parse results on success,
+     * Returns whether the expression returns parse results on success,
      * or false if the expression simply returns true on success.
      *
      * @return bool
@@ -105,8 +112,7 @@ abstract class Expression
     }
 
     /**
-     * Returns true if the number of result nodes returned by the expression
-     * varies based on the input.
+     * Returns whether the number of result nodes returned by the expression varies based on the input.
      *
      * @return bool
      */
@@ -116,8 +122,7 @@ abstract class Expression
     }
 
     /**
-     * Returns true if it can be determined statically whether the expression
-     * returns parse results on success.
+     * Returns whether it can be determined statically that the expression returns parse results on success.
      *
      * @return bool
      */
@@ -131,7 +136,7 @@ abstract class Expression
         //$this->id = spl_object_hash($this);
         $this->id = ++self::$UID;
     }
-    
+
     public function __wakeup()
     {
         //$this->id = spl_object_hash($this);

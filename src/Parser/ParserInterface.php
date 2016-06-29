@@ -2,7 +2,7 @@
 /*
  * This file is part of Pegasus
  *
- * (c) 2014 Jules Bernable 
+ * (c) 2014 Jules Bernable
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,7 +12,7 @@
 namespace ju1ius\Pegasus\Parser;
 
 use ju1ius\Pegasus\Expression;
-
+use ju1ius\Pegasus\Node;
 
 interface ParserInterface
 {
@@ -23,7 +23,7 @@ interface ParserInterface
      * @param int       $pos
      * @param string    $start_rule
      *
-     * @return Pegasus\Node | null
+     * @return Node|null
      */
     public function parse($text, $pos=0, $start_rule=null);
 
@@ -32,10 +32,10 @@ interface ParserInterface
      *
      * This is called internally by Expression::match to parse sub-expressions.
      *
-     * @param Pegasus\Expression    $expr
-     * @param int           $pos
+     * @param Expression $expr
+     * @param int        $pos
      *
-     * @return Pegasus\Node | null
+     * @return Node|null
      */
     public function apply(Expression $expr, $pos);
 }

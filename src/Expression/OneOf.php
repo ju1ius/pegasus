@@ -2,19 +2,16 @@
 /*
  * This file is part of Pegasus
  *
- * (c) 2014 Jules Bernable 
+ * (c) 2014 Jules Bernable
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-
 namespace ju1ius\Pegasus\Expression;
 
-use ju1ius\Pegasus\Expression\Composite;
-use ju1ius\Pegasus\Parser\ParserInterface;
 use ju1ius\Pegasus\Node;
-
+use ju1ius\Pegasus\Parser\ParserInterface;
 
 /**
  * A series of expressions, one of which must match
@@ -31,25 +28,24 @@ class OneOf extends Composite
 
     public function isCapturingDecidable()
     {
-        $capturing_children = 0;
+        $capturingChildren = 0;
         foreach ($this->children as $child) {
             if (!$child->isCapturingDecidable()) {
                 return false;
             }
             if ($child->isCapturing()) {
-                $capturing_children++;
-            }   
+                $capturingChildren++;
+            }
         }
-        return 0 === $capturing_children
-            || $capturing_children === count($this->children)
-        ;
+
+        return !$capturingChildren || $capturingChildren === count($this->children);
     }
-    
+
     public function match($text, $pos, ParserInterface $parser)
     {
         foreach ($this->children as $child) {
             $node = $parser->apply($child, $pos);
-            if($node) {
+            if ($node) {
                 // Wrap the succeeding child in a node representing the OneOf
                 return new Node\OneOf($this, $text, $pos, $node->end, [$node]);
             }

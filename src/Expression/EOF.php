@@ -16,7 +16,7 @@ use ju1ius\Pegasus\Node;
 
 
 /**
- * Matches if there's nothing left to consume.
+ * Matches if there's nothing left to consume (end of input).
  */
 class EOF extends Terminal
 {

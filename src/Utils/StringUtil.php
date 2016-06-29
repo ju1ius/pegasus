@@ -2,7 +2,7 @@
 /*
  * This file is part of Pegasus
  *
- * (c) 2014 Jules Bernable 
+ * (c) 2014 Jules Bernable
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,7 +12,7 @@
 namespace ju1ius\Pegasus\Utils;
 
 
-class String
+class StringUtil
 {
     const BACKREF_SPLIT_RX = <<<'EOS'
 @
@@ -24,7 +24,7 @@ EOS;
 
 	const ESCAPES_REPLACE_RX = <<<'EOS'
 @
-	(?<!\\\\)\\\\((?:\\\\\\\\)*)	# odd number of backslashes
+	(?<!\\\\) \\\\ ((?:\\\\\\\\)*)	# odd number of backslashes
     (?:                             # followed by
 		x([0-9a-fA-F]{1,2})			# hex escape sequence
 		| ([abnrtvef])				# or control char escape sequence
@@ -44,14 +44,14 @@ EOS;
 @Sx
 EOS;
 
-    public static function splitBackrefSubject($subject)
+    public static function splitBackReferenceSubject($subject)
     {
 		if (preg_match_all(self::BACKREF_SPLIT_RX, $subject, $matches, PREG_SET_ORDER)) {
 			return $matches;
 		}
     }
 
-    public static function replaceBackrefSubject(array $subjectParts, callable $callback, $regex = false)
+    public static function replaceBackReferenceSubject(array $subjectParts, callable $callback, $regex = false)
     {
 		$output = '';
         foreach ($subjectParts as $part) {
@@ -61,25 +61,27 @@ EOS;
             }
 			$output .= $part[1] . ($replaced ?: '') . $part[3];
 		}
+
 		return $output;
     }
 
 	public static function convertEscapeSequences($str)
     {
 		// replace php style escape sequences by their actual character
-		$str = preg_replace_callback(self::ESCAPES_REPLACE_RX, 'self::escape_replace_cb' ,$str);
+		$str = preg_replace_callback(self::ESCAPES_REPLACE_RX, 'self::escapeReplaceCallback', $str);
 		// reduce redundant backslashes
 		// FIXME: use stripcslashes ?
-        $str = preg_replace_callback(self::BACKSLASH_REPLACE_RX, 'self::backslach_replace_cb', $str);
+        $str = preg_replace_callback(self::BACKSLASH_REPLACE_RX, 'self::backslashReplaceCallback', $str);
+
         return $str;
 	}
 
-	private static function escape_replace_cb($matches)
+	private static function escapeReplaceCallback($matches)
 	{
 		$res = str_repeat('\\', strlen($matches[1]) / 2);
 		if (isset($matches[4])) {
 			$res .= chr(octdec($matches[4]));
-		} else if (isset($matches[3])) {
+		} elseif (isset($matches[3])) {
 			switch($matches[3]) {
 				case 'a':
 					$res .= "\x07";
@@ -106,15 +108,16 @@ EOS;
 					$res .= "\f";
 					break;
 			}
-		} else if (isset($matches[2])) {
+		} elseif (isset($matches[2])) {
 			$res .= chr(hexdec($matches[2]));
 		} else {
 			$res = $matches[0];
 		}
+
 		return $res;
 	}
 
-	private static function backslach_replace_cb($matches)
+	private static function backslashReplaceCallback($matches)
 	{
 		return str_repeat('\\', strlen($matches[1]) / 2) . $matches[2];
 	}

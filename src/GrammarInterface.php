@@ -2,7 +2,7 @@
 /*
  * This file is part of Pegasus
  *
- * (c) 2014 Jules Bernable 
+ * (c) 2014 Jules Bernable
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -24,8 +24,8 @@ interface GrammarInterface extends \ArrayAccess, \Countable, \IteratorAggregate
      * Set the grammar's name.
      *
      * @param string $name
-     * 
-     * @return $this 
+     *
+     * @return $this
      */
     public function setName($name);
 
@@ -73,11 +73,11 @@ interface GrammarInterface extends \ArrayAccess, \Countable, \IteratorAggregate
      * Folds the grammar by resolving Reference objects
      * to actual references to the corresponding expressions.
      *
-     * @param string    $start_rule An optional default start rule to use.
+     * @param string $startRule An optional default start rule to use.
      *
      * @return GrammarInterface $this
      */
-	public function fold($start_rule = null);
+	public function fold($startRule = null);
 
     /**
      * Unfolds the grammar by converting circular references to Reference objects.
@@ -98,11 +98,11 @@ interface GrammarInterface extends \ArrayAccess, \Countable, \IteratorAggregate
      *
      * Folds the grammar and performs additional optimizations.
      *
-     * @param string    $start_rule The default start rule to use.
+     * @param string $startRule The default start rule to use.
      *
      * @return GrammarInterface $this
      */
-	public function finalize($start_rule = null);
+	public function finalize($startRule = null);
 
     /**
      * Returns a string representation of the grammar.

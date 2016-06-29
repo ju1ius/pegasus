@@ -8,13 +8,11 @@
  * file that was distributed with this source code.
  */
 
-
 namespace ju1ius\Pegasus\Expression;
 
-use ju1ius\Pegasus\Parser\ParserInterface;
 use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Utils\String;
-
+use ju1ius\Pegasus\Parser\ParserInterface;
+use ju1ius\Pegasus\Utils\StringUtil;
 
 /**
  * An expression that matches what a regex does.
@@ -37,12 +35,12 @@ class Regex extends Terminal
     /**
      * @var string
      */
-    public $compiled_pattern;
+    public $compiledPattern;
 
     /**
      * @var string
      */
-    public $compiled_flags;
+    public $compiledFlags;
 
     /**
      * @var boolean
@@ -54,7 +52,7 @@ class Regex extends Terminal
      */
     public $subjectParts = [];
 
-    public function __construct($pattern, $name='', array $flags=[])
+    public function __construct($pattern, $name = '', array $flags = [])
     {
         parent::__construct($name);
         $this->pattern = $pattern;
@@ -64,14 +62,14 @@ class Regex extends Terminal
 
     protected function setup()
     {
-        $this->compiled_flags = implode('', $this->flags);
-        $this->compiled_pattern = sprintf(
+        $this->compiledFlags = implode('', $this->flags);
+        $this->compiledPattern = sprintf(
             '/\G %s /%s',
             $this->pattern,
-            $this->compiled_flags
+            $this->compiledFlags
         );
         // check for backreferences
-        $parts = String::splitBackrefSubject($this->pattern);
+        $parts = StringUtil::splitBackReferenceSubject($this->pattern);
         if ($parts) {
             $this->hasBackReference = true;
             $this->subjectParts = $parts;
@@ -80,24 +78,24 @@ class Regex extends Terminal
 
     public function asRhs()
     {
-        return $this->compiled_pattern;
+        return $this->compiledPattern;
     }
 
     public function match($text, $pos, ParserInterface $parser)
     {
         if ($this->hasBackReference) {
             $pattern = '/\G'
-                . String::replaceBackrefSubject($this->subjectParts, [$parser, 'getReference'], true)
+                . StringUtil::replaceBackReferenceSubject($this->subjectParts, [$parser, 'getReference'], true)
                 . '/'
-                . $this->compiled_flags
-            ;
+                . $this->compiledFlags;
         } else {
-            $pattern = $this->compiled_pattern;
+            $pattern = $this->compiledPattern;
         }
-        if(preg_match($pattern, $text, $matches, 0, $pos)) {
+        if (preg_match($pattern, $text, $matches, 0, $pos)) {
             $match = $matches[0];
             $length = strlen($match);
             $node = new Node\Regex($this, $text, $pos, $pos + $length, $matches);
+
             return $node;
         }
     }

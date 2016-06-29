@@ -2,7 +2,7 @@
 /*
  * This file is part of Pegasus
  *
- * (c) 2014 Jules Bernable 
+ * (c) 2014 Jules Bernable
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -15,58 +15,74 @@ use ju1ius\Pegasus\Expression;
 
 
 /**
- * An abstract expression which contains several other expressions. 
- * 
+ * An expression which contains several other expressions.
+ *
+ * @author ju1ius <ju1ius@laposte.net>
  */
 abstract class Composite extends Expression
 {
     /**
      * Holds an array of this expression's sub expressions.
-     * MUST be a zero-indexed array of Expression objects.
      *
-     * @var array
+     * @var Expression[]
      */
     public $children;
 
-    public function __construct(array $children=[], $name='')
+    /**
+     * Composite constructor.
+     *
+     * @param array  $children
+     * @param string $name
+     */
+    public function __construct(array $children = [], $name = '')
     {
         parent::__construct($name);
         $this->children = array_values($children);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function equals(Expression $other)
     {
         if (!parent::equals($other)) {
             return false;
         }
         foreach ($this->children as $i => $child) {
-            if (!isset($other->children[$i])) {
-                return false;
-            }
-            if (!$child->equals($other->children[$i])) {
+            /** @var Composite $other */
+            if (!isset($other->children[$i]) || !$child->equals($other->children[$i])) {
                 return false;
             }
         }
+
         return true;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function isCapturing()
     {
         foreach ($this->children as $child) {
             if ($child->isCapturing()) {
                 return true;
-            }   
+            }
         }
+
         return false;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function isCapturingDecidable()
     {
         foreach ($this->children as $child) {
             if (!$child->isCapturingDecidable()) {
                 return false;
-            }   
+            }
         }
+
         return true;
     }
 
@@ -78,7 +94,7 @@ abstract class Composite extends Expression
      */
     protected function stringMembers()
     {
-        return array_map(function($child) {
+        return array_map(function(Expression $child) {
             if ($child instanceof Reference) {
                 return $child->asRhs();
             }

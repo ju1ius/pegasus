@@ -12,16 +12,16 @@
  */
 protected $backref_replacements_{{expr.id}} = {{repr(expr.subjectParts)}};
 {% endcollect %}
-$pattern = '/\G' . $this->replaceBackrefSubject($backref_replacements_{{expr.id}}, true) . '/{{expr.compiled_flags}}';
+$pattern = '/\G' . $this->replaceBackrefSubject($backref_replacements_{{expr.id}}, true) . '/{{expr.compiledFlags}}';
 
 {%- else -%}
 
-$pattern = {{rxrepr(expr.compiled_pattern)}};
+$pattern = {{rxrepr(expr.compiledPattern)}};
 
 {%- endif %}
 
 if(preg_match($pattern, $this->text, $matches, 0, $this->pos)) {
-    {{result_var}} = new Node\Regex('{{expr.name}}', $this->text, $this->pos, $this->pos + strlen($matches[0]), $matches); 
+    {{result_var}} = new Node\Regex('{{expr.name}}', $this->text, $this->pos, $this->pos + strlen($matches[0]), $matches);
     $this->pos = {{result_var}}->end;
 } else {
 {{macros.error(expr) | indent}}

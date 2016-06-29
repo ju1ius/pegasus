@@ -2,19 +2,17 @@
 /*
  * This file is part of Pegasus
  *
- * (c) 2014 Jules Bernable 
+ * (c) 2014 Jules Bernable
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-
 namespace ju1ius\Pegasus\Expression;
 
-use ju1ius\Pegasus\Parser\ParserInterface;
 use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Utils\String;
-
+use ju1ius\Pegasus\Parser\ParserInterface;
+use ju1ius\Pegasus\Utils\StringUtil;
 
 /**
  * A string literal
@@ -28,15 +26,15 @@ class Literal extends Terminal
      */
     public $literal;
 
-	/**
-	 * @var string
-	 */
-	public $quotechar;
+    /**
+     * @var string
+     */
+    public $quoteCharacter = '"';
 
     /**
      * @var int
      */
-    public $length;
+    public $length = 0;
 
     /**
      * @var boolean
@@ -48,17 +46,17 @@ class Literal extends Terminal
      */
     public $subjectParts = [];
 
-	public function __construct($literal, $name='', $quotechar='"')
+    public function __construct($literal, $name = '', $quoteCharacter = '"')
     {
         parent::__construct($name);
-		$this->literal = $literal;
-		$this->quotechar = $quotechar;
+        $this->literal = $literal;
+        $this->quoteCharacter = $quoteCharacter;
         $this->setup();
     }
 
     public function setup()
     {
-        $parts = String::splitBackrefSubject($this->literal);
+        $parts = StringUtil::splitBackReferenceSubject($this->literal);
         if ($parts) {
             $this->hasBackReference = true;
             $this->subjectParts = $parts;
@@ -79,7 +77,7 @@ class Literal extends Terminal
         $length = $this->length;
 
         if ($this->hasBackReference) {
-            $value = String::replaceBackrefSubject($this->subjectParts, [$parser, 'getReference']);
+            $value = StringUtil::replaceBackReferenceSubject($this->subjectParts, [$parser, 'getReference']);
             $length = strlen($value);
         }
         if ($pos === strpos($text, $value, $pos)) {
