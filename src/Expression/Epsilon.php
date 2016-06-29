@@ -18,10 +18,10 @@ use ju1ius\Pegasus\Parser\ParserInterface;
  * The empty string
  *
  * Always matches without consuming any input.
- **/
+ */
 class Epsilon extends Terminal
 {
-    public function asRhs()
+    public function asRightHandSide()
     {
         return 'ε';
     }

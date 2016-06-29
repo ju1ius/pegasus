@@ -18,15 +18,15 @@ use ju1ius\Pegasus\Parser\ParserInterface;
  * An expression that always fail without consuming any input.
  *
  * This can be used to signal malformed input.
- **/
+ */
 class Fail extends Terminal
 {
     /**
      * @inheritdoc
      */
-    public function asRhs()
+    public function asRightHandSide()
     {
-		return 'FAIL';
+		return '#FAIL';
     }
 
     /**

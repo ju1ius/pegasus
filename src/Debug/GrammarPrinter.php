@@ -55,7 +55,7 @@ class GrammarPrinter extends GrammarVisitor
             $this->indent(),
             $expr->name ?: '',
             str_replace('ju1ius\Pegasus\Expression\\', '', get_class($expr)),
-            $expr->asRhs()
+            $expr->asRightHandSide()
         );
     }
 

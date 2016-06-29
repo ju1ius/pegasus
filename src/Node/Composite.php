@@ -30,7 +30,7 @@ class Composite extends Node
      * @param int    $start     The position in the text where that expr started matching
      * @param int    $end       The position after start where the expr first didn't match.
      * @param array  $children  List of child parse tree nodes
-     **/
+     */
     public function __construct($expr, $full_text, $start, $end, array $children)
     {
         parent::__construct($expr, $full_text, $start, $end);

@@ -20,7 +20,7 @@ use ju1ius\Pegasus\Parser\ParserInterface;
  */
 class Sequence extends Composite
 {
-    public function asRhs()
+    public function asRightHandSide()
     {
         return implode(' ', $this->stringMembers());
     }

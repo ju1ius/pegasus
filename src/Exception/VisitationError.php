@@ -2,7 +2,7 @@
 /*
  * This file is part of Pegasus
  *
- * (c) 2014 Jules Bernable 
+ * (c) 2014 Jules Bernable
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -23,13 +23,13 @@ use ju1ius\Pegasus\Node;
  * tree traversal in your head.
  *
  * @todo Make this serializable
- **/
+ */
 class VisitationError extends \RuntimeException
 {
     /**
-     * @param $exc  What went wrong. We wrap this and add more info. 
-     * @param $node The node at which the error occurred 
-     **/
+     * @param \Exception $exc  What went wrong. We wrap this and add more info.
+     * @param Node       $node The node at which the error occurred
+     */
     public function __construct(\Exception $exc, Node $node)
     {
         parent::__construct('', 0, $exc);
@@ -45,5 +45,4 @@ class VisitationError extends \RuntimeException
             $this->node->inspect($this->node)
         );
     }
-    
 }

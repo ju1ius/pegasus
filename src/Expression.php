@@ -12,11 +12,10 @@ namespace ju1ius\Pegasus;
 
 use ju1ius\Pegasus\Parser\ParserInterface;
 
-
 /**
  * An object that matches against a piece of text.
  *
- **/
+ */
 abstract class Expression
 {
     /**
@@ -40,19 +39,12 @@ abstract class Expression
 
     private static $UID = 0;
 
-    public function __construct($name='')
+    public function __construct($name = '')
     {
         $this->name = $name;
         //$this->id = spl_object_hash($this);
         $this->id = ++self::$UID;
     }
-
-    /**
-     * Returns a string representation of this expression, suitable for the right-hand-side of a rule.
-     *
-     * @return string
-     */
-    abstract public function asRhs();
 
     /**
      * Returns the parse tree matching this expression at the given position,
@@ -71,13 +63,20 @@ abstract class Expression
      */
     abstract public function match($text, $pos, ParserInterface $parser);
 
+    /**
+     * Returns a string representation of this expression, suitable for the right-hand-side of a rule.
+     *
+     * @return string
+     */
+    abstract public function asRightHandSide();
+
     public function asRule()
     {
         if ($this->name) {
-            return sprintf('%s = %s', $this->name, $this->asRhs());
+            return sprintf('%s = %s', $this->name, $this->asRightHandSide());
         }
 
-        return $this->asRhs();
+        return $this->asRightHandSide();
     }
 
     public function __toString()
@@ -96,8 +95,7 @@ abstract class Expression
     {
         return $this instanceof $other
             && $other->id === $this->id
-            && $other->name === $this->name
-        ;
+            && $other->name === $this->name;
     }
 
     /**

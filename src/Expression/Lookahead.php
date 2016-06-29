@@ -16,10 +16,10 @@ use ju1ius\Pegasus\Parser\ParserInterface;
 /**
  * An expression which consumes nothing, even if it's contained expression succeeds.
  *
- **/
+ */
 class Lookahead extends Wrapper
 {
-    public function asRhs()
+    public function asRightHandSide()
     {
         return sprintf('&(%s)', $this->stringMembers());
     }

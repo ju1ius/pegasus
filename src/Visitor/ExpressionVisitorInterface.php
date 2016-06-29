@@ -2,17 +2,15 @@
 /*
  * This file is part of Pegasus
  *
- * (c) 2014 Jules Bernable 
+ * (c) 2014 Jules Bernable
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-
 namespace ju1ius\Pegasus\Visitor;
 
 use ju1ius\Pegasus\Expression;
-
 
 interface ExpressionVisitorInterface
 {
@@ -23,7 +21,7 @@ interface ExpressionVisitorInterface
      *  * null:      $nodes stays as-is
      *  * otherwise: $nodes is set to the return value
      *
-     * @param ju1ius\Pegasus\Expression $expr
+     * @param Expression $expr
      *
      * @return mixed
      */
@@ -36,7 +34,7 @@ interface ExpressionVisitorInterface
      *  * null:      $node stays as-is
      *  * otherwise: $node is set to the return value
      *
-     * @param ju1ius\Pegasus\Expression $expr The visited expression 
+     * @param Expression $expr The visited expression
      *
      * @return mixed
      */
@@ -51,7 +49,7 @@ interface ExpressionVisitorInterface
      *  * array:     The return value is merged into the parent array (at the position of the $node)
      *  * otherwise: $node is set to the return value
      *
-     * @param ju1ius\Pegasus\Expression $expr The visited expression
+     * @param Expression $expr The visited expression
      *
      * @return mixed
      */
@@ -64,7 +62,7 @@ interface ExpressionVisitorInterface
      *  * null:      $nodes stays as-is
      *  * otherwise: $nodes is set to the return value
      *
-     * @param ju1ius\Pegasus\Expression $expr The visited expression 
+     * @param Expression $expr The visited expression
      *
      * @return mixed
      */

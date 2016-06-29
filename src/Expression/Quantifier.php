@@ -37,7 +37,7 @@ class Quantifier extends Wrapper
         return true;
     }
 
-    public function asRhs()
+    public function asRightHandSide()
     {
         return sprintf(
             '(%s){%s,%s}',

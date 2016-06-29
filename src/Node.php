@@ -25,7 +25,7 @@ namespace ju1ius\Pegasus;
  * to parse once and render several representations from the tree, one after
  * another.
  *
- **/
+ */
 abstract class Node
 {
     /**
@@ -63,7 +63,7 @@ abstract class Node
      * @param string            $full_text  The full text fed to the parser
      * @param int               $start      The position in the text where that expr started matching
      * @param int               $end        The position after start where the expr first didn't match.
-     **/
+     */
     public function __construct($expr, $full_text, $start, $end)
     {
         $this->expr = $expr;
@@ -115,7 +115,7 @@ abstract class Node
     public function inspect($error = null)
     {
         $rule = $this->expr instanceof Expression
-            ? ($this->expr->name ?: $this->expr->asRhs())
+            ? ($this->expr->name ?: $this->expr->asRightHandSide())
             : (string)$this->expr;
 
         return sprintf(

@@ -21,7 +21,7 @@ use ju1ius\Pegasus\Parser\ParserInterface;
  */
 class OneOf extends Composite
 {
-    public function asRhs()
+    public function asRightHandSide()
     {
         return implode(' | ', $this->stringMembers());
     }

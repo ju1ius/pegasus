@@ -17,7 +17,7 @@ class FlattenChoiceTest extends OptimizationTestCase
     {
         $result = $this->apply(new FlattenChoice, $input);
         $this->assertExpressionEquals($expected, $result);
-        $this->assertEquals($expected->asRhs(), $result->asRhs());
+        $this->assertEquals($expected->asRhs(), $result->asRightHandSide());
     }
     public function testApplyProvider()
     {

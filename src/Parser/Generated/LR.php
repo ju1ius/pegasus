@@ -34,7 +34,7 @@ class LR
      * @param string    $rule_name
      * @param Node      $seed
      * @param Head      $head
-     **/ 
+     */ 
     public function __construct($rule_name, Node $seed=null, Head $head=null)
     {
         $this->rule = $rule_name;

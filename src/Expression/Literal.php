@@ -18,7 +18,7 @@ use ju1ius\Pegasus\Utils\StringUtil;
  * A string literal
  *
  * Use these if you can; they're the fastest.
- **/
+ */
 class Literal extends Terminal
 {
     /**
@@ -51,11 +51,7 @@ class Literal extends Terminal
         parent::__construct($name);
         $this->literal = $literal;
         $this->quoteCharacter = $quoteCharacter;
-        $this->setup();
-    }
 
-    public function setup()
-    {
         $parts = StringUtil::splitBackReferenceSubject($this->literal);
         if ($parts) {
             $this->hasBackReference = true;
@@ -65,7 +61,7 @@ class Literal extends Terminal
         }
     }
 
-    public function asRhs()
+    public function asRightHandSide()
     {
         //TODO backslash escaping
         return sprintf('"%s"', $this->literal);

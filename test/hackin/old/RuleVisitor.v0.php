@@ -32,11 +32,11 @@ class RuleVisitor extends NodeVisitor
      * @param $node, $visited_children
      * @return void
      */
-    public function generic_visit($node, $visited_children)
+    public function generic_visit($node, $visitedChildren)
     {
-        return $visited_children ?: $node;
+        return $visitedChildren ?: $node;
         return $node instanceof Composite
-            ? $visited_children ?: null
+            ? $visitedChildren ?: null
             : $node;
     }
 

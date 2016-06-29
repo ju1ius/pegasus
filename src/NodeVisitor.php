@@ -33,7 +33,7 @@ use ju1ius\Pegasus\Node;
  * arrow pointing someplace in a half-transformed mishmash of nodes--and
  * that's assuming you're even transforming the tree into another tree.
  * Heaven forbid you're making it into a string or something else.
- **/
+ */
 class NodeVisitor
 {
     protected $visitors = [];
@@ -50,19 +50,27 @@ class NodeVisitor
      * @TODO: If we need to optimize this, we can go back to putting subclasses
      * in charge of visiting children; they know when not to bother.
      * Or we can mark nodes as not descend-worthy in the grammar.
-     **/
-    public function visit($node)
+     *
+     * @param Node $node
+     *
+     * @return mixed
+     */
+    public function visit(Node $node)
     {
         try {
             // ignored rule
-            if (!$node) return;
+            if (!$node) {
+                return;
+            }
             $label = is_string($node->expr)
                 ? $node->expr
                 : $node instanceof Node\Label
                     ? $node->expr->label
                     : $node->expr->name
             ;
-            if (isset($this->ignored[$label])) return;
+            if (isset($this->ignored[$label])) {
+                return;
+            }
 
             // visit children before visiting node.
             $children = [];
@@ -107,11 +115,13 @@ class NodeVisitor
      * This works out well regardless of whether a subclass is trying
      * to make another tree, a flat string, or whatever.
      *
-     * @param Node  $node             The node we're visiting
-     * @param array $visited_children The results of visiting the children of that node
+     * @param Node  $node            The node we're visiting
+     * @param array $visitedChildren The results of visiting the children of that node
      *
-     **/
-    public function generic_visit(Node $node, array $visited_children)
+     *
+     * @return \ju1ius\Pegasus\Node
+     */
+    public function generic_visit(Node $node, array $visitedChildren)
     {
         return $node;
     }
@@ -173,22 +183,29 @@ class NodeVisitor
 
     /**
      * Returns a map from rule names to visitation methods
+     *
+     * @return array
      */
     private function getVisitors()
     {
-        $refclass = new \ReflectionClass($this);
+        $refClass = new \ReflectionClass($this);
         $methods = [];
-        foreach ($refclass->getMethods() as $refmethod) {
-            $name = $refmethod->name;
-            if (0 === strpos($name, 'visit_')) {
+        foreach ($refClass->getMethods() as $refMethod) {
+            $name = $refMethod->name;
+            if (strpos($name, 'visit_') === 0) {
                 $methods[substr($name, 6)] = $name;
             }
         }
+
         return $methods;
     }
 
     /**
      * Returns a map from rule names to actions
+     *
+     * @param array $config
+     *
+     * @return array
      */
     private function getActions(array $config)
     {
@@ -202,16 +219,16 @@ class NodeVisitor
         if (!isset($config['actions'])) {
             return $result;
         }
-        foreach ($config['actions'] as $expr_name => $actions) {
+        foreach ($config['actions'] as $exprName => $actions) {
             // actions are chainable, so make it an array
             if (!is_array($actions)) {
                 $actions = [$actions];
             }
             foreach ($actions as $action) {
                 if ($action instanceof \Closure) {
-                    $result[$expr_name][] = $action->bindTo($this, $this);
+                    $result[$exprName][] = $action->bindTo($this, $this);
                 } elseif (method_exists($this, $action)) {
-                    $result[$expr_name][] = [$this, $action];
+                    $result[$exprName][] = [$this, $action];
                 }
             }
         }

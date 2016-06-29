@@ -20,7 +20,7 @@ use ju1ius\Pegasus\Parser\ParserInterface;
  */
 class Skip extends Wrapper
 {
-    public function asRhs()
+    public function asRightHandSide()
     {
         return sprintf('~(%s)', $this->stringMembers());
     }

@@ -10,24 +10,31 @@
 
 namespace ju1ius\Pegasus\Expression;
 
-use ju1ius\Pegasus\Exception\GrammarException;
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Grammar\Exception\UnresolvedReference;
 use ju1ius\Pegasus\Parser\ParserInterface;
 
 /**
- * A reference to a named rule, which we must be resolved before matching.
+ * A reference to a named expression.
+ *
+ * References must be resolved before matching by calling Grammar::finalize().
  */
 class Reference extends Expression
 {
+    /**
+     * The name of the rule this expression refers to.
+     *
+     * @var string
+     */
     public $identifier;
 
-    public function __construct($identifier)
+    public function __construct($identifier, $name = '')
     {
+        parent::__construct($name);
         $this->identifier = $identifier;
-        parent::__construct();
     }
 
-    public function asRhs()
+    public function asRightHandSide()
     {
         return $this->name
             ? "<{$this->name} (reference to {$this->identifier})>"
@@ -36,12 +43,6 @@ class Reference extends Expression
 
     public function match($text, $pos, ParserInterface $parser)
     {
-        throw new GrammarException(
-            sprintf(
-                'Unresolved reference to rule <%s>.'
-                . ' You must call Grammar::finalize before parsing.',
-                $this->identifier
-            )
-        );
+        throw new UnresolvedReference($this->identifier);
     }
 }

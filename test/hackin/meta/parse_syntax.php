@@ -7,7 +7,7 @@ use ju1ius\Pegasus\MetaGrammar;
 use ju1ius\Pegasus\Grammar;
 
 //$mg = MetaGrammar::create();
-//$rx = $mg['regex']->children[0]->compiled_pattern;
+//$rx = $mg['regex']->children[0]->compiledPattern;
 //var_dump($rx);
 //preg_match($rx, '/foo\/bar/Sx', $matches);
 //var_dump($matches);

@@ -18,10 +18,10 @@ use ju1ius\Pegasus\Parser\ParserInterface;
  *
  * In any case, it never consumes any characters;
  * it's a negative lookahead.
- **/
+ */
 class Not extends Wrapper
 {
-    public function asRhs()
+    public function asRightHandSide()
     {
         return sprintf('!(%s)', $this->stringMembers());
     }

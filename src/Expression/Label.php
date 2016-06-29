@@ -29,7 +29,7 @@ class Label extends Wrapper
         $this->label = $label;
     }
 
-    public function asRhs()
+    public function asRightHandSide()
     {
         return sprintf('%s:(%s)', $this->label, $this->stringMembers());
     }

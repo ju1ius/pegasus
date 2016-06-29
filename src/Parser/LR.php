@@ -35,7 +35,7 @@ class LR
      * @param Node $seed
      * @param Expression $rule
      * @param Head $head
-     **/ 
+     */ 
     public function __construct(Expression $rule, Node $seed=null, Head $head=null)
     {
         $this->rule = $rule;

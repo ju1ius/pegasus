@@ -31,7 +31,7 @@ abstract class Composite extends Expression
     /**
      * Composite constructor.
      *
-     * @param array  $children
+     * @param Expression[]  $children
      * @param string $name
      */
     public function __construct(array $children = [], $name = '')
@@ -98,7 +98,7 @@ abstract class Composite extends Expression
             if ($child instanceof Reference) {
                 return $child->asRhs();
             }
-            return $child->name ?: $child->asRhs();
+            return $child->name ?: $child->asRightHandSide();
         }, $this->children);
     }
 }

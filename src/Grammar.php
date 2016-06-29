@@ -10,12 +10,15 @@
 
 namespace ju1ius\Pegasus;
 
-use ju1ius\Pegasus\Exception\GrammarException;
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Grammar\Exception\AnonymousTopLevelExpression;
+use ju1ius\Pegasus\Grammar\Exception\GrammarException;
+use ju1ius\Pegasus\Grammar\Exception\MissingStartRule;
+use ju1ius\Pegasus\Grammar\Exception\RuleNotFound;
+use ju1ius\Pegasus\Parser\LRPackrat as Parser;
 use ju1ius\Pegasus\Traverser\GrammarTraverser;
 use ju1ius\Pegasus\Visitor\GrammarVisitor;
 use ju1ius\Pegasus\Visitor\MetaGrammarNodeVisitor;
-use ju1ius\Pegasus\Parser\LRPackrat as Parser;
 
 /**
  * A collection of expressions that describe a language.
@@ -119,16 +122,17 @@ class Grammar implements GrammarInterface
      * @param string     $startRule Optional start rule name for the grammar.
      *
      * @return Grammar
-     * @throws GrammarException
+     * @throws \ju1ius\Pegasus\Grammar\Exception\GrammarException
      */
     public static function fromExpression(Expression $expr, $startRule = null)
     {
+        if (!$startRule && !$expr->name) {
+            throw new AnonymousTopLevelExpression($expr);
+        }
         if (!$startRule) {
             $startRule = $expr->name;
         }
-        if (!$startRule) {
-            throw new GrammarException('Top level expression must have a name.');
-        }
+
         $grammar = new static();
         $grammar[$startRule] = $expr;
 
@@ -136,7 +140,7 @@ class Grammar implements GrammarInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getName()
     {
@@ -144,7 +148,7 @@ class Grammar implements GrammarInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function setName($name)
     {
@@ -154,7 +158,7 @@ class Grammar implements GrammarInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getRules()
     {
@@ -162,7 +166,7 @@ class Grammar implements GrammarInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function setStartRule($name)
     {
@@ -171,27 +175,23 @@ class Grammar implements GrammarInterface
 
             return $this;
         }
-        throw new GrammarException(
-            "The rule '$name' wasn't found in this grammar."
-        );
+        throw new RuleNotFound($name);
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getStartRule()
     {
         if (!$this->defaultRule) {
-            throw new GrammarException(
-                'You must provide a start rule for the grammar.'
-            );
+            throw new MissingStartRule();
         }
 
         return $this->rules[$this->defaultRule];
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function isFolded()
     {
@@ -199,7 +199,7 @@ class Grammar implements GrammarInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function fold($startRule = null)
     {
@@ -217,7 +217,7 @@ class Grammar implements GrammarInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function unfold()
     {
@@ -231,7 +231,7 @@ class Grammar implements GrammarInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function finalize($startRule = null)
     {
@@ -241,7 +241,7 @@ class Grammar implements GrammarInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function copy($deep = false)
     {
@@ -256,7 +256,7 @@ class Grammar implements GrammarInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function merge(GrammarInterface $other)
     {
@@ -271,7 +271,7 @@ class Grammar implements GrammarInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function __toString()
     {
@@ -284,7 +284,7 @@ class Grammar implements GrammarInterface
 
         $out .= "\n";
         foreach ($this->rules as $name => $expr) {
-            $out .= sprintf("%s = %s\n", $name, $expr->asRhs());
+            $out .= sprintf("%s = %s\n", $name, $expr->asRightHandSide());
         }
 
         return $out;
@@ -303,13 +303,11 @@ class Grammar implements GrammarInterface
     public function offsetSet($name, $expr)
     {
         if (!$expr instanceof Expression) {
-            throw new GrammarException(
-                sprintf(
-                    'Value passed to %s must be instance of ju1ius\Pegasus\Expression, "%s" given.',
-                    __METHOD__,
-                    is_object($expr) ? get_class($expr) : gettype($expr)
-                )
-            );
+            throw new \InvalidArgumentException(sprintf(
+                'Value passed to `%s` must be instance of ju1ius\Pegasus\Expression, `%s` given.',
+                __METHOD__,
+                is_object($expr) ? get_class($expr) : gettype($expr)
+            ));
         }
 
         $expr->name = $name;

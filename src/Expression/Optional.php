@@ -16,7 +16,7 @@ namespace ju1ius\Pegasus\Expression;
  * If the contained expression succeeds,
  * it goes ahead and consumes what it consumes.
  * Otherwise, it consumes nothing.
- **/
+ */
 class Optional extends Quantifier
 {
     public function __construct(array $children = [], $name = '')
@@ -24,7 +24,7 @@ class Optional extends Quantifier
         parent::__construct($children, 0, 1, $name);
     }
 
-    public function asRhs()
+    public function asRightHandSide()
     {
         return sprintf('(%s)?', $this->stringMembers());
     }

@@ -8,12 +8,10 @@
  * file that was distributed with this source code.
  */
 
-
 namespace ju1ius\Pegasus\Visitor;
 
-use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Expression;
-
+use ju1ius\Pegasus\Grammar;
 
 interface GrammarVisitorInterface
 {
@@ -24,7 +22,7 @@ interface GrammarVisitorInterface
      *  * null:      $grammar stays as-is
      *  * otherwise: $grammar is set to the return value
      *
-     * @param ju1ius\Pegasus\Grammar $grammar
+     * @param Grammar $grammar
      *
      * @return mixed
      */
@@ -37,7 +35,7 @@ interface GrammarVisitorInterface
      *  * null:      $grammar stays as-is
      *  * otherwise: $grammar is set to the return value
      *
-     * @param ju1ius\Pegasus\Grammar $grammar
+     * @param Grammar $grammar
      *
      * @return mixed
      */
@@ -50,8 +48,8 @@ interface GrammarVisitorInterface
      *  * null:      $expr stays as-is
      *  * otherwise: $expr is set to the return value
      *
-     * @param ju1ius\Pegasus\Grammar    $grammar    The visited grammar. 
-     * @param ju1ius\Pegasus\Expression $expr       The visited expression. 
+     * @param Grammar    $grammar The visited grammar.
+     * @param Expression $expr    The visited expression.
      *
      * @return mixed
      */
@@ -62,12 +60,12 @@ interface GrammarVisitorInterface
      *
      * Return value semantics:
      *  * null:      $expr stays as-is
-     *  * false:     $expr is removed from the grammar. 
+     *  * false:     $expr is removed from the grammar.
      *  * array:     The return value is merged into the parent array (at the position of the $node)
      *  * otherwise: $expr is set to the return value
      *
-     * @param ju1ius\Pegasus\Grammar    $grammar    The visited grammar. 
-     * @param ju1ius\Pegasus\Expression $expr       The visited expression. 
+     * @param Grammar    $grammar The visited grammar.
+     * @param Expression $expr    The visited expression.
      *
      * @return mixed
      */
@@ -80,8 +78,8 @@ interface GrammarVisitorInterface
      *  * null:      $expr stays as-is
      *  * otherwise: $expr is set to the return value
      *
-     * @param ju1ius\Pegasus\Grammar    $grammar    The visited grammar. 
-     * @param ju1ius\Pegasus\Expression $expr       The visited expression. 
+     * @param Grammar    $grammar The visited grammar.
+     * @param Expression $expr    The visited expression.
      *
      * @return mixed
      */
@@ -96,8 +94,8 @@ interface GrammarVisitorInterface
      *  * array:     The return value is merged into the parent array (at the position of the $node)
      *  * otherwise: $expr is set to the return value
      *
-     * @param ju1ius\Pegasus\Grammar    $grammar    The visited grammar. 
-     * @param ju1ius\Pegasus\Expression $expr       The visited expression. 
+     * @param Grammar    $grammar The visited grammar.
+     * @param Expression $expr    The visited expression.
      *
      * @return mixed
      */

@@ -2,7 +2,7 @@
 /*
  * This file is part of Pegasus
  *
- * (c) 2014 Jules Bernable 
+ * (c) 2014 Jules Bernable
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -19,7 +19,7 @@ use ju1ius\Pegasus\Utils\StringUtil;
  *
  * Use these as much as you can and jam as much into each one as you can;
  * they're fast.
- **/
+ */
 class Regex extends Terminal
 {
     /**
@@ -57,14 +57,10 @@ class Regex extends Terminal
         parent::__construct($name);
         $this->pattern = $pattern;
         $this->flags = array_unique(array_merge($flags, ['S', 'x']));
-        $this->setup();
-    }
 
-    protected function setup()
-    {
         $this->compiledFlags = implode('', $this->flags);
         $this->compiledPattern = sprintf(
-            '/\G %s /%s',
+            '/\G%s/%s',
             $this->pattern,
             $this->compiledFlags
         );
@@ -76,7 +72,7 @@ class Regex extends Terminal
         }
     }
 
-    public function asRhs()
+    public function asRightHandSide()
     {
         return $this->compiledPattern;
     }
@@ -84,10 +80,8 @@ class Regex extends Terminal
     public function match($text, $pos, ParserInterface $parser)
     {
         if ($this->hasBackReference) {
-            $pattern = '/\G'
-                . StringUtil::replaceBackReferenceSubject($this->subjectParts, [$parser, 'getReference'], true)
-                . '/'
-                . $this->compiledFlags;
+            $backRef = StringUtil::replaceBackReferenceSubject($this->subjectParts, [$parser, 'getReference'], true);
+            $pattern = '/\G' . $backRef . '/' . $this->compiledFlags;
         } else {
             $pattern = $this->compiledPattern;
         }

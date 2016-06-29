@@ -9,7 +9,7 @@
  */
 
 
-namespace ju1ius\Pegasus\Exception;
+namespace ju1ius\Pegasus\Grammar\Exception;
 
 
 class GrammarException extends \Exception {}

@@ -44,7 +44,7 @@ class ExpressionPrinter extends ExpressionVisitor
             $this->indent(),
             $expr->name ? $expr->name . ' ' : '',
             str_replace('ju1ius\Pegasus\Expression\\', '', get_class($expr)),
-            $expr->asRhs()
+            $expr->asRightHandSide()
         );
     }
 

@@ -2,7 +2,7 @@
 
 namespace ju1ius\Pegasus;
 
-use ju1ius\Pegasus\Exception\GrammarException;
+use ju1ius\Pegasus\Grammar\Exception\GrammarException;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Parser\LRPackrat as Parser;
 use ju1ius\Pegasus\Visitor\RuleVisitor;

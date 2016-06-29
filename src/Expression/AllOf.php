@@ -18,7 +18,7 @@ use ju1ius\Pegasus\Parser\ParserInterface;
  *
  * The returned node is from the last child.
  * If you like, you can think of the preceding children as lookaheads.
- **/
+ */
 class AllOf extends Composite
 {
     /**
@@ -39,7 +39,7 @@ class AllOf extends Composite
     /**
      * @inheritdoc
      */
-    public function asRhs()
+    public function asRightHandSide()
     {
         return implode(' ', $this->stringMembers());
     }
