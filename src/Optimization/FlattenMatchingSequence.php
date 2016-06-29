@@ -2,7 +2,7 @@
 /*
  * This file is part of Pegasus
  *
- * (c) 2014 Jules Bernable 
+ * (c) 2014 Jules Bernable
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,27 +12,20 @@
 namespace ju1ius\Pegasus\Optimization;
 
 use ju1ius\Pegasus\Expression;
-
+use ju1ius\Pegasus\Expression\Sequence;
 
 /**
  * Nested sequence expressions can be flattened without affecting how they match.
- *
  */
-class FlattenMatchingSequence extends Optimization
+class FlattenMatchingSequence extends FlatteningOptimization
 {
-    use FlattenerTrait {
-        FlattenerTrait::_appliesTo as __appliesTo;
-    }
-
-    public function _appliesTo(Expression $expr)
+    public function doAppliesTo(Expression $expr)
     {
-        return $expr instanceof Expression\Sequence
-            && $this->__appliesTo($expr)
-        ;
+        return $expr instanceof Sequence && parent::doAppliesTo($expr);
     }
 
     public function isEligibleChild(Expression $child)
     {
-        return $child instanceof Expression\Sequence;
+        return $child instanceof Sequence;
     }
 }

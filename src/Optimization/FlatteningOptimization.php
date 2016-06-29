@@ -1,32 +1,36 @@
 <?php
-/*
- * This file is part of Pegasus
- *
- * (c) 2014 Jules Bernable 
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 
 namespace ju1ius\Pegasus\Optimization;
 
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Expression\Composite;
 
-
-trait FlattenerTrait
+/**
+ * @author ju1ius
+ */
+abstract class FlatteningOptimization extends Optimization
 {
-    protected function _appliesTo(Expression $expr)
+    protected function doAppliesTo(Expression $expr)
     {
+        if (!$expr instanceof Composite) {
+            return false;
+        }
+
         foreach ($expr->children as $child) {
             if ($this->isEligibleChild($child)) {
                 return true;
             }
         }
+
         return false;
     }
 
-    protected function _apply(Expression $expr)
+    /**
+     * @param Expression|Composite $expr
+     *
+     * @return Composite
+     */
+    protected function doApply(Expression $expr)
     {
         $children = [];
         foreach ($expr->children as $child) {
@@ -37,8 +41,9 @@ trait FlattenerTrait
             }
         }
         $class = get_class($expr);
-        $new_expr = new $class($children, $expr->name);
 
-        return $new_expr;
+        return new $class($children, $expr->name);
     }
+
+    abstract protected function isEligibleChild(Expression $child);
 }

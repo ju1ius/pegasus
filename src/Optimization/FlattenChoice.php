@@ -2,7 +2,7 @@
 /*
  * This file is part of Pegasus
  *
- * (c) 2014 Jules Bernable 
+ * (c) 2014 Jules Bernable
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,23 +12,17 @@
 namespace ju1ius\Pegasus\Optimization;
 
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Expression\OneOf;
 
-
-class FlattenChoice extends Optimization
+class FlattenChoice extends FlatteningOptimization
 {
-    use FlattenerTrait {
-        FlattenerTrait::_appliesTo as __appliesTo;
-    }
-
-    public function _appliesTo(Expression $expr)
+    protected function doAppliesTo(Expression $expr)
     {
-        return $expr instanceof Expression\OneOf
-            && $this->__appliesTo($expr)
-        ;
+        return $expr instanceof OneOf && parent::doAppliesTo($expr);
     }
 
     public function isEligibleChild(Expression $child)
     {
-        return $child instanceof Expression\OneOf;
+        return $child instanceof OneOf;
     }
 }

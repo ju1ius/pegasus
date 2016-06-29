@@ -16,20 +16,28 @@ use ju1ius\Pegasus\Expression;
 
 class OptimizationSequence extends Optimization
 {
+    /**
+     * @var Optimization
+     */
+    protected $first;
+
+    /**
+     * @var Optimization
+     */
+    protected $last;
+
     public function __construct(Optimization $first, Optimization $last)
     {
         $this->first = $first;
         $this->last = $last;
     }
 
-    protected function _appliesTo(Expression $expr)
+    protected function doAppliesTo(Expression $expr)
     {
-        return $this->last->appliesTo($expr)
-            || $this->first->appliesTo($expr)
-        ;
+        return $this->last->appliesTo($expr) || $this->first->appliesTo($expr);
     }
 
-    protected function _apply(Expression $expr)
+    protected function doApply(Expression $expr)
     {
         return $this->last->apply($this->first->apply($expr));
     }

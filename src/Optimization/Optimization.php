@@ -12,27 +12,56 @@ namespace ju1ius\Pegasus\Optimization;
 
 use ju1ius\Pegasus\Expression;
 
-class Optimization
+abstract class Optimization
 {
     protected $appliesToCache = [];
 
+    /**
+     * @param Optimization $other
+     *
+     * @return OptimizationSequence
+     */
     public function add(Optimization $other)
     {
         return new OptimizationSequence($this, $other);
     }
 
-    public function apply(Expression $expr)
+    /**
+     * @param Expression $expr
+     *
+     * @return Expression
+     */
+    final public function apply(Expression $expr)
     {
-        return $this->appliesTo($expr) ? $this->_apply($expr) : $expr;
+        return $this->appliesTo($expr) ? $this->doApply($expr) : $expr;
     }
 
-    public function appliesTo(Expression $expr)
+    /**
+     * @param Expression $expr
+     *
+     * @return bool
+     */
+    final public function appliesTo(Expression $expr)
     {
         $key = spl_object_hash($expr);
         if (!isset($this->appliesToCache[$key])) {
-            $this->appliesToCache[$key] = $this->_appliesTo($expr);
+            $this->appliesToCache[$key] = $this->doAppliesTo($expr);
         }
 
         return $this->appliesToCache[$key];
     }
+
+    /**
+     * @param Expression $expr
+     *
+     * @return Expression
+     */
+    abstract protected function doApply(Expression $expr);
+
+    /**
+     * @param Expression $expr
+     *
+     * @return bool
+     */
+    abstract protected function doAppliesTo(Expression $expr);
 }
