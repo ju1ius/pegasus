@@ -12,7 +12,7 @@
 namespace ju1ius\Pegasus\Utils;
 
 
-class StringUtil
+final class StringUtil
 {
     const BACKREF_SPLIT_RX = <<<'EOS'
 @
