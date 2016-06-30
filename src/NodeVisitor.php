@@ -57,22 +57,19 @@ class NodeVisitor
      */
     public function visit(Node $node)
     {
+        // ignored rule
+        if (!$node) {
+            return null;
+        }
+        $label = is_string($node->expr)
+            ? $node->expr
+            : ($node instanceof Node\Label ? $node->expr->label : $node->expr->name)
+        ;
+        if (isset($this->ignored[$label])) {
+            return null;
+        }
         try {
-            // ignored rule
-            if (!$node) {
-                return;
-            }
-            $label = is_string($node->expr)
-                ? $node->expr
-                : $node instanceof Node\Label
-                    ? $node->expr->label
-                    : $node->expr->name
-            ;
-            if (isset($this->ignored[$label])) {
-                return;
-            }
-
-            // visit children before visiting node.
+            // visit children before visiting node (depth first).
             $children = [];
             if ($node instanceof Node\Composite) {
                 // visit children
@@ -83,7 +80,6 @@ class NodeVisitor
                     }
 				}
             }
-
             //if (isset($this->actions[$node->expr_name])) {
                 //$actions = $this->actions[$node->expr_name];
                 //$res = $node;
@@ -92,13 +88,9 @@ class NodeVisitor
                 //}
                 //return $res;
             //}
+            $visitor = isset($this->visitors[$label]) ? $this->visitors[$label] : 'generic_visit';
 
-            $visitor = isset($this->visitors[$label])
-                ? $this->visitors[$label]
-                : 'generic_visit'
-            ;
-
-            return $this->$visitor($node, $children);
+            return $this->{$visitor}($node, $children);
 
         } catch (VisitationError $e) {
             throw $e;

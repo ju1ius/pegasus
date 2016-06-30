@@ -32,21 +32,23 @@ class VisitationError extends \RuntimeException
     protected $node;
 
     /**
-     * @param \Exception $exc  What went wrong. We wrap this and add more info.
      * @param Node       $node The node at which the error occurred
+     * @param string     $msg
+     * @param \Exception $previous Optional exception to wrap with debug info.
      */
-    public function __construct(\Exception $exc, Node $node)
+    public function __construct(Node $node, $msg = '', \Exception $previous = null)
     {
-        parent::__construct('', 0, $exc);
         $this->node = $node;
+        parent::__construct($msg, 0, $previous);
     }
 
     public function __toString()
     {
+        $prev = $this->getPrevious();
         return sprintf(
             "%s: %s\n\nParse tree:\n%s\n",
-            get_class($this->getPrevious()),
-            (string) $this->getPrevious(),
+            $prev ? get_class($this->getPrevious()) : __CLASS__,
+            $prev ? (string) $this->getPrevious() : $this->getMessage(),
             $this->node->inspect($this->node)
         );
     }
