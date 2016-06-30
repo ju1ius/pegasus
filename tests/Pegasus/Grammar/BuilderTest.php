@@ -2,17 +2,15 @@
 
 namespace ju1ius\Pegasus\Tests\Grammar;
 
-use ju1ius\Pegasus\Tests\PegasusTestCase;
-
-use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Grammar\Builder;
-use ju1ius\Pegasus\Expression\Sequence;
+use ju1ius\Pegasus\Expression\Literal;
+use ju1ius\Pegasus\Expression\Not;
 use ju1ius\Pegasus\Expression\OneOf;
 use ju1ius\Pegasus\Expression\Quantifier;
-use ju1ius\Pegasus\Expression\Literal;
-use ju1ius\Pegasus\Expression\Regex;
 use ju1ius\Pegasus\Expression\Reference as Ref;
-
+use ju1ius\Pegasus\Expression\Sequence as Seq;
+use ju1ius\Pegasus\Grammar;
+use ju1ius\Pegasus\Grammar\Builder;
+use ju1ius\Pegasus\Tests\PegasusTestCase;
 
 class BuilderTest extends PegasusTestCase
 {
@@ -27,74 +25,77 @@ class BuilderTest extends PegasusTestCase
     public function testBasicRulesProvider()
     {
         return [
-            [
+            'Sequence' => [
                 [
-                    'start' => new Sequence([new Literal('foo'), new Ref('bar')]),
-                    'bar' => new OneOf([new Literal('bar'), new Literal('baz')])
+                    'start' => new Seq([new Literal('foo'), new Ref('bar')])
                 ],
-                Builder::build()
-                    ->rule('start')->seq()
-                        ->literal('foo')
-                        ->ref('bar')
-                    ->rule('bar')->oneOf()
-                        ->literal('bar')
-                        ->literal('baz')
+                Builder::create()->rule('start')->seq()
+                    ->literal('foo')
+                    ->ref('bar')
                     ->getGrammar()
             ],
-            [
+            'Choice' => [
+                [
+                    'start' => new OneOf([new Literal('bar'), new Literal('baz')])
+                ],
+                Builder::create()->rule('start')->oneOf()
+                    ->literal('bar')
+                    ->literal('baz')
+                    ->getGrammar()
+            ],
+            'Choice of sequences' => [
                 [
                     'start' => new OneOf([
-                        new Sequence([new Literal('foo'), new Literal('bar')]),
-                        new Sequence([new Ref('beg'), new Ref('food')]),
-                    ]),
-                    'beg' => new Sequence([
-                        new Literal('Can'),
-                        new OneOf([new Literal('I'), new Literal('We')]),
-                        new Literal('haz')
-                    ]),
-                    'food' => new Sequence([
-                        new OneOf([new Literal('cheez'), new Literal('ham')]),
-                        new Literal('burger')
+                        new Seq([new Literal('foo'), new Literal('bar')]),
+                        new Seq([new Ref('baz'), new Ref('qux')]),
                     ])
                 ],
-                Builder::build()
-                    ->rule('start')->alt()
-                        ->seq()
-                            ->literal('foo')
-                            ->literal('bar')
-                        ->end()
-                        ->seq()
-                            ->ref('beg')
-                            ->ref('food')
-                    ->rule('beg')->seq()
-                        ->literal('Can')
-                        ->alt()
-                            ->literal('I')
-                            ->literal('We')
-                        ->end()
-                        ->literal('haz')
-                    ->rule('food')->seq()
-                        ->alt()
-                            ->literal('cheez')
-                            ->literal('ham')
-                        ->end()
-                        ->literal('burger')
+                Builder::create()->rule('start')->oneOf()
+                    ->seq()->literal('foo')->literal('bar')->end()
+                    ->seq()->ref('baz')->ref('qux')->end()
                     ->getGrammar()
             ],
-            [
+            'Squence of choices' => [
                 [
-                    'start' => new Sequence([
-                        new Quantifier([new Literal('foo')], 1, INF),
-                        new Quantifier([new Literal('bar')], 1, INF),
+                    'start' => new Seq([
+                        new OneOf([new Literal('foo'), new Literal('bar')]),
+                        new OneOf([new Ref('baz'), new Ref('qux')]),
                     ])
                 ],
-                Builder::build()
+                Builder::create()->rule('start')->seq()
+                    ->oneOf()->literal('foo')->literal('bar')->end()
+                    ->oneOf()->ref('baz')->ref('qux')->end()
+                    ->getGrammar()
+            ],
+            'Top-level decorator' => [
+                [
+                    'start' => new Quantifier([new Literal('foo')], 1, INF)
+                ],
+                Builder::create()->rule('start')->q(1)->literal('foo')->getGrammar()
+            ],
+            'Nested decorators' => [
+                [
+                    'start' => new Not([
+                        new Quantifier([new Literal('foo')], 1, 1)
+                    ])
+                ],
+                Builder::create()->rule('start')->not()->exactly(1)->literal('foo')->getGrammar()
+            ],
+            'Quantifiers' => [
+                [
+                    'start' => new Seq([
+                        new Quantifier([new Literal('foo')], 1, INF),
+                        new Quantifier([new Literal('bar')], 1, 1),
+                        new Quantifier([new Literal('baz')], 2, 42),
+                    ])
+                ],
+                Builder::create()
                     ->rule('start')->seq()
                         ->q(1)->literal('foo')
-                        ->q(1)->literal('bar')
+                        ->exactly(1)->literal('bar')
+                        ->q(2, 42)->literal('baz')
                     ->getGrammar()
             ]
         ];
     }
-
 }

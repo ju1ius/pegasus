@@ -73,12 +73,12 @@ class NodeVisitor
             $children = [];
             if ($node instanceof Node\Composite) {
                 // visit children
-				foreach ($node->children as $child) {
-					// filter ignored (null) nodes
+                foreach ($node->children as $child) {
+                    // filter ignored (null) nodes
                     if (null !== $result = $this->visit($child)) {
                         $children[] = $result;
                     }
-				}
+                }
             }
             //if (isset($this->actions[$node->expr_name])) {
                 //$actions = $this->actions[$node->expr_name];

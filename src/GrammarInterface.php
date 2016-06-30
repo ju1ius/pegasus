@@ -37,36 +37,36 @@ interface GrammarInterface extends \ArrayAccess, \Countable, \IteratorAggregate
      */
     public function getRules();
 
-	/**
-	 * Sets the default start rule for this grammar.
-	 *
-	 * @param string $name The name of the rule to use as start rule.
+    /**
+     * Sets the default start rule for this grammar.
+     *
+     * @param string $name The name of the rule to use as start rule.
      *
      * @throw GrammarException If the rule wasn't found in the grammar.
      *
      * @return GrammarInterface $this
-	 */
+     */
     public function setStartRule($name);
 
-	/**
-	 * Retuns the default start rule of this grammar.
-	 *
+    /**
+     * Retuns the default start rule of this grammar.
+     *
      * @throw GrammarException If the default start rule is not set.
      *
-	 * @return Expression
-	 */
+     * @return Expression
+     */
     public function getStartRule();
 
-	/**
+    /**
      * Returns a new (unfolded) grammar object containing the rules
      * of this instance merged with rules of $other.
-	 *
-	 * Rules with the same name will be overriden.
-	 *
-     * @param GrammarInterface  $other	The grammar to merge into this one.
-	 *
+     *
+     * Rules with the same name will be overriden.
+     *
+     * @param GrammarInterface  $other    The grammar to merge into this one.
+     *
      * @return GrammarInterface
-	 */
+     */
     public function merge(GrammarInterface $other);
 
     /**
@@ -77,21 +77,21 @@ interface GrammarInterface extends \ArrayAccess, \Countable, \IteratorAggregate
      *
      * @return GrammarInterface $this
      */
-	public function fold($startRule = null);
+    public function fold($startRule = null);
 
     /**
      * Unfolds the grammar by converting circular references to Reference objects.
      *
      * @return GrammarInterface $this
      */
-	public function unfold();
+    public function unfold();
 
     /**
      * Returns wheter the grammar is in folded state.
      *
      * @return bool True if the grammar is in folded state.
      */
-	public function isFolded();
+    public function isFolded();
 
     /**
      * Prepares the grammar for matching.
@@ -102,7 +102,7 @@ interface GrammarInterface extends \ArrayAccess, \Countable, \IteratorAggregate
      *
      * @return GrammarInterface $this
      */
-	public function finalize($startRule = null);
+    public function finalize($startRule = null);
 
     /**
      * Returns a string representation of the grammar.

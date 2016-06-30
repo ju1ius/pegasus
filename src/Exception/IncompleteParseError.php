@@ -21,7 +21,7 @@ class IncompleteParseError extends ParseError
 {
     public function __toString()
     {
-		$ruleName = $this->expr->name ?: (string) $this->expr;
+        $ruleName = $this->expr->name ?: (string) $this->expr;
         return sprintf(
             '%s: rule "%s" matched entirely but didn\'t consume all the text. '
             . 'Beginning of non-matching portion (line %s, column %s): "%s".',

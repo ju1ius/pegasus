@@ -26,7 +26,7 @@ class Fail extends Terminal
      */
     public function asRightHandSide()
     {
-		return '#FAIL';
+        return '#FAIL';
     }
 
     /**

@@ -2,7 +2,7 @@
 /*
  * This file is part of Pegasus
  *
- * (c) 2014 Jules Bernable 
+ * (c) 2014 Jules Bernable
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -17,7 +17,7 @@ use ju1ius\Pegasus\Node;
 /**
  * A Node that has child nodes.
  */
-class Composite extends Node
+abstract class Composite extends Node
 {
     /**
      * @var array List of child parse tree nodes.
@@ -36,7 +36,7 @@ class Composite extends Node
         parent::__construct($expr, $full_text, $start, $end);
         $this->children = $children;
     }
-    
+
     public function equals($other=null)
     {
         return parent::equals($other)
@@ -64,7 +64,7 @@ class Composite extends Node
         }
         return $res;
     }
-    
+
     public function terminals()
     {
         foreach ($this->children as $child) {

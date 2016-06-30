@@ -23,7 +23,7 @@ class BackReferencesTest extends PegasusTestCase
     {
         return [
             [
-                'start = a:"foo" "bar" "${a}"',
+                'start <- a:"foo" "bar" "${a}"',
                 'foobarfoo',
                 'foobarfoo',
             ]

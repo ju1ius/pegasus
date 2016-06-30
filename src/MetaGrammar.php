@@ -11,20 +11,7 @@
 
 namespace ju1ius\Pegasus;
 
-use ju1ius\Pegasus\Expression\Reference as Ref;
-use ju1ius\Pegasus\Expression\Literal;
-use ju1ius\Pegasus\Expression\Regex;
-use ju1ius\Pegasus\Expression\Quantifier;
-use ju1ius\Pegasus\Expression\OneOrMore;
-use ju1ius\Pegasus\Expression\ZeroOrMore;
-use ju1ius\Pegasus\Expression\Not;
-use ju1ius\Pegasus\Expression\OneOf;
-use ju1ius\Pegasus\Expression\Sequence;
-
 use ju1ius\Pegasus\Grammar\Builder;
-use ju1ius\Pegasus\Parser\LRPackrat as Parser;
-use ju1ius\Pegasus\Visitor\MetaGrammarNodeVisitor;
-
 
 /**
  * Factory class that builds a Grammar instance
@@ -33,131 +20,135 @@ use ju1ius\Pegasus\Visitor\MetaGrammarNodeVisitor;
  */
 class MetaGrammar
 {
-	const SYNTAX = <<<'EOS'
+    const SYNTAX = <<<'EOS'
 
 %name Pegasus
 
-grammar			= _ directives rules
+grammar <- _ directives rules
 
 ########### Directives ##########
 
-directives      = directive*
-directive       = name_directive | start_directive | ws_directive | ci_directive
-name_directive  = "%name" _ identifier
-start_directive = "%start" _ identifier
-ws_directive    = "%whitespace" _ equals expression
-ci_directive    = "%case_insensitive" _
-	
+directives      <- directive*
+directive       <- name_directive | start_directive | ws_directive | ci_directive
+name_directive  <- '%name' _ identifier
+start_directive <- '%start' _ identifier
+ws_directive    <- '%whitespace' _ equals expression
+ci_directive    <- '%case_insensitive' _
+
 ########### Rules ##########
 
-rules			= rule+
+rules           <- rule+
 
-rule			= identifier equals expression
+rule            <- identifier arrow_left expression
 
-expression		= choice | sequence | term
+expression      <- choice | sequence | term
 
-choice			= alternative (OR alternative)+
-			
-alternative		= sequence | term
+choice          <- alternative (OR alternative)+
+            
+alternative     <- sequence | term
 
-sequence		= term{2,}
+sequence        <- term{2,}
 
-term			= labeled | labelable
+term            <- labeled | labelable
 
-labeled			= label labelable
+labeled         <- label labelable
 
-labelable		= prefixed | prefixable
+labelable       <- prefixed | prefixable
 
-prefixed		= skip | lookahead | not
+prefixed        <- skip | lookahead | not
 
-skip            = '~' prefixable
+skip            <- '~' prefixable
 
-lookahead		= '&' prefixable
+lookahead       <- '&' prefixable
 
-not				= '!' prefixable
+not             <- '!' prefixable
 
-prefixable		= prefixed | suffixable | primary
+prefixable      <- prefixed | suffixable | primary
 
-suffixable		= suffixed | primary
+suffixable      <- suffixed | primary
 
-suffixed		= suffixable quantifier
+suffixed        <- suffixable quantifier
 
-primary			= parenthesized | atom
+primary         <- parenthesized | atom
 
-parenthesized	= "(" _ expression ")" _
-			
-atom			= eof | epsilon | fail | literal | regex | reference
+parenthesized   <- '(' _ expression ')' _
 
-equals			= "=" _
+atom            <- eof | epsilon | fail | literal | regex | reference
 
-reference		= identifier !equals
+equals          <- '=' _
 
-eof             = / EOF\b / _
+arrow_left      <- '<-' _
 
-epsilon         = / E\b / _
+reference       <- identifier !arrow_left
 
-fail            = / FAIL\b / _
+eof             <- / EOF\b / _
 
-quantifier		= /(?> ([*+?]) | (?: \{ (\d+)(?:,(\d*))? \} ) )/ _
+epsilon         <- / E\b / _
 
-regex			= / \/ ((?: (?:\\.) | [^\/] )*) \/ ([imsuUX]*)? / _
+fail            <- / FAIL\b / _
 
-literal			= / (["']) ((?: (?:\\.) | (?:(?!\1).) )*) \1 / _
+quantifier      <- /(?> ([*+?]) | (?: \{ (\d+)(?:,(\d*))? \} ) )/ _
 
-label			= / ([a-zA-Z_]\w*): /
+regex           <- / \/ ((?: (?:\\.) | [^\/] )*) \/ ([imsuUX]*)? / _
 
-identifier		= / [a-zA-Z_]\w* / _
+literal         <- / (["']) ((?: (?:\\.) | (?:(?!\1).) )*) \1 / _
 
-OR				= "|" _
+label           <- / ([a-zA-Z_]\w*): /
 
-_				= (ws | comment)*
+identifier      <- / [a-zA-Z_]\w* / _
 
-comment			= / \# ([^\r\n]*) /
+OR              <- '|' _
 
-ws				= /\s+/
+_               <- (ws | comment)*
+
+comment         <- / \# ([^\r\n]*) /
+
+ws              <- /\s+/
 
 EOS;
 
-	/**
-	 * @var Grammar The unique instance of the meta grammar.
-	 */
-	private static $instance = null;
+    /**
+     * @var Grammar The unique instance of the meta grammar.
+     */
+    private static $instance = null;
 
     private static $grammar = null;
 
-	/**
-	 * Private constructor.
-	 *
-	 * You can't instanciate MetaGrammar.
-	 * You just call MetaGrammar::create() and it returns an unique instance of Grammar.
-	 */
-	private function __construct(){}
+    /**
+     * Private constructor.
+     *
+     * You can't instanciate MetaGrammar.
+     * You just call MetaGrammar::create() and it returns an unique instance of Grammar.
+     */
+    private function __construct()
+    {
+    }
 
-	/**
-	 * Factory method for MetaGrammar.
-	 *
+    /**
+     * Factory method for MetaGrammar.
+     *
      * @return Grammar
-	 */
-	public static function create()
-	{
-		if (null === self::$instance) {
+     */
+    public static function create()
+    {
+        if (null === self::$instance) {
             $grammar = self::getGrammar();
-			// FIXME: ATM this is completely overkill to parse the syntax
-			// since it matches exactly the expression tree.
-			// we should find a way to simplify the expression tree in order
-			// to speedup the syntax parsing process.
+            // FIXME: ATM this is completely overkill to parse the syntax
+            // since it matches exactly the expression tree.
+            // we should find a way to simplify the expression tree in order
+            // to speedup the syntax parsing process.
             /*
-			$parser = new Parser($grammar);
-			$tree = $parser->parseAll(self::SYNTAX);
+            $parser = new Parser($grammar);
+            $tree = $parser->parseAll(self::SYNTAX);
             self::$instance = (new MetaGrammarNodeVisitor)->visit($tree);
             //echo self::$instance, "\n";
             self::$instance->finalize();
             */
             self::$instance = $grammar;
-		}
+        }
 
-		return self::$instance;
-	}
+        return self::$instance;
+    }
 
     /**
      * Returns the unique instance of the base grammar
@@ -174,9 +165,9 @@ EOS;
         return self::$grammar;
     }
 
-	private static function buildGrammar()
-	{
-		$g = Builder::create()
+    private static function buildGrammar()
+    {
+        $g = Builder::create()
             ->rule('grammar')->sequence()
                 ->ref('_')
                 ->ref('directives')
@@ -186,24 +177,24 @@ EOS;
             // ------------------------------------------------------------------------------------------------------
             ->rule('directives')->zeroOrMore()
                 ->ref('directive')
-		    ->rule('directive')->oneOf()
+            ->rule('directive')->oneOf()
                 ->ref('name_directive')
                 ->ref('start_directive')
                 ->ref('ws_directive')
                 ->ref('ci_directive')
-		    ->rule('name_directive')->sequence()
+            ->rule('name_directive')->sequence()
                 ->literal('%name')
                 ->ref('_')
                 ->ref('identifier')
-		    ->rule('start_directive')->sequence()
+            ->rule('start_directive')->sequence()
                 ->literal('%start')
                 ->ref('_')
                 ->ref('identifier')
-		    ->rule('ws_directive')->sequence()
+            ->rule('ws_directive')->sequence()
                 ->literal('%whitespace')
                 ->ref('equals')
                 ->ref('expression')
-		    ->rule('ci_directive')->sequence()
+            ->rule('ci_directive')->sequence()
                 ->literal('%case_insensitive')
                 ->ref('_')
             //
@@ -211,7 +202,7 @@ EOS;
             // ------------------------------------------------------------------------------------------------------
             ->rule('rules')->oneOrMore()
                 ->ref('rule')
-		    ->rule('rule')->sequence()
+            ->rule('rule')->sequence()
                 ->ref('identifier')
                 ->ref('arrow_left')
                 ->ref('expression')
@@ -223,7 +214,7 @@ EOS;
                 ->oneOrMore()->sequence()
                     ->ref('OR')
                     ->ref('alternative')
-		    ->rule('alternative')->oneOf()
+            ->rule('alternative')->oneOf()
                 ->ref('sequence')
                 ->ref('term')
             ->rule('sequence')
@@ -271,14 +262,14 @@ EOS;
                 ->ref('choice')
                 ->ref('sequence')
                 ->ref('term')
-		    ->rule('term')->oneOf()
+            ->rule('term')->oneOf()
                 ->ref('labeled')
                 ->ref('labelable')
             ->rule('labeled')->sequence()
                 ->ref('label')
                 ->ref('labelable')
                 ->ref('_')
-		    ->rule('labelable')->oneOf()
+            ->rule('labelable')->oneOf()
                 ->ref('prefixed')
                 ->ref('prefixable')
             ->rule('prefixed')->oneOf()
@@ -295,10 +286,10 @@ EOS;
             ->rule('suffixable')->oneOf()
                 ->ref('suffixed')
                 ->ref('primary')
-		    ->rule('primary')->oneOf()
+            ->rule('primary')->oneOf()
                 ->ref('parenthesized')
                 ->ref('atom')
-		    ->rule('parenthesized')->sequence()
+            ->rule('parenthesized')->sequence()
                 ->literal('(')
                 ->ref('_')
                 ->ref('expression')
@@ -340,5 +331,5 @@ EOS;
         ;
 
         return $g->finalize('grammar');
-	}
+    }
 }

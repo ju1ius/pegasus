@@ -55,12 +55,11 @@ class GrammarTraverser implements GrammarTraverserInterface
     /**
      * Constructor for GrammarTraverser.
      *
-     * If $fold if false, the references will not be converted
-     * back to actual expression objects.
+     * If $fold if false, the references will not be converted back to actual expression objects.
      * This can be useful if you need ie to serialize the grammar in some way.
      *
-     * @param bool $cloneExpressions Whether the expressions are cloned before traversal.
-     * @param bool $fold             Whether the grammar is folded back after traversal.
+     * @param bool $cloneExpressions Whether expressions are to be cloned before traversal.
+     * @param bool $fold             Whether grammars are to be folded after traversal.
      *
      */
     public function __construct($cloneExpressions = true, $fold = false)
@@ -123,8 +122,7 @@ class GrammarTraverser implements GrammarTraverserInterface
 
         if ($this->fold) {
             // reference resolving has to be done in a full additional pass
-            $resolver = (new ExpressionTraverser)
-                ->addVisitor(new ExpressionFolder($grammar));
+            $resolver = (new ExpressionTraverser)->addVisitor(new ExpressionFolder($grammar));
             foreach ($grammar as $name => $rule) {
                 $resolver->traverse($rule);
             }

@@ -11,6 +11,7 @@
 namespace ju1ius\Pegasus;
 
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Grammar\Builder;
 use ju1ius\Pegasus\Grammar\Exception\AnonymousTopLevelExpression;
 use ju1ius\Pegasus\Grammar\Exception\GrammarException;
 use ju1ius\Pegasus\Grammar\Exception\MissingStartRule;
@@ -105,8 +106,8 @@ class Grammar implements GrammarInterface
      */
     public static function fromSyntax($syntax, $startRule = null)
     {
-        $metagrammar = MetaGrammar::create();
-        $tree = (new Parser($metagrammar))->parseAll($syntax);
+        $metaGrammar = MetaGrammar::create();
+        $tree = (new Parser($metaGrammar))->parseAll($syntax);
         $grammar = (new MetaGrammarNodeVisitor)->visit($tree);
         if ($startRule) {
             $grammar->setStartRule($startRule);
@@ -122,14 +123,14 @@ class Grammar implements GrammarInterface
      * @param string     $startRule Optional start rule name for the grammar.
      *
      * @return Grammar
-     * @throws \ju1ius\Pegasus\Grammar\Exception\GrammarException
+     * @throws AnonymousTopLevelExpression If no named start rule could be determined.
      */
     public static function fromExpression(Expression $expr, $startRule = null)
     {
-        if (!$startRule && !$expr->name) {
-            throw new AnonymousTopLevelExpression($expr);
-        }
         if (!$startRule) {
+            if (!$expr->name) {
+                throw new AnonymousTopLevelExpression($expr);
+            }
             $startRule = $expr->name;
         }
 
@@ -155,6 +156,16 @@ class Grammar implements GrammarInterface
         $this->name = $name;
 
         return $this;
+    }
+
+    /**
+     * @param $ruleName
+     *
+     * @return Builder
+     */
+    public function rule($ruleName)
+    {
+        return Builder::create($this)->rule($ruleName);
     }
 
     /**
@@ -235,9 +246,7 @@ class Grammar implements GrammarInterface
      */
     public function finalize($startRule = null)
     {
-        $this->fold($startRule);
-
-        return $this;
+        return $this->fold($startRule);
     }
 
     /**
@@ -279,12 +288,11 @@ class Grammar implements GrammarInterface
         if ($name = $this->getName()) {
             $out .= "%name $name\n";
         }
-        $start_rule = $this->getStartRule();
         $out .= "%start {$this->defaultRule}\n";
 
         $out .= "\n";
         foreach ($this->rules as $name => $expr) {
-            $out .= sprintf("%s = %s\n", $name, $expr->asRightHandSide());
+            $out .= sprintf("%s <- %s\n", $name, $expr->asRightHandSide());
         }
 
         return $out;
@@ -297,6 +305,10 @@ class Grammar implements GrammarInterface
 
     public function offsetGet($name)
     {
+        if (!isset($this->rules[$name])) {
+            throw new RuleNotFound($name);
+        }
+
         return $this->rules[$name];
     }
 

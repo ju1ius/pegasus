@@ -73,7 +73,7 @@ abstract class Expression
     public function asRule()
     {
         if ($this->name) {
-            return sprintf('%s = %s', $this->name, $this->asRightHandSide());
+            return sprintf('%s <- %s', $this->name, $this->asRightHandSide());
         }
 
         return $this->asRightHandSide();
@@ -110,16 +110,6 @@ abstract class Expression
     }
 
     /**
-     * Returns whether the number of result nodes returned by the expression varies based on the input.
-     *
-     * @return bool
-     */
-    public function hasVariableCaptureCount()
-    {
-        return false;
-    }
-
-    /**
      * Returns whether it can be determined statically that the expression returns parse results on success.
      *
      * @return bool
@@ -127,6 +117,16 @@ abstract class Expression
     public function isCapturingDecidable()
     {
         return true;
+    }
+
+    /**
+     * Returns whether the number of result nodes returned by the expression varies based on the input.
+     *
+     * @return bool
+     */
+    public function hasVariableCaptureCount()
+    {
+        return false;
     }
 
     public function __clone()

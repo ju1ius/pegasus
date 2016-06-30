@@ -31,9 +31,9 @@ class ExpressionUnfolder extends ExpressionVisitor
     private $grammar;
 
     public function __construct(Grammar $grammar)
-	{
-		$this->grammar = $grammar;
-	}
+    {
+        $this->grammar = $grammar;
+    }
 
     public function beforeTraverse(Expression $expr)
     {
@@ -46,10 +46,10 @@ class ExpressionUnfolder extends ExpressionVisitor
     }
 
     public function enterExpression(Expression $expr)
-	{
+    {
         if (!$this->isTopLevel && $expr->name && isset($this->grammar[$expr->name])) {
             return new Reference($expr->name);
         }
         $this->isTopLevel = false;
-	}
+    }
 }

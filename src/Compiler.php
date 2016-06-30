@@ -2,26 +2,26 @@
 /*
  * This file is part of Pegasus
  *
- * (c) 2014 Jules Bernable 
+ * (c) 2014 Jules Bernable
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-
 namespace ju1ius\Pegasus;
 
-use Twig_Loader_Filesystem;
-use Twig_Environment;
-use Twig_Extension_Debug;
-
-use ju1ius\Pegasus\Twig\Extension\PegasusTwigExtension;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Analysis;
-
+use ju1ius\Pegasus\Twig\Extension\PegasusTwigExtension;
+use Twig_Environment;
+use Twig_Extension_Debug;
+use Twig_Loader_Filesystem;
 
 abstract class Compiler
 {
+    /**
+     * @var Twig_Environment
+     */
     protected $twig = null;
 
     public function __construct()
@@ -30,34 +30,54 @@ abstract class Compiler
     }
 
     abstract public function getTemplateDirectories();
+
     abstract public function getParserClass();
+
     abstract public function getExtendedParserClass();
+
     abstract public function getNodeVisitorClass();
+
     abstract protected function renderParser($outputDirectory, $args);
-    
+
+    /**
+     * @return Twig_Environment
+     */
     public function getTwigEnvironment()
     {
         return $this->twig;
     }
 
+    /**
+     * @return array
+     */
     public function getTwigExtensions()
     {
         return [];
     }
 
-    public function compileFile($path, $output_dir='', $args=[])
+    /**
+     * @param string $path
+     * @param string $outputDirectory
+     * @param array  $args
+     */
+    public function compileFile($path, $outputDirectory = '', $args = [])
     {
-        if (!$output_dir) {
-            $output_dir = dirname($path);
+        if (!$outputDirectory) {
+            $outputDirectory = dirname($path);
         }
         if (empty($args['name'])) {
             $args['name'] = explode('.', basename($path))[0];
         }
         $syntax = file_get_contents($path);
-        $this->compileSyntax($syntax, $output_dir, $args);
+        $this->compileSyntax($syntax, $outputDirectory, $args);
     }
 
-    public function compileSyntax($syntax, $output_dir, $args=[])
+    /**
+     * @param string $syntax
+     * @param string $outputDirectory
+     * @param array  $args
+     */
+    public function compileSyntax($syntax, $outputDirectory, $args = [])
     {
         $grammar = Grammar::fromSyntax($syntax);
         $name = $grammar->getName();
@@ -66,16 +86,22 @@ abstract class Compiler
         } else {
             if (empty($args['name'])) {
                 throw new \InvalidArgumentException(
-                    'You must provide a name for the grammar, either with the %name directive or by passing a "name" parameter to the arguments array.'
+                    'You must provide a name for the grammar'
+                    . ', either with the %name directive or by passing a "name" parameter to the arguments array.'
                 );
             }
             $args['class'] = $args['name'];
             unset($args['name']);
         }
-        $this->compileGrammar($grammar, $output_dir, $args);
+        $this->compileGrammar($grammar, $outputDirectory, $args);
     }
 
-    public function compileGrammar(Grammar $grammar, $output_dir, $args=[])
+    /**
+     * @param Grammar $grammar
+     * @param string  $outputDirectory
+     * @param array   $args
+     */
+    public function compileGrammar(Grammar $grammar, $outputDirectory, $args = [])
     {
         $args['grammar'] = $grammar;
         $args['base_class'] = $this->getParserClass();
@@ -90,23 +116,27 @@ abstract class Compiler
             }
         }
         $this->optimizeGrammar($grammar, $analysis);
-        $this->renderParser($output_dir, $args);
+        $this->renderParser($outputDirectory, $args);
     }
 
-    protected function renderTemplate($tpl, $args=[])
-    {
-        $tpl = $this->twig->loadTemplate($tpl);
-        return $tpl->render($args);
-    }
-
+    /**
+     * @param Expression $expr
+     *
+     * @return string
+     */
     public function renderExpression(Expression $expr)
     {
         $tpl_name = self::getExpressionTemplate($expr);
-        $args = [
-            'expr' => $expr
-        ];
+        $args = ['expr' => $expr];
 
         return $this->renderTemplate($tpl_name, $args);
+    }
+
+    protected function renderTemplate($tpl, $args = [])
+    {
+        $tpl = $this->twig->loadTemplate($tpl);
+
+        return $tpl->render($args);
     }
 
     protected static function getExpressionTemplate($expr)
@@ -125,13 +155,13 @@ abstract class Compiler
     protected function setupTwigEnvironment()
     {
         $loader = new Twig_Loader_Filesystem($this->getTemplateDirectories());
-        $this->twig = new Twig_Environment($loader, [
+    $this->twig = new Twig_Environment($loader, [
             'autoescape' => false,
-            'debug' => true
+            'debug' => true,
         ]);
         $extensions = [
             new Twig_Extension_Debug,
-            new PegasusTwigExtension($this)
+            new PegasusTwigExtension($this),
         ];
         $extensions = array_merge($extensions, $this->getTwigExtensions());
         foreach ($extensions as $ext) {
@@ -141,6 +171,9 @@ abstract class Compiler
 
     /**
      * Override this to add optimizations
+     *
+     * @param GrammarInterface $grammar
+     * @param Analysis         $analysis
      */
     protected function optimizeGrammar(GrammarInterface $grammar, Analysis $analysis)
     {

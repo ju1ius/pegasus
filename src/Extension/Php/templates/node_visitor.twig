@@ -8,11 +8,11 @@
  * file that was distributed with this source code.
  */
 
-
 use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\NodeVisitor;
 
 
-class {{ grammar.name }}NodeVisitor extends ju1ius\Pegasus\NodeVisitor
+class {{ grammar.name }}NodeVisitor extends NodeVisitor
 {
     public function generic_visit(Node $node, $children)
     {
