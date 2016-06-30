@@ -36,9 +36,7 @@ class Reference extends Expression
 
     public function asRightHandSide()
     {
-        return $this->name
-            ? "<{$this->name} (reference to {$this->identifier})>"
-            : "<{$this->identifier}>";
+        return $this->identifier;
     }
 
     public function match($text, $pos, ParserInterface $parser)

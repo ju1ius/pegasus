@@ -19,7 +19,7 @@ use ju1ius\Pegasus\Parser\ParserInterface;
  * In any case, it never consumes any characters;
  * it's a negative lookahead.
  */
-class Not extends Wrapper
+class Not extends Decorator
 {
     public function asRightHandSide()
     {

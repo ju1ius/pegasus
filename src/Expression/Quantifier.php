@@ -16,7 +16,7 @@ use ju1ius\Pegasus\Parser\ParserInterface;
 /**
  * An expression wrapper like the {n, n+i} quantifier in regular expressions.
  */
-class Quantifier extends Wrapper
+class Quantifier extends Decorator
 {
     public $min;
     public $max;

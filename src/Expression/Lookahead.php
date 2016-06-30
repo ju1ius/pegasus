@@ -17,7 +17,7 @@ use ju1ius\Pegasus\Parser\ParserInterface;
  * An expression which consumes nothing, even if it's contained expression succeeds.
  *
  */
-class Lookahead extends Wrapper
+class Lookahead extends Decorator
 {
     public function asRightHandSide()
     {

@@ -19,7 +19,7 @@ use ju1ius\Pegasus\Parser\ParserInterface;
  *
  * This allows for example to identify an expression in a local context.
  */
-class Label extends Wrapper
+class Label extends Decorator
 {
     public $label;
 

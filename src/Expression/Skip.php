@@ -18,7 +18,7 @@ use ju1ius\Pegasus\Parser\ParserInterface;
  *
  * This is equivalent to ignoring nodes in the node visitor, but it can dramatically reduce the size of the parse tree.
  */
-class Skip extends Wrapper
+class Skip extends Decorator
 {
     public function asRightHandSide()
     {
