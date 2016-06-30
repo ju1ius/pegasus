@@ -2,7 +2,7 @@
 /*
  * This file is part of Pegasus
  *
- * (c) 2014 Jules Bernable 
+ * (c) 2014 Jules Bernable
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -21,6 +21,7 @@ use ju1ius\Pegasus\Expression\Not;
 use ju1ius\Pegasus\Expression\OneOf;
 use ju1ius\Pegasus\Expression\Sequence;
 
+use ju1ius\Pegasus\Grammar\Builder;
 use ju1ius\Pegasus\Parser\LRPackrat as Parser;
 use ju1ius\Pegasus\Visitor\MetaGrammarNodeVisitor;
 
@@ -175,175 +176,169 @@ EOS;
 
 	private static function buildGrammar()
 	{
-		$g = new Grammar();
-		$g['grammar'] = new Sequence([
-            new Ref('_'),
-            new Ref('directives'),
-            new Ref('rules')
-		]);
-        // directives
-        $g['directives'] = new ZeroOrMore([new Ref('directive')]);
-        $g['directive'] = new OneOf([
-            new Ref('name_directive'),
-            new Ref('start_directive'),
-            new Ref('ws_directive'),
-            new Ref('ci_directive')
-        ]);
-        $g['name_directive'] = new Sequence([
-            new Literal('%name'),
-            new Ref('_'),
-            new Ref('identifier')
-        ]);
-        $g['start_directive'] = new Sequence([
-            new Literal('%start'),
-            new Ref('_'),
-            new Ref('identifier')
-        ]);
-        $g['ws_directive'] = new Sequence([
-            new Literal('%whitespace'),
-            new Ref('equals'),
-            new Ref('expression')
-        ]);
-        $g['ci_directive'] = new Sequence([
-            new Literal('%case_insensitive'),
-            new Ref('_')
-        ]);
-        // rules
-		$g['rules'] = new OneOrMore([new Ref('rule')]);
-		$g['rule'] = new Sequence([
-			new Ref('identifier'),
-			new Ref('equals'),
-			new Ref('expression')
-		]);
-		$g['expression'] = new OneOf([
-			new Ref('choice'),
-            new Ref('sequence'),
-			new Ref('term')
-		]);
-		$g['choice'] = new Sequence([
-            new Ref('alternative'),
-            new OneOrMore([
-                new Sequence([
-                    new Ref('OR'),
-                    new Ref('alternative')
-                ])
-            ])
-        ]);
-        $g['alternative'] = new OneOf([
-            new Ref('sequence'),
-            new Ref('term')
-        ]);
-        $g['sequence'] = new Quantifier([new Ref('term')], 2, INF);
-        $g['term'] = new OneOf([
-            new Ref('labeled'),
-            new Ref('labelable')
-        ]);
-		$g['labeled'] = new Sequence([
-			new Ref('label'),
-			new Ref('labelable'),
-			new Ref('_')
-		]);
-        $g['labelable'] = new OneOf([
-            new Ref('prefixed'),
-            new Ref('prefixable')
-        ]);
-		$g['prefixed'] = new OneOf([
-			new Sequence([
-				new Literal('~'), new Ref('prefixable')
-			], 'skip'),
-			new Sequence([
-				new Literal('&'), new Ref('prefixable')
-			], 'lookahead'),
-			new Sequence([
-				new Literal('!'), new Ref('prefixable')
-			], 'not')
-		]);
-		$g['prefixable'] = new OneOf([
-			new Ref('prefixed'),
-			new Ref('suffixable'),
-			new Ref('primary')
-		]);
-		$g['suffixable'] = new OneOf([
-			new Ref('suffixed'), new Ref('primary')
-		]);
-		$g['suffixed'] = new Sequence([
-			new Ref('suffixable'), new Ref('quantifier')
-		]);
-		$g['primary'] = new OneOf([
-			new Ref('parenthesized'),
-			new Ref('atom')
-		]);
-        $g['parenthesized'] = new Sequence([
-				new Literal('('),
-				new Ref('_'),
-				new Ref('expression'),
-				//new Ref('_'),
-				new Literal(')'),
-				new Ref('_')
-        ]);
-		$g['atom'] = new OneOf([
-            new Ref('eof'),
-            new Ref('epsilon'),
-            new Ref('fail'),
-			new Ref('literal'),
-			new Ref('regex'),
-			new Ref('reference')
-		]);
-		$g['OR'] = new Sequence([
-			new Literal('|'),
-			new Ref('_')
-		]);
-		$g['equals'] = new Sequence([
-			new Literal('='),
-			new Ref('_')
-		]);
-        // ATOMS
-		$g['reference'] = new Sequence([
-			new Ref('identifier'),
-			new Not([new Ref('equals')])
-		]);
-		$g['quantifier'] = new Sequence([
-			new Regex('(?> ([*+?]) | (?: \{ (\d+) (?:,(\d*))? \} ) )'),
-			new Ref('_')
-		]);
-		$g['literal'] = new Sequence([
-			new Regex('(["\'])((?:(?:\\\\.)|(?:(?!\1).))*)\1'),
-			new Ref('_')
-		]);
-		$g['regex'] = new Sequence([
-            new Regex('\/((?:(?:\\\\.)|[^\/])*)\/([imsuUX]*)?'),
-			new Ref('_')
-        ]);
-        $g['eof'] = new Sequence([
-            new Regex('EOF\b'),
-            new Ref('_')
-        ]);
-        $g['epsilon'] = new Sequence([
-            new Regex('E\b'),
-            new Ref('_')
-        ]);
-        $g['fail'] = new Sequence([
-            new Regex('FAIL\b'),
-            new Ref('_')
-        ]);
-        // TOKENS
-		$g['identifier'] = new Sequence([
-			new Regex('[a-zA-Z_]\w*'),
-			new Ref('_')
-		]);
-		$g['label'] = new Regex('([a-zA-Z_]\w*):');
-        // WHITESPACE
-        $g['_'] = new ZeroOrMore([
-            new OneOf([
-                new Ref('ws'),
-                new Ref('comment')
-            ])
-        ]);
-		$g['comment'] = new Regex('\#([^\n]*)');
-		$g['ws'] = new Regex('\s+');
+		$g = Builder::create()
+            ->rule('grammar')->sequence()
+                ->ref('_')
+                ->ref('directives')
+                ->ref('rules')
+            //
+            // Directives
+            // ------------------------------------------------------------------------------------------------------
+            ->rule('directives')->zeroOrMore()
+                ->ref('directive')
+		    ->rule('directive')->oneOf()
+                ->ref('name_directive')
+                ->ref('start_directive')
+                ->ref('ws_directive')
+                ->ref('ci_directive')
+		    ->rule('name_directive')->sequence()
+                ->literal('%name')
+                ->ref('_')
+                ->ref('identifier')
+		    ->rule('start_directive')->sequence()
+                ->literal('%start')
+                ->ref('_')
+                ->ref('identifier')
+		    ->rule('ws_directive')->sequence()
+                ->literal('%whitespace')
+                ->ref('equals')
+                ->ref('expression')
+		    ->rule('ci_directive')->sequence()
+                ->literal('%case_insensitive')
+                ->ref('_')
+            //
+            // rules
+            // ------------------------------------------------------------------------------------------------------
+            ->rule('rules')->oneOrMore()
+                ->ref('rule')
+		    ->rule('rule')->sequence()
+                ->ref('identifier')
+                ->ref('arrow_left')
+                ->ref('expression')
+            //
+            // composite expressions
+            // ------------------------------------------------------------------------------------------------------
+            ->rule('choice')->sequence()
+                ->ref('alternative')
+                ->oneOrMore()->sequence()
+                    ->ref('OR')
+                    ->ref('alternative')
+		    ->rule('alternative')->oneOf()
+                ->ref('sequence')
+                ->ref('term')
+            ->rule('sequence')
+                ->atLeast(2)->ref('term')
+            //
+            // decorator expressions
+            // ------------------------------------------------------------------------------------------------------
+            ->rule('quantifier')->sequence()
+                ->regex('(?> ([*+?]) | (?: \{ (\d+) (?:,(\d*))? \} ) )')
+                ->ref('_')
+            ->rule('skip')->sequence()
+                ->literal('~')
+                ->ref('prefixable')
+            ->rule('lookahead')->sequence()
+                ->literal('&')
+                ->ref('prefixable')
+            ->rule('not')->sequence()
+                ->literal('!')
+                ->ref('prefixable')
+            //
+            // terminal expressions
+            // ------------------------------------------------------------------------------------------------------
+            ->rule('reference')->sequence()
+                ->ref('identifier')
+                ->not()->ref('arrow_left')
+            ->rule('literal')->sequence()
+                ->regex('(["\']) ((?:(?:\\\\.)|(?:(?!\1).))*) \1')
+                ->ref('_')
+            ->rule('regex')->sequence()
+                ->regex('\/((?:(?:\\\\.)|[^\/])*)\/([imsuUX]*)?')
+                ->ref('_')
+            ->rule('eof')->sequence()
+                ->regex('EOF\b')
+                ->ref('_')
+            ->rule('epsilon')->sequence()
+                ->regex('E\b')
+                ->ref('_')
+            ->rule('fail')->sequence()
+                ->regex('FAIL\b')
+                ->ref('_')
+            //
+            // expression parts
+            // ------------------------------------------------------------------------------------------------------
+            ->rule('expression')->oneOf()
+                ->ref('choice')
+                ->ref('sequence')
+                ->ref('term')
+		    ->rule('term')->oneOf()
+                ->ref('labeled')
+                ->ref('labelable')
+            ->rule('labeled')->sequence()
+                ->ref('label')
+                ->ref('labelable')
+                ->ref('_')
+		    ->rule('labelable')->oneOf()
+                ->ref('prefixed')
+                ->ref('prefixable')
+            ->rule('prefixed')->oneOf()
+                ->ref('skip')
+                ->ref('lookahead')
+                ->ref('not')
+            ->rule('prefixable')->oneOf()
+                ->ref('prefixed')
+                ->ref('suffixable')
+                ->ref('primary')
+            ->rule('suffixed')->sequence()
+                ->ref('suffixable')
+                ->ref('quantifier')
+            ->rule('suffixable')->oneOf()
+                ->ref('suffixed')
+                ->ref('primary')
+		    ->rule('primary')->oneOf()
+                ->ref('parenthesized')
+                ->ref('atom')
+		    ->rule('parenthesized')->sequence()
+                ->literal('(')
+                ->ref('_')
+                ->ref('expression')
+                ->literal(')')
+                ->ref('_')
+            ->rule('atom')->oneOf()
+                ->ref('eof')
+                ->ref('epsilon')
+                ->ref('fail')
+                ->ref('literal')
+                ->ref('regex')
+                ->ref('reference')
+            ->rule('OR')->sequence()
+                ->literal('|')
+                ->ref('_')
+            ->rule('arrow_left')->sequence()
+                ->literal('<-')
+                ->ref('_')
+            ->rule('equals')->sequence()
+                ->literal('=')
+                ->ref('_')
+            ->rule('identifier')->sequence()
+                ->regex('[a-zA-Z_]\w*')
+                ->ref('_')
+            ->rule('label')
+                ->regex('([a-zA-Z_]\w*):')
+            //
+            // whitespace
+            // ------------------------------------------------------------------------------------------------------
+            ->rule('_')->zeroOrMore()
+                ->oneOf()
+                    ->ref('ws')
+                    ->ref('comment')
+            ->rule('ws')
+                ->regex('\s+')
+            ->rule('comment')
+                ->regex('\#([^\n]*)')
+            ->getGrammar()
+        ;
 
-        $g->finalize('grammar');
-
-        return $g;
+        return $g->finalize('grammar');
 	}
 }
