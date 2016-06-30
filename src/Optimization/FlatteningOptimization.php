@@ -16,13 +16,9 @@ abstract class FlatteningOptimization extends Optimization
             return false;
         }
 
-        foreach ($expr->children as $child) {
-            if ($this->isEligibleChild($child)) {
-                return true;
-            }
-        }
-
-        return false;
+        return $expr->some(function (Expression $child) {
+            return $this->isEligibleChild($child);
+        });
     }
 
     /**
@@ -33,9 +29,10 @@ abstract class FlatteningOptimization extends Optimization
     protected function doApply(Expression $expr)
     {
         $children = [];
-        foreach ($expr->children as $child) {
+        foreach ($expr as $child) {
             if ($this->isEligibleChild($child)) {
-                $children = array_merge($children, $child->children);
+                /** @var Composite $child */
+                array_push($children, ...$child);
             } else {
                 $children[] = $child;
             }

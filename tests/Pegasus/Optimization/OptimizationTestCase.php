@@ -2,21 +2,21 @@
 
 namespace ju1ius\Pegasus\Tests\Optimization;
 
-use ju1ius\Pegasus\Tests\PegasusTestCase;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Optimization\Optimization;
-
+use ju1ius\Pegasus\Tests\PegasusTestCase;
 
 class OptimizationTestCase extends PegasusTestCase
 {
-    protected function apply(Optimization $optim, Expression $expr)
+    protected function applyOptimization(Optimization $optim, Expression $expr)
     {
         if ($expr instanceof Composite) {
-            foreach ($expr->children as $i => $child) {
-                $expr->children[$i] = $this->apply($optim, $child);
+            foreach ($expr as $i => $child) {
+                $expr[$i] = $this->applyOptimization($optim, $child);
             }
         }
+
         return $optim->apply($expr);
     }
 }

@@ -21,7 +21,7 @@ class FlattenSequenceTest extends OptimizationTestCase
             new FlattenMatchingSequence,
             new FlattenCapturingSequence
         );
-        $result = $this->apply($opt, $input);
+        $result = $this->applyOptimization($opt, $input);
         $this->assertExpressionEquals($expected, $result);
         $this->assertEquals($expected->asRightHandSide(), $result->asRightHandSide());
     }

@@ -55,7 +55,7 @@ class PegasusTestCase extends \PHPUnit_Framework_TestCase
     {
         $expr->id = null;
         if ($expr instanceof Expression\Composite) {
-            foreach ($expr->children as $child) {
+            foreach ($expr as $child) {
                 $this->cleanupExpr($child);
             }
         }

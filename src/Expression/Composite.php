@@ -13,20 +13,19 @@ namespace ju1ius\Pegasus\Expression;
 
 use ju1ius\Pegasus\Expression;
 
-
 /**
  * An expression which contains several other expressions.
  *
  * @author ju1ius <ju1ius@laposte.net>
  */
-abstract class Composite extends Expression
+abstract class Composite extends Expression implements \ArrayAccess, \Countable, \IteratorAggregate
 {
     /**
      * Holds an array of this expression's sub expressions.
      *
      * @var Expression[]
      */
-    public $children;
+    protected $children;
 
     /**
      * Composite constructor.
@@ -50,14 +49,14 @@ abstract class Composite extends Expression
         if (!parent::equals($other)) {
             return false;
         }
-        foreach ($this->children as $i => $child) {
-            /** @var Composite $other */
-            if (!isset($other->children[$i]) || !$child->equals($other->children[$i])) {
-                return false;
-            }
+        /** @var Composite $other */
+        if (count($this->children) !== $other->count()) {
+            return false;
         }
 
-        return true;
+        return $this->every(function (Expression $child, $i) use ($other) {
+            return isset($other[$i]) && $child->equals($other[$i]);
+        });
     }
 
     /**
@@ -65,13 +64,9 @@ abstract class Composite extends Expression
      */
     public function isCapturing()
     {
-        foreach ($this->children as $child) {
-            if ($child->isCapturing()) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->some(function (Expression $child) {
+            return $child->isCapturing();
+        });
     }
 
     /**
@@ -79,13 +74,9 @@ abstract class Composite extends Expression
      */
     public function isCapturingDecidable()
     {
-        foreach ($this->children as $child) {
-            if (!$child->isCapturingDecidable()) {
-                return false;
-            }
-        }
-
-        return true;
+        return $this->every(function (Expression $child) {
+            return $child->isCapturingDecidable();
+        });
     }
 
     /**
@@ -102,5 +93,151 @@ abstract class Composite extends Expression
             }
             return $child->name ?: $child->asRightHandSide();
         }, $this->children);
+    }
+
+    //
+    // Collection
+    // --------------------------------------------------------------------------------------------------------------
+
+    /**
+     * @param Expression[] ...$children
+     *
+     * @return $this
+     */
+    public function push(Expression ...$children)
+    {
+        $i = count($this->children);
+        foreach ($children as $child) {
+            $this->offsetSet($i++, $child);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param callable $f
+     *
+     * @return $this
+     */
+    public function map(callable $f)
+    {
+        $children = [];
+        foreach ($this->children as $i => $child) {
+            $children[] = $f($child, $i);
+        }
+
+        return new static($children, $this->name);
+    }
+
+    /**
+     * @param callable $predicate
+     *
+     * @return bool
+     */
+    public function every(callable $predicate)
+    {
+        foreach ($this->children as $i => $child) {
+            if (!$predicate($child, $i)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @param callable $predicate
+     *
+     * @return bool
+     */
+    public function some(callable $predicate)
+    {
+        foreach ($this->children as $i => $child) {
+            if ($predicate($child, $i)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    //
+    // ArrayAccess
+    // --------------------------------------------------------------------------------------------------------------
+
+    /**
+     * @param int $offset
+     *
+     * @return bool
+     */
+    public function offsetExists($offset)
+    {
+        return isset($this->children[$offset]);
+    }
+
+    /**
+     * @param int $offset
+     * @return Expression
+     */
+    public function offsetGet($offset)
+    {
+        if (!isset($this->children[$offset])) {
+
+        }
+
+        return $this->children[$offset];
+    }
+
+    /**
+     * @param int        $offset
+     * @param Expression $value
+     *
+     * @return Expression|void
+     */
+    public function offsetSet($offset, $value)
+    {
+        // handle $expr[] = $child;
+        if ($offset === null) {
+            $offset = count($this->children);
+        }
+        if (!$value instanceof Expression) {
+            throw new \InvalidArgumentException(sprintf(
+                'Value passed to `%s` should be instance of `%s`, `%s` given.',
+                __METHOD__,
+                Expression::class,
+                get_class($value)
+            ));
+        }
+
+        return $this->children[(int)$offset] = $value;
+    }
+
+    /**
+     * @param int $offset
+     */
+    public function offsetUnset($offset)
+    {
+        unset($this->children[$offset]);
+    }
+
+    //
+    // Countable
+    // --------------------------------------------------------------------------------------------------------------
+
+    /**
+     * @inheritdoc
+     */
+    public function count()
+    {
+        return count($this->children);
+    }
+
+    //
+    // IteratorAggregate
+    // --------------------------------------------------------------------------------------------------------------
+
+    public function getIterator()
+    {
+        return new \ArrayIterator($this->children);
     }
 }

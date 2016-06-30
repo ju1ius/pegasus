@@ -148,7 +148,7 @@ class Analysis
      *
      * @param string $ruleName The rule name to search in.
      *
-     * @return array    An array of reference names.
+     * @return array An array of reference names.
      */
     public function getReferencesFrom($ruleName)
     {
@@ -166,7 +166,7 @@ class Analysis
      *
      * @param string $ruleName The rule name to search in.
      *
-     * @return array    An array of reference names.
+     * @return array An array of reference names.
      */
     public function getLeftReferencesFrom($ruleName)
     {
@@ -207,7 +207,7 @@ class Analysis
         if ($expr instanceof Reference) {
             yield $expr->identifier;
         } elseif ($expr instanceof Composite) {
-            foreach ($expr->children as $child) {
+            foreach ($expr as $child) {
                 foreach ($this->directReferences($child) as $ref) {
                     yield $ref;
                 }
@@ -227,13 +227,13 @@ class Analysis
         if ($expr instanceof Reference) {
             yield $expr->identifier;
         } elseif ($expr instanceof OneOf) {
-            foreach ($expr->children as $child) {
+            foreach ($expr as $child) {
                 foreach ($this->directLeftReferences($child) as $ref) {
                     yield $ref;
                 }
             }
         } elseif ($expr instanceof Composite) {
-            foreach ($this->directLeftReferences($expr->children[0]) as $ref) {
+            foreach ($this->directLeftReferences($expr[0]) as $ref) {
                 yield $ref;
             }
         }

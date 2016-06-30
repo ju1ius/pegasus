@@ -19,12 +19,15 @@ use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Expression\Lookahead;
 use ju1ius\Pegasus\Expression\Not;
 use ju1ius\Pegasus\Expression\OneOf;
+use ju1ius\Pegasus\Expression\OneOrMore;
+use ju1ius\Pegasus\Expression\Optional;
 use ju1ius\Pegasus\Expression\Quantifier;
 use ju1ius\Pegasus\Expression\Reference;
 use ju1ius\Pegasus\Expression\Regex;
 use ju1ius\Pegasus\Expression\Sequence;
 use ju1ius\Pegasus\Expression\Skip;
-use ju1ius\Pegasus\Expression\Wrapper;
+use ju1ius\Pegasus\Expression\Decorator;
+use ju1ius\Pegasus\Expression\ZeroOrMore;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Expression;
 
@@ -64,7 +67,7 @@ class Builder
      *
      * @return Builder
      */
-    public static function build(Grammar $grammar = null)
+    public static function create(Grammar $grammar = null)
     {
         return new self($grammar);
     }
@@ -107,21 +110,23 @@ class Builder
         }
 
         $top = $this->exprStack->top();
-        // if top expr is a wrapper and it has already one child, end the top expr
-        if ($top instanceof Wrapper && count($top->children) === 1) {
+        // if top expr is a `Decorator` and it has already one child,
+        // end the top expression
+        if ($top instanceof Decorator && count($top) > 0) {
             $this->end();
             $top = $this->exprStack->top();
         }
 
         if ($top instanceof Composite) {
-            $top->children[] = $expr;
+            $top[] = $expr;
             $this->exprStack->push($expr);
         } else {
             throw new \RuntimeException(
                 sprintf(
-                    'Cannot add child expression %s to non-composite expression %s. Did you forget to call Builder::end()?',
-                    $expr,
-                    $top
+                    'Cannot add child expression `%s` to non-composite expression `%s`.'
+                    . ' Did you forget to call `Builder::end()`?',
+                    get_class($expr),
+                    get_class($top)
                 )
             );
         }
@@ -130,6 +135,8 @@ class Builder
     }
 
     /**
+     * Ends the latest composite rule.
+     *
      * @param bool $all
      *
      * @return $this
@@ -156,68 +163,56 @@ class Builder
     /**
      * @param string $literal
      *
-     * @return Builder
+     * @return $this
      */
     public function literal($literal)
     {
-        $this->add(new Literal($literal));
-
-        return $this->end();
+        return $this->add(new Literal($literal))->end();
     }
 
     /**
      * @param string $pattern
      * @param array  $flags
      *
-     * @return Builder
+     * @return $this
      */
     public function regex($pattern, array $flags = [])
     {
-        $this->add(new Regex($pattern, '', $flags));
-
-        return $this->end();
+        return $this->add(new Regex($pattern, '', $flags))->end();
     }
 
     /**
-     * @return Builder
+     * @return $this
      */
     public function eof()
     {
-        $this->add(new EOF());
-
-        return $this->end();
+        return $this->add(new EOF())->end();
     }
 
     /**
-     * @return Builder
+     * @return $this
      */
     public function e()
     {
-        $this->add(new Epsilon());
-
-        return $this->end();
+        return $this->add(new Epsilon())->end();
     }
 
     /**
-     * @return Builder
+     * @return $this
      */
     public function fail()
     {
-        $this->add(new Fail());
-
-        return $this->end();
+        return $this->add(new Fail())->end();
     }
 
     /**
      * @param string $name
      *
-     * @return Builder
+     * @return $this
      */
     public function reference($name)
     {
-        $this->add(new Reference($name));
-
-        return $this->end();
+        return $this->add(new Reference($name))->end();
     }
 
     /**
@@ -225,7 +220,7 @@ class Builder
      *
      * @param string $name
      *
-     * @return Builder
+     * @return $this
      */
     public function ref($name)
     {
@@ -233,7 +228,7 @@ class Builder
     }
 
     /**
-     * @return Builder
+     * @return $this
      */
     public function sequence()
     {
@@ -243,7 +238,7 @@ class Builder
     /**
      * Alias of `sequence`
      *
-     * @return Builder
+     * @return $this
      */
     public function seq()
     {
@@ -251,7 +246,7 @@ class Builder
     }
 
     /**
-     * @return Builder
+     * @return $this
      */
     public function oneOf()
     {
@@ -261,7 +256,7 @@ class Builder
     /**
      * Alias of `oneOf`.
      *
-     * @return Builder
+     * @return $this
      */
     public function alt()
     {
@@ -269,20 +264,105 @@ class Builder
     }
 
     /**
+     * Adds a Quantifier matching between $min and $max terms ({min,max})
+     *
      * @param int $min
      * @param int $max
      *
-     * @return Builder
+     * @return $this
      */
-    public function q($min = 0, $max = INF)
+    public function between($min = 0, $max = INF)
     {
         return $this->add(new Quantifier([], $min, $max));
     }
 
     /**
+     * Alias of `between`.
+     *
+     * @param int $min
+     * @param int $max
+     *
+     * @return $this
+     */
+    public function q($min = 0, $max = INF)
+    {
+        return $this->between($min, $max);
+    }
+
+    /**
+     * Adds a Quantifier matching exactly $n terms ({n,n})
+     *
+     * @param int $n
+     *
+     * @return $this
+     */
+    public function exactly($n)
+    {
+        return $this->add(new Quantifier([], $n, $n));
+    }
+
+    /**
+     * Adds a Quantifier matching at least $n terms ({n,})
+     *
+     * @param int $n
+     *
+     * @return $this
+     */
+    public function atLeast($n)
+    {
+        return $this->add(new Quantifier([], $n, INF));
+    }
+
+    /**
+     * Adds a Quantifier matching at most $n terms ({0,n})
+     *
+     * @param int $n
+     *
+     * @return $this
+     */
+    public function atMost($n)
+    {
+        return $this->add(new Quantifier([], 0, $n));
+    }
+
+    /**
+     * @return $this
+     */
+    public function optional()
+    {
+        return $this->add(new Optional([]));
+    }
+
+    /**
+     * Alias of `optional`.
+     *
+     * @return $this
+     */
+    public function opt()
+    {
+        return $this->optional();
+    }
+
+    /**
+     * @return $this
+     */
+    public function zeroOrMore()
+    {
+        return $this->add(new ZeroOrMore([]));
+    }
+
+    /**
+     * @return $this
+     */
+    public function oneOrMore()
+    {
+        return $this->add(new OneOrMore([]));
+    }
+
+    /**
      * @param string $label
      *
-     * @return Builder
+     * @return $this
      */
     public function label($label)
     {
@@ -290,7 +370,7 @@ class Builder
     }
 
     /**
-     * @return Builder
+     * @return $this
      */
     public function not()
     {
@@ -298,7 +378,7 @@ class Builder
     }
 
     /**
-     * @return Builder
+     * @return $this
      */
     public function lookahead()
     {
@@ -306,7 +386,19 @@ class Builder
     }
 
     /**
-     * @return Builder
+     * Alias of `lookahead`.
+     *
+     * I found no better antonym for `not`...
+     *
+     * @return $this
+     */
+    public function yep()
+    {
+        return $this->lookahead();
+    }
+
+    /**
+     * @return $this
      */
     public function skip()
     {

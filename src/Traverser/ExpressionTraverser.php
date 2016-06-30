@@ -95,7 +95,7 @@ class ExpressionTraverser implements ExpressionTraverserInterface
         }
 
         if ($expr instanceof Composite) {
-            foreach ($expr->children as $i => $child) {
+            foreach ($expr as $i => $child) {
                 // protect against recursive rules
                 if (isset($this->visited[$child->id])) {
                     continue;
@@ -103,7 +103,7 @@ class ExpressionTraverser implements ExpressionTraverserInterface
                 $this->visited[$child->id] = true;
 
                 if (null !== $result = $this->traverseExpression($child)) {
-                    $expr->children[$i] = $result;
+                    $expr[$i] = $result;
                 }
             }
         }
