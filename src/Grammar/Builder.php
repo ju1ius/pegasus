@@ -27,6 +27,7 @@ use ju1ius\Pegasus\Expression\Regex;
 use ju1ius\Pegasus\Expression\Sequence;
 use ju1ius\Pegasus\Expression\Skip;
 use ju1ius\Pegasus\Expression\Decorator;
+use ju1ius\Pegasus\Expression\Token;
 use ju1ius\Pegasus\Expression\ZeroOrMore;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Expression;
@@ -403,5 +404,13 @@ class Builder
     public function skip()
     {
         return $this->add(new Skip([]));
+    }
+
+    /**
+     * @return $this
+     */
+    public function token()
+    {
+        return $this->add(new Token([]));
     }
 }
