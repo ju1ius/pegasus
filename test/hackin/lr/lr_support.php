@@ -12,7 +12,7 @@ use ju1ius\Pegasus\Parser\Head;
 
 class Parser extends LRPackrat
 {
-    public function apply(Expression $expr, $pos)
+    public function apply(Expression $expr, $pos, Scope $scope)
     {
         if ($m = $this->memo_lr($expr, $pos)) {
             return $this->recall($m, $expr);
@@ -20,7 +20,7 @@ class Parser extends LRPackrat
         $lr = new LR($expr);
         $this->lrStack->push($lr);
         $m = $this->inject_memo($expr, $pos, $lr, $pos);
-        $result = $this->evaluate($expr);
+        $result = $this->evaluate($expr,);
         $this->lrStack->pop();
         if ($lr->head) {
             $m->end = $this->pos;
@@ -39,7 +39,7 @@ class Parser extends LRPackrat
         }
         if (isset($head->eval[$expr->id])) {
             unset($head->eval[$expr->id]);
-            $this->save($m, $this->evaluate($expr));
+            $this->save($m, $this->evaluate($expr,));
         }
         return $m;
     }
@@ -78,7 +78,7 @@ class Parser extends LRPackrat
         while (true) {
             $this->pos = $pos;
             $head->eval = $head->involved;
-            $result = $this->evaluate($expr);
+            $result = $this->evaluate($expr,);
             if (!$result || $this->pos <= $m->end) {
                 unset($this->heads[$pos]);
                 return $this->recall($m, $expr);
@@ -100,11 +100,11 @@ class Parser extends LRPackrat
         return $this->memo[$expr->id][$pos] = new MemoEntry(null, $pos);
     }
      
-    public function evaluate(Expression $expr)
+    public function evaluate(Expression $expr, Scope $scope)
     {
         $name = $expr->name ?: get_class($expr);
         echo "Trying rule $name @ {$this->pos}\n";
-        $result = parent::evaluate($expr);
+        $result = parent::evaluate($expr, $scope);
         echo "$name => $result\n";
         return $result;
     }

@@ -41,7 +41,7 @@ abstract class Node
      *
      * @var string
      */
-    public $full_text;
+    public $fullText;
 
     /**
      * The position in the text where the expression started matching.
@@ -60,14 +60,14 @@ abstract class Node
     /**
      * @param string|Expression $expr       The expression (or it's string representation when used in a generated
      *                                      parser) that generated this node.
-     * @param string            $full_text  The full text fed to the parser
+     * @param string            $fullText   The full text fed to the parser
      * @param int               $start      The position in the text where that expr started matching
      * @param int               $end        The position after start where the expr first didn't match.
      */
-    public function __construct($expr, $full_text, $start, $end)
+    public function __construct($expr, $fullText, $start, $end)
     {
         $this->expr = $expr;
-        $this->full_text = $full_text;
+        $this->fullText = $fullText;
         $this->start = $start;
         $this->end = $end;
     }
@@ -94,7 +94,7 @@ abstract class Node
      */
     public function getText()
     {
-        return (string)substr($this->full_text, $this->start, $this->end - $this->start);
+        return (string)substr($this->fullText, $this->start, $this->end - $this->start);
     }
 
     public function equals(Node $other = null)
@@ -104,7 +104,7 @@ abstract class Node
             && $this->expr === $other->expr
             && $this->start === $other->start
             && $this->end === $other->end
-            && $this->full_text === $other->full_text;
+            && $this->fullText === $other->fullText;
     }
 
     public function notEquals($other = null)

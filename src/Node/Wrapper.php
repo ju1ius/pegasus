@@ -19,13 +19,13 @@ use ju1ius\Pegasus\Node;
  */
 abstract class Wrapper extends Composite
 {
-    public function __construct($expr, $full_text, $start, $end, $child=[])
+    public function __construct($expr, $fullText, $start, $end, $child=[])
     {
         if (!is_array($child)) {
             $child = [$child];
         } elseif (count($child) > 1) {
             throw new \InvalidArgumentException('Decorator nodes can have only one child.');
         }
-        parent::__construct($expr, $full_text, $start, $end, $child);
+        parent::__construct($expr, $fullText, $start, $end, $child);
     }
 }

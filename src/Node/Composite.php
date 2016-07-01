@@ -25,15 +25,15 @@ abstract class Composite extends Node
     public $children =  [];
 
     /**
-     * @param string $expr      The name of the expression that generated me
-     * @param string $full_text The full text fed to the parser
-     * @param int    $start     The position in the text where that expr started matching
-     * @param int    $end       The position after start where the expr first didn't match.
-     * @param array  $children  List of child parse tree nodes
+     * @param string $expr     The name of the expression that generated me
+     * @param string $fullText The full text fed to the parser
+     * @param int    $start    The position in the text where that expr started matching
+     * @param int    $end      The position after start where the expr first didn't match.
+     * @param array  $children List of child parse tree nodes
      */
-    public function __construct($expr, $full_text, $start, $end, array $children)
+    public function __construct($expr, $fullText, $start, $end, array $children)
     {
-        parent::__construct($expr, $full_text, $start, $end);
+        parent::__construct($expr, $fullText, $start, $end);
         $this->children = $children;
     }
 
