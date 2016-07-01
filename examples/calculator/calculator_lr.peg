@@ -1,3 +1,4 @@
+%name CalculatorLR
 
 expr    = expr "+" term
         | expr "-" term

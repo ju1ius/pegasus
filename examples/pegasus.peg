@@ -1,0 +1,90 @@
+
+%name Pegasus
+
+grammar			<- _ directives rules
+
+########### Directives ##########
+
+directives      <- directive*
+directive       <- name_directive | start_directive | ws_directive | ci_directive
+name_directive  <- "%name" _ identifier
+start_directive <- "%start" _ identifier
+ws_directive    <- "%whitespace" _ equals expression
+ci_directive    <- "%case_insensitive" _
+
+########### Rules ##########
+
+rules			<- rule+
+
+rule			<- identifier equals expression
+
+choice			<- alternative (OR alternative)+
+
+sequence		<- term{2,}
+
+skip            <- '~' prefixable
+
+lookahead		<- '&' prefixable
+
+not				<- '!' prefixable
+
+reference		<- identifier !equals
+
+eof             <- / EOF\b / _
+
+epsilon         <- / E\b / _
+
+fail            <- / FAIL\b / _
+
+quantifier		<- /(?> ([*+?]) | (?: \{ (\d+)(?:,(\d*))? \} ) )/ _
+
+regex			<- / \/ ((?: (?:\\.) | [^\/] )*) \/ ([imsuUX]*)? / _
+
+literal			<- / (["']) ((?: (?:\\.) | (?:(?!\1).) )*) \1 / _
+
+label			<- / ([a-zA-Z_]\w*): /
+
+identifier		<- / [a-zA-Z_]\w* / _
+
+############
+
+expression		<- choice | sequence | term
+
+alternative		<- sequence | term
+
+term			<- labeled | labelable
+
+labeled			<- label labelable
+
+labelable		<- prefixed | prefixable
+
+prefixable		<- prefixed | suffixable | primary
+
+prefixed		<- skip | lookahead | not
+
+suffixable		<- suffixed | primary
+
+suffixed		<- suffixable quantifier
+
+
+
+
+
+
+primary			<- parenthesized | atom
+
+parenthesized	<- "(" _ expression ")" _
+
+atom			<- eof | epsilon | fail | literal | regex | reference
+
+equals			<- "<-" _
+
+
+
+OR				<- "|" _
+
+_				<- (ws | comment)*
+
+comment			<- / \# ([^\r\n]*) /
+
+ws				<- /\s+/
