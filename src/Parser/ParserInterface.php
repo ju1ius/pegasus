@@ -31,10 +31,24 @@ interface ParserInterface
      *
      * This is called internally by Expression::match to parse sub-expressions.
      *
+     * @internal
+     *
      * @param Expression $expr
      * @param int        $pos
+     * @param Scope      $scope
      *
      * @return Node|null
      */
-    public function apply(Expression $expr, $pos);
+    public function apply(Expression $expr, $pos, Scope $scope);
+
+    /**
+     * Applies a named rule from the grammar at position $pos.
+     *
+     * @param string $ruleName
+     * @param int    $pos
+     * @param Scope  $scope
+     *
+     * @return Node|null
+     */
+    public function applyRule($ruleName, $pos, Scope $scope);
 }

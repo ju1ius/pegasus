@@ -12,6 +12,7 @@ namespace ju1ius\Pegasus\Expression;
 
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Parser\ParserInterface;
+use ju1ius\Pegasus\Parser\Scope;
 use ju1ius\Pegasus\Utils\StringUtil;
 
 /**
@@ -77,10 +78,12 @@ class Regex extends Terminal
         return $this->compiledPattern;
     }
 
-    public function match($text, $pos, ParserInterface $parser)
+    public function match($text, $pos, ParserInterface $parser, Scope $scope)
     {
         if ($this->hasBackReference) {
-            $backRef = StringUtil::replaceBackReferenceSubject($this->subjectParts, [$parser, 'getReference'], true);
+            $backRef = StringUtil::replaceBackReferenceSubject($this->subjectParts, function ($label) use ($scope) {
+                return $scope[$label];
+            }, true);
             $pattern = '/\G' . $backRef . '/' . $this->compiledFlags;
         } else {
             $pattern = $this->compiledPattern;

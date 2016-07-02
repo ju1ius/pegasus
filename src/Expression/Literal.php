@@ -10,8 +10,10 @@
 
 namespace ju1ius\Pegasus\Expression;
 
+use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Parser\ParserInterface;
+use ju1ius\Pegasus\Parser\Scope;
 use ju1ius\Pegasus\Utils\StringUtil;
 
 /**
@@ -67,13 +69,15 @@ class Literal extends Terminal
         return sprintf('"%s"', $this->literal);
     }
 
-    public function match($text, $pos, ParserInterface $parser)
+    public function match($text, $pos, ParserInterface $parser, Scope $scope)
     {
         $value = $this->literal;
         $length = $this->length;
 
         if ($this->hasBackReference) {
-            $value = StringUtil::replaceBackReferenceSubject($this->subjectParts, [$parser, 'getReference']);
+            $value = StringUtil::replaceBackReferenceSubject($this->subjectParts, function ($identifier) use ($scope) {
+                return $scope[$identifier];
+            });
             $length = strlen($value);
         }
         if ($pos === strpos($text, $value, $pos)) {

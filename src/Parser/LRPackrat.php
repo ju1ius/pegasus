@@ -45,16 +45,17 @@ class LRPackrat extends Packrat
     /**
      * @param Expression $expr
      * @param int        $pos
+     * @param Scope      $scope
      *
      * @return \ju1ius\Pegasus\Node|mixed|null
      */
-    public function apply(Expression $expr, $pos)
+    public function apply(Expression $expr, $pos, Scope $scope)
     {
         $this->pos = $pos;
         $this->error->position = $pos;
         $this->error->expr = $expr;
 
-        if (!$memo = $this->recall($expr)) {
+        if (!$memo = $this->recall($expr, $scope)) {
             // Store the expression in backreferences table,
             // just enough info to retrieve the result from the memo table.
             $this->refmap[$expr->name] = [$expr->id, $pos];
@@ -65,7 +66,7 @@ class LRPackrat extends Packrat
             // Memoize $lr, then evaluate $expr.
             $memo = new MemoEntry($lr, $pos);
             $this->memo[$expr->id][$pos] = $memo;
-            $result = $this->evaluate($expr);
+            $result = $this->evaluate($expr, $scope);
             // Pop $lr off the invocation stack
             $this->lrStack->pop();
             $memo->end = $this->pos;
@@ -76,7 +77,7 @@ class LRPackrat extends Packrat
             }
             $lr->seed = $result;
 
-            return $this->lrAnswer($expr, $pos, $memo);
+            return $this->lrAnswer($expr, $pos, $memo, $scope);
         }
         $this->pos = $memo->end;
         if ($memo->result instanceof LR) {
@@ -109,10 +110,11 @@ class LRPackrat extends Packrat
      * @param Expression $expr
      * @param int        $pos
      * @param MemoEntry  $memo
+     * @param Scope      $scope
      *
      * @return mixed|null
      */
-    protected function lrAnswer(Expression $expr, $pos, MemoEntry $memo)
+    protected function lrAnswer(Expression $expr, $pos, MemoEntry $memo, Scope $scope)
     {
         $head = $memo->result->head;
         if ($head->rule->id !== $expr->id) {
@@ -123,7 +125,7 @@ class LRPackrat extends Packrat
             return;
         }
 
-        return $this->growLR($expr, $pos, $memo, $head);
+        return $this->growLR($expr, $pos, $memo, $head, $scope);
     }
 
     /**
@@ -131,16 +133,17 @@ class LRPackrat extends Packrat
      * @param int        $pos
      * @param MemoEntry  $memo
      * @param Head       $head
+     * @param Scope      $scope
      *
      * @return mixed
      */
-    protected function growLR(Expression $expr, $pos, MemoEntry $memo, Head $head)
+    protected function growLR(Expression $expr, $pos, MemoEntry $memo, Head $head, Scope $scope)
     {
         $this->heads[$pos] = $head;
         while (true) {
             $this->pos = $pos;
             $head->eval = $head->involved;
-            $result = $this->evaluate($expr);
+            $result = $this->evaluate($expr, $scope);
             if (!$result || $this->pos <= $memo->end) {
                 break;
             }
@@ -155,10 +158,11 @@ class LRPackrat extends Packrat
 
     /**
      * @param Expression $expr
+     * @param Scope      $scope
      *
      * @return MemoEntry
      */
-    protected function recall(Expression $expr)
+    protected function recall(Expression $expr, Scope $scope)
     {
         $pos = $this->pos;
         // inline this to save a method call...
@@ -177,7 +181,7 @@ class LRPackrat extends Packrat
         // Allow involved rules to be evaluated, but only once, during a seed-growing iteration.
         if (isset($head->eval[$expr->id])) {
             unset($head->eval[$expr->id]);
-            $result = $this->evaluate($expr);
+            $result = $this->evaluate($expr, $scope);
             $memo->result = $result;
             $memo->end = $this->pos;
         }

@@ -8,11 +8,12 @@
  * file that was distributed with this source code.
  */
 
-
 namespace ju1ius\Pegasus\Expression;
 
+use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Parser\ParserInterface;
+use ju1ius\Pegasus\Parser\Scope;
 
 /**
  * Wraps an expression in order to give it an unique label.
@@ -44,11 +45,13 @@ class Label extends Decorator
         return $this->children[0]->isCapturingDecidable();
     }
 
-    public function match($text, $pos, ParserInterface $parser)
+    public function match($text, $pos, ParserInterface $parser, Scope $scope)
     {
-        $node = $parser->apply($this->children[0], $pos);
+        $node = $parser->apply($this->children[0], $pos, $scope);
         if ($node) {
-            return new Node\Label($this, $text, $node->start, $node->end, [$node]);
+            $scope[$this->label] = substr($text, $node->start, $node->end - $node->start);
+
+            return $node;
         }
     }
 }

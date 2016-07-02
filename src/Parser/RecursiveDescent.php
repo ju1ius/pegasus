@@ -39,20 +39,6 @@ class RecursiveDescent implements ParserInterface
      */
     protected $error;
 
-    /**
-     * Map from label names to parse results, for resolving backreferences.
-     *
-     * @var array
-     */
-    protected $labels;
-
-    /**
-     * Map from rule names to parse results, for resolving backreferences.
-     *
-     * @var array
-     */
-    protected $refmap;
-
     public function __construct(GrammarInterface $grammar)
     {
         $this->grammar = $grammar;
@@ -104,13 +90,6 @@ class RecursiveDescent implements ParserInterface
         $this->source = $source;
         $this->pos = $pos;
         $this->error = new ParseError($source);
-        $this->refmap = [];
-        $this->labels = [];
-        // fold the grammar
-        $was_folded = $this->grammar->isFolded();
-        if (!$was_folded) {
-            $this->grammar->fold();
-        }
 
         if (!$rule) {
             $rule = $this->grammar->getStartRule();
@@ -118,19 +97,7 @@ class RecursiveDescent implements ParserInterface
             $rule = $this->grammar[$rule];
         }
 
-        //FIXME: how to do this ?
-        // maybe write a generator that recursively yields subexpressions ?
-        // it would need to yield depth-first, ie terminal rules,
-        // then parent composite rules, etc...
-        // ATM we just pass $this to the Expression::match method,
-        // and let expressions call $parser->apply for their children.
-        $result = $this->apply($rule, $pos);
-
-        if (!$was_folded) {
-            // grammar wasn't folded before parsing, so we unfold it
-            // to restore it's original state.
-            $this->grammar->unfold();
-        }
+        $result = $this->apply($rule, $pos, Scope::void());
 
         if (!$result) {
             throw $this->error;
@@ -139,16 +106,21 @@ class RecursiveDescent implements ParserInterface
         return $result;
     }
 
-    public function apply(Expression $expr, $pos = 0)
+    public function apply(Expression $expr, $pos, Scope $scope)
     {
         $this->pos = $pos;
         $this->error->position = $pos;
         $this->error->expr = $expr;
 
         // evaluate expression
-        $result = $this->evaluate($expr);
+        $result = $this->evaluate($expr, $scope);
 
         return $result;
+    }
+
+    public function applyRule($ruleName, $pos, Scope $scope)
+    {
+        return $this->apply($this->grammar[$ruleName], $pos, $scope);
     }
 
     /**
@@ -156,40 +128,19 @@ class RecursiveDescent implements ParserInterface
      *
      * @param Expression $expr
      *
+     * @param Scope      $scope
+     *
      * @return Node|null
      */
-    public function evaluate(Expression $expr)
+    public function evaluate(Expression $expr, Scope $scope)
     {
-        $result = $expr->match($this->source, $this->pos, $this);
+        $result = $expr->match($this->source, $this->pos, $this, $scope);
         if ($result) {
-            // store labels and named expressions for backreferences
-            if ($expr instanceof Label) {
-                $this->labels[$expr->label] = $result;
-            }
-            if ($expr->name) {
-                $this->refmap[$expr->name] = $result;
-            }
             // update parser position
             $this->pos = $result->end;
             $this->error->node = $result;
         }
 
         return $result;
-    }
-
-    /**
-     * Search the references map for an expression with the same name.
-     *
-     */
-    public function getReference($name)
-    {
-        if (isset($this->labels[$name])) {
-            return (string)$this->labels[$name];
-        }
-        if (isset($this->refmap[$name])) {
-            return (string)$this->refmap[$name];
-        }
-
-        return '';
     }
 }

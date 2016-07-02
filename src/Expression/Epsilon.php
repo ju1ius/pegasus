@@ -31,7 +31,7 @@ class Epsilon extends Terminal
         return false;
     }
 
-    public function match($text, $pos, ParserInterface $parser)
+    public function match($text, $pos, ParserInterface $parser, Scope $scope)
     {
         return new Node\Epsilon($this, $text, $pos, $pos);
     }

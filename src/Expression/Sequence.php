@@ -12,6 +12,7 @@ namespace ju1ius\Pegasus\Expression;
 
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Parser\ParserInterface;
+use ju1ius\Pegasus\Parser\Scope;
 
 /**
  * A series of expressions that must match contiguous, ordered pieces of the text.
@@ -37,15 +38,15 @@ class Sequence extends Composite
         return $capturing;
     }
 
-    public function match($text, $pos, ParserInterface $parser)
+    public function match($text, $pos, ParserInterface $parser, Scope $scope)
     {
         $new_pos = $pos;
         $seq_len = 0;
         $children = [];
         foreach ($this->children as $child) {
-            $node = $parser->apply($child, $new_pos);
+            $node = $parser->apply($child, $new_pos, $scope);
             if (!$node) {
-                return;
+                return null;
             }
             $children[] = $node;
             $len = $node->end - $node->start;

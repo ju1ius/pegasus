@@ -14,18 +14,18 @@ final class StringUtil
 {
     const BACKREF_SPLIT_RX = <<<'EOS'
 @
-    ((?: \\. | [^\$] )*?)    # Any escaped char or not $
-    \$\{ ([a-zA-Z_]\w*) \}    # ${identifier}
+    ((?: \\. | [^\$] )*?)   # Any escaped char or not $
+    \$\{ ([a-zA-Z_]\w*) \}  # ${identifier}
     ((?: \\. | [^\$] )*)    # Any escaped char or not $
 @Sx
 EOS;
 
     const ESCAPES_REPLACE_RX = <<<'EOS'
 @
-    (?<!\\\\) \\\\ ((?:\\\\\\\\)*)    # odd number of backslashes
+    (?<!\\\\) \\\\ ((?:\\\\\\\\)*)  # odd number of backslashes
     (?:                             # followed by
-        x([0-9a-fA-F]{1,2})            # hex escape sequence
-        | ([abnrtvef])                # or control char escape sequence
+        x([0-9a-fA-F]{1,2})         # hex escape sequence
+        | ([abnrtvef])              # or control char escape sequence
         | ([0-7]{1,3})              # or octal escape sequence
     )
 @Sx

@@ -68,9 +68,11 @@ class Packrat extends RecursiveDescent
      * @param Expression $expr
      * @param int        $pos
      *
+     * @param Scope      $scope
+     *
      * @return Node|null
      */
-    public function apply(Expression $expr, $pos = 0)
+    public function apply(Expression $expr, $pos, Scope $scope)
     {
         $this->pos = $pos;
         $this->error->position = $pos;
@@ -90,7 +92,7 @@ class Packrat extends RecursiveDescent
         $memo = new MemoEntry(null, $pos);
         $this->memo[$expr->id][$pos] = $memo;
         // evaluate expression
-        $result = $this->evaluate($expr);
+        $result = $this->evaluate($expr, $scope);
         // update the result in the memo table
         $memo->result = $result;
         $memo->end = $this->pos;

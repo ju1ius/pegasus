@@ -12,6 +12,7 @@ namespace ju1ius\Pegasus\Expression;
 
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Parser\ParserInterface;
+use ju1ius\Pegasus\Parser\Scope;
 
 /**
  * An expression wrapper like the {n, n+i} quantifier in regular expressions.
@@ -47,13 +48,13 @@ class Quantifier extends Decorator
         );
     }
 
-    public function match($text, $pos, ParserInterface $parser)
+    public function match($text, $pos, ParserInterface $parser, Scope $scope)
     {
         $nextPosition = $pos;
         $children = [];
         $matchCount = 0;
         while (true) {
-            $node = $parser->apply($this->children[0], $nextPosition);
+            $node = $parser->apply($this->children[0], $nextPosition, $scope);
             if (!$node) {
                 break;
             }

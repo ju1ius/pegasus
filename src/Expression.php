@@ -11,6 +11,7 @@
 namespace ju1ius\Pegasus;
 
 use ju1ius\Pegasus\Parser\ParserInterface;
+use ju1ius\Pegasus\Parser\Scope;
 
 /**
  * An object that matches against a piece of text.
@@ -51,17 +52,24 @@ abstract class Expression
      * (not necessarily extending all the way to the end of $text),
      * or null if the match failed.
      *
-     * This method is for internal use only and should never be called directly.
-     *
-     * @internal
-     *
      * @param string          $text   The full text of the match subject.
      * @param int             $pos    The position at which this expression must start matching.
      * @param ParserInterface $parser The parser used for this expression.
+     * @param Scope           $scope  The scope of bindings for the current sequence.
      *
-     * @return Node | null
+     * @return Node|null
      */
-    abstract public function match($text, $pos, ParserInterface $parser);
+    abstract public function match($text, $pos, ParserInterface $parser, Scope $scope);
+
+    /**
+     * @param string                     $text
+     * @param int                        $pos
+     * @param Grammar|array|\ArrayAccess $rules
+     * @param Scope                      $scope
+     *
+     * @return mixed
+     */
+    //abstract public function parse($text, $pos, $rules, Scope $scope);
 
     /**
      * Returns a string representation of this expression, suitable for the right-hand-side of a rule.

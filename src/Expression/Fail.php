@@ -40,7 +40,7 @@ class Fail extends Terminal
     /**
      * @inheritdoc
      */
-    public function match($text, $pos, ParserInterface $parser)
+    public function match($text, $pos, ParserInterface $parser, Scope $scope)
     {
         return null;
     }
