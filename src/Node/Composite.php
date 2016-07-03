@@ -8,11 +8,9 @@
  * file that was distributed with this source code.
  */
 
-
 namespace ju1ius\Pegasus\Node;
 
 use ju1ius\Pegasus\Node;
-
 
 /**
  * A Node that has child nodes.
@@ -22,34 +20,39 @@ abstract class Composite extends Node
     /**
      * @var array List of child parse tree nodes.
      */
-    public $children =  [];
+    public $children = [];
 
     /**
-     * @param string $expr     The name of the expression that generated me
+     * @param string $name     The name of the expression that generated me
      * @param string $fullText The full text fed to the parser
-     * @param int    $start    The position in the text where that expr started matching
-     * @param int    $end      The position after start where the expr first didn't match.
+     * @param int    $start    The position in the text where that name started matching
+     * @param int    $end      The position after start where the name first didn't match.
      * @param array  $children List of child parse tree nodes
      */
-    public function __construct($expr, $fullText, $start, $end, array $children)
+    public function __construct($name, $fullText, $start, $end, array $children)
     {
-        parent::__construct($expr, $fullText, $start, $end);
+        parent::__construct($name, $fullText, $start, $end);
         $this->children = $children;
     }
 
-    public function equals($other=null)
+    /**
+     * @inheritdoc
+     */
+    public function equals($other = null)
     {
-        return parent::equals($other)
-            && $this->children === $other->children
-        ;
+        return parent::equals($other) && $this->children === $other->children;
     }
 
-    public function inspect($error=null)
+    /**
+     * @inheritdoc
+     */
+    public function inspect($error = null)
     {
         $ret = [parent::inspect($error)];
-        foreach($this->children as $child) {
+        foreach ($this->children as $child) {
             $ret[] = self::indent($child->inspect($error));
         }
+
         return implode("\n", $ret);
     }
 
@@ -59,12 +62,15 @@ abstract class Composite extends Node
         foreach ($this->children as $child) {
             $res[] = $child instanceof Composite
                 ? $child->toArray()
-                : $child->getText()
-            ;
+                : $child->getText();
         }
+
         return $res;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function terminals()
     {
         foreach ($this->children as $child) {
@@ -74,6 +80,9 @@ abstract class Composite extends Node
         }
     }
 
+    /**
+     * @inheritdoc
+     */
     public function iter()
     {
         yield $this;

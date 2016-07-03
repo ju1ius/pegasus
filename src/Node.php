@@ -24,12 +24,11 @@ namespace ju1ius\Pegasus;
 abstract class Node
 {
     /**
-     * The expression (or it's string representation when used in a generated parser)
-     * that generated this node.
+     * The name of this node.
      *
      * @var string
      */
-    public $expr;
+    public $name;
 
     /**
      * The full text fed to the parser.
@@ -53,15 +52,14 @@ abstract class Node
     public $end;
 
     /**
-     * @param string|Expression $expr       The expression (or it's string representation when used in a generated
-     *                                      parser) that generated this node.
-     * @param string            $fullText   The full text fed to the parser
-     * @param int               $start      The position in the text where that expr started matching
-     * @param int               $end        The position after start where the expr first didn't match.
+     * @param string $name     The name of this node.
+     * @param string $fullText The full text fed to the parser
+     * @param int    $start    The position in the text where that name started matching
+     * @param int    $end      The position after start where the name first didn't match.
      */
-    public function __construct($expr, $fullText, $start, $end)
+    public function __construct($name, $fullText, $start, $end)
     {
-        $this->expr = $expr;
+        $this->name = $name;
         $this->fullText = $fullText;
         $this->start = $start;
         $this->end = $end;
@@ -98,7 +96,7 @@ abstract class Node
     {
         return $other
             && $this instanceof $other
-            && $this->expr === $other->expr
+            && $this->name === $other->name
             && $this->start === $other->start
             && $this->end === $other->end
             && $this->fullText === $other->fullText;
@@ -111,9 +109,9 @@ abstract class Node
 
     public function inspect($error = null)
     {
-        $rule = $this->expr instanceof Expression
-            ? ($this->expr->name ?: $this->expr->__toString())
-            : (string)$this->expr;
+        $rule = $this->name instanceof Expression
+            ? ($this->name->name ?: (string)$this->name)
+            : (string)$this->name;
 
         return sprintf(
             '+ %s, Rule=> %s Match=> "%s" %s',

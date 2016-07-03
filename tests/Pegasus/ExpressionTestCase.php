@@ -27,8 +27,6 @@ class ExpressionTestCase extends PegasusTestCase
         }
 
         $result = (new RecursiveDescent($grammar))->parse($text, $pos);
-        // unset Node->expr so we can test it easily
-        $result->expr = null;
 
         return $result;
     }
