@@ -10,6 +10,7 @@
 
 namespace ju1ius\Pegasus\Grammar;
 
+use ju1ius\Pegasus\Expression\AttributedSequence;
 use ju1ius\Pegasus\Expression\BackReference;
 use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\EOF;
@@ -113,7 +114,7 @@ class Builder
         }
 
         $top = $this->exprStack->top();
-        // if top expr is a `Decorator` and it has already one child, end the top expression
+        // if top expression is a `Decorator` and it has already one child, end the top expression
         if ($top instanceof Decorator && count($top) > 0) {
             $this->end();
             $top = $this->exprStack->top();
@@ -161,6 +162,10 @@ class Builder
 
         return $this;
     }
+
+    //
+    // Terminal Expressions
+    // --------------------------------------------------------------------------------------------------------------
 
     /**
      * @param string $literal
@@ -261,6 +266,10 @@ class Builder
         return $this->backReference($ref);
     }
 
+    //
+    // Composite Expressions
+    // --------------------------------------------------------------------------------------------------------------
+
     /**
      * @return $this
      */
@@ -302,7 +311,7 @@ class Builder
      */
     public function attributedSequence()
     {
-        return $this->add(new Expression\AttributedSequence([]));
+        return $this->add(new AttributedSequence([]));
     }
 
     /**
@@ -314,6 +323,10 @@ class Builder
     {
         return $this->attributedSequence();
     }
+
+    //
+    // Quantifier Expressions
+    // --------------------------------------------------------------------------------------------------------------
 
     /**
      * Adds a Quantifier matching between $min and $max terms ({min,max})
@@ -411,15 +424,9 @@ class Builder
         return $this->add(new OneOrMore([]));
     }
 
-    /**
-     * @param string $label
-     *
-     * @return $this
-     */
-    public function label($label)
-    {
-        return $this->add(new Label([], $label));
-    }
+    //
+    // Predicate Expressions
+    // --------------------------------------------------------------------------------------------------------------
 
     /**
      * @return $this
@@ -437,6 +444,10 @@ class Builder
         return $this->add(new Assert([]));
     }
 
+    //
+    // Grouping Expressions
+    // --------------------------------------------------------------------------------------------------------------
+
     /**
      * @return $this
      */
@@ -452,6 +463,20 @@ class Builder
     {
         return $this->add(new Token([]));
     }
+
+    /**
+     * @param string $label
+     *
+     * @return $this
+     */
+    public function label($label)
+    {
+        return $this->add(new Label([], $label));
+    }
+
+    //
+    // Semantic Expressions
+    // --------------------------------------------------------------------------------------------------------------
 
     /**
      * @param string $name

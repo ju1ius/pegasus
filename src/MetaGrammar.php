@@ -14,8 +14,7 @@ namespace ju1ius\Pegasus;
 use ju1ius\Pegasus\Grammar\Builder;
 
 /**
- * Factory class that builds a Grammar instance
- * capable of parsing other grammars.
+ * Factory class that builds a Grammar instance capable of parsing other grammars.
  *
  */
 class MetaGrammar
