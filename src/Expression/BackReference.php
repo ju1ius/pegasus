@@ -40,7 +40,7 @@ class BackReference extends Expression
         }
     }
 
-    public function asRightHandSide()
+    public function __toString()
     {
         return sprintf('$%s', $this->identifier);
     }

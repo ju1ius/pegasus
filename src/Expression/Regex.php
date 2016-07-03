@@ -73,7 +73,7 @@ class Regex extends Terminal
         }
     }
 
-    public function asRightHandSide()
+    public function __toString()
     {
         return $this->compiledPattern;
     }

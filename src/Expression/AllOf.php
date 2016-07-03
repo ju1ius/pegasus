@@ -40,7 +40,7 @@ class AllOf extends Composite
     /**
      * @inheritdoc
      */
-    public function asRightHandSide()
+    public function __toString()
     {
         return implode(' ', $this->stringMembers());
     }

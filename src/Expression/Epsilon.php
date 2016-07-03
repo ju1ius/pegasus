@@ -21,7 +21,7 @@ use ju1ius\Pegasus\Parser\ParserInterface;
  */
 class Epsilon extends Terminal
 {
-    public function asRightHandSide()
+    public function __toString()
     {
         return 'ε';
     }

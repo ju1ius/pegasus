@@ -20,14 +20,6 @@ use ju1ius\Pegasus\Parser\Scope;
 abstract class Expression
 {
     /**
-     * The name of this expression.
-     * Any named expression is turned into a grammar rule.
-     *
-     * @var string
-     */
-    public $name;
-
-    /**
      * A globally unique identifier for this expression.
      *
      * Used internally by the parsers for result memoization.
@@ -42,6 +34,14 @@ abstract class Expression
      * @var integer
      */
     public $id;
+
+    /**
+     * The name of this expression.
+     * Any named expression is turned into a grammar rule.
+     *
+     * @var string
+     */
+    public $name;
 
     /**
      * @var int
@@ -96,20 +96,15 @@ abstract class Expression
      *
      * @return string
      */
-    abstract public function asRightHandSide();
+    abstract public function __toString();
 
     public function asRule()
     {
         if ($this->name) {
-            return sprintf('%s <- %s', $this->name, $this->asRightHandSide());
+            return sprintf('%s <- %s', $this->name, $this->__toString());
         }
 
-        return $this->asRightHandSide();
-    }
-
-    public function __toString()
-    {
-        return sprintf('<%s: %s>', get_class($this), $this->asRule());
+        return $this->__toString();
     }
 
     /**
@@ -153,6 +148,16 @@ abstract class Expression
      * @return bool
      */
     public function hasVariableCaptureCount()
+    {
+        return false;
+    }
+
+    /**
+     * Returns whether this expression is a semantic action.
+     *
+     * @return bool
+     */
+    public function isSemantic()
     {
         return false;
     }

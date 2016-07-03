@@ -13,7 +13,7 @@ class AnonymousTopLevelExpression extends GrammarException
     {
         $msg = sprintf(
             'Top-level expressions must have a name. None given for <%s>',
-            $expr->asRightHandSide()
+            $expr
         );
         parent::__construct($msg);
     }

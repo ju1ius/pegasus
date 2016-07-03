@@ -21,7 +21,7 @@ class ZeroOrMore extends Quantifier
         parent::__construct($children, 0, INF, $name);
     }
 
-    public function asRightHandSide()
+    public function __toString()
     {
         return sprintf('(%s)*', $this->stringMembers());
     }

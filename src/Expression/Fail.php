@@ -24,7 +24,7 @@ class Fail extends Terminal
     /**
      * @inheritdoc
      */
-    public function asRightHandSide()
+    public function __toString()
     {
         return '#FAIL';
     }

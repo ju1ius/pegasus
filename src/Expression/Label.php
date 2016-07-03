@@ -30,7 +30,7 @@ class Label extends Decorator
         $this->label = $label;
     }
 
-    public function asRightHandSide()
+    public function __toString()
     {
         return sprintf('%s:(%s)', $this->label, $this->stringMembers());
     }

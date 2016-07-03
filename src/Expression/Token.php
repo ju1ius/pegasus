@@ -18,8 +18,8 @@ class Token extends Decorator
         }
     }
 
-    public function asRightHandSide()
+    public function __toString()
     {
-        return sprintf('@(%s)', $this->children[0]->asRightHandSide());
+        return sprintf('@(%s)', $this->children[0]->__toString());
     }
 }

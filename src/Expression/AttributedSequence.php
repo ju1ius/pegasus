@@ -50,7 +50,7 @@ class AttributedSequence extends Composite
         return $parser->apply($action, $newPos, new Scope($scope->getBindings(), $children));
     }
 
-    public function asRightHandSide()
+    public function __toString()
     {
         return implode(' ', $this->stringMembers());
     }

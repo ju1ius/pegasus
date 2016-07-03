@@ -35,11 +35,25 @@ class Reference extends Expression
         $this->identifier = $identifier;
     }
 
-    public function asRightHandSide()
+    /**
+     * @inheritDoc
+     */
+    public function __toString()
     {
         return $this->identifier;
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function isCapturingDecidable()
+    {
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function match($text, $pos, ParserInterface $parser, Scope $scope)
     {
         return $parser->applyRule($this->identifier, $pos, Scope::void());

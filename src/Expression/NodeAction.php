@@ -74,7 +74,7 @@ class NodeAction extends Expression
         return new $this->nodeClass($this, $text, $first->start, $last->end, $captures);
     }
 
-    public function asRightHandSide()
+    public function __toString()
     {
         return sprintf(
             '<%s: "%s">',

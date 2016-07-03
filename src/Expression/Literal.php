@@ -63,7 +63,7 @@ class Literal extends Terminal
         }
     }
 
-    public function asRightHandSide()
+    public function __toString()
     {
         //TODO backslash escaping
         return sprintf('"%s"', $this->literal);

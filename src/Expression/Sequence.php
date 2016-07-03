@@ -22,7 +22,7 @@ use ju1ius\Pegasus\Parser\Scope;
  */
 class Sequence extends Composite
 {
-    public function asRightHandSide()
+    public function __toString()
     {
         return implode(' ', $this->stringMembers());
     }

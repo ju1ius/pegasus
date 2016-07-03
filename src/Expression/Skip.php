@@ -21,7 +21,7 @@ use ju1ius\Pegasus\Parser\Scope;
  */
 class Skip extends Decorator
 {
-    public function asRightHandSide()
+    public function __toString()
     {
         return sprintf('~(%s)', $this->stringMembers());
     }

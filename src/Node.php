@@ -112,7 +112,7 @@ abstract class Node
     public function inspect($error = null)
     {
         $rule = $this->expr instanceof Expression
-            ? ($this->expr->name ?: $this->expr->asRightHandSide())
+            ? ($this->expr->name ?: $this->expr->__toString())
             : (string)$this->expr;
 
         return sprintf(

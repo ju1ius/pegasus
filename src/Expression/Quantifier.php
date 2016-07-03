@@ -38,7 +38,7 @@ class Quantifier extends Decorator
         return true;
     }
 
-    public function asRightHandSide()
+    public function __toString()
     {
         return sprintf(
             '(%s){%s,%s}',

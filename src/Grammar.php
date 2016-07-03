@@ -292,7 +292,7 @@ class Grammar implements GrammarInterface
 
         $out .= "\n";
         foreach ($this->rules as $name => $expr) {
-            $out .= sprintf("%s <- %s\n", $name, $expr->asRightHandSide());
+            $out .= sprintf("%s <- %s\n", $name, $expr);
         }
 
         return $out;

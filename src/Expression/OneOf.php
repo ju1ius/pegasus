@@ -23,7 +23,7 @@ use ju1ius\Pegasus\Parser\Scope;
  */
 class OneOf extends Composite
 {
-    public function asRightHandSide()
+    public function __toString()
     {
         return implode(' | ', $this->stringMembers());
     }

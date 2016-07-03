@@ -33,6 +33,9 @@ class PegasusTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * Asserts that two expression are equals, omitting their id property.
+     *
+     * @param Expression $expected
+     * @param Expression $actual
      */
     public function assertExpressionEquals(Expression $expected, Expression $actual)
     {
@@ -41,6 +44,10 @@ class PegasusTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $actual);
     }
 
+    /**
+     * @param Grammar $expected
+     * @param Grammar $actual
+     */
     public function assertGrammarEquals(Grammar $expected, Grammar $actual)
     {
         $expected->unfold();
@@ -51,6 +58,9 @@ class PegasusTestCase extends \PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * @param Expression $expr
+     */
     protected function cleanupExpr(Expression $expr)
     {
         $expr->id = null;

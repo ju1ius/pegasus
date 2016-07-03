@@ -14,16 +14,19 @@ class FlattenSequenceTest extends OptimizationTestCase
 {
     /**
      * @dataProvider testApplyProvider
+     *
+     * @param Expression $input
+     * @param Expression $expected
      */
-    public function testApply($input, Expression $expected)
+    public function testApply(Expression $input, Expression $expected)
     {
         $opt = new FlattenSequence(
-            new FlattenMatchingSequence,
-            new FlattenCapturingSequence
+            new FlattenMatchingSequence(),
+            new FlattenCapturingSequence()
         );
         $result = $this->applyOptimization($opt, $input);
         $this->assertExpressionEquals($expected, $result);
-        $this->assertEquals($expected->asRightHandSide(), $result->asRightHandSide());
+        $this->assertEquals((string)$expected, (string)$result);
     }
     public function testApplyProvider()
     {

@@ -24,7 +24,7 @@ class Optional extends Quantifier
         parent::__construct($children, 0, 1, $name);
     }
 
-    public function asRightHandSide()
+    public function __toString()
     {
         return sprintf('(%s)?', $this->stringMembers());
     }

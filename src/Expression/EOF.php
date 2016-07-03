@@ -37,7 +37,7 @@ class EOF extends Terminal
         }
     }
 
-    public function asRightHandSide()
+    public function __toString()
     {
         return 'EOF';
     }

@@ -80,6 +80,16 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
     }
 
     /**
+     * @inheritdoc
+     */
+    public function isSemantic()
+    {
+        return $this->some(function (Expression $child) {
+            return $child->isSemantic();
+        });
+    }
+
+    /**
      * Return an of string represented children,
      * stopping descent when we hit a named node so the returned value
      * resembles the input rule.
@@ -91,7 +101,7 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
             if ($child instanceof Reference) {
                 return $child->asRightHandSide();
             }
-            return $child->name ?: $child->asRightHandSide();
+            return $child->name ?: $child->__toString();
         }, $this->children);
     }
 
@@ -236,6 +246,9 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
     // IteratorAggregate
     // --------------------------------------------------------------------------------------------------------------
 
+    /**
+     * @inheritdoc
+     */
     public function getIterator()
     {
         return new \ArrayIterator($this->children);
