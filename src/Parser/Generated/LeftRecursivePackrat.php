@@ -20,7 +20,7 @@ use ju1ius\Pegasus\Parser\MemoEntry;
  *
  * @see doc/algo/packrat-lr.pdf
  */
-class LRPackrat extends Packrat
+class LeftRecursivePackrat extends Packrat
 {
     /**
      * @var array
@@ -53,12 +53,12 @@ class LRPackrat extends Packrat
         if (!$memo = $this->recall($ruleName)) {
             // Store the expression in backreferences table,
             // just enough info to retrieve the result from the memo table.
-            // $this->refmap[$expr->name] = [$expr->id, $pos];
+            // $this->refmap[$name->name] = [$name->id, $pos];
 
-            // Create a new LR and push it onto the rule invocation stack.
-            $lr = new LR($ruleName);
+            // Create a new LeftRecursion and push it onto the rule invocation stack.
+            $lr = new LeftRecursion($ruleName);
             $this->lrStack->push($lr);
-            // Memoize $lr, then evaluate $expr.
+            // Memoize $lr, then evaluate $name.
             $memo = new MemoEntry($lr, $pos);
             $this->memo[$ruleName][$pos] = $memo;
             $result = $this->evaluate($ruleName);
@@ -73,14 +73,14 @@ class LRPackrat extends Packrat
             return $this->lrAnswer($ruleName, $pos, $memo);
         }
         $this->pos = $memo->end;
-        if ($memo->result instanceof LR) {
+        if ($memo->result instanceof LeftRecursion) {
             $this->setupLR($ruleName, $memo->result);
             return $memo->result->seed;
         }
         return $memo->result;
     }
 
-    protected function setupLR($ruleName, LR $lr)
+    protected function setupLR($ruleName, LeftRecursion $lr)
     {
         if(!$lr->head) {
             $lr->head = new Head($ruleName);
@@ -128,7 +128,7 @@ class LRPackrat extends Packrat
     {
         $startPos = $this->pos;
         // inline this to save a method call...
-        //$memo = $this->memo($expr, $pos);
+        //$memo = $this->memo($name, $pos);
         $memo = isset($this->memo[$ruleName][$startPos]) ? $this->memo[$ruleName][$startPos] : null;
         // If not growing a seed parse,
         // just return what is stored in the memo table.

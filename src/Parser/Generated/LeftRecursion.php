@@ -13,30 +13,35 @@ namespace ju1ius\Pegasus\Parser\Generated;
 use ju1ius\Pegasus\Node;
 
 /**
- * LR’s $seed field holds the initial parse found for the associated rule, which is stored in the $rule field.
+ * LeftRecursion’s `seed` field holds the initial parse found for the associated `rule`.
  *
- * The $head field, for a left-recursive invocation, holds information pertinent to the left recursion
- * (head is set to NIL for non-left-recursive invocations).
+ * The `head` field, for a left-recursive invocation, holds information pertinent to the left recursion
+ * (`head` is set to NULL for non-left-recursive invocations).
  */
-class LR
+class LeftRecursion
 {
     /**
+     * The expression we're currently matching.
+     *
      * @var string
      */
     public $rule;
 
     /**
+     * The initial parse tree found for the associated `rule`
+     *
      * @var Node|null
      */
     public $seed;
 
     /**
+     * Holds information pertinent to the left recursion (null for non-left-recursive invocations)
+     *
      * @var Head|null
      */
     public $head;
 
     /**
-     *
      * @param string $ruleName
      * @param Node   $seed
      * @param Head   $head
