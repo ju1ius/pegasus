@@ -21,6 +21,7 @@ abstract class Expression
 {
     /**
      * The name of this expression.
+     * Any named expression is turned into a grammar rule.
      *
      * @var string
      */
@@ -29,17 +30,36 @@ abstract class Expression
     /**
      * A globally unique identifier for this expression.
      *
-     * It MUST never be modified, as it is used by the Parser classes
-     * for caching match results.
+     * Used internally by the parsers for result memoization.
+     * It is public for performance reasons and must NEVER be modified.
      *
-     * @var integer
+     * We use an incrementing integer over spl_object_hash(),
+     * because ATM it is significantly faster.
+     *
      * @readonly
      * @internal
+     *
+     * @var integer
      */
     public $id;
 
+    /**
+     * @var int
+     */
     private static $UID = 0;
 
+    /**
+     * @var string
+     */
+    protected static $DEFAULT_NODE_CLASS = Node::class;
+
+    /**
+     * Expression constructor.
+     *
+     * All subclasses MUST call their parent constructor.
+     *
+     * @param string $name Optional name for this expression.
+     */
     public function __construct($name = '')
     {
         $this->name = $name;

@@ -13,18 +13,13 @@ namespace ju1ius\Pegasus;
 /**
  * Abstract class for parse tree nodes.
  *
- * Consider these immutable once constructed. As a side effect of a
- * memory-saving strategy in the cache, multiple references to a single
- * ``Node`` might be returned in a single parse tree. So, if you started
- * messing with one, you'd see surprising parallel changes pop up elsewhere.
+ * Consider these immutable once constructed.
  *
- * My philosophy is that parse trees (and their nodes) should be
- * representation-agnostic. That is, they shouldn't get all mixed up with what
- * the final rendered form of a wiki page (or the intermediate representation
- * of a programming language, or whatever) is going to be: you should be able
- * to parse once and render several representations from the tree, one after
- * another.
- *
+ * My philosophy is that parse trees should be representation-agnostic.
+ * That is, they shouldn't get mixed up with what the final rendered form of a wiki page
+ * (or the intermediate representation of a programming language, or whatever) is going to be:
+ * you should be able to parse once and render several representations from the tree,
+ * one after another.
  */
 abstract class Node
 {
@@ -46,14 +41,14 @@ abstract class Node
     /**
      * The position in the text where the expression started matching.
      *
-     * @var string
+     * @var int
      */
     public $start;
 
     /**
      * The position after start where the expression first didn't match.
      *
-     * @var string
+     * @var int
      */
     public $end;
 
@@ -73,21 +68,6 @@ abstract class Node
     }
 
     /**
-     * Generator recursively yielding all terminal (leaf) nodes
-     */
-    abstract public function terminals();
-
-    /**
-     * Generator recursively yielding this node and it's children
-     */
-    abstract public function iter();
-
-    public function __toString()
-    {
-        return $this->getText();
-    }
-
-    /**
      * Returns the text this node matched
      *
      * @return string
@@ -95,6 +75,23 @@ abstract class Node
     public function getText()
     {
         return (string)substr($this->fullText, $this->start, $this->end - $this->start);
+    }
+
+    /**
+     * Generator recursively yielding this node and it's children
+     *
+     * @return \Generator
+     */
+    abstract public function iter();
+
+    /**
+     * Generator recursively yielding all terminal (leaf) nodes
+     */
+    abstract public function terminals();
+
+    public function __toString()
+    {
+        return $this->getText();
     }
 
     public function equals(Node $other = null)

@@ -17,8 +17,8 @@ use ju1ius\Pegasus\Parser\Scope;
 /**
  * A series of expressions, each of which must succeed from the current position.
  *
- * The returned node is from the last child.
- * If you like, you can think of the preceding children as lookaheads.
+ * The returned node is the last child.
+ * One could think of the preceding children as lookaheads.
  */
 class AllOf extends Composite
 {

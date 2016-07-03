@@ -10,7 +10,6 @@
 
 namespace ju1ius\Pegasus;
 
-
 interface GrammarInterface extends \ArrayAccess, \Countable, \IteratorAggregate
 {
     /**
@@ -42,16 +41,16 @@ interface GrammarInterface extends \ArrayAccess, \Countable, \IteratorAggregate
      *
      * @param string $name The name of the rule to use as start rule.
      *
-     * @throw GrammarException If the rule wasn't found in the grammar.
+     * @throw \ju1ius\Pegasus\Grammar\Exception\RuleNotFound If the rule wasn't found in the grammar.
      *
      * @return GrammarInterface $this
      */
     public function setStartRule($name);
 
     /**
-     * Retuns the default start rule of this grammar.
+     * Returns the start rule of this grammar.
      *
-     * @throw GrammarException If the default start rule is not set.
+     * @throw \ju1ius\Pegasus\Grammar\Exception\RuleNotFound If no start rule was found.
      *
      * @return Expression
      */
@@ -63,7 +62,7 @@ interface GrammarInterface extends \ArrayAccess, \Countable, \IteratorAggregate
      *
      * Rules with the same name will be overriden.
      *
-     * @param GrammarInterface  $other    The grammar to merge into this one.
+     * @param GrammarInterface $other The grammar to merge into this one.
      *
      * @return GrammarInterface
      */
@@ -72,6 +71,8 @@ interface GrammarInterface extends \ArrayAccess, \Countable, \IteratorAggregate
     /**
      * Folds the grammar by resolving Reference objects
      * to actual references to the corresponding expressions.
+     *
+     * @deprecated since version 0.2 Grammars don't need to be folded before matching anymore.
      *
      * @param string $startRule An optional default start rule to use.
      *
@@ -87,7 +88,7 @@ interface GrammarInterface extends \ArrayAccess, \Countable, \IteratorAggregate
     public function unfold();
 
     /**
-     * Returns wheter the grammar is in folded state.
+     * Returns whether the grammar is in folded state.
      *
      * @return bool True if the grammar is in folded state.
      */
@@ -114,12 +115,13 @@ interface GrammarInterface extends \ArrayAccess, \Countable, \IteratorAggregate
 
     /**
      * Returns a clone of this Grammar.
-     * If deep is false, returns a shallow clone.
-     * If deep is false, returns a deep clone, with all expressions cloned.
      *
-     * @param bool $deep Wheter to return a deep clone.
+     * If deep is false, returns a shallow clone.
+     * If deep is true, returns a deep clone, with all expressions cloned.
+     *
+     * @param bool $deep Whether to return a deep clone.
      *
      * @return GrammarInterface
      */
-    public function copy($deep=false);
+    public function copy($deep = false);
 }

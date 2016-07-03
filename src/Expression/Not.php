@@ -15,9 +15,10 @@ use ju1ius\Pegasus\Parser\ParserInterface;
 use ju1ius\Pegasus\Parser\Scope;
 
 /**
- * An expression that succeeds only if the expression within it doesn't
+ * Decorates an expression, succeeds if it fails, fails if it succeeds,
+ * and never consumes any input (zero-width negative lookahead).
  *
- * In any case, it never consumes any characters: it's a negative lookahead.
+ * @author ju1ius <ju1ius@laposte.net>
  */
 class Not extends Decorator
 {

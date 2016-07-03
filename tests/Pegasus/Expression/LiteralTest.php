@@ -10,14 +10,15 @@ class LiteralTest extends ExpressionTestCase
 {
     /**
      * @dataProvider testMatchProvider
+     *
+     * @param string $literal
+     * @param array  $params
+     * @param Node   $expected
      */
-    public function testMatch($literal, $params, $expected)
+    public function testMatch($literal, array $params, Node $expected)
     {
         $expr = new Literal($literal);
-        $this->assertNodeEquals(
-            $expected,
-            call_user_func_array([$this, 'parse'], array_merge([$expr], $params))
-        );
+        $this->assertNodeEquals($expected, $this->parse($expr, ...$params));
     }
 
     public function testMatchProvider()
