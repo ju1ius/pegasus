@@ -9,12 +9,30 @@
  */
 
 use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\NodeVisitor;
+use ju1ius\Pegasus\Traverser\DepthFirstNodeTraverser;
 
 
-class {{ grammar.name }}NodeVisitor extends NodeVisitor
+class {{ grammar.name }}NodeTraverser extends DepthFirstNodeTraverser
 {
-    public function generic_visit(Node $node, $children)
+    /**
+     * @inheritDoc
+     */
+    protected function beforeTraverse(Node $node)
+    {
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function afterTraverse($result)
+    {
+        return null;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function genericVisit(Node $node, $children)
     {
         return $node;
     }
@@ -22,8 +40,8 @@ class {{ grammar.name }}NodeVisitor extends NodeVisitor
     /**
      * Visitor for grammar rule {{ rule.name }}.
      *
-     * @param {{ rule.nodeClass }} $node The currently visited node.
-     * @param mixed $children The result of this node's children visitation.
+     * @param Node  $node       The currently visited node.
+     * @param mixed $children   The result of this node's children visitation.
      *
      * @return mixed The result of this node's visitation.
      */
