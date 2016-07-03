@@ -1,22 +1,22 @@
 %name CalculatorLR
 
-expr    = expr "+" term
+expr    <- expr "+" term
         | expr "-" term
         | term
 
-term    = term "*" primary
+term    <- term "*" primary
         | term "/" primary
         | primary
 
-primary = '(' expr ')'
-        | num
+primary <- '(' expr ')'
+        | number
 
-num     = expo | float | int
+number  <- expo | float | int
 
-float   = /-?[0-9]*\.[0-9]+/
+float   <- /-?[0-9]*\.[0-9]+/
 
-int     = /-?[0-9]+/
+int     <- /-?[0-9]+/
 
-expo    = (float | int) 'e' int
+expo    <- (float | int) 'e' int
 
-_       = /\s*/
+_       <- /\s*/

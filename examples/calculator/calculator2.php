@@ -4,10 +4,10 @@ require_once __DIR__.'/../vendor/autoload.php';
 
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\NodeVisitor;
+use ju1ius\Pegasus\Traverser\DepthFirstNodeTraverser;
 
 
-class Calculator extends NodeVisitor
+class Calculator extends DepthFirstNodeTraverser
 {
     public function __construct($actions=[], $precision=6)
     {
@@ -91,6 +91,6 @@ $calculator = new Calculator([
     'LPAREN' => 'ignore',
     'RPAREN' => 'ignore',
 ]);
-$result = $calculator->visit($tree);
+$result = $calculator->traverse($tree);
 echo "Result: ", $result, "\n";
 echo "Mem peak: ", memory_get_peak_usage(), "\n";

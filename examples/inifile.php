@@ -1,13 +1,12 @@
 <?php
-require_once __DIR__.'/../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Parser\Packrat as Parser;
-use ju1ius\Pegasus\NodeVisitor;
 use ju1ius\Pegasus\Node\Composite;
+use ju1ius\Pegasus\Parser\Packrat as Parser;
+use ju1ius\Pegasus\Traverser\DepthFirstNodeTraverser;
 
-
-class IniFileVisitor extends NodeVisitor
+class IniFileTraverser extends DepthFirstNodeTraverser
 {
     public function visit_config($node, $children)
     {
@@ -15,34 +14,38 @@ class IniFileVisitor extends NodeVisitor
         foreach ($children as list($name, $properties)) {
             $sections[$name] = $properties;
         }
+
         return $sections;
     }
 
     public function visit_header($node, $children)
     {
         list($regex) = $children;
-        return $regex->matches[1];    
+
+        return $regex->matches[1];
     }
-    
+
     public function visit_properties($node, $children)
     {
         $props = [];
         foreach ($children as list($key, $value)) {
             $props[$key] = $value;
         }
+
         return $props;
     }
-    
-    public function generic_visit($node, $children)
+
+    public function genericVisit($node, $children)
     {
         if ($node instanceof Composite) {
             return $children
                 ? 1 === count($children) ? $children[0] : $children
                 : null;
         }
+
         return $node;
     }
-    
+
 }
 
 $syntax = <<<'EOS'
@@ -80,15 +83,17 @@ $step_1 = microtime(true);
 echo "Generating grammar: ", $step_1 - $start, "s\n";
 
 $p = new Parser($g);
-$v = new IniFileVisitor([
-    'ignore' => ['_', 'ws', 'eol', 'comment', 'eq'],
-    'actions' => [
-        'section' => 'liftChildren',
-        'property' => 'liftChildren',
-        'key' => 'liftValue',
-        'value' => 'liftValue'
+$v = new IniFileTraverser(
+    [
+        'ignore' => ['_', 'ws', 'eol', 'comment', 'eq'],
+        'actions' => [
+            'section' => 'liftChildren',
+            'property' => 'liftChildren',
+            'key' => 'liftValue',
+            'value' => 'liftValue',
+        ],
     ]
-]);
+);
 
 $text = <<<'EOS'
 [section 1]
@@ -110,9 +115,9 @@ $step_2 = microtime(true);
 //echo "Parsing file ", $argv[1], ": ", $step_2-$step, "s\n";
 
 $step = microtime(true);
-$config = $v->visit($tree);
+$config = $v->traverse($tree);
 $step_3 = microtime(true);
-echo "Visiting parse tree: ", $step_3-$step, "s\n";
-echo "Total time: ", $step_3-$start, "s\n";
+echo "Visiting parse tree: ", $step_3 - $step, "s\n";
+echo "Total time: ", $step_3 - $start, "s\n";
 //var_dump($config);
 //echo $tree->inspect(), "\n";

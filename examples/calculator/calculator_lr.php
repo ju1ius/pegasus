@@ -4,16 +4,17 @@ require_once __DIR__.'/../vendor/autoload.php';
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Parser\LeftRecursivePackrat as Parser;
 use ju1ius\Pegasus\Node\Composite;
-use ju1ius\Pegasus\NodeVisitor;
+use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
+use ju1ius\Pegasus\Traverser\DepthFirstNodeTraverser;
 
 
-class Calculator extends NodeVisitor
+class Calculator extends DepthFirstNodeTraverser
 {
     /**
      * Unnamed Node (not a rule reference)
      * discard it and return it's children, if any
      */
-    public function generic_visit($node, $children)
+    public function genericVisit($node, $children)
     {
         if ($node instanceof Composite) {
             return $children ?: null;
@@ -79,31 +80,31 @@ class Calculator extends NodeVisitor
 
 $syntax = <<<'EOS'
 
-expr    = expr "+" term
+expr    <- expr "+" term
         | expr "-" term
         | term
 
-term    = term "*" primary
+term    <- term "*" primary
         | term "/" primary
         | primary
 
-primary = '(' expr ')'
-        | num
+primary <- '(' expr ')'
+        | number
 
-num     = expo | float | int
+number  <- expo | float | int
 
-float   = /-?[0-9]*\.[0-9]+/
+float   <- /-?[0-9]*\.[0-9]+/
 
-int     = /-?[0-9]+/
+int     <- /-?[0-9]+/
 
-expo    = (float | int) 'e' int
+expo    <- (float | int) 'e' int
 
-_       = /\s*/
+_       <- /\s*/
 
 EOS;
 
 
-$grammar = new Grammar($syntax);
+$grammar = Grammar::fromSyntax($syntax);
 $parser = new LeftRecursivePackrat($grammar);
 $tree = $parser->parseAll($argv[1]);
 $calculator = new Calculator([
@@ -115,5 +116,5 @@ $calculator = new Calculator([
         'primary' => 'liftChild'
     ]
 ]);
-$result = $calculator->visit($tree);
+$result = $calculator->traverse($tree);
 echo "Result: ", $result, "\n";

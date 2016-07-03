@@ -4,10 +4,10 @@ require_once __DIR__.'/../vendor/autoload.php';
 
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Parser\Packrat as Parser;
-use ju1ius\Pegasus\NodeVisitor;
+use ju1ius\Pegasus\Traverser\DepthFirstNodeTraverser;
 
 
-class Calculator extends NodeVisitor
+class Calculator extends DepthFirstNodeTraverser
 {
     /**
      * Unnamed Node (not a rule reference)
@@ -99,6 +99,6 @@ $grammar = new Grammar($syntax);
 $parser = new Parser($grammar);
 $tree = $parser->parse($argv[1]);
 $calculator = new Calculator();
-$result = $calculator->visit($tree);
+$result = $calculator->traverse($tree);
 echo "Result: ", $result, "\n";
 echo "Mem peak: ", memory_get_peak_usage(), "\n";
