@@ -12,4 +12,4 @@
 namespace ju1ius\Pegasus\Node;
 
 
-class Assert extends Wrapper {}
+class Assert extends Decorator {}

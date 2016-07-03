@@ -8,41 +8,42 @@
  * file that was distributed with this source code.
  */
 
-
 namespace ju1ius\Pegasus\Extension\Php;
 
 use ju1ius\Pegasus\Compiler;
-
+use ju1ius\Pegasus\Parser\Generated\LeftRecursivePackrat;
+use ju1ius\Pegasus\Parser\Generated\Packrat;
+use ju1ius\Pegasus\Traverser\DepthFirstNodeTraverser;
 
 class PhpCompiler extends Compiler
 {
     public function getTemplateDirectories()
     {
         return [
-            __DIR__.'/templates'
+            __DIR__ . '/templates',
         ];
     }
 
     public function getTwigExtensions()
     {
         return [
-            new PhpTwigExtension()
+            new PhpTwigExtension(),
         ];
     }
 
     public function getParserClass()
     {
-        return 'ju1ius\Pegasus\Parser\Generated\Packrat';
+        return Packrat::class;
     }
 
     public function getExtendedParserClass()
     {
-        return 'ju1ius\Pegasus\Parser\Generated\LRPackrat';
+        return LeftRecursivePackrat::class;
     }
 
     public function getNodeVisitorClass()
     {
-        return 'ju1ius\Pegasus\NodeVisitor';
+        return DepthFirstNodeTraverser::class;
     }
 
     protected function renderParser($outputDirectory, $args)

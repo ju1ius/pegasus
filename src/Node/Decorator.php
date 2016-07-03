@@ -17,15 +17,15 @@ use ju1ius\Pegasus\Node;
 /**
  * A composite node having only one child node.
  */
-abstract class Wrapper extends Composite
+abstract class Decorator extends Composite
 {
-    public function __construct($expr, $fullText, $start, $end, $child=[])
+    public function __construct($name, $fullText, $start, $end, $child=[])
     {
         if (!is_array($child)) {
             $child = [$child];
         } elseif (count($child) > 1) {
             throw new \InvalidArgumentException('Decorator nodes can have only one child.');
         }
-        parent::__construct($expr, $fullText, $start, $end, $child);
+        parent::__construct($name, $fullText, $start, $end, $child);
     }
 }

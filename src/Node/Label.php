@@ -12,4 +12,4 @@
 namespace ju1ius\Pegasus\Node;
 
 
-class Label extends Wrapper {}
+class Label extends Decorator {}

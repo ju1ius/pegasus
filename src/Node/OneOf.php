@@ -12,4 +12,4 @@
 namespace ju1ius\Pegasus\Node;
 
 
-class OneOf extends Wrapper {}
+class OneOf extends Decorator {}
