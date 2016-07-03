@@ -16,7 +16,7 @@ use ju1ius\Pegasus\Expression\OneOrMore;
 use ju1ius\Pegasus\Expression\ZeroOrMore;
 use ju1ius\Pegasus\Expression\Quantifier;
 use ju1ius\Pegasus\Expression\Not;
-use ju1ius\Pegasus\Expression\Lookahead;
+use ju1ius\Pegasus\Expression\Assert;
 use ju1ius\Pegasus\Expression\OneOf;
 use ju1ius\Pegasus\Expression\Sequence;
 use ju1ius\Pegasus\Expression\Reference;

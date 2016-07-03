@@ -55,11 +55,13 @@ labeled         <- label labelable
 
 labelable       <- prefixed | prefixable
 
-prefixed        <- skip | lookahead | not
+prefixed        <- token | skip | assert | not
+
+token           <- '@' prefixable
 
 skip            <- '~' prefixable
 
-lookahead       <- '&' prefixable
+assert          <- '&' prefixable
 
 not             <- '!' prefixable
 
@@ -228,7 +230,7 @@ EOS;
             ->rule('skip')->sequence()
                 ->literal('~')
                 ->ref('prefixable')
-            ->rule('lookahead')->sequence()
+            ->rule('assert')->sequence()
                 ->literal('&')
                 ->ref('prefixable')
             ->rule('not')->sequence()
@@ -274,7 +276,7 @@ EOS;
                 ->ref('prefixable')
             ->rule('prefixed')->oneOf()
                 ->ref('skip')
-                ->ref('lookahead')
+                ->ref('assert')
                 ->ref('not')
             ->rule('prefixable')->oneOf()
                 ->ref('prefixed')

@@ -168,11 +168,11 @@ class MetaGrammarNodeVisitor extends NodeVisitor
         return new Expression\Label([$labelable], $label);
     }
 
-    public function visit_lookahead(Node\Sequence $node, $children)
+    public function visit_assert(Node\Sequence $node, $children)
     {
         list($amp, $prefixable) = $children;
 
-        return new Expression\Lookahead([$prefixable]);
+        return new Expression\Assert([$prefixable]);
     }
 
     public function visit_not(Node\Sequence $node, $children)

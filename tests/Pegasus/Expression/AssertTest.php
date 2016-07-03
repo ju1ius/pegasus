@@ -4,23 +4,23 @@ namespace ju1ius\Pegasus\Tests\Expression;
 
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
-use ju1ius\Pegasus\Expression\Lookahead;
+use ju1ius\Pegasus\Expression\Assert;
 use ju1ius\Pegasus\Expression\Literal;
 
-use ju1ius\Pegasus\Node\Lookahead as LA;
+use ju1ius\Pegasus\Node\Assert as LA;
 
 
-class LookaheadTest extends ExpressionTestCase
+class AssertTest extends ExpressionTestCase
 {
     /**
      * @dataProvider testMatchProvider
      */
-    public function testMatch($children, $match_args, $expected)
+    public function testMatch(array $children, array $match_args, $expected)
     {
-        $expr = new Lookahead($children);
+        $expr = new Assert($children);
         $this->assertNodeEquals(
             $expected,
-            call_user_func_array([$this, 'parse'], array_merge([$expr], $match_args))
+            $this->parse($expr, ...$match_args)
         );
     }
     public function testMatchProvider()
@@ -41,12 +41,15 @@ class LookaheadTest extends ExpressionTestCase
 
     /**
      * @dataProvider testMatchErrorProvider
-     * @expectedException ju1ius\Pegasus\Exception\ParseError
+     * @expectedException \ju1ius\Pegasus\Exception\ParseError
+     *
+     * @param array $children
+     * @param array $match_args
      */
-    public function testMatchError($children, $match_args)
+    public function testMatchError(array $children, array $match_args)
     {
-        $expr = new Lookahead($children);
-        call_user_func_array([$this, 'parse'], array_merge([$expr], $match_args));
+        $expr = new Assert($children);
+        $this->parse($expr, ...$match_args);
     }
     public function testMatchErrorProvider()
     {

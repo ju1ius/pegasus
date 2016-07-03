@@ -16,7 +16,7 @@ use ju1ius\Pegasus\Expression\Epsilon;
 use ju1ius\Pegasus\Expression\Fail;
 use ju1ius\Pegasus\Expression\Label;
 use ju1ius\Pegasus\Expression\Literal;
-use ju1ius\Pegasus\Expression\Lookahead;
+use ju1ius\Pegasus\Expression\Assert;
 use ju1ius\Pegasus\Expression\Not;
 use ju1ius\Pegasus\Expression\OneOf;
 use ju1ius\Pegasus\Expression\OneOrMore;
@@ -381,21 +381,9 @@ class Builder
     /**
      * @return $this
      */
-    public function lookahead()
+    public function assert()
     {
-        return $this->add(new Lookahead([]));
-    }
-
-    /**
-     * Alias of `lookahead`.
-     *
-     * I found no better antonym for `not`...
-     *
-     * @return $this
-     */
-    public function yep()
-    {
-        return $this->lookahead();
+        return $this->add(new Assert([]));
     }
 
     /**
