@@ -1,22 +1,16 @@
 <?php
 require_once __DIR__.'/../../../vendor/autoload.php';
 
-
-use ju1ius\Pegasus\Expression\Literal;
-use ju1ius\Pegasus\Expression\Regex;
-use ju1ius\Pegasus\Expression\Sequence;
-use ju1ius\Pegasus\Expression\OneOf;
-use ju1ius\Pegasus\Expression\OneOrMore;
-
+use ju1ius\Pegasus\Grammar\Builder;
 use ju1ius\Pegasus\Parser;
-use ju1ius\Pegasus\NodeVisitor;
+use ju1ius\Pegasus\Traverser\DepthFirstNodeTraverser;
 
 $syntax = <<<'EOS'
-xs  = xs "x"
+xs  <- xs "x"
     | "x"
 EOS;
 
-class XXXVisitor extends NodeVisitor
+class XXXTraverser extends DepthFirstNodeTraverser
 {
     public function visit_x($node, $children)
     {
@@ -32,19 +26,20 @@ class XXXVisitor extends NodeVisitor
         list($xxx, $x) = $children;
         return $xxx . $x;
     }
-    
+
 }
 
+$g = Builder::create()
+    ->rule('xs')->oneOf()
+        ->seq()
+            ->ref('xs')
+            ->literal('x')
+        ->end()
+        ->literal('x')
+    ->getGrammar();
 
-$xxx = new OneOf([], 'xxx');
-$x = new Literal('x', 'x');
-$xxx->children = [
-    new Sequence([$xxx, $x], 'xxx_x'),
-    $x
-];
-
-$parser = new Parser\LeftRecursivePackrat($xxx);
+$parser = new Parser\LeftRecursivePackrat($g);
 $tree = $parser->parse('xxxx');
 //echo $tree->inspect();
-$visited = (new XXXVisitor)->visit($tree);
+$visited = (new XXXTraverser)->traverse($tree);
 var_export($visited);

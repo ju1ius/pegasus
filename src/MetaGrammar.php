@@ -142,7 +142,7 @@ EOS;
             /*
             $parser = new Parser($grammar);
             $tree = $parser->parseAll(self::SYNTAX);
-            self::$instance = (new MetaGrammarNodeVisitor)->visit($tree);
+            self::$instance = (new MetaGrammarTraverser)->traverse($tree);
             //echo self::$instance, "\n";
             self::$instance->finalize();
             */

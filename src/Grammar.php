@@ -18,7 +18,7 @@ use ju1ius\Pegasus\Grammar\Exception\RuleNotFound;
 use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
 use ju1ius\Pegasus\Traverser\GrammarTraverser;
 use ju1ius\Pegasus\Visitor\GrammarVisitor;
-use ju1ius\Pegasus\Visitor\MetaGrammarNodeVisitor;
+use ju1ius\Pegasus\Traverser\MetaGrammarTraverser;
 
 /**
  * A collection of expressions that describe a language.
@@ -107,7 +107,7 @@ class Grammar implements GrammarInterface
     {
         $metaGrammar = MetaGrammar::create();
         $tree = (new LeftRecursivePackrat($metaGrammar))->parseAll($syntax);
-        $grammar = (new MetaGrammarNodeVisitor)->visit($tree);
+        $grammar = (new MetaGrammarTraverser)->traverse($tree);
         if ($startRule) {
             $grammar->setStartRule($startRule);
         }

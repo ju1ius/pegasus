@@ -8,15 +8,14 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Visitor;
+namespace ju1ius\Pegasus\Traverser;
 
 use ju1ius\Pegasus\Exception\VisitationError;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\NodeVisitor;
 
-class MetaGrammarNodeVisitor extends NodeVisitor
+class MetaGrammarTraverser extends DepthFirstNodeTraverser
 {
     static protected $QUANTIFIER_CLASSES = [
         '?' => 'ju1ius\Pegasus\Expression\Optional',
@@ -31,13 +30,13 @@ class MetaGrammarNodeVisitor extends NodeVisitor
         ]);
     }
 
-    public function generic_visit(Node $node, $children)
+    public function genericVisit(Node $node, $children)
     {
         if ($node instanceof Node\OneOf) {
             return $children[0];
         } elseif ($node instanceof Node\Not) {
             return null;
-        } elseif ($node instanceof Node\Wrapper) {
+        } elseif ($node instanceof Node\Decorator) {
             if (count($children) > 1) {
                 throw new \LogicException('Decorator nodes cannot have more than one children.');
             }

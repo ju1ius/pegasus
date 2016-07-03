@@ -1,56 +1,45 @@
 <?php
-require_once __DIR__.'/../utils.php';
-
-use ju1ius\Pegasus\MetaGrammar;
-use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Composite;
-
-use ju1ius\Pegasus\Traverser\GrammarTraverser;
-use ju1ius\Pegasus\Traverser\ExpressionTraverser;
-use ju1ius\Pegasus\Visitor\GrammarVisitor;
-use ju1ius\Pegasus\Visitor\ExpressionVisitor;
-
-use ju1ius\Pegasus\Parser\Packrat;
-use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
-use ju1ius\Pegasus\Visitor\RuleVisitor;
+require_once __DIR__ . '/../utils.php';
 
 use ju1ius\Pegasus\Debug\ExpressionPrinter;
 use ju1ius\Pegasus\Debug\GrammarPrinter;
+use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Expression\Composite;
+use ju1ius\Pegasus\Grammar;
+use ju1ius\Pegasus\MetaGrammar;
+use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
+use ju1ius\Pegasus\Traverser\ExpressionTraverser;
+use ju1ius\Pegasus\Traverser\GrammarTraverser;
+use ju1ius\Pegasus\Visitor\RuleVisitor;
 
-
-function parse_syntax($syntax, Grammar $g=null)
+function parse_syntax($syntax, Grammar $g = null)
 {
-    if (null === $g) $g = MetaGrammar::getGrammar();
+    if (!$g) {
+        $g = MetaGrammar::getGrammar();
+    }
     $p = new LeftRecursivePackrat($g);
+
     return $p->parse($syntax);
 }
 
-function grammar_from_tree($tree)
-{
-    list($rules, $start) = (new RuleVisitor)->visit($tree);
-    $grammar = new Grammar($rules, $start);
-    return $grammar;
-}
-
-function print_expr($tree)
+function print_expr(Expression $tree)
 {
     $trav = new ExpressionTraverser();
     $trav->addVisitor(new ExpressionPrinter);
     $trav->traverse($tree);
 }
 
-function print_grammar($grammar)
+function print_grammar(Grammar $grammar)
 {
     $trav = new GrammarTraverser(false);
     $trav->addVisitor(new GrammarPrinter);
     $trav->traverse($grammar);
 }
 
-function exp_tree_map($expr, $callback, $visited=null)
+function exp_tree_map(Expression $expr, callable $callback, $visited = null)
 {
-    if (null === $visited) {
-        $visited = new SplObjectStorage();
+    if (!$visited) {
+        $visited = new \SplObjectStorage();
     }
     if ($visited->contains($expr)) {
         return;
