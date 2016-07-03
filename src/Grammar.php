@@ -61,9 +61,9 @@ class Grammar implements GrammarInterface
     protected $rules = [];
 
     /**
-     * @var string The default start rule of the grammar.
+     * @var string The start rule of the grammar.
      */
-    protected $defaultRule = null;
+    protected $startRule = null;
 
     /**
      * @var bool True if the grammar is in folded state.
@@ -78,19 +78,19 @@ class Grammar implements GrammarInterface
     /**
      * Factory method that constructs a Grammar object from an associative array of rules.
      *
-     * @param Expression[] $rules      An array of ['rule_name' => $expression].
-     * @param Expression   $start_rule The top level expression of this grammar.
+     * @param Expression[] $rules     An array of ['rule_name' => $expression].
+     * @param Expression   $startRule The top level expression of this grammar.
      *
      * @return Grammar
      */
-    public static function fromArray(array $rules, $start_rule = null)
+    public static function fromArray(array $rules, $startRule = null)
     {
         $grammar = new static();
         foreach ($rules as $name => $rule) {
             $grammar[$name] = $rule;
         }
-        if ($start_rule) {
-            $grammar->setStartRule($start_rule);
+        if ($startRule) {
+            $grammar->setStartRule($startRule);
         }
 
         return $grammar->unfold();
@@ -182,7 +182,7 @@ class Grammar implements GrammarInterface
     public function setStartRule($name)
     {
         if (isset($this->rules[$name])) {
-            $this->defaultRule = $name;
+            $this->startRule = $name;
 
             return $this;
         }
@@ -194,11 +194,11 @@ class Grammar implements GrammarInterface
      */
     public function getStartRule()
     {
-        if (!$this->defaultRule) {
+        if (!$this->startRule) {
             throw new MissingStartRule();
         }
 
-        return $this->rules[$this->defaultRule];
+        return $this->rules[$this->startRule];
     }
 
     /**
@@ -288,7 +288,7 @@ class Grammar implements GrammarInterface
         if ($name = $this->getName()) {
             $out .= "%name $name\n";
         }
-        $out .= "%start {$this->defaultRule}\n";
+        $out .= "%start {$this->startRule}\n";
 
         $out .= "\n";
         foreach ($this->rules as $name => $expr) {
@@ -324,8 +324,8 @@ class Grammar implements GrammarInterface
 
         $expr->name = $name;
 
-        if (!$this->defaultRule) {
-            $this->defaultRule = $name;
+        if (!$this->startRule) {
+            $this->startRule = $name;
         }
 
         $this->rules[$name] = $expr;
