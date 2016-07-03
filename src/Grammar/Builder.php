@@ -18,6 +18,7 @@ use ju1ius\Pegasus\Expression\Fail;
 use ju1ius\Pegasus\Expression\Label;
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Expression\Assert;
+use ju1ius\Pegasus\Expression\NodeAction;
 use ju1ius\Pegasus\Expression\Not;
 use ju1ius\Pegasus\Expression\OneOf;
 use ju1ius\Pegasus\Expression\OneOrMore;
@@ -193,9 +194,19 @@ class Builder
     /**
      * @return $this
      */
-    public function e()
+    public function epsilon()
     {
         return $this->add(new Epsilon())->end();
+    }
+
+    /**
+     * Alias of `epsilon`.
+     *
+     * @return $this
+     */
+    public function e()
+    {
+        return $this->epsilon();
     }
 
     /**
@@ -284,6 +295,24 @@ class Builder
     public function alt()
     {
         return $this->oneOf();
+    }
+
+    /**
+     * @return $this
+     */
+    public function attributedSequence()
+    {
+        return $this->add(new Expression\AttributedSequence([]));
+    }
+
+    /**
+     * Alias of `attributedSequence`.
+     *
+     * @return $this
+     */
+    public function attr()
+    {
+        return $this->attributedSequence();
     }
 
     /**
@@ -422,5 +451,16 @@ class Builder
     public function token()
     {
         return $this->add(new Token([]));
+    }
+
+    /**
+     * @param string $name
+     * @param string $class
+     *
+     * @return $this
+     */
+    public function node($name = '', $class = '')
+    {
+        return $this->add(new NodeAction($name, $class))->end();
     }
 }
