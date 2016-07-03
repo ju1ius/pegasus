@@ -10,6 +10,7 @@
 
 namespace ju1ius\Pegasus\Expression;
 
+use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Parser\ParserInterface;
 use ju1ius\Pegasus\Parser\Scope;
@@ -55,5 +56,27 @@ class Sequence extends Composite
         }
 
         return new Node\Sequence($this, $text, $pos, $pos + $seq_len, $children);
+    }
+
+    public function parse($text, $pos, $rules, Scope $scope)
+    {
+        $newPos = $pos;
+        $totalLength = 0;
+        $children = [];
+        $childrenScope = $scope->nest();
+        foreach ($this->children as $child) {
+            $result = $child->parse($text, $newPos, $rules, $childrenScope); // {|_| scope = scope.merge _ } ???
+            if (!$result) {
+                return null;
+            }
+            $childrenScope = $childrenScope->capture($result);
+            $children[] = $result;
+            //$length = $result->end - $result->start;
+            $length = strlen($result);
+            $newPos += $length;
+            $totalLength += $length;
+        }
+
+        return $children;
     }
 }

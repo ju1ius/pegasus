@@ -240,6 +240,17 @@ EOS;
                 ->literal('!')
                 ->ref('prefixable')
             //
+            // semantic expressions
+            // ------------------------------------------------------------------------------------------------------
+            ->rule('node_action')->sequence()
+                ->literal('<')
+                ->optional()->sequence()
+                    ->ref('literal')
+                    ->literal(':')
+                ->end()
+                ->optional()->ref('literal')
+                ->literal('>')
+            //
             // terminal expressions
             // ------------------------------------------------------------------------------------------------------
             ->rule('reference')->sequence()
