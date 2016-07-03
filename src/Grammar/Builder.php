@@ -10,6 +10,7 @@
 
 namespace ju1ius\Pegasus\Grammar;
 
+use ju1ius\Pegasus\Expression\BackReference;
 use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\EOF;
 use ju1ius\Pegasus\Expression\Epsilon;
@@ -111,8 +112,7 @@ class Builder
         }
 
         $top = $this->exprStack->top();
-        // if top expr is a `Decorator` and it has already one child,
-        // end the top expression
+        // if top expr is a `Decorator` and it has already one child, end the top expression
         if ($top instanceof Decorator && count($top) > 0) {
             $this->end();
             $top = $this->exprStack->top();
@@ -226,6 +226,28 @@ class Builder
     public function ref($name)
     {
         return $this->reference($name);
+    }
+
+    /**
+     * @param $ref
+     *
+     * @return $this
+     */
+    public function backReference($ref)
+    {
+        return $this->add(new BackReference($ref))->end();
+    }
+
+    /**
+     * Alias of `backReference`
+     *
+     * @param $ref
+     *
+     * @return Builder
+     */
+    public function backref($ref)
+    {
+        return $this->backReference($ref);
     }
 
     /**

@@ -2,6 +2,8 @@
 
 namespace ju1ius\Pegasus\Parser;
 
+use ju1ius\Pegasus\Parser\Exception\UndefinedBinding;
+
 /**
  * Represents the scope of bindings and captures in a parse sequence.
  *
@@ -46,6 +48,22 @@ class Scope implements \IteratorAggregate, \ArrayAccess
     public static function void()
     {
         return new self();
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        $bindings = [];
+        foreach ($this->bindings as $k => $v) {
+            $bindings[] = "{$k} => {$v}";
+        }
+
+        return sprintf(
+            '<Scope bindings: [%s]>',
+            implode(', ', $bindings)
+        );
     }
 
     /**
@@ -130,7 +148,11 @@ class Scope implements \IteratorAggregate, \ArrayAccess
 
     public function offsetGet($offset)
     {
-        return isset($this->bindings[$offset]) ? $this->bindings[$offset] : null;
+        if (!isset($this->bindings[$offset])) {
+            throw new UndefinedBinding($offset, $this);
+        }
+
+        return $this->bindings[$offset];
     }
 
     public function offsetSet($offset, $value)
