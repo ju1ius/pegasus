@@ -18,7 +18,7 @@ use ju1ius\Pegasus\Parser\Scope;
 /**
  * @author ju1ius <ju1ius@laposte.net>
  */
-class NodeAction extends Expression
+class NodeAction extends Semantic
 {
     /**
      * @const string
