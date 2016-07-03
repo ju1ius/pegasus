@@ -2,7 +2,7 @@
 {% set child = expr.children[0] %}
 {% set subres_var = '$result_' ~ child.id %}
 /**
- *  Matching: {{ expr.asRightHandSide() }}
+ * Matching: {{ expr }}
  */
 {{ result_var }} = null;
 {{ subres_var }} = null;

@@ -5,7 +5,7 @@
 {% set child = expr.children[0] %}
 {% set subres_var = '$result_' ~ child.id %}
 /**
- *  Matching: {{ expr.asRightHandSide() }}
+ * Matching: {{ expr }}
  */
 {{ pos_var }} = $this->pos;
 {{ count_var }} = 0;
@@ -13,7 +13,7 @@
 while ({{ count_var }} < {{ expr.max }}) {
     {{ subres_var }} = null;
 {% filter indent -%}
-{% include expr_tpl(child) with {'expr': child} only %}
+{% include expr_tpl(child) with {expr: child} only %}
 {%- endfilter %}
     if (!{{ subres_var }}) {
         break;
