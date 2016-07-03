@@ -13,10 +13,9 @@ namespace ju1ius\Pegasus;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar\Builder;
 use ju1ius\Pegasus\Grammar\Exception\AnonymousTopLevelExpression;
-use ju1ius\Pegasus\Grammar\Exception\GrammarException;
 use ju1ius\Pegasus\Grammar\Exception\MissingStartRule;
 use ju1ius\Pegasus\Grammar\Exception\RuleNotFound;
-use ju1ius\Pegasus\Parser\LRPackrat as Parser;
+use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
 use ju1ius\Pegasus\Traverser\GrammarTraverser;
 use ju1ius\Pegasus\Visitor\GrammarVisitor;
 use ju1ius\Pegasus\Visitor\MetaGrammarNodeVisitor;
@@ -28,7 +27,7 @@ use ju1ius\Pegasus\Visitor\MetaGrammarNodeVisitor;
  * use ju1ius\Pegasus\Grammar;
  * use ju1ius\Pegasus\Parser\Packrat as Parser;
  * // or if the grammar is left-recursive:
- * // use ju1ius\Pegasus\Parser\LRPackrat as Parser
+ * // use ju1ius\Pegasus\Parser\LeftRecursivePackrat as Parser
  *
  * $syntax = <<<'EOS'
  * polite_greeting = greeting ", my good sir"
@@ -107,7 +106,7 @@ class Grammar implements GrammarInterface
     public static function fromSyntax($syntax, $startRule = null)
     {
         $metaGrammar = MetaGrammar::create();
-        $tree = (new Parser($metaGrammar))->parseAll($syntax);
+        $tree = (new LeftRecursivePackrat($metaGrammar))->parseAll($syntax);
         $grammar = (new MetaGrammarNodeVisitor)->visit($tree);
         if ($startRule) {
             $grammar->setStartRule($startRule);

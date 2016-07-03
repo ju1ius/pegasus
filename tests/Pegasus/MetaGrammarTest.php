@@ -3,21 +3,21 @@
 namespace ju1ius\Pegasus\Tests;
 
 use ju1ius\Pegasus\MetaGrammar;
-use ju1ius\Pegasus\Parser\LRPackrat as Parser;
+use ju1ius\Pegasus\Parser\LeftRecursivePackrat as Parser;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Node\Regex as Rx;
 
 class MetaGrammarTest extends PegasusTestCase
 {
     /**
-     * @var Parser
+     * @var LeftRecursivePackrat
      */
     protected static $parser;
 
     public static function setUpBeforeClass()
     {
         $grammar = MetaGrammar::create();
-        self::$parser = new Parser($grammar);
+        self::$parser = new LeftRecursivePackrat($grammar);
     }
 
     protected function parse($rule_name, $text, $pos = 0)

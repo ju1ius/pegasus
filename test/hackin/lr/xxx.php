@@ -43,7 +43,7 @@ $xxx->children = [
     $x
 ];
 
-$parser = new Parser\LRPackrat($xxx);
+$parser = new Parser\LeftRecursivePackrat($xxx);
 $tree = $parser->parse('xxxx');
 //echo $tree->inspect();
 $visited = (new XXXVisitor)->visit($tree);

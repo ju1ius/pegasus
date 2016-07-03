@@ -4,20 +4,20 @@ require_once __DIR__.'/../../vendor/autoload.php';
 
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Parser\LRPackrat;
+use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
 use ju1ius\Pegasus\Parser\MemoEntry;
-use ju1ius\Pegasus\Parser\LR;
+use ju1ius\Pegasus\Parser\LeftRecursion;
 use ju1ius\Pegasus\Parser\Head;
 
 
-class Parser extends LRPackrat
+class Parser extends LeftRecursivePackrat
 {
     public function apply(Expression $expr, $pos, Scope $scope)
     {
         if ($m = $this->memo_lr($expr, $pos)) {
             return $this->recall($m, $expr);
         }
-        $lr = new LR($expr);
+        $lr = new LeftRecursion($expr);
         $this->lrStack->push($lr);
         $m = $this->inject_memo($expr, $pos, $lr, $pos);
         $result = $this->evaluate($expr,);
@@ -45,14 +45,14 @@ class Parser extends LRPackrat
     }
     public function recall(MemoEntry $m, Expression $expr)
     {
-        if ($m->result instanceof LR) {
+        if ($m->result instanceof LeftRecursion) {
             $this->setupLR($expr, $m->result);
             return $m->result->seed;
         }
         $this->pos = $m->end;
         return $m->result;
     }
-    public function setupLR(Expression $expr, LR $lr)
+    public function setupLR(Expression $expr, LeftRecursion $lr)
     {
         if (!$lr->head) {
             $lr->head = new Head($expr);

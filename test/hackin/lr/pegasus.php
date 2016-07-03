@@ -3,7 +3,7 @@ require_once __DIR__.'/../../../vendor/autoload.php';
 
 use ju1ius\Pegasus\MetaGrammar;
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Parser\LRPackrat as Parser;
+use ju1ius\Pegasus\Parser\LeftRecursivePackrat as Parser;
 
 
 
@@ -22,7 +22,7 @@ EOS;
 
 
 $grammar = Grammar::fromSyntax($text);
-$parser = new Parser($grammar);
+$parser = new LeftRecursivePackrat($grammar);
 $tree = $parser->parseAll('bar');
 
 echo $tree->inspect(), "\n";

@@ -74,7 +74,7 @@ $g->finalize('expr');
 $g = Grammar::fromSyntax($syntax);
 
 echo $g, "\n";
-$parser = new Parser\LRPackrat($g);
+$parser = new Parser\LeftRecursivePackrat($g);
 $tree = $parser->parse('(1+(3*2)-7)/9');
 //$tree = $parser->parse('12/42+17*3-2');
 echo $tree->inspect();

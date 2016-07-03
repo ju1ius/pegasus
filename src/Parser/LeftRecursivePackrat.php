@@ -18,7 +18,7 @@ use ju1ius\Pegasus\Expression;
  *
  * @see doc/algo/packrat-lr.pdf
  */
-class LRPackrat extends Packrat
+class LeftRecursivePackrat extends Packrat
 {
     /**
      * @var Head[]
@@ -26,7 +26,7 @@ class LRPackrat extends Packrat
     protected $heads;
 
     /**
-     * @var \SplStack<LR>
+     * @var \SplStack<LeftRecursion>
      */
     protected $lrStack;
 
@@ -60,8 +60,8 @@ class LRPackrat extends Packrat
             // just enough info to retrieve the result from the memo table.
             $this->refmap[$expr->name] = [$expr->id, $pos];
 
-            // Create a new LR and push it onto the rule invocation stack.
-            $lr = new LR($expr);
+            // Create a new LeftRecursion and push it onto the rule invocation stack.
+            $lr = new LeftRecursion($expr);
             $this->lrStack->push($lr);
             // Memoize $lr, then evaluate $expr.
             $memo = new MemoEntry($lr, $pos);
@@ -80,7 +80,7 @@ class LRPackrat extends Packrat
             return $this->lrAnswer($expr, $pos, $memo, $scope);
         }
         $this->pos = $memo->end;
-        if ($memo->result instanceof LR) {
+        if ($memo->result instanceof LeftRecursion) {
             $this->setupLR($expr, $memo->result);
 
             return $memo->result->seed;
@@ -90,10 +90,10 @@ class LRPackrat extends Packrat
     }
 
     /**
-     * @param Expression $expr
-     * @param LR         $lr
+     * @param Expression    $expr
+     * @param LeftRecursion $lr
      */
-    protected function setupLR(Expression $expr, LR $lr)
+    protected function setupLR(Expression $expr, LeftRecursion $lr)
     {
         if (!$lr->head) {
             $lr->head = new Head($expr);

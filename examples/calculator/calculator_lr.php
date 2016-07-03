@@ -2,7 +2,7 @@
 require_once __DIR__.'/../vendor/autoload.php';
 
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Parser\LRPackrat as Parser;
+use ju1ius\Pegasus\Parser\LeftRecursivePackrat as Parser;
 use ju1ius\Pegasus\Node\Composite;
 use ju1ius\Pegasus\NodeVisitor;
 
@@ -104,7 +104,7 @@ EOS;
 
 
 $grammar = new Grammar($syntax);
-$parser = new Parser($grammar);
+$parser = new LeftRecursivePackrat($grammar);
 $tree = $parser->parseAll($argv[1]);
 $calculator = new Calculator([
     'ignore' => ['_'],

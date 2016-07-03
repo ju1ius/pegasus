@@ -12,7 +12,7 @@ use ju1ius\Pegasus\Visitor\GrammarVisitor;
 use ju1ius\Pegasus\Visitor\ExpressionVisitor;
 
 use ju1ius\Pegasus\Parser\Packrat;
-use ju1ius\Pegasus\Parser\LRPackrat;
+use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
 use ju1ius\Pegasus\Visitor\RuleVisitor;
 
 use ju1ius\Pegasus\Debug\ExpressionPrinter;
@@ -22,7 +22,7 @@ use ju1ius\Pegasus\Debug\GrammarPrinter;
 function parse_syntax($syntax, Grammar $g=null)
 {
     if (null === $g) $g = MetaGrammar::getGrammar();
-    $p = new LRPackrat($g);
+    $p = new LeftRecursivePackrat($g);
     return $p->parse($syntax);
 }
 

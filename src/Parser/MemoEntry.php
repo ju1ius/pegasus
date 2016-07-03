@@ -15,7 +15,7 @@ use ju1ius\Pegasus\Node;
 class MemoEntry
 {
     /**
-     * @var LR|Node|null
+     * @var LeftRecursion|Node|null
      */
     public $result;
 

@@ -32,7 +32,7 @@ class PythonLanguageDefinition extends LanguageDefinition
 
     public function getExtendedParserClass()
     {
-        return 'pegasus.parsers.LRPackrat';
+        return 'pegasus.parsers.LeftRecursivePackrat';
     }
 
     public function getNodeVisitorClass()

@@ -3,7 +3,7 @@ require_once __DIR__.'/../utils.php';
 
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\MetaGrammar;
-use ju1ius\Pegasus\Parser\LRPackrat as Parser;
+use ju1ius\Pegasus\Parser\LeftRecursivePackrat as Parser;
 use ju1ius\Pegasus\Visitor\RuleVisitor;
 use ju1ius\Pegasus\Visitor\ExpressionTraverser;
 use ju1ius\Pegasus\Visitor\RefMaker;
@@ -42,7 +42,7 @@ EOS;
 //echo "Meta:\n=====\n", "\n", $meta, "\n";
 //echo $meta['parenthesized'];
 $meta = MetaGrammar::getGrammar();
-$parser = new Parser($meta);
+$parser = new LeftRecursivePackrat($meta);
 $tree = $parser->parseAll($syntax);
 list($rules, $default) = (new RuleVisitor)->visit($tree);
 $grammar = new Grammar($rules, $default);
