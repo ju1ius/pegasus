@@ -36,7 +36,7 @@ class BackReference extends Expression
         $length = strlen($pattern);
 
         if (substr($text, $pos, $length) === $pattern) {
-            return new Node\BackReference($this->name, $text, $pos, $pos + $length);
+            return new Node($this->name, $pos, $pos + $length, $text);
         }
     }
 

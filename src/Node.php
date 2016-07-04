@@ -10,6 +10,8 @@
 
 namespace ju1ius\Pegasus;
 
+use Traversable;
+
 /**
  * Abstract class for parse tree nodes.
  *
@@ -21,7 +23,7 @@ namespace ju1ius\Pegasus;
  * you should be able to parse once and render several representations from the tree,
  * one after another.
  */
-abstract class Node
+class Node implements \Countable, \IteratorAggregate, \ArrayAccess
 {
     /**
      * The name of this node.
@@ -52,17 +54,36 @@ abstract class Node
     public $end;
 
     /**
+     * @var array
+     */
+    public $children;
+
+    /**
+     * @var array
+     */
+    public $attributes;
+
+    /**
      * @param string $name     The name of this node.
-     * @param string $fullText The full text fed to the parser
      * @param int    $start    The position in the text where that name started matching
      * @param int    $end      The position after start where the name first didn't match.
+     * @param string $fullText The full text fed to the parser
+     * @param array  $children
+     * @param array  $attributes
      */
-    public function __construct($name, $fullText, $start, $end)
+    public function __construct($name, $start, $end, $fullText, array $children = [], array $attributes = [])
     {
         $this->name = $name;
         $this->fullText = $fullText;
         $this->start = $start;
         $this->end = $end;
+        $this->children = $children;
+        $this->attributes = $attributes;
+    }
+
+    public function __toString()
+    {
+        return $this->getText();
     }
 
     /**
@@ -80,52 +101,118 @@ abstract class Node
      *
      * @return \Generator
      */
-    abstract public function iter();
+    public function iter() {
+        yield $this;
+        foreach ($this->children as $child) {
+            foreach ($child->iter() as $node) {
+                yield $node;
+            }
+        }
+    }
 
     /**
      * Generator recursively yielding all terminal (leaf) nodes
      */
-    abstract public function terminals();
-
-    public function __toString()
-    {
-        return $this->getText();
+    public function terminals() {
+        if ($this->children) {
+            foreach ($this->children as $child) {
+                foreach ($child->terminals() as $terminal) {
+                    yield $terminal;
+                }
+            }
+        } else {
+            yield $this;
+        }
     }
 
     public function equals(Node $other = null)
     {
-        return $other
-            && $this instanceof $other
-            && $this->name === $other->name
-            && $this->start === $other->start
-            && $this->end === $other->end
-            && $this->fullText === $other->fullText;
+        $isEqual = $other
+            && $other instanceof $this
+            && $other->name === $this->name
+            && $other->start === $this->start
+            && $other->end === $this->end
+            && count($other->children) === count($this->children)
+            && count($other->attributes) === count($this->attributes)
+        ;
+        if (!$isEqual) {
+            return false;
+        }
+        foreach ($this->attributes as $name => $value) {
+            if (!isset($other->attributes[$name]) || $other->attributes[$name] !== $this->attributes[$name]) {
+                return false;
+            }
+        }
+        foreach ($this->children as $i => $child) {
+            if (!$child->equals($other->children[$i])) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
-    public function notEquals($other = null)
+    /**
+     * @inheritDoc
+     */
+    public function offsetExists($offset)
     {
-        return !$this->equals($other);
+        if (is_int($offset)) {
+            return isset($this->children[$offset]);
+        }
+
+        return isset($this->attributes[$offset]);
     }
 
-    public function inspect($error = null)
+    /**
+     * @inheritDoc
+     */
+    public function offsetGet($offset)
     {
-        $rule = $this->name instanceof Expression
-            ? ($this->name->name ?: (string)$this->name)
-            : (string)$this->name;
+        if (is_int($offset)) {
+            return $this->children[$offset];
+        }
 
-        return sprintf(
-            '+ %s, Rule=> %s Match=> "%s" %s',
-            str_replace('ju1ius\Pegasus\\', '', get_class($this)),
-            $rule,
-            $this->getText(),
-            $error === $this ? '    <-- *** We were here. ***' : ''
-        );
+        return $this->attributes[$offset];
     }
 
-    static protected function indent($text)
+    /**
+     * @inheritDoc
+     */
+    public function offsetSet($offset, $value)
     {
-        return implode("\n", array_map(function ($line) {
-            return '+---' . $line;
-        }, explode("\n", $text)));
+        if (is_int($offset)) {
+            return $this->children[$offset] = $value;
+        }
+
+        return $this->attributes[$offset] = $value;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function offsetUnset($offset)
+    {
+        if (is_int($offset)) {
+            unset($this->children[$offset]);
+        }
+
+        unset($this->attributes[$offset]);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getIterator()
+    {
+        return new \ArrayIterator($this->children);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function count()
+    {
+        return count($this->children);
     }
 }

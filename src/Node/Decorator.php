@@ -19,13 +19,14 @@ use ju1ius\Pegasus\Node;
  */
 abstract class Decorator extends Composite
 {
-    public function __construct($name, $fullText, $start, $end, $child=[])
+    /**
+     * @inheritDoc
+     */
+    public function __construct($name, $start, $end, $fullText, array $children = [], array $attributes = [])
     {
-        if (!is_array($child)) {
-            $child = [$child];
-        } elseif (count($child) > 1) {
-            throw new \InvalidArgumentException('Decorator nodes can have only one child.');
+        if (count($children) > 1) {
+            throw new \LogicException('Decorator nodes can have only one child.');
         }
-        parent::__construct($name, $fullText, $start, $end, $child);
+        parent::__construct($name, $start, $end, $fullText, $children, $attributes);
     }
 }

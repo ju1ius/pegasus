@@ -33,7 +33,7 @@ class EOF extends Terminal
     public function match($text, $pos, ParserInterface $parser, Scope $scope)
     {
         if (!isset($text[$pos])) {
-            return new Node\EOF($this->name, $text, $pos, $pos);
+            return new Node($this->name, $pos, $pos, $text);
         }
     }
 
