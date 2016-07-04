@@ -49,7 +49,7 @@ class OneOf extends Composite
             $node = $parser->apply($child, $pos, $scope);
             if ($node) {
                 // Wrap the succeeding child in a node representing the OneOf
-                return new Node\OneOf($this, $text, $pos, $node->end, [$node]);
+                return new Node\OneOf($this->name, $text, $pos, $node->end, [$node]);
             }
         }
     }

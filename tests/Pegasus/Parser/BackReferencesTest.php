@@ -30,22 +30,6 @@ class BackReferencesTest extends PegasusTestCase
                 'foobarfoo',
                 'foobarfoo',
             ],
-            // FIXME: this should fail
-            'labeled reference in another rule' => [
-                Builder::create()
-                    ->rule('foobarbaz')->seq()
-                        ->ref('foobar')
-                        ->ref('baz_x')
-                    ->rule('foobar')->seq()
-                        ->label('a')->literal('foo')
-                        ->literal('bar')
-                    ->rule('baz_x')->seq()
-                        ->literal('baz')
-                        ->literal('${a}')
-                    ->getGrammar(),
-                'foobarbazfoo',
-                'foobarbaz${a}',
-            ]
         ];
     }
 }

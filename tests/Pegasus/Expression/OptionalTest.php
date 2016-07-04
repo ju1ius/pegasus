@@ -17,10 +17,10 @@ class OptionalTest extends ExpressionTestCase
      */
     public function testMatch($children, $match_args, $expected)
     {
-        $expr = new Optional($children);
+        $expr = new Optional($children, '?');
         $this->assertNodeEquals(
             $expected,
-            call_user_func_array([$this, 'parse'], array_merge([$expr], $match_args))
+            $this->parse($expr, ...$match_args)
         );
     }
     public function testMatchProvider()
@@ -29,29 +29,29 @@ class OptionalTest extends ExpressionTestCase
             [
                 [new Literal('foo')],
                 ['foo'],
-                new Quant('', 'foo', 0, 3, [new Lit('', 'foo', 0, 3)])
+                new Quant('?', 'foo', 0, 3, [new Lit('', 'foo', 0, 3)])
             ],
             [
                 [new Literal('foo')],
                 ['bar'],
-                new Quant('', 'bar', 0, 0, [])
+                new Quant('?', 'bar', 0, 0, [])
             ],
             [
                 [new Regex('[\w-]+')],
                 ['d-o_0-b'],
-                new Quant('', 'd-o_0-b', 0, 7, [
+                new Quant('?', 'd-o_0-b', 0, 7, [
 					new Rx('', 'd-o_0-b', 0, 7, ['d-o_0-b'])]
                 )
             ],
             [
                 [new Regex('[\w-]+')],
                 ['$_o_$'],
-                new Quant('', '$_o_$', 0, 0, [])
+                new Quant('?', '$_o_$', 0, 0, [])
             ],
             [
                 [new Regex('[\w-]+')],
                 ['micro$oft'],
-                new Quant('', 'micro$oft', 0, 5, [
+                new Quant('?', 'micro$oft', 0, 5, [
 					new Rx('', 'micro$oft', 0, 5, ['micro'])
                 ])
             ],

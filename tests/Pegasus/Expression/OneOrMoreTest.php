@@ -15,10 +15,10 @@ class OneOrMoreTest extends ExpressionTestCase
      */
     public function testMatch($children, $match_args, $expected)
     {
-        $expr = new OneOrMore($children);
+        $expr = new OneOrMore($children, '+');
         $this->assertNodeEquals(
             $expected,
-            call_user_func_array([$this, 'parse'], array_merge([$expr], $match_args))
+            $this->parse($expr, ...$match_args)
         );
     }
     public function testMatchProvider()
@@ -27,7 +27,7 @@ class OneOrMoreTest extends ExpressionTestCase
             [
                 [new Literal('x')],
                 ['xxx'],
-                new Quant('', 'xxx', 0, 3, [
+                new Quant('+', 'xxx', 0, 3, [
                     new Lit('', 'xxx', 0, 1),
                     new Lit('', 'xxx', 1, 2),
                     new Lit('', 'xxx', 2, 3),
@@ -38,12 +38,12 @@ class OneOrMoreTest extends ExpressionTestCase
 
     /**
      * @dataProvider testMatchErrorProvider
-     * @expectedException ju1ius\Pegasus\Exception\ParseError
+     * @expectedException \ju1ius\Pegasus\Exception\ParseError
      */
     public function testMatchError($children, $match_args)
     {
-        $expr = new OneOrMore($children);
-        call_user_func_array([$this, 'parse'], array_merge([$expr], $match_args));
+        $expr = new OneOrMore($children, '+');
+        $this->parse($expr, ...$match_args);
     }
     public function testMatchErrorProvider()
     {

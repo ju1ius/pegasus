@@ -3,6 +3,7 @@
 namespace ju1ius\Pegasus\Tests\Expression;
 
 use ju1ius\Pegasus\Expression\Literal;
+use ju1ius\Pegasus\Grammar\Builder;
 use ju1ius\Pegasus\Node\Literal as Lit;
 use ju1ius\Pegasus\Node\Quantifier as Quant;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
@@ -12,96 +13,96 @@ class QuantifierTest extends ExpressionTestCase
     /**
      * @dataProvider testMatchProvider
      */
-    public function testMatch($args, $match_args, $expected)
+    public function testMatch($expr, $match_args, $expected)
     {
-        $expr = $this->expr('Quantifier', $args);
         $this->assertNodeEquals(
             $expected,
-            call_user_func_array([$this, 'parse'], array_merge([$expr], $match_args))
+            $this->parse($expr, ...$match_args)
         );
     }
     public function testMatchProvider()
     {
         return [
             // exact number of occurences
-            [
-                [[new Literal('x')], 1, 1],
+            'exactly one "x" with "x"' => [
+                Builder::create()->rule('one')->exactly(1)->literal('x')->getGrammar(),
                 ['x'],
-                new Quant('', 'x', 0, 1, [new Lit('', 'x', 0, 1)])
+                new Quant('one', 'x', 0, 1, [
+                    new Lit('', 'x', 0, 1)
+                ])
             ],
-            [
-                [[new Literal('x')], 3, 3],
+            'exactly three "x" with "xxx"' => [
+                Builder::create()->rule('three')->exactly(3)->literal('x')->getGrammar(),
                 ['xxx'],
-                new Quant('', 'xxx', 0, 3, [
+                new Quant('three', 'xxx', 0, 3, [
                     new Lit('', 'xxx', 0, 1),
                     new Lit('', 'xxx', 1, 2),
                     new Lit('', 'xxx', 2, 3),
                 ])
             ],
             // range of occurences, min > 0, max is finite
-            [
-                [[new Literal('x')], 1, 3],
+            'between one and three "x" with "x"' => [
+                Builder::create()->rule('1..3')->between(1, 3)->literal('x')->getGrammar(),
                 ['x'],
-                new Quant('', 'x', 0, 1, [
+                new Quant('1..3', 'x', 0, 1, [
                     new Lit('', 'x', 0, 1),
                 ])
             ],
-            [
-                [[new Literal('x')], 1, 3],
+            'between one and three "x" with "xxx"' => [
+                Builder::create()->rule('1..3')->between(1, 3)->literal('x')->getGrammar(),
                 ['xxx'],
-                new Quant('', 'xxx', 0, 3, [
+                new Quant('1..3', 'xxx', 0, 3, [
                     new Lit('', 'xxx', 0, 1),
                     new Lit('', 'xxx', 1, 2),
                     new Lit('', 'xxx', 2, 3),
                 ])
             ],
             // range of occurences, min > 0, max is infinite
-            [
-                [[new Literal('x')], 1, INF],
+            'one or more "x" with "xxx"' => [
+                Builder::create()->rule('+')->q(1, INF)->literal('x')->getGrammar(),
                 ['xxx'],
-                new Quant('', 'xxx', 0, 3, [
+                new Quant('+', 'xxx', 0, 3, [
                     new Lit('', 'xxx', 0, 1),
                     new Lit('', 'xxx', 1, 2),
                     new Lit('', 'xxx', 2, 3),
                 ])
             ],
             // range of occurences, min === 0
-            [
-                [[new Literal('x')], 0, 1],
+            'optional "x" with "foo"' => [
+                Builder::create()->rule('?')->q(0, 1)->literal('x')->getGrammar(),
                 ['foo'],
-                new Quant('', 'foo', 0, 0, [])
+                new Quant('?', 'foo', 0, 0, [])
             ],
-            [
-                [[new Literal('x')], 0, INF],
+            '0 or more "x" with "foo"' => [
+                Builder::create()->rule('*')->q(0, INF)->literal('x')->getGrammar(),
                 ['foo'],
-                new Quant('', 'foo', 0, 0, [])
+                new Quant('*', 'foo', 0, 0, [])
             ],
-            [
-                [[new Literal('x')], 0, INF],
+            '0 or more "x" with "xoo"' => [
+                Builder::create()->rule('*')->q(0, INF)->literal('x')->getGrammar(),
                 ['xoo'],
-                new Quant('', 'xoo', 0, 1, [new Lit('', 'xoo', 0, 1)])
+                new Quant('*', 'xoo', 0, 1, [new Lit('', 'xoo', 0, 1)])
             ],
         ];
     }
 
     /**
      * @dataProvider testMatchErrorProvider
-     * @expectedException ju1ius\Pegasus\Exception\ParseError
+     * @expectedException \ju1ius\Pegasus\Exception\ParseError
      */
-    public function testMatchError($args, $match_args)
+    public function testMatchError($expr, $match_args)
     {
-        $expr = $this->expr('Quantifier', $args);
-        call_user_func_array([$this, 'parse'], array_merge([$expr], $match_args));
+        $this->parse($expr, ...$match_args);
     }
     public function testMatchErrorProvider()
     {
         return [
-            [
-                [[new Literal('x')], 1, 1],
+            'exactly one "x" with "foo"' => [
+                Builder::create()->rule('one')->exactly(1)->literal('x')->getGrammar(),
                 ['foo']
             ],
-            [
-                [[new Literal('x')], 2, INF],
+            '2 or more "x" with "x_x"' => [
+                Builder::create()->rule('two')->q(2, INF)->literal('x')->getGrammar(),
                 ['x_x']
             ]
         ];

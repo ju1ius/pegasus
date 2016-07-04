@@ -3,9 +3,9 @@
 namespace ju1ius\Pegasus\Tests;
 
 use ju1ius\Pegasus\MetaGrammar;
-use ju1ius\Pegasus\Parser\LeftRecursivePackrat as Parser;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Node\Regex as Rx;
+use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
 
 class MetaGrammarTest extends PegasusTestCase
 {

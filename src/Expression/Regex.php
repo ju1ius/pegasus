@@ -91,7 +91,7 @@ class Regex extends Terminal
         if (preg_match($pattern, $text, $matches, 0, $pos)) {
             $match = $matches[0];
             $length = strlen($match);
-            $node = new Node\Regex($this, $text, $pos, $pos + $length, $matches);
+            $node = new Node\Regex($this->name, $text, $pos, $pos + $length, $matches);
 
             return $node;
         }

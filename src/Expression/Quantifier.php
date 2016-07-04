@@ -74,7 +74,7 @@ class Quantifier extends Decorator
         }
 
         if ($matchCount >= $this->min) {
-            return new Node\Quantifier($this, $text, $pos, $nextPosition, $children);
+            return new Node\Quantifier($this->name, $text, $pos, $nextPosition, $children);
         }
     }
 }

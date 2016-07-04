@@ -15,12 +15,12 @@ class NotTest extends ExpressionTestCase
     /**
      * @dataProvider testMatchProvider
      */
-    public function testMatch($children, $match_args, $expected)
+    public function testMatch($children, $args, $expected)
     {
-        $expr = new Not($children);
+        $expr = new Not($children, 'not');
         $this->assertNodeEquals(
             $expected,
-            call_user_func_array([$this, 'parse'], array_merge([$expr], $match_args))
+            $this->parse($expr, ...$args)
         );
     }
     public function testMatchProvider()
@@ -29,29 +29,29 @@ class NotTest extends ExpressionTestCase
             [
                 [new Literal('foo')],
                 ['barbaz'],
-                new NotNode('', 'barbaz', 0, 0, [])
+                new NotNode('not', 'barbaz', 0, 0, [])
             ],
             [
                 [new Literal('bar')],
                 ['foobar'],
-                new NotNode('', 'foobar', 0, 0, [])
+                new NotNode('not', 'foobar', 0, 0, [])
             ],
             [
                 [new Literal('foo')],
                 ['foobar', 3],
-                new NotNode('', 'foobar', 3, 3, [])
+                new NotNode('not', 'foobar', 3, 3, [])
             ],
         ];
     }
 
     /**
      * @dataProvider testMatchErrorProvider
-     * @expectedException ju1ius\Pegasus\Exception\ParseError
+     * @expectedException \ju1ius\Pegasus\Exception\ParseError
      */
-    public function testMatchError($children, $match_args)
+    public function testMatchError($children, $args)
     {
-        $expr = new Not($children);
-        call_user_func_array([$this, 'parse'], array_merge([$expr], $match_args));
+        $expr = new Not($children, 'not');
+        $this->parse($expr, ...$args);
     }
     public function testMatchErrorProvider()
     {

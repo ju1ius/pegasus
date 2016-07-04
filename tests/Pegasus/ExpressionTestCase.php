@@ -18,8 +18,7 @@ class ExpressionTestCase extends PegasusTestCase
     protected function parse($grammar, $text, $pos = 0)
     {
         if ($grammar instanceof Expression) {
-            $name = $grammar->name ?: $grammar->id;
-            $grammar = Grammar::fromArray([$name => $grammar]);
+            $grammar = Grammar::fromExpression($grammar);
         } elseif (is_array($grammar)) {
             $grammar = Grammar::fromArray($grammar);
         } elseif (!$grammar instanceof Grammar) {

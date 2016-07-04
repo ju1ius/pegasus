@@ -41,7 +41,7 @@ class Not extends Decorator
     {
         $node = $parser->apply($this->children[0], $pos, $scope);
         if (!$node) {
-            return new Node\Not($this, $text, $pos, $pos);
+            return new Node\Not($this->name, $text, $pos, $pos);
         }
     }
 }

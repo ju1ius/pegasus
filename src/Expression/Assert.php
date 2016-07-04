@@ -41,7 +41,7 @@ class Assert extends Decorator
     {
         $node = $parser->apply($this->children[0], $pos, $scope);
         if ($node) {
-            return new Node\Assert($this, $text, $pos, $pos);
+            return new Node\Assert($this->name, $text, $pos, $pos);
         }
     }
 }

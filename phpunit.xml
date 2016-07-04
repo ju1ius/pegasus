@@ -3,18 +3,20 @@
     bootstrap="./tests/bootstrap.php"
 >
     <testsuites>
+        <testsuite name="Grammar">
+            <directory>tests/Pegasus/Grammar</directory>
+        </testsuite>
         <testsuite name="Expressions">
             <file>tests/Pegasus/Expression/LiteralTest.php</file>
             <file>tests/Pegasus/Expression/RegexTest.php</file>
             <file>tests/Pegasus/Expression/QuantifierTest.php</file>
             <directory>tests/Pegasus/Expression</directory>
         </testsuite>
-        <testsuite name="Grammar">
-            <directory>tests/Pegasus/Grammar</directory>
-            <file>tests/Pegasus/MetaGrammarTest.php</file>
-        </testsuite>
         <testsuite name="Parsers">
             <directory>tests/Pegasus/Parser</directory>
+        </testsuite>
+        <testsuite name="MetaGrammar">
+            <file>tests/Pegasus/MetaGrammarTest.php</file>
         </testsuite>
         <testsuite name="Optimizations">
             <directory>tests/Pegasus/Optimization</directory>

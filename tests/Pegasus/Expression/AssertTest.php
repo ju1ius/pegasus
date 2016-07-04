@@ -2,39 +2,50 @@
 
 namespace ju1ius\Pegasus\Tests\Expression;
 
-use ju1ius\Pegasus\Tests\ExpressionTestCase;
-
+use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Assert;
 use ju1ius\Pegasus\Expression\Literal;
-
+use ju1ius\Pegasus\Grammar;
+use ju1ius\Pegasus\Grammar\Builder;
+use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Node\Assert as LA;
-
+use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class AssertTest extends ExpressionTestCase
 {
     /**
      * @dataProvider testMatchProvider
+     *
+     * @param Grammar $expr
+     * @param array   $args
+     * @param Node    $expected
+     *
+     * @internal     param \ju1ius\Pegasus\Expression[] $children
      */
-    public function testMatch(array $children, array $match_args, $expected)
+    public function testMatch(Grammar $expr, array $args, Node $expected)
     {
-        $expr = new Assert($children);
         $this->assertNodeEquals(
             $expected,
-            $this->parse($expr, ...$match_args)
+            $this->parse($expr, ...$args)
         );
     }
+
     public function testMatchProvider()
     {
         return [
             [
-                [new Literal('foo')],
+                Builder::create()->rule('assert')
+                    ->assert()->literal('foobar')
+                    ->getGrammar(),
                 ['foobar'],
-                new LA('', 'foobar', 0, 0, [])
+                new LA('assert', 'foobar', 0, 0, []),
             ],
             [
-                [new Literal('bar')],
+                Builder::create()->rule('assert')
+                    ->assert()->literal('bar')
+                    ->getGrammar(),
                 ['foobar', 3],
-                new LA('', 'foobar', 3, 3, [])
+                new LA('assert', 'foobar', 3, 3, []),
             ],
         ];
     }
@@ -43,21 +54,23 @@ class AssertTest extends ExpressionTestCase
      * @dataProvider testMatchErrorProvider
      * @expectedException \ju1ius\Pegasus\Exception\ParseError
      *
-     * @param array $children
-     * @param array $match_args
+     * @param Grammar $expr
+     * @param array   $args
      */
-    public function testMatchError(array $children, array $match_args)
+    public function testMatchError(Grammar $expr, array $args)
     {
-        $expr = new Assert($children);
-        $this->parse($expr, ...$match_args);
+        $this->parse($expr, ...$args);
     }
+
     public function testMatchErrorProvider()
     {
         return [
             [
-                [new Literal('foo')],
-                ['barbaz']
-            ]
+                Builder::create()->rule('assert')
+                    ->assert()->literal('foo')
+                    ->getGrammar(),
+                ['barbaz'],
+            ],
         ];
     }
 
