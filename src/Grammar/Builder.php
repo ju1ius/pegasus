@@ -19,6 +19,7 @@ use ju1ius\Pegasus\Expression\Fail;
 use ju1ius\Pegasus\Expression\Label;
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Expression\Assert;
+use ju1ius\Pegasus\Expression\Match;
 use ju1ius\Pegasus\Expression\NodeAction;
 use ju1ius\Pegasus\Expression\Not;
 use ju1ius\Pegasus\Expression\OneOf;
@@ -26,7 +27,8 @@ use ju1ius\Pegasus\Expression\OneOrMore;
 use ju1ius\Pegasus\Expression\Optional;
 use ju1ius\Pegasus\Expression\Quantifier;
 use ju1ius\Pegasus\Expression\Reference;
-use ju1ius\Pegasus\Expression\Regex;
+use ju1ius\Pegasus\Expression\RegExp;
+use ju1ius\Pegasus\Expression\SemanticAction;
 use ju1ius\Pegasus\Expression\Sequence;
 use ju1ius\Pegasus\Expression\Skip;
 use ju1ius\Pegasus\Expression\Decorator;
@@ -183,9 +185,20 @@ class Builder
      *
      * @return $this
      */
-    public function regex($pattern, array $flags = [])
+    public function match($pattern, array $flags = [])
     {
-        return $this->add(new Regex($pattern, '', $flags))->end();
+        return $this->add(new Match($pattern, $flags))->end();
+    }
+
+    /**
+     * @param string $pattern
+     * @param array  $flags
+     *
+     * @return $this
+     */
+    public function regexp($pattern, array $flags = [])
+    {
+        return $this->add(new RegExp($pattern, $flags))->end();
     }
 
     /**
@@ -487,5 +500,27 @@ class Builder
     public function node($name = '', $class = '')
     {
         return $this->add(new NodeAction($name, $class))->end();
+    }
+
+    /**
+     * @param \Closure $closure
+     *
+     * @return $this
+     */
+    public function semanticAction(\Closure $closure)
+    {
+        return $this->add(new SemanticAction($closure))->end();
+    }
+
+    /**
+     * Alias of `semanticAction`.
+     *
+     * @param \Closure $closure
+     *
+     * @return Builder
+     */
+    public function action(\Closure $closure)
+    {
+        return $this->semanticAction($closure);
     }
 }
