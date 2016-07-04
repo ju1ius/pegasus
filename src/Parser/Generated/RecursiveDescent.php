@@ -126,7 +126,7 @@ class RecursiveDescent implements ParserInterface
         $refClass = new \ReflectionClass($this);
         foreach ($refClass->getMethods() as $method) {
             if (strpos($method->name, 'match_') === 0) {
-                $ruleName = substr($method->name, 0, 6);
+                $ruleName = substr($method->name, 6);
                 $matchers[$ruleName] = $method->getClosure($this);
             }
         }
