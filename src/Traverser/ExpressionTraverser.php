@@ -18,7 +18,7 @@ use ju1ius\Pegasus\Visitor\ExpressionVisitorInterface;
 class ExpressionTraverser implements ExpressionTraverserInterface
 {
     /**
-     * @var ExpressionVisitor[]
+     * @var \SplObjectStorage.<ExpressionVisitor>
      */
     protected $visitors;
 
@@ -31,15 +31,17 @@ class ExpressionTraverser implements ExpressionTraverserInterface
 
     public function __construct()
     {
-        $this->visitors = [];
+        $this->visitors = new \SplObjectStorage();
     }
 
     /**
      * @inheritDoc
      */
-    public function addVisitor(ExpressionVisitorInterface $visitor)
+    public function addVisitor(ExpressionVisitorInterface ...$visitors)
     {
-        $this->visitors[] = $visitor;
+        foreach ($visitors as $visitor) {
+            $this->visitors->attach($visitor);
+        }
 
         return $this;
     }
@@ -47,14 +49,10 @@ class ExpressionTraverser implements ExpressionTraverserInterface
     /**
      * @inheritDoc
      */
-    public function removeVisitor(ExpressionVisitorInterface $visitor)
+    public function removeVisitor(ExpressionVisitorInterface ...$visitors)
     {
-        foreach ($this->visitors as $index => $storedVisitor) {
-            if ($storedVisitor === $visitor) {
-                unset($this->visitors[$index]);
-
-                return $this;
-            }
+        foreach ($visitors as $visitor) {
+            $this->visitors->detach($visitor);
         }
 
         return $this;

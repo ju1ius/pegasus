@@ -18,20 +18,20 @@ interface ExpressionTraverserInterface
     /**
      * Adds a visitor.
      *
-     * @param ExpressionVisitorInterface $visitor Visitor to add
+     * @param ExpressionVisitorInterface[] ...$visitors Visitor to add
      *
      * @return $this
      */
-    public function addVisitor(ExpressionVisitorInterface $visitor);
+    public function addVisitor(ExpressionVisitorInterface ...$visitors);
 
     /**
      * Removes an added visitor.
      *
-     * @param ExpressionVisitorInterface $visitor
+     * @param ExpressionVisitorInterface[] ...$visitors
      *
      * @return $this
      */
-    public function removeVisitor(ExpressionVisitorInterface $visitor);
+    public function removeVisitor(ExpressionVisitorInterface ...$visitors);
 
     /**
      * Traverses an expression using the registered visitors.

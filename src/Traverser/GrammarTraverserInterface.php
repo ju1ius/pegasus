@@ -21,20 +21,21 @@ interface GrammarTraverserInterface
     /**
      * Adds a visitor.
      *
-     * @param GrammarVisitorInterface $visitor Visitor to add
+     * @param GrammarVisitorInterface[] ...$visitors
      *
      * @return $this
      */
-    public function addVisitor(GrammarVisitorInterface $visitor);
+    public function addVisitor(GrammarVisitorInterface ...$visitors);
 
     /**
      * Removes an added visitor.
      *
-     * @param GrammarVisitorInterface $visitor
+     * @param GrammarVisitorInterface[] ...$visitors
      *
      * @return $this
+     *
      */
-    public function removeVisitor(GrammarVisitorInterface $visitor);
+    public function removeVisitor(GrammarVisitorInterface ...$visitors);
 
     /**
      * Traverses a grammar and it's expression tree using the registered visitors.

@@ -33,14 +33,14 @@ use ju1ius\Pegasus\Visitor\GrammarVisitorInterface;
 class GrammarTraverser implements GrammarTraverserInterface
 {
     /**
-     * @var \SplObjectStorage
+     * @var \SplObjectStorage.<GrammarVisitorInterface>
      */
     private $visitors;
 
     /**
      * @var bool
      */
-    private $fold = true;
+    private $foldGrammar = true;
 
     /**
      * @var bool
@@ -55,26 +55,28 @@ class GrammarTraverser implements GrammarTraverserInterface
     /**
      * Constructor for GrammarTraverser.
      *
-     * If $fold if false, the references will not be converted back to actual expression objects.
+     * If `$foldGrammar` if false, the references will not be converted back to actual expression objects.
      * This can be useful if you need ie to serialize the grammar in some way.
      *
-     * @param bool $cloneExpressions Whether expressions are to be cloned before traversal.
-     * @param bool $fold             Whether grammars are to be folded after traversal.
+     * @param bool $cloneExpressions Whether expressions must be cloned before traversal.
+     * @param bool $foldGrammar      Whether grammars must be folded after traversal.
      *
      */
-    public function __construct($cloneExpressions = true, $fold = false)
+    public function __construct($cloneExpressions = true, $foldGrammar = false)
     {
         $this->cloneExpressions = $cloneExpressions;
-        $this->fold = $fold;
+        $this->foldGrammar = $foldGrammar;
         $this->visitors = new \SplObjectStorage();
     }
 
     /**
      * @inheritDoc
      */
-    public function addVisitor(GrammarVisitorInterface $visitor)
+    public function addVisitor(GrammarVisitorInterface ...$visitors)
     {
-        $this->visitors->attach($visitor);
+        foreach ($visitors as $visitor) {
+            $this->visitors->attach($visitor);
+        }
 
         return $this;
     }
@@ -82,9 +84,11 @@ class GrammarTraverser implements GrammarTraverserInterface
     /**
      * @inheritDoc
      */
-    public function removeVisitor(GrammarVisitorInterface $visitor)
+    public function removeVisitor(GrammarVisitorInterface ...$visitors)
     {
-        $this->visitors->detach($visitor);
+        foreach ($visitors as $visitor) {
+            $this->visitors->detach($visitor);
+        }
 
         return $this;
     }
@@ -120,7 +124,7 @@ class GrammarTraverser implements GrammarTraverserInterface
             }
         }
 
-        if ($this->fold) {
+        if ($this->foldGrammar) {
             // reference resolving has to be done in a full additional pass
             $resolver = (new ExpressionTraverser)->addVisitor(new ExpressionFolder($grammar));
             foreach ($grammar as $name => $rule) {
