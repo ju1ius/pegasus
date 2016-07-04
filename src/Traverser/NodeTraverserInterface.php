@@ -10,26 +10,30 @@
 
 namespace ju1ius\Pegasus\Traverser;
 
-use ju1ius\Pegasus\Visitor\VisitorInterface;
+use ju1ius\Pegasus\Visitor\NodeVisitorInterface;
 
 /**
  * Generic traverser interface
  */
-interface TraverserInterface
+interface NodeTraverserInterface
 {
     /**
      * Adds a visitor.
      *
-     * @param VisitorInterface $visitor Visitor to add
+     * @param NodeVisitorInterface[] ...$visitors
+     *
+     * @return $this
      */
-    public function addVisitor(VisitorInterface $visitor);
+    public function addVisitor(NodeVisitorInterface ...$visitors);
 
     /**
      * Removes an added visitor.
      *
-     * @param VisitorInterface $visitor
+     * @param NodeVisitorInterface[] ...$visitors
+     *
+     * @return $this
      */
-    public function removeVisitor(VisitorInterface $visitor);
+    public function removeVisitor(NodeVisitorInterface ...$visitors);
 
     /**
      * Traverses a node using the registered visitors.
