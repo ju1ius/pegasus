@@ -2,13 +2,9 @@
 
 namespace ju1ius\Pegasus\Tests\Expression;
 
-use ju1ius\Pegasus\Expression\Literal;
-use ju1ius\Pegasus\Expression\Sequence;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Builder;
 use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Node\Literal as Lit;
-use ju1ius\Pegasus\Node\Sequence as Seq;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class SequenceTest extends ExpressionTestCase
@@ -36,9 +32,9 @@ class SequenceTest extends ExpressionTestCase
                     ->literal('bar')
                     ->getGrammar(),
                 ['foobar'],
-                new Seq('seq', 'foobar', 0, 6, [
-                    new Lit('', 'foobar', 0, 3),
-                    new Lit('', 'foobar', 3, 6),
+                new Node('seq', 0, 6, 'foobar', [
+                    new Node('', 0, 3, 'foobar'),
+                    new Node('', 3, 6, 'foobar'),
                 ])
             ],
         ];

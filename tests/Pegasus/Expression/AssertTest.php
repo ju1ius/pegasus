@@ -3,12 +3,9 @@
 namespace ju1ius\Pegasus\Tests\Expression;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Assert;
-use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Builder;
 use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Node\Assert as LA;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class AssertTest extends ExpressionTestCase
@@ -19,8 +16,6 @@ class AssertTest extends ExpressionTestCase
      * @param Grammar $expr
      * @param array   $args
      * @param Node    $expected
-     *
-     * @internal     param \ju1ius\Pegasus\Expression[] $children
      */
     public function testMatch(Grammar $expr, array $args, Node $expected)
     {
@@ -38,14 +33,14 @@ class AssertTest extends ExpressionTestCase
                     ->assert()->literal('foobar')
                     ->getGrammar(),
                 ['foobar'],
-                new LA('assert', 'foobar', 0, 0, []),
+                new Node('assert', 0, 0, 'foobar', []),
             ],
             [
                 Builder::create()->rule('assert')
                     ->assert()->literal('bar')
                     ->getGrammar(),
                 ['foobar', 3],
-                new LA('assert', 'foobar', 3, 3, []),
+                new Node('assert', 3, 3, 'foobar', []),
             ],
         ];
     }

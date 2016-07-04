@@ -2,13 +2,10 @@
 
 namespace ju1ius\Pegasus\Tests\Expression;
 
-use ju1ius\Pegasus\Tests\ExpressionTestCase;
-
-use ju1ius\Pegasus\Expression\Not;
 use ju1ius\Pegasus\Expression\Literal;
-
-use ju1ius\Pegasus\Node\Not as NotNode;
-
+use ju1ius\Pegasus\Expression\Not;
+use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class NotTest extends ExpressionTestCase
 {
@@ -29,17 +26,17 @@ class NotTest extends ExpressionTestCase
             [
                 [new Literal('foo')],
                 ['barbaz'],
-                new NotNode('not', 'barbaz', 0, 0, [])
+                new Node('not', 0, 0, 'barbaz', [])
             ],
             [
                 [new Literal('bar')],
                 ['foobar'],
-                new NotNode('not', 'foobar', 0, 0, [])
+                new Node('not', 0, 0, 'foobar', [])
             ],
             [
                 [new Literal('foo')],
                 ['foobar', 3],
-                new NotNode('not', 'foobar', 3, 3, [])
+                new Node('not', 3, 3, 'foobar', [])
             ],
         ];
     }

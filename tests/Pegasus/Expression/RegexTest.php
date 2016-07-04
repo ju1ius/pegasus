@@ -3,7 +3,7 @@
 namespace ju1ius\Pegasus\Tests\Expression;
 
 use ju1ius\Pegasus\Grammar\Builder;
-use ju1ius\Pegasus\Node\Regex as Rx;
+use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class RegexTest extends ExpressionTestCase
@@ -24,24 +24,24 @@ class RegexTest extends ExpressionTestCase
         return [
             // simple literals
 			'/foo/ with "foo"' => [
-                Builder::create()->rule('r')->regex('foo')->getGrammar(),
+                Builder::create()->rule('r')->match('foo')->getGrammar(),
                 ['foo'],
-                new Rx('r', 'foo', 0, 3, ['foo'])
+                new Node('r', 0, 3, 'foo', ['foo'])
             ],
             '/bar/ @3 with "foobar"' => [
-                Builder::create()->rule('r')->regex('bar')->getGrammar(),
+                Builder::create()->rule('r')->match('bar')->getGrammar(),
                 ['foobar', 3],
-                new Rx('r', 'foobar', 3, 6, ['bar'])
+                new Node('r', 3, 6, 'foobar', ['bar'])
             ],
 			'/fo+/ with "fooooobar!"' => [
-                Builder::create()->rule('r')->regex('fo+')->getGrammar(),
+                Builder::create()->rule('r')->match('fo+')->getGrammar(),
                 ['fooooobar!'],
-                new Rx('r', 'fooooobar!', 0, 6, ['fooooo'])
+                new Node('r', 0, 6, 'fooooobar!', ['fooooo'])
             ],
             'complex pattern with capturing groups' => [
-                Builder::create()->rule('r')->regex('"((?:(?:\\\\.)|[^"])*)"')->getGrammar(),
+                Builder::create()->rule('r')->match('"((?:(?:\\\\.)|[^"])*)"')->getGrammar(),
                 ['"quoted\\"stri\\ng"'],
-				new Rx('r', '"quoted\\"stri\\ng"', 0, 17, [
+				new Node('r', 0, 17, '"quoted\\"stri\\ng"', [
                     '"quoted\\"stri\\ng"',
                     'quoted\\"stri\\ng'
                 ])

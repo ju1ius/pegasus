@@ -4,8 +4,7 @@ namespace ju1ius\Pegasus\Tests\Expression;
 
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Expression\OneOrMore;
-use ju1ius\Pegasus\Node\Literal as Lit;
-use ju1ius\Pegasus\Node\Quantifier as Quant;
+use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class OneOrMoreTest extends ExpressionTestCase
@@ -27,10 +26,10 @@ class OneOrMoreTest extends ExpressionTestCase
             [
                 [new Literal('x')],
                 ['xxx'],
-                new Quant('+', 'xxx', 0, 3, [
-                    new Lit('', 'xxx', 0, 1),
-                    new Lit('', 'xxx', 1, 2),
-                    new Lit('', 'xxx', 2, 3),
+                new Node('+', 0, 3, 'xxx', [
+                    new Node('', 0, 1, 'xxx'),
+                    new Node('', 1, 2, 'xxx'),
+                    new Node('', 2, 3, 'xxx'),
                 ])
             ],
         ];

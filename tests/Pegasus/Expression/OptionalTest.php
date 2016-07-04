@@ -4,10 +4,8 @@ namespace ju1ius\Pegasus\Tests\Expression;
 
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Expression\Optional;
-use ju1ius\Pegasus\Expression\Regex;
-use ju1ius\Pegasus\Node\Literal as Lit;
-use ju1ius\Pegasus\Node\Quantifier as Quant;
-use ju1ius\Pegasus\Node\Regex as Rx;
+use ju1ius\Pegasus\Expression\RegExp;
+use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class OptionalTest extends ExpressionTestCase
@@ -29,30 +27,30 @@ class OptionalTest extends ExpressionTestCase
             [
                 [new Literal('foo')],
                 ['foo'],
-                new Quant('?', 'foo', 0, 3, [new Lit('', 'foo', 0, 3)])
+                new Node('?', 0, 3, 'foo', [new Node('', 0, 3, 'foo')])
             ],
             [
                 [new Literal('foo')],
                 ['bar'],
-                new Quant('?', 'bar', 0, 0, [])
+                new Node('?', 0, 0, 'bar', [])
             ],
             [
-                [new Regex('[\w-]+')],
+                [new RegExp('[\w-]+')],
                 ['d-o_0-b'],
-                new Quant('?', 'd-o_0-b', 0, 7, [
-					new Rx('', 'd-o_0-b', 0, 7, ['d-o_0-b'])]
+                new Node('?', 0, 7, 'd-o_0-b', [
+					new Node('', 0, 7, 'd-o_0-b', ['d-o_0-b'])]
                 )
             ],
             [
-                [new Regex('[\w-]+')],
+                [new RegExp('[\w-]+')],
                 ['$_o_$'],
-                new Quant('?', '$_o_$', 0, 0, [])
+                new Node('?', 0, 0, '$_o_$', [])
             ],
             [
-                [new Regex('[\w-]+')],
+                [new RegExp('[\w-]+')],
                 ['micro$oft'],
-                new Quant('?', 'micro$oft', 0, 5, [
-					new Rx('', 'micro$oft', 0, 5, ['micro'])
+                new Node('?', 0, 5, 'micro$oft', [
+					new Node('', 0, 5, 'micro$oft', ['micro'])
                 ])
             ],
         ];

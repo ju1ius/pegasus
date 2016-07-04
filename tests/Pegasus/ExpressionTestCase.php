@@ -8,13 +8,6 @@ use ju1ius\Pegasus\Parser\RecursiveDescent;
 
 class ExpressionTestCase extends PegasusTestCase
 {
-    protected function expr($class, array $args)
-    {
-        $class = "ju1ius\\Pegasus\\Expression\\{$class}";
-
-        return (new \ReflectionClass($class))->newInstanceArgs($args);
-    }
-
     protected function parse($grammar, $text, $pos = 0)
     {
         if ($grammar instanceof Expression) {

@@ -36,10 +36,10 @@ class BackReferenceTest extends ExpressionTestCase
                         ->backref('a')
                     ->getGrammar(),
                 ['foobarfoo'],
-                new Node\Sequence('start', 'foobarfoo', 0, 9, [
-                    new Node\Literal('', 'foobarfoo', 0, 3),
-                    new Node\Literal('', 'foobarfoo', 3, 6),
-                    new Node\BackReference('', 'foobarfoo', 6, 9),
+                new Node('start', 0, 9, 'foobarfoo', [
+                    new Node('', 0, 3, 'foobarfoo'),
+                    new Node('', 3, 6, 'foobarfoo'),
+                    new Node('', 6, 9, 'foobarfoo'),
                 ])
             ]
         ];
