@@ -25,9 +25,9 @@ class LiteralTest extends ExpressionTestCase
     {
         return [
             ['foo', ['foo'], new Node('test', 0, 3, 'foo')],
-            ['foo', ['foobar'], new Node('test', 0, 3, 'foobar')],
-            ['foo', ['barfoo', 3], new Node('test', 3, 6, 'barfoo')],
-            ['bar', ['foobarbaz', 3], new Node('test', 3, 6, 'foobarbaz')],
+            ['foo', ['foobar'], new Node('test', 0, 3, 'foo')],
+            ['foo', ['barfoo', 3], new Node('test', 3, 6, 'foo')],
+            ['bar', ['foobarbaz', 3], new Node('test', 3, 6, 'bar')],
         ];
     }
 }

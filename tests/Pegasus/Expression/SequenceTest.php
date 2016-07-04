@@ -32,9 +32,9 @@ class SequenceTest extends ExpressionTestCase
                     ->literal('bar')
                     ->getGrammar(),
                 ['foobar'],
-                new Node('seq', 0, 6, 'foobar', [
-                    new Node('', 0, 3, 'foobar'),
-                    new Node('', 3, 6, 'foobar'),
+                new Node('seq', 0, 6, null, [
+                    new Node('', 0, 3, 'foo'),
+                    new Node('', 3, 6, 'bar'),
                 ])
             ],
         ];

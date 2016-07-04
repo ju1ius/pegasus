@@ -26,10 +26,10 @@ class OneOrMoreTest extends ExpressionTestCase
             [
                 [new Literal('x')],
                 ['xxx'],
-                new Node('+', 0, 3, 'xxx', [
-                    new Node('', 0, 1, 'xxx'),
-                    new Node('', 1, 2, 'xxx'),
-                    new Node('', 2, 3, 'xxx'),
+                new Node('+', 0, 3, null, [
+                    new Node('', 0, 1, 'x'),
+                    new Node('', 1, 2, 'x'),
+                    new Node('', 2, 3, 'x'),
                 ])
             ],
         ];

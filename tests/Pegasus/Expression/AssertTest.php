@@ -33,14 +33,14 @@ class AssertTest extends ExpressionTestCase
                     ->assert()->literal('foobar')
                     ->getGrammar(),
                 ['foobar'],
-                new Node('assert', 0, 0, 'foobar', []),
+                new Node('assert', 0, 0),
             ],
             [
                 Builder::create()->rule('assert')
                     ->assert()->literal('bar')
                     ->getGrammar(),
                 ['foobar', 3],
-                new Node('assert', 3, 3, 'foobar', []),
+                new Node('assert', 3, 3),
             ],
         ];
     }

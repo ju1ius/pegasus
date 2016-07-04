@@ -25,61 +25,61 @@ class QuantifierTest extends ExpressionTestCase
             'exactly one "x" with "x"' => [
                 Builder::create()->rule('one')->exactly(1)->literal('x')->getGrammar(),
                 ['x'],
-                new Node('one', 0, 1, 'x', [
+                new Node('one', 0, 1, null, [
                     new Node('', 0, 1, 'x')
                 ])
             ],
             'exactly three "x" with "xxx"' => [
                 Builder::create()->rule('three')->exactly(3)->literal('x')->getGrammar(),
                 ['xxx'],
-                new Node('three', 0, 3, 'xxx', [
-                    new Node('', 0, 1, 'xxx'),
-                    new Node('', 1, 2, 'xxx'),
-                    new Node('', 2, 3, 'xxx'),
+                new Node('three', 0, 3, null, [
+                    new Node('', 0, 1, 'x'),
+                    new Node('', 1, 2, 'x'),
+                    new Node('', 2, 3, 'x'),
                 ])
             ],
             // range of occurences, min > 0, max is finite
             'between one and three "x" with "x"' => [
                 Builder::create()->rule('1..3')->between(1, 3)->literal('x')->getGrammar(),
                 ['x'],
-                new Node('1..3', 0, 1, 'x', [
+                new Node('1..3', 0, 1, null, [
                     new Node('', 0, 1, 'x'),
                 ])
             ],
             'between one and three "x" with "xxx"' => [
                 Builder::create()->rule('1..3')->between(1, 3)->literal('x')->getGrammar(),
                 ['xxx'],
-                new Node('1..3', 0, 3, 'xxx', [
-                    new Node('', 0, 1, 'xxx'),
-                    new Node('', 1, 2, 'xxx'),
-                    new Node('', 2, 3, 'xxx'),
+                new Node('1..3', 0, 3, null, [
+                    new Node('', 0, 1, 'x'),
+                    new Node('', 1, 2, 'x'),
+                    new Node('', 2, 3, 'x'),
                 ])
             ],
             // range of occurences, min > 0, max is infinite
             'one or more "x" with "xxx"' => [
                 Builder::create()->rule('+')->q(1, INF)->literal('x')->getGrammar(),
                 ['xxx'],
-                new Node('+', 0, 3, 'xxx', [
-                    new Node('', 0, 1, 'xxx'),
-                    new Node('', 1, 2, 'xxx'),
-                    new Node('', 2, 3, 'xxx'),
+                new Node('+', 0, 3, null, [
+                    new Node('', 0, 1, 'x'),
+                    new Node('', 1, 2, 'x'),
+                    new Node('', 2, 3, 'x'),
                 ])
             ],
             // range of occurences, min === 0
             'optional "x" with "foo"' => [
                 Builder::create()->rule('?')->q(0, 1)->literal('x')->getGrammar(),
                 ['foo'],
-                new Node('?', 0, 0, 'foo', [])
+                new Node('?', 0, 0)
             ],
             '0 or more "x" with "foo"' => [
                 Builder::create()->rule('*')->q(0, INF)->literal('x')->getGrammar(),
                 ['foo'],
-                new Node('*', 0, 0, 'foo', [])
+                new Node('*', 0, 0)
             ],
             '0 or more "x" with "xoo"' => [
                 Builder::create()->rule('*')->q(0, INF)->literal('x')->getGrammar(),
                 ['xoo'],
-                new Node('*', 0, 1, 'xoo', [new Node('', 0, 1, 'xoo')])
+                new Node('*', 0, 1, null, [new Node('', 0, 1, 'x')])
             ],
         ];
     }

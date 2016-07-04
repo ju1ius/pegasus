@@ -26,16 +26,15 @@ class OneOfTest extends ExpressionTestCase
             [
                 [new Literal('bar'), new Literal('foo')],
                 ['foobar'],
-                new Node('choice', 0, 3, 'foobar', [
-                    new Node('', 0, 3, 'foobar'),
+                new Node('choice', 0, 3, null, [
+                    new Node('', 0, 3, 'foo'),
                 ])
             ],
-            # must return the first matched expression
-            [
+            'must return the first matched expression' => [
                 [new Literal('foo', 'FOO'), new Literal('foo', 'FOO2')],
                 ['foobar'],
-                new Node('choice', 0, 3, 'foobar', [
-                    new Node('FOO', 0, 3, 'foobar'),
+                new Node('choice', 0, 3, null, [
+                    new Node('FOO', 0, 3, 'foo'),
                 ])
             ],
         ];

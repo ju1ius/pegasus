@@ -14,8 +14,8 @@ class BackReferencesTest extends PegasusTestCase
      */
     public function testLiteralReferences(Grammar $grammar, $input, $expected)
     {
-        $result = (new Parser($grammar))->parseAll($input);
-        $this->assertEquals($expected, $result->getText());
+        $node = (new Parser($grammar))->parseAll($input);
+        $this->assertEquals($expected, $node->getText($input));
     }
 
     public function testLiteralReferencesProvider()

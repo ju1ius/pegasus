@@ -26,17 +26,17 @@ class NotTest extends ExpressionTestCase
             [
                 [new Literal('foo')],
                 ['barbaz'],
-                new Node('not', 0, 0, 'barbaz', [])
+                new Node('not', 0, 0)
             ],
             [
                 [new Literal('bar')],
                 ['foobar'],
-                new Node('not', 0, 0, 'foobar', [])
+                new Node('not', 0, 0)
             ],
             [
                 [new Literal('foo')],
                 ['foobar', 3],
-                new Node('not', 3, 3, 'foobar', [])
+                new Node('not', 3, 3)
             ],
         ];
     }

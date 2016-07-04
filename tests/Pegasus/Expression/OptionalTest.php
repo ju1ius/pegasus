@@ -3,6 +3,7 @@
 namespace ju1ius\Pegasus\Tests\Expression;
 
 use ju1ius\Pegasus\Expression\Literal;
+use ju1ius\Pegasus\Expression\Match;
 use ju1ius\Pegasus\Expression\Optional;
 use ju1ius\Pegasus\Expression\RegExp;
 use ju1ius\Pegasus\Node;
@@ -27,30 +28,30 @@ class OptionalTest extends ExpressionTestCase
             [
                 [new Literal('foo')],
                 ['foo'],
-                new Node('?', 0, 3, 'foo', [new Node('', 0, 3, 'foo')])
+                new Node('?', 0, 3, null, [new Node('', 0, 3, 'foo')])
             ],
             [
                 [new Literal('foo')],
                 ['bar'],
-                new Node('?', 0, 0, 'bar', [])
+                new Node('?', 0, 0)
             ],
             [
-                [new RegExp('[\w-]+')],
+                [new Match('[\w-]+')],
                 ['d-o_0-b'],
-                new Node('?', 0, 7, 'd-o_0-b', [
-					new Node('', 0, 7, 'd-o_0-b', ['d-o_0-b'])]
+                new Node('?', 0, 7, null, [
+					new Node('', 0, 7, 'd-o_0-b')]
                 )
             ],
             [
-                [new RegExp('[\w-]+')],
+                [new Match('[\w-]+')],
                 ['$_o_$'],
-                new Node('?', 0, 0, '$_o_$', [])
+                new Node('?', 0, 0)
             ],
             [
-                [new RegExp('[\w-]+')],
+                [new Match('[\w-]+')],
                 ['micro$oft'],
-                new Node('?', 0, 5, 'micro$oft', [
-					new Node('', 0, 5, 'micro$oft', ['micro'])
+                new Node('?', 0, 5, null, [
+					new Node('', 0, 5, 'micro')
                 ])
             ],
         ];
