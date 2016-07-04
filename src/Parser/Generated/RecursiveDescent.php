@@ -32,27 +32,24 @@ class RecursiveDescent implements ParserInterface
     protected $error;
 
     /**
-     * @var
+     * @var \Closure[]
      */
-    protected $refmap;
+    protected $matchers = [];
 
     /**
-     * Return the parse tree matching this expression at the given position,
-     * not necessarily extending all the way to the end of $text.
-     *
-     * @throw ParseError if there's no match there
-     *
-     * @param string $text
-     * @param string $rule
-     *
-     * @return Node
-     * @throws IncompleteParseError
-     * @throws ParseError
-     * @throws null
+     * RecursiveDescent constructor.
      */
-    public function parseAll($text, $rule = null)
+    public function __construct()
     {
-        $result = $this->parse($text, 0, $rule);
+        $this->matchers = $this->buildMatchers();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function parseAll($text, $startRule = null)
+    {
+        $result = $this->parse($text, 0, $startRule);
         if ($this->pos < strlen($text)) {
             //echo $result->inspect(), "\n";
             throw new IncompleteParseError(
@@ -66,33 +63,15 @@ class RecursiveDescent implements ParserInterface
     }
 
     /**
-     * Return the parse tree matching this expression at the given position,
-     * not necessarily extending all the way to the end of $text.
-     *
-     * @throw ParseError if there's no match there
-     *
-     * @param string $text
-     * @param int    $pos
-     * @param string $rule
-     *
-     * @return Node|null
-     * @throws ParseError
-     * @throws null
+     * @inheritdoc
      */
-    public function parse($text, $pos = 0, $rule = null)
+    public function parse($text, $position = 0, $startRule = null)
     {
         $this->text = $text;
-        $this->pos = $pos;
+        $this->pos = $position;
         $this->error = new ParseError($text);
-        $this->refmap = [];
 
-        //FIXME: how to do this ?
-        // maybe write a generator that recursively yields subexpressions ?
-        // it would need to yield depth-first, ie terminal rules,
-        // then parent composite rules, etc...
-        // ATM we just pass $this to the Expression::match method,
-        // and let expressions call $parser->apply for their children.
-        $result = $this->apply($rule, $pos);
+        $result = $this->apply($startRule, $position);
 
         if (!$result) {
             throw $this->error;
@@ -101,26 +80,35 @@ class RecursiveDescent implements ParserInterface
         return $result;
     }
 
-    public function apply($ruleName, $pos = 0)
+    /**
+     * Applies $rule_name at position $pos.
+     *
+     *
+     * @param string $ruleName
+     * @param int    $position
+     *
+     * @return Node|null
+     */
+    protected function apply($ruleName, $position = 0)
     {
-        $this->pos = $pos;
-        $this->error->position = $pos;
+        $this->pos = $position;
+        $this->error->position = $position;
         $this->error->expr = $ruleName;
 
         // evaluate expression
-        $result = $this->evaluate($ruleName);
-
-        return $result;
+        return $this->evaluate($ruleName);
     }
 
     /**
      * Evaluates an expression & updates current position on success.
      *
+     * @param string $ruleName
+     *
+     * @return Node|null
      */
-    public function evaluate($ruleName)
+    final protected function evaluate($ruleName)
     {
-        $match_method = "match_{$ruleName}";
-        $result = $this->{$ruleName}();
+        $result = $this->matchers[$ruleName]();
         if ($result) {
             $this->pos = $result->end;
             $this->error->node = $result;
@@ -130,17 +118,19 @@ class RecursiveDescent implements ParserInterface
     }
 
     /**
-     * Search the references map for an expression with the same name.
-     *
+     * @return \Closure[]
      */
-    public function getReference($name)
+    private function buildMatchers()
     {
-        if (!isset($this->refmap[$name])) {
-            return '';
+        $matchers = [];
+        $refClass = new \ReflectionClass($this);
+        foreach ($refClass->getMethods() as $method) {
+            if (strpos($method->name, 'match_') === 0) {
+                $ruleName = substr($method->name, 0, 6);
+                $matchers[$ruleName] = $method->getClosure($this);
+            }
         }
-        list($id, $pos) = $this->refmap[$name];
-        $memo = $this->memo[$id][$pos];
 
-        return (string)$memo->result;
+        return $matchers;
     }
 }

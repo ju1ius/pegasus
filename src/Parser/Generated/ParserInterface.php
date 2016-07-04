@@ -10,30 +10,37 @@
 
 namespace ju1ius\Pegasus\Parser\Generated;
 
+use ju1ius\Pegasus\Exception\IncompleteParseError;
+use ju1ius\Pegasus\Exception\ParseError;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Node;
 
 interface ParserInterface
 {
     /**
-     * Parse $text starting from position $pos, using start rule $start_rule.
+     * Return the parse tree matching this expression at the given position,
+     * not necessarily extending all the way to the end of $text.
      *
      * @param string $text
-     * @param int    $pos
      * @param string $startRule
      *
-     * @return Node|null
+     * @return Node
+     *
+     * @throws ParseError If the text doesn't match
+     * @throws IncompleteParseError If the text doesn't match entirely
      */
-    public function parse($text, $pos = 0, $startRule = null);
+    public function parseAll($text, $startRule = null);
 
     /**
-     * Applies $rule_name at position $pos.
+     * Parse the given text starting from given position, using the given start rule.
      *
+     * @param string $text
+     * @param int    $position
+     * @param string $startRule
      *
-     * @param string $ruleName
-     * @param int    $pos
+     * @return Node
      *
-     * @return Node|null
+     * @throws ParseError If the text doesn't match
      */
-    public function apply($ruleName, $pos);
+    public function parse($text, $position = 0, $startRule = null);
 }
