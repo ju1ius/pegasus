@@ -8,11 +8,9 @@
  * file that was distributed with this source code.
  */
 
-
 namespace ju1ius\Pegasus\Node;
 
 use ju1ius\Pegasus\Node;
-
 
 /**
  * A composite node having only one child node.
@@ -20,13 +18,14 @@ use ju1ius\Pegasus\Node;
 abstract class Decorator extends Composite
 {
     /**
-     * @inheritDoc
+     * @param string    $name
+     * @param int       $start
+     * @param int       $end
+     * @param Node|null $child
+     * @param array     $attributes
      */
-    public function __construct($name, $start, $end, $fullText, array $children = [], array $attributes = [])
+    public function __construct($name, $start, $end, Node $child = null, array $attributes = [])
     {
-        if (count($children) > 1) {
-            throw new \LogicException('Decorator nodes can have only one child.');
-        }
-        parent::__construct($name, $start, $end, $fullText, $children, $attributes);
+        parent::__construct($name, $start, $end, null, $child ? [$child] : [], $attributes);
     }
 }

@@ -80,8 +80,8 @@ class Literal extends Terminal
             });
             $length = strlen($value);
         }
-        if ($pos === strpos($text, $value, $pos)) {
-            return new Node($this->name, $pos, $pos + $length, $text);
+        if ($value === substr($text, $pos, $length)) {
+            return new Node($this->name, $pos, $pos + $length, $value);
         }
     }
 }

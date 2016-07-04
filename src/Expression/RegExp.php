@@ -52,7 +52,7 @@ class RegExp extends Terminal
      */
     public $subjectParts = [];
 
-    public function __construct($pattern, $name = '', array $flags = [])
+    public function __construct($pattern, array $flags = [], $name = '')
     {
         parent::__construct($name);
         $this->pattern = $pattern;
@@ -90,7 +90,7 @@ class RegExp extends Terminal
         if (preg_match($pattern, $text, $matches, 0, $pos)) {
             $match = $matches[0];
             $length = strlen($match);
-            $node = new Node\RegExp($this->name, $text, $pos, $pos + $length, $matches);
+            $node = new Node($this->name, $pos, $pos + $length, $text, [], ['matches' => $matches]);
 
             return $node;
         }

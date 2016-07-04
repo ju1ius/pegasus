@@ -55,7 +55,7 @@ class Sequence extends Composite
             $seq_len += $len;
         }
 
-        return new Node($this->name, $pos, $pos + $seq_len, $text, $children);
+        return new Node($this->name, $pos, $pos + $seq_len, null, $children);
     }
 
     public function parse($text, $pos, $rules, Scope $scope)

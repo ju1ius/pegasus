@@ -35,8 +35,8 @@ class BackReference extends Expression
         $pattern = $scope[$this->identifier];
         $length = strlen($pattern);
 
-        if (substr($text, $pos, $length) === $pattern) {
-            return new Node($this->name, $pos, $pos + $length, $text);
+        if ($pattern === $value = substr($text, $pos, $length)) {
+            return new Node($this->name, $pos, $pos + $length, $value);
         }
     }
 

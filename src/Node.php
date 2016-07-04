@@ -10,8 +10,6 @@
 
 namespace ju1ius\Pegasus;
 
-use Traversable;
-
 /**
  * Abstract class for parse tree nodes.
  *
@@ -33,13 +31,6 @@ class Node implements \Countable, \IteratorAggregate, \ArrayAccess
     public $name;
 
     /**
-     * The full text fed to the parser.
-     *
-     * @var string
-     */
-    public $fullText;
-
-    /**
      * The position in the text where the expression started matching.
      *
      * @var int
@@ -54,6 +45,13 @@ class Node implements \Countable, \IteratorAggregate, \ArrayAccess
     public $end;
 
     /**
+     * The value of this node.
+     *
+     * @var string
+     */
+    public $value;
+
+    /**
      * @var array
      */
     public $children;
@@ -64,17 +62,17 @@ class Node implements \Countable, \IteratorAggregate, \ArrayAccess
     public $attributes;
 
     /**
-     * @param string $name     The name of this node.
-     * @param int    $start    The position in the text where that name started matching
-     * @param int    $end      The position after start where the name first didn't match.
-     * @param string $fullText The full text fed to the parser
+     * @param string $name  The name of this node.
+     * @param int    $start The position in the text where that name started matching
+     * @param int    $end   The position after start where the name first didn't match.
+     * @param null   $value The value matched by this node (only for terminals).
      * @param array  $children
      * @param array  $attributes
      */
-    public function __construct($name, $start, $end, $fullText, array $children = [], array $attributes = [])
+    public function __construct($name, $start, $end, $value = null, array $children = [], array $attributes = [])
     {
         $this->name = $name;
-        $this->fullText = $fullText;
+        $this->value = $value;
         $this->start = $start;
         $this->end = $end;
         $this->children = $children;
@@ -83,17 +81,20 @@ class Node implements \Countable, \IteratorAggregate, \ArrayAccess
 
     public function __toString()
     {
-        return $this->getText();
+        return $this->value ? (string)$this->value : '';
     }
 
     /**
      * Returns the text this node matched
      *
+     * @param string $input The original input string
+     *
      * @return string
      */
-    public function getText()
+    public function getText($input)
     {
-        return (string)substr($this->fullText, $this->start, $this->end - $this->start);
+        $length = $this->end - $this->start;
+        return $length > 0 ? substr($input, $this->start, $length) : '';
     }
 
     /**

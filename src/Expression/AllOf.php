@@ -34,7 +34,7 @@ class AllOf extends Composite
             }
         }
 
-        return new Node($this->name, $pos, $node->end, $text, [$node]);
+        return new Node($this->name, $pos, $node->end, null, [$node]);
     }
 
     /**

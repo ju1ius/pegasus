@@ -8,41 +8,21 @@
  * file that was distributed with this source code.
  */
 
-
 namespace ju1ius\Pegasus\Node;
 
 use ju1ius\Pegasus\Node;
 
-
 class Terminal extends Node
 {
     /**
-     * @var mixed
+     * @param string $name
+     * @param int    $start
+     * @param int    $end
+     * @param null   $value
+     * @param array  $attributes
      */
-    public $value;
-
-    /**
-     * @inheritDoc
-     */
-    public function __construct($name, $fullText, $start, $end, $value = null)
+    public function __construct($name, $start, $end, $value = null, array $attributes = [])
     {
-        parent::__construct($name, $fullText, $start, $end);
-        $this->value = $value;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function terminals()
-    {
-        yield $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function iter()
-    {
-        yield $this;
+        parent::__construct($name, $start, $end, $value, [], $attributes);
     }
 }

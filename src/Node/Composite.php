@@ -17,4 +17,15 @@ use ju1ius\Pegasus\Node;
  */
 abstract class Composite extends Node
 {
+    /**
+     * @param string $name
+     * @param int    $start
+     * @param int    $end
+     * @param array  $children
+     * @param array  $attributes
+     */
+    public function __construct($name, $start, $end, array $children, array $attributes = [])
+    {
+        parent::__construct($name, $start, $end, null, $children, $attributes);
+    }
 }

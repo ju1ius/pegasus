@@ -13,6 +13,7 @@ namespace ju1ius\Pegasus\Expression;
 
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Parser\ParserInterface;
+use ju1ius\Pegasus\Parser\Scope;
 
 /**
  * The empty string
@@ -33,6 +34,6 @@ class Epsilon extends Terminal
 
     public function match($text, $pos, ParserInterface $parser, Scope $scope)
     {
-        return new Node($this->name, $pos, $pos, $text);
+        return new Node($this->name, $pos, $pos, '');
     }
 }

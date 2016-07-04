@@ -11,10 +11,18 @@ use ju1ius\Pegasus\Parser\Scope;
  */
 class Token extends Decorator
 {
+    /**
+     * @inheritDoc
+     */
     public function match($text, $pos, ParserInterface $parser, Scope $scope)
     {
         if ($node = $parser->apply($this->children[0], $pos, $scope)) {
-            return new Node($this->name, $node->start, $node->end, $text);
+            return new Node(
+                $this->name,
+                $node->start,
+                $node->end,
+                substr($text, $node->start, $node->end - $node->start)
+            );
         }
     }
 
