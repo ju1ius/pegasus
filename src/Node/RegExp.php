@@ -2,33 +2,27 @@
 /*
  * This file is part of Pegasus
  *
- * (c) 2014 Jules Bernable 
+ * (c) 2014 Jules Bernable
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-
 namespace ju1ius\Pegasus\Node;
 
-use ju1ius\Pegasus\Node\Terminal;
-
-
 /**
- * Node returned from a ``Regex`` expression
+ * Node returned from a `RegExp` expression.
  *
- * Grants access to the ``re.Match`` object, in case you want to access
- * capturing groups, etc. 
- *
+ * Grants access to the matches array, in case you want to access capturing groups.
  */
-class Regex extends Terminal
+class RegExp extends Terminal
 {
     /**
-     * @var array Array of regex matches, as returned preg_match.
+     * @var array Array of regex matches, as returned by `preg_match`.
      */
     public $matches;
 
-    public function __construct($name, $fullText, $start, $end, $matches=[])
+    public function __construct($name, $fullText, $start, $end, $matches = [])
     {
         parent::__construct($name, $fullText, $start, $end, $matches);
         $this->matches = $matches;

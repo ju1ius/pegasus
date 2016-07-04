@@ -18,10 +18,9 @@ use ju1ius\Pegasus\Utils\StringUtil;
 /**
  * An expression that matches what a regex does.
  *
- * Use these as much as you can and jam as much into each one as you can;
- * they're fast.
+ * Use these as much as you can and jam as much into each one as you can: they're fast.
  */
-class Regex extends Terminal
+class RegExp extends Terminal
 {
     /**
      * @var string
@@ -91,7 +90,7 @@ class Regex extends Terminal
         if (preg_match($pattern, $text, $matches, 0, $pos)) {
             $match = $matches[0];
             $length = strlen($match);
-            $node = new Node\Regex($this->name, $text, $pos, $pos + $length, $matches);
+            $node = new Node\RegExp($this->name, $text, $pos, $pos + $length, $matches);
 
             return $node;
         }
