@@ -15,7 +15,7 @@ namespace ju1ius\Pegasus\Visitor;
 /**
  * Generic Visitor interface
  */
-interface VisitorInterface
+interface NodeVisitorInterface
 {
     /**
      * Called once before traversal.
