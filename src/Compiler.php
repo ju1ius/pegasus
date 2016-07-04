@@ -108,7 +108,7 @@ abstract class Compiler
 
         // analyse grammar
         $analysis = new Analysis($grammar);
-        // find the appropiate parser class
+        // find the appropriate parser class
         foreach ($grammar as $rule_name => $expr) {
             if ($analysis->isLeftRecursive($rule_name)) {
                 $args['base_class'] = $this->getExtendedParserClass();
@@ -146,9 +146,9 @@ abstract class Compiler
             case 'zeroormore':
             case 'oneormore':
             case 'optional':
-                return 'quantifier.twig';
+                return 'expression/quantifier.twig';
             default:
-                return "$class.twig";
+                return "expression/{$class}.twig";
         }
     }
 
