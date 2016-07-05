@@ -4,7 +4,6 @@ namespace ju1ius\Pegasus\Tests;
 
 use ju1ius\Pegasus\MetaGrammar;
 use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Node\Regex as Rx;
 use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
 
 class MetaGrammarTest extends PegasusTestCase
@@ -41,17 +40,11 @@ class MetaGrammarTest extends PegasusTestCase
         return [
             [
                 '# A comment',
-                new Rx('comment', '# A comment', 0, 11, [
-                    '# A comment',
-                    ' A comment',
-                ]),
+                new Node('comment', 0, 11, '# A comment'),
             ],
             [
-                "# ends with line\n",
-                new Rx('comment', "# ends with line\n", 0, 16, [
-                    '# ends with line',
-                    ' ends with line',
-                ]),
+                "# ends with line\n Nope!",
+                new Node('comment', 0, 16, "# ends with line"),
             ],
         ];
     }
@@ -65,7 +58,7 @@ class MetaGrammarTest extends PegasusTestCase
         $node = $this->parse('_', $input);
         $this->assertEquals(
             $expected,
-            $node->getText()
+            $node->getText($input)
         );
     }
 
@@ -90,7 +83,7 @@ class MetaGrammarTest extends PegasusTestCase
     public function testIdentifier($input, $expected)
     {
         $node = $this->parse('identifier', $input);
-        $this->assertEquals($expected, $node->getText());
+        $this->assertEquals($expected, $node->getText($input));
     }
 
     public function testIdentifierProvider()
@@ -111,7 +104,7 @@ class MetaGrammarTest extends PegasusTestCase
     public function testArrowLeft($input, $expected)
     {
         $node = $this->parse('arrow_left', $input);
-        $this->assertEquals($expected, $node->getText());
+        $this->assertEquals($expected, $node->getText($input));
     }
 
     public function testArrowLeftProvider()
@@ -130,7 +123,7 @@ class MetaGrammarTest extends PegasusTestCase
     public function testReference($input, $expected)
     {
         $node = $this->parse('reference', $input);
-        $this->assertEquals($expected, $node->getText());
+        $this->assertEquals($expected, $node->getText($input));
     }
 
     public function testReferenceProvider()
@@ -171,21 +164,21 @@ class MetaGrammarTest extends PegasusTestCase
     public function testLiteralProvider()
     {
         return [
-            [
+            'double-quoted with escaped quote' => [
                 '"qstring\"esc"',
-                new Rx('', '"qstring\"esc"', 0, 14, [
+                new Node('', 0, 14, '"qstring\"esc"', [], ['matches' => [
                     '"qstring\"esc"',
                     '"',
                     'qstring\"esc',
-                ]),
+                ]]),
             ],
-            [
+            'single-quoted with escaped quote' => [
                 "'qstring\'esc'",
-                new Rx('', "'qstring\'esc'", 0, 14, [
+                new Node('', 0, 14, "'qstring\'esc'", [], ['matches' => [
                     "'qstring\'esc'",
                     "'",
                     "qstring\'esc",
-                ]),
+                ]]),
             ],
         ];
     }
@@ -206,42 +199,42 @@ class MetaGrammarTest extends PegasusTestCase
         return [
             [
                 '*',
-                new Rx('', '*', 0, 1, [
+                new Node('', 0, 1, '*', [], ['matches' => [
                     '*',
                     '*',
-                ]),
+                ]]),
             ],
             [
                 '+',
-                new Rx('', '+', 0, 1, [
+                new Node('', 0, 1, '+', [], ['matches' => [
                     '+',
                     '+',
-                ]),
+                ]]),
             ],
             [
                 '?',
-                new Rx('', '?', 0, 1, [
+                new Node('', 0, 1, '?', [], ['matches' => [
                     '?',
                     '?',
-                ]),
+                ]]),
             ],
             [
                 '{1,2}',
-                new Rx('', '{1,2}', 0, 5, [
+                new Node('', 0, 5, '{1,2}', [], ['matches' => [
                     '{1,2}',
                     '',
                     '1',
                     '2',
-                ]),
+                ]]),
             ],
             [
                 '{3,}',
-                new Rx('', '{3,}', 0, 4, [
+                new Node('', 0, 4, '{3,}', [], ['matches' => [
                     '{3,}',
                     '',
                     '3',
                     '',
-                ]),
+                ]]),
             ],
         ];
     }

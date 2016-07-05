@@ -10,8 +10,19 @@
 
 namespace ju1ius\Pegasus\Traverser;
 
-use ju1ius\Pegasus\Exception\VisitationError;
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Expression\Assert;
+use ju1ius\Pegasus\Expression\EOF;
+use ju1ius\Pegasus\Expression\Epsilon;
+use ju1ius\Pegasus\Expression\Label;
+use ju1ius\Pegasus\Expression\Literal;
+use ju1ius\Pegasus\Expression\Not;
+use ju1ius\Pegasus\Expression\OneOf;
+use ju1ius\Pegasus\Expression\Quantifier;
+use ju1ius\Pegasus\Expression\Reference;
+use ju1ius\Pegasus\Expression\RegExp;
+use ju1ius\Pegasus\Expression\Sequence;
+use ju1ius\Pegasus\Expression\Skip;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Node;
 
@@ -32,22 +43,16 @@ class MetaGrammarTraverser extends DepthFirstNodeTraverser
 
     public function genericVisit(Node $node, $children)
     {
-        if ($node instanceof Node\OneOf) {
-            return $children[0];
-        } elseif ($node instanceof Node\Not) {
+        if ($node->isTransient) {
+            // skip transient nodes (shouldn't happen)
             return null;
-        } elseif ($node instanceof Node\Decorator) {
-            if (count($children) > 1) {
-                throw new \LogicException('Decorator nodes cannot have more than one children.');
-            }
-
+        }
+        $numChildren = count($children);
+        if ($numChildren === 1) {
             return $children[0];
-        } elseif ($node instanceof Node\Composite) {
-            if (count($children) === 1) {
-                return $children[0];
-            }
-
-            return $children ?: null;
+        }
+        if ($numChildren) {
+            return $children;
         }
         if ($children) {
             throw new \LogicException('Shouldnt have reached here...');
@@ -56,9 +61,8 @@ class MetaGrammarTraverser extends DepthFirstNodeTraverser
         return $node;
     }
 
-    public function visit_grammar(Node\Sequence $node, $children)
+    public function visit_grammar(Node $node, $directives, $rules)
     {
-        list($directives, $rules) = $children;
         $grammar = new Grammar();
         // add rules
         foreach ($rules as $expr) {
@@ -82,7 +86,7 @@ class MetaGrammarTraverser extends DepthFirstNodeTraverser
     // Directives
     // --------------------------------------------------------------------------------------------------------------
 
-    public function visit_directives(Node\Quantifier $node, $children)
+    public function visit_directives(Node $node, ...$children)
     {
         $directives = [];
         foreach ($children as list($name, $value)) {
@@ -92,29 +96,23 @@ class MetaGrammarTraverser extends DepthFirstNodeTraverser
         return $directives;
     }
 
-    public function visit_name_directive(Node\Sequence $node, $children)
+    public function visit_name_directive(Node $node, $dir, $name)
     {
-        list($dir, $name) = $children;
-
         return ['name', $name];
     }
 
-    public function visit_start_directive(Node\Sequence $node, $children)
+    public function visit_start_directive(Node $node, $dir, $name)
     {
-        list($dir, $name) = $children;
-
         return ['start', $name];
     }
 
-    public function visit_ci_directive(Node\Sequence $node, $children)
+    public function visit_ci_directive(Node $node, ...$children)
     {
         return ['case_insensitive', true];
     }
 
-    public function visit_ws_directive(Node\Sequence $node, $children)
+    public function visit_ws_directive(Node $node, $dir, Expression $expr)
     {
-        list($dir, $expr) = $children;
-
         return ['whitespace' => $expr];
     }
 
@@ -122,14 +120,13 @@ class MetaGrammarTraverser extends DepthFirstNodeTraverser
     // Rules
     // --------------------------------------------------------------------------------------------------------------
 
-    public function visit_rules(Node\Quantifier $node, $children)
+    public function visit_rules(Node $node, Expression ...$children)
     {
         return $children;
     }
 
-    public function visit_rule(Node\Sequence $node, $children)
+    public function visit_rule(Node $node, $identifier, Expression $expression)
     {
-        list($identifier, $expression) = $children;
         $expression->name = $identifier;
 
         return $expression;
@@ -139,179 +136,157 @@ class MetaGrammarTraverser extends DepthFirstNodeTraverser
     // Composite Expressions
     // --------------------------------------------------------------------------------------------------------------
 
-    public function visit_choice(Node\Sequence $node, $children)
+    public function visit_choice(Node $node, Expression $alt1, $others)
     {
-        list($alt1, $others) = $children;
         if (is_array($others)) {
             $alternatives = array_merge([$alt1], $others);
         } else {
             $alternatives = [$alt1, $others];
         }
 
-        return new Expression\OneOf($alternatives);
+        return new OneOf($alternatives);
     }
 
-    public function visit_sequence(Node\Quantifier $node, $children)
+    public function visit_sequence(Node $node, Expression ...$children)
     {
-        return new Expression\Sequence($children);
+        return new Sequence($children);
     }
 
     //
     // Decorator Expressions
     // --------------------------------------------------------------------------------------------------------------
 
-    public function visit_labeled(Node\Sequence $node, $children)
+    public function visit_labeled(Node $node, $label, Expression $labelable)
     {
-        list($label, $labelable) = $children;
-
-        return new Expression\Label([$labelable], $label);
+        return new Label([$labelable], $label);
     }
 
-    public function visit_assert(Node\Sequence $node, $children)
+    public function visit_assert(Node $node, $amp, Expression $prefixable)
     {
-        list($amp, $prefixable) = $children;
-
-        return new Expression\Assert([$prefixable]);
+        return new Assert([$prefixable]);
     }
 
-    public function visit_not(Node\Sequence $node, $children)
+    public function visit_not(Node $node, $bang, Expression $prefixable)
     {
-        list($bang, $prefixable) = $children;
-
-        return new Expression\Not([$prefixable]);
+        return new Not([$prefixable]);
     }
 
-    public function visit_skip(Node\Sequence $node, $children)
+    public function visit_skip(Node $node, $tilde, Expression $prefixable)
     {
-        list($tilde, $prefixable) = $children;
-
-        return new Expression\Skip([$prefixable]);
+        return new Skip([$prefixable]);
     }
 
-    public function visit_quantifier(Node\Sequence $node, $children)
+    public function visit_quantifier(Node $node, $quantifier)
     {
-        $quantifier = $children[0];
-        if (!empty($quantifier->matches[1])) {
-            $class = self::$QUANTIFIER_CLASSES[$quantifier->matches[1]];
+        $matches = $quantifier['matches'];
+        if (!empty($matches[1])) {
+            $class = self::$QUANTIFIER_CLASSES[$matches[1]];
 
             return new $class([]);
         }
-        $min = (int)$quantifier->matches[2];
-        $max = !empty($quantifier->matches[3]) ? (int)$quantifier->matches[3] : INF;
+        $min = (int)$matches[2];
+        $max = !empty($matches[3]) ? (int)$matches[3] : INF;
 
-        return new Expression\Quantifier([], $min, $max);
+        return new Quantifier([], $min, $max);
     }
 
-    public function visit_suffixed(Node\Sequence $node, $children)
+    public function visit_suffixed(Node $node, $suffixable, Quantifier $suffix)
     {
-        list($suffixable, $suffix) = $children;
-        if ($suffix instanceof Expression\Quantifier) {
-            $suffix[0] = $suffixable;
+        $suffix[0] = $suffixable;
 
-            return $suffix;
-        }
-
-        throw new VisitationError(
-            $node, sprintf(
-            'Suffix should be instance of Expression\Quantifier, `%s` given',
-            get_class($suffix)
-        )
-        );
+        return $suffix;
     }
 
     //
     // Terminal Expressions
     // --------------------------------------------------------------------------------------------------------------
 
-    public function visit_literal(Node\Sequence $node, $children)
+    public function visit_literal(Node $node, $literal)
     {
-        $quote = $children[0]->matches[1];
-        $str = $children[0]->matches[2];
+        $quoteChar = $literal['matches'][1];
+        $str = $literal['matches'][2];
 
-        return new Expression\Literal($str, '', $quote);
+        return new Literal($str, '', $quoteChar);
     }
 
-    public function visit_regex(Node\Sequence $node, $children)
+    public function visit_regex(Node $node, $regexp)
     {
-        $regex = $children[0];
-        list($match, $pattern, $flags) = $regex->matches;
+        list($match, $pattern, $flags) = $regexp['matches'];
 
-        return new Expression\Regex($pattern, '', str_split($flags));
+        return new RegExp($pattern, str_split($flags));
     }
 
-    public function visit_reference(Node\Sequence $node, $children)
+    public function visit_reference(Node $node, $identifier)
     {
-        return new Expression\Reference($children[0]);
+        return new Reference($identifier);
     }
 
-    public function visit_eof(Node\Sequence $node, $children)
+    public function visit_eof(Node $node, ...$children)
     {
-        return new Expression\EOF();
+        return new EOF();
     }
 
-    public function visit_epsilon(Node\Sequence $node, $children)
+    public function visit_epsilon(Node $node, ...$children)
     {
-        return new Expression\Epsilon();
+        return new Epsilon();
     }
 
     //
     // Expression parts
     // --------------------------------------------------------------------------------------------------------------
 
-    public function visit_expression(Node\OneOf $node, $children)
+    public function visit_expression(Node $node, $expr)
     {
-        return $children[0];
-    }
-
-    public function visit_alternative(Node\OneOf $node, $children)
-    {
-        return $children[0];
-    }
-
-    public function visit_term(Node\OneOf $node, $children)
-    {
-        return $children[0];
-    }
-
-    public function visit_prefixed(Node\OneOf $node, $children)
-    {
-        return $children[0];
-    }
-
-    public function visit_prefixable(Node\OneOf $node, $children)
-    {
-        return $children[0];
-    }
-
-    public function visit_labelable(Node\OneOf $node, $children)
-    {
-        return $children[0];
-    }
-
-    public function visit_primary(Node\OneOf $node, $children)
-    {
-        return $children[0];
-    }
-
-    public function visit_parenthesized(Node\Sequence $node, $children)
-    {
-        list($lp, $expr, $rp) = $children;
-
         return $expr;
     }
 
-    public function visit_atom(Node\OneOf $node, $children)
+    public function visit_alternative(Node $node, $choice)
     {
-        return $children[0];
+        return $choice;
     }
 
-    public function visit_label(Node\Regex $node, $children)
+    public function visit_term(Node $node, $term)
     {
-        return $node->matches[1];
+        return $term;
     }
 
-    public function visit_identifier(Node\Sequence $node, $children)
+    public function visit_prefixed(Node $node, $prefixed)
     {
-        return $children[0]->matches[0];
+        return $prefixed;
+    }
+
+    public function visit_prefixable(Node $node, $prefixable)
+    {
+        return $prefixable;
+    }
+
+    public function visit_labelable(Node $node, $labelable)
+    {
+        return $labelable;
+    }
+
+    public function visit_primary(Node $node, $primary)
+    {
+        return $primary;
+    }
+
+    public function visit_parenthesized(Node $node, $lp, $expr, $rp)
+    {
+        return $expr;
+    }
+
+    public function visit_atom(Node $node, $atom)
+    {
+        return $atom;
+    }
+
+    public function visit_label(Node $node, $label)
+    {
+        return $label['matches'][1];
+    }
+
+    public function visit_identifier(Node $node, $identifier)
+    {
+        return $identifier['matches'][0];
     }
 }

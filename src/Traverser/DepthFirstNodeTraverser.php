@@ -166,20 +166,17 @@ class DepthFirstNodeTraverser
         try {
             // visit children before visiting node (depth first).
             $children = [];
-            if ($node instanceof Node\Composite) {
-                // visit children
-                foreach ($node->children as $child) {
-                    // filter ignored (null) nodes
-                    if (null !== $result = $this->visit($child)) {
-                        $children[] = $result;
-                    }
+            foreach ($node->children as $child) {
+                // filter ignored (null) nodes
+                if (null !== $result = $this->visit($child)) {
+                    $children[] = $result;
                 }
             }
 
             if (isset($this->visitors[$label])) {
                 $visitor = $this->visitors[$label];
 
-                return $visitor($node, $children);
+                return $visitor($node, ...$children);
             }
 
             return $this->genericVisit($node, $children);

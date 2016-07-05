@@ -11,8 +11,9 @@
 
 namespace ju1ius\Pegasus\Exception;
 
+use ju1ius\Pegasus\Debug\ParseTreePrinter;
 use ju1ius\Pegasus\Node;
-
+use ju1ius\Pegasus\Traverser\NodeTraverser;
 
 /**
  * Something went wrong while traversing a parse tree.
@@ -42,6 +43,21 @@ class VisitationError extends \RuntimeException
         parent::__construct($msg, 0, $previous);
     }
 
+    /**
+     * @return Node
+     */
+    public function getNode()
+    {
+        return $this->node;
+    }
+
+    public function printParseTree(Node $rootNode = null)
+    {
+        $traverser = (new NodeTraverser)
+            ->addVisitor(new ParseTreePrinter($this->getNode()))
+            ->traverse($rootNode ?: $this->getNode());
+    }
+
     public function __toString()
     {
         $prev = $this->getPrevious();
@@ -49,7 +65,7 @@ class VisitationError extends \RuntimeException
             "%s: %s\n\nParse tree:\n%s\n",
             $prev ? get_class($this->getPrevious()) : __CLASS__,
             $prev ? (string) $this->getPrevious() : $this->getMessage(),
-            $this->node->inspect($this->node)
+            $this->printParseTree()
         );
     }
 }
