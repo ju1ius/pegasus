@@ -28,9 +28,20 @@ final class ParseTreePrinter extends NodeVisitor
      */
     private $errorNode;
 
-    public function __construct($errorNode = null)
+    /**
+     * @var string
+     */
+    private $output;
+
+    /**
+     * @var bool
+     */
+    private $returnOutput;
+
+    public function __construct($errorNode = null, $returnOutput = true)
     {
         $this->errorNode = $errorNode;
+        $this->returnOutput = $returnOutput;
     }
 
     /**
@@ -39,6 +50,21 @@ final class ParseTreePrinter extends NodeVisitor
     public function beforeTraverse($node)
     {
         $this->depth = 0;
+        $this->output = '';
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function afterTraverse($node)
+    {
+        if ($this->returnOutput) {
+            return $this->output;
+        }
+
+        echo $this->output . PHP_EOL;
+
+        return null;
     }
 
     /**
@@ -53,10 +79,10 @@ final class ParseTreePrinter extends NodeVisitor
 
         $indent = str_repeat('│ ', $this->depth - 1);
         $indent .= $numChildren ? '├ ' : '└ ';
-        echo sprintf(
+        $this->output .= sprintf(
             '%s<%s("%s")@[%d..%d]: "%s">' . PHP_EOL,
             $indent,
-            str_replace('ju1ius\Pegasus\Node', '', get_class($node)),
+            str_replace('ju1ius\\Pegasus\\', '', get_class($node)),
             $node->name,
             $node->start,
             $node->end,
@@ -64,7 +90,7 @@ final class ParseTreePrinter extends NodeVisitor
         );
 
         if ($this->errorNode === $node) {
-            echo sprintf(
+            $this->output .= sprintf(
                 "╠%s═▲▲▲ Error was here!\n",
                 str_repeat('═', $this->depth - 1)
             );
