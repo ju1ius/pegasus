@@ -224,7 +224,7 @@ EOS;
             // decorator expressions
             // ------------------------------------------------------------------------------------------------------
             ->rule('quantifier')->sequence()
-                ->regex('(?> ([*+?]) | (?: \{ (\d+) (?:,(\d*))? \} ) )')
+                ->regexp('(?> ([*+?]) | (?: \{ (\d+) (?:,(\d*))? \} ) )')
                 ->ref('_')
             ->rule('token')->sequence()
                 ->literal('@')
@@ -256,19 +256,19 @@ EOS;
                 ->ref('identifier')
                 ->not()->ref('arrow_left')
             ->rule('literal')->sequence()
-                ->regex('(["\']) ((?:(?:\\\\.)|(?:(?!\1).))*) \1')
+                ->regexp('(["\']) ((?:\\\\.|(?!\1).)*) \1')
                 ->ref('_')
             ->rule('regex')->sequence()
-                ->regex('\/((?:(?:\\\\.)|[^\/])*)\/([imsuUX]*)?')
+                ->regexp('\/ ((?:\\\\.|[^\/])*) \/ ([imsuUX]*)?')
                 ->ref('_')
             ->rule('eof')->sequence()
-                ->regex('EOF\b')
+                ->match('EOF\b')
                 ->ref('_')
             ->rule('epsilon')->sequence()
-                ->regex('E\b')
+                ->match('E\b')
                 ->ref('_')
             ->rule('fail')->sequence()
-                ->regex('FAIL\b')
+                ->match('FAIL\b')
                 ->ref('_')
             //
             // expression parts
@@ -327,10 +327,10 @@ EOS;
                 ->literal('=')
                 ->ref('_')
             ->rule('identifier')->sequence()
-                ->regex('[a-zA-Z_]\w*')
+                ->match('[a-zA-Z_]\w*')
                 ->ref('_')
             ->rule('label')
-                ->regex('([a-zA-Z_]\w*):')
+                ->regexp('([a-zA-Z_]\w*):')
             //
             // whitespace
             // ------------------------------------------------------------------------------------------------------
@@ -339,9 +339,9 @@ EOS;
                     ->ref('ws')
                     ->ref('comment')
             ->rule('ws')
-                ->regex('\s+')
+                ->match('\s+')
             ->rule('comment')
-                ->regex('\#([^\n]*)')
+                ->match('\#[^\n]*')
             ->getGrammar()
         ;
 
