@@ -41,42 +41,23 @@ class Sequence extends Composite
 
     public function match($text, $pos, ParserInterface $parser, Scope $scope)
     {
-        $new_pos = $pos;
-        $seq_len = 0;
+        $nextPos = $pos;
+        $totalLength = 0;
         $children = [];
         foreach ($this->children as $child) {
-            $node = $parser->apply($child, $new_pos, $scope);
+            $node = $parser->apply($child, $nextPos, $scope);
             if (!$node) {
                 return null;
             }
-            $children[] = $node;
-            $len = $node->end - $node->start;
-            $new_pos += $len;
-            $seq_len += $len;
-        }
-
-        return new Node($this->name, $pos, $pos + $seq_len, null, $children);
-    }
-
-    public function parse($text, $pos, $rules, Scope $scope)
-    {
-        $newPos = $pos;
-        $totalLength = 0;
-        $children = [];
-        $childrenScope = $scope->nest();
-        foreach ($this->children as $child) {
-            $result = $child->parse($text, $newPos, $rules, $childrenScope); // {|_| scope = scope.merge _ } ???
-            if (!$result) {
-                return null;
-            }
-            $childrenScope = $childrenScope->capture($result);
-            $children[] = $result;
-            //$length = $result->end - $result->start;
-            $length = strlen($result);
-            $newPos += $length;
+            $length = $node->end - $node->start;
+            $nextPos += $length;
             $totalLength += $length;
+            if ($node->isTransient) {
+                continue;
+            }
+            $children[] = $node;
         }
 
-        return $children;
+        return new Node($this->name, $pos, $pos + $totalLength, null, $children);
     }
 }

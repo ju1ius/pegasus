@@ -10,6 +10,8 @@
 
 namespace ju1ius\Pegasus\Expression;
 
+use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Grammar\Exception\MissingSemanticInAttributedSequence;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Parser\ParserInterface;
 use ju1ius\Pegasus\Parser\Scope;
@@ -22,12 +24,36 @@ use ju1ius\Pegasus\Parser\Scope;
  */
 class AttributedSequence extends Composite
 {
+    public function __toString()
+    {
+        return implode(' ', $this->stringMembers());
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isCapturing()
+    {
+        /** @var Expression $last */
+        $last = end($this->children);
+
+        return $last->isCapturing();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isCapturingDecidable()
+    {
+        return false;
+    }
+
     public function match($text, $pos, ParserInterface $parser, Scope $scope)
     {
         $action = end($this->children);
         $actionIndex = key($this->children);
         if (!$action instanceof Semantic) {
-            throw new \LogicException('Last expression of `%s` should be instance of Semantic.');
+            throw new MissingSemanticInAttributedSequence($this);
         }
 
         $newPos = $pos;
@@ -41,29 +67,15 @@ class AttributedSequence extends Composite
             if (!$node) {
                 return null;
             }
-            $children[] = $node;
             $length = $node->end - $node->start;
             $newPos += $length;
             $totalLength += $length;
+            if ($node->isTransient) {
+                continue;
+            }
+            $children[] = $node;
         }
 
         return $parser->apply($action, $newPos, new Scope($scope->getBindings(), $children));
-    }
-
-    public function __toString()
-    {
-        return implode(' ', $this->stringMembers());
-    }
-
-    public function isCapturing()
-    {
-        $last = end($this->children);
-
-        return $last->isCapturing;
-    }
-
-    public function isCapturingDecidable()
-    {
-        return false;
     }
 }

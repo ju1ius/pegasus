@@ -17,8 +17,8 @@ use ju1ius\Pegasus\Parser\Scope;
 /**
  * A series of expressions, each of which must succeed from the current position.
  *
- * The returned node is the last child.
- * One could think of the preceding children as lookaheads.
+ * The returned node is the last child, making the sequence of preceding children
+ * equivalent to a lookbehind.
  */
 class AllOf extends Composite
 {
@@ -42,6 +42,9 @@ class AllOf extends Composite
      */
     public function __toString()
     {
-        return implode(' ', $this->stringMembers());
+        return sprintf(
+            '&<(%s)',
+            implode(' ', $this->stringMembers())
+        );
     }
 }

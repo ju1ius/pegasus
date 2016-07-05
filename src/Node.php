@@ -11,15 +11,11 @@
 namespace ju1ius\Pegasus;
 
 /**
- * Abstract class for parse tree nodes.
+ * A parse tree node.
  *
- * Consider these immutable once constructed.
+ * Fields are public for performance, but should generally be treated as immutable once constructed.
  *
- * My philosophy is that parse trees should be representation-agnostic.
- * That is, they shouldn't get mixed up with what the final rendered form of a wiki page
- * (or the intermediate representation of a programming language, or whatever) is going to be:
- * you should be able to parse once and render several representations from the tree,
- * one after another.
+ * @TODO remove `ArrayAccess` implementation if it proves to be a bottleneck.
  */
 class Node implements \Countable, \IteratorAggregate, \ArrayAccess
 {
@@ -40,9 +36,19 @@ class Node implements \Countable, \IteratorAggregate, \ArrayAccess
     /**
      * The position after start where the expression first didn't match.
      *
+     * It represents the offset _after_ the match so it's typically equal to
+     * `$this->start + strlen($this->value)`.
+     *
      * @var int
      */
     public $end;
+
+    /**
+     * Whether this node should appear in the final parse tree.
+     *
+     * @var bool
+     */
+    public $isTransient = false;
 
     /**
      * The value of this node.
@@ -52,7 +58,7 @@ class Node implements \Countable, \IteratorAggregate, \ArrayAccess
     public $value;
 
     /**
-     * @var array
+     * @var Node[]
      */
     public $children;
 
@@ -65,6 +71,8 @@ class Node implements \Countable, \IteratorAggregate, \ArrayAccess
      * @param string $name  The name of this node.
      * @param int    $start The position in the text where that name started matching
      * @param int    $end   The position after start where the name first didn't match.
+     *                      It represents the offset after the match so it's typically equal to
+     *                      $start + strlen($value).
      * @param null   $value The value matched by this node (only for terminals).
      * @param array  $children
      * @param array  $attributes
@@ -77,6 +85,81 @@ class Node implements \Countable, \IteratorAggregate, \ArrayAccess
         $this->end = $end;
         $this->children = $children;
         $this->attributes = $attributes;
+    }
+
+    /**
+     * Returns a new transient node at this given position.
+     *
+     * A transient node signals a match that can be skipped by some expressions.
+     * This kind of node is returned by zero-width assertion expressions (`Assert`, `Not`, `EOF`, `Epsilon`)
+     * and `Skip` expressions.
+     *
+     * @param string $name
+     * @param int    $start
+     * @param int    $end
+     *
+     * @return static
+     */
+    public static function transient($name, $start, $end)
+    {
+        $node = new static($name, $start, $end);
+        $node->isTransient = true;
+
+        return $node;
+    }
+
+    /**
+     * Returns a new terminal node at the given position.
+     *
+     * A terminal node may have a value, but has no children.
+     *
+     * @param string $name
+     * @param int    $start
+     * @param int    $end
+     * @param null   $value
+     * @param array  $attributes
+     *
+     * @return static
+     */
+    public static function terminal($name, $start, $end, $value = null, array $attributes = [])
+    {
+        return new static($name, $start, $end, $value, [], $attributes);
+    }
+
+    /**
+     * Returns a new decorator node at the given position.
+     *
+     * A decorator node has only one child and no value.
+     *
+     * @param string $name
+     * @param int    $start
+     * @param int    $end
+     * @param Node   $child
+     * @param array  $attributes
+     *
+     * @return static
+     */
+    public static function decorator($name, $start, $end, Node $child, array $attributes = [])
+    {
+        return new static($name, $start, $end, null, [$child], $attributes);
+    }
+
+    /**
+     * Returns a new composite node at the given position.
+     *
+     * A composite node has no value but can have any number of children.
+     *
+     * @param string $name
+     * @param int    $start
+     * @param int    $end
+     * @param array  $children
+     * @param array  $attributes
+     *
+     * @return static
+     */
+    public static function composite($name, $start, $end, array $children = [], array $attributes = [])
+    {
+        return new static($name, $start, $end, null, $children, $attributes);
     }
 
     public function __toString()
@@ -94,6 +177,7 @@ class Node implements \Countable, \IteratorAggregate, \ArrayAccess
     public function getText($input)
     {
         $length = $this->end - $this->start;
+
         return $length > 0 ? substr($input, $this->start, $length) : '';
     }
 
@@ -102,7 +186,8 @@ class Node implements \Countable, \IteratorAggregate, \ArrayAccess
      *
      * @return \Generator
      */
-    public function iter() {
+    public function iter()
+    {
         yield $this;
         foreach ($this->children as $child) {
             foreach ($child->iter() as $node) {
@@ -114,7 +199,8 @@ class Node implements \Countable, \IteratorAggregate, \ArrayAccess
     /**
      * Generator recursively yielding all terminal (leaf) nodes
      */
-    public function terminals() {
+    public function terminals()
+    {
         if ($this->children) {
             foreach ($this->children as $child) {
                 foreach ($child->terminals() as $terminal) {
@@ -134,8 +220,7 @@ class Node implements \Countable, \IteratorAggregate, \ArrayAccess
             && $other->start === $this->start
             && $other->end === $this->end
             && count($other->children) === count($this->children)
-            && count($other->attributes) === count($this->attributes)
-        ;
+            && count($other->attributes) === count($this->attributes);
         if (!$isEqual) {
             return false;
         }
@@ -174,7 +259,7 @@ class Node implements \Countable, \IteratorAggregate, \ArrayAccess
             return $this->children[$offset];
         }
 
-        return $this->attributes[$offset];
+        return isset($this->attributes[$offset]) ? $this->attributes[$offset] : null;
     }
 
     /**
