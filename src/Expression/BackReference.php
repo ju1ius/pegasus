@@ -11,7 +11,7 @@ use ju1ius\Pegasus\Parser\Scope;
 /**
  * @author ju1ius
  */
-class BackReference extends Expression
+class BackReference extends Terminal
 {
     /**
      * @var string
@@ -36,7 +36,7 @@ class BackReference extends Expression
         $length = strlen($pattern);
 
         if ($pattern === $value = substr($text, $pos, $length)) {
-            return new Node($this->name, $pos, $pos + $length, $value);
+            return new Node\Terminal($this->name, $pos, $pos + $length, $value);
         }
     }
 

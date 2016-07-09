@@ -31,6 +31,29 @@ class Quantifier extends Decorator
         $this->max = $max === INF ? $max : (int)$max;
 
         parent::__construct($children, $name);
+
+    /**
+     * @return bool
+     */
+    public function isZeroOrMore()
+    {
+        return $this->min === 0 && $this->max === INF;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOneOrMore()
+    {
+        return $this->min === 1 && $this->max === INF;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOptional()
+    {
+        return $this->min === 0 && $this->max === 1;
     }
 
     public function hasVariableCaptureCount()
@@ -74,7 +97,7 @@ class Quantifier extends Decorator
         }
 
         if ($matchCount >= $this->min) {
-            return new Node($this->name, $pos, $nextPosition, null, $children);
+            return new Node\Quantifier($this->name, $pos, $nextPosition, $children, $this->isOptional());
         }
     }
 }

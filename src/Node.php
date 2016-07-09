@@ -44,13 +44,6 @@ class Node implements \Countable, \IteratorAggregate, \ArrayAccess
     public $end;
 
     /**
-     * Whether this node should appear in the final parse tree.
-     *
-     * @var bool
-     */
-    public $isTransient = false;
-
-    /**
      * The value of this node.
      *
      * @var string
@@ -66,6 +59,34 @@ class Node implements \Countable, \IteratorAggregate, \ArrayAccess
      * @var array
      */
     public $attributes;
+
+    /**
+     * Whether this node should appear in the final parse tree.
+     *
+     * @var bool
+     */
+    public $isTransient = false;
+
+    /**
+     * Whether this node is a terminal node.
+     *
+     * @var bool
+     */
+    public $isTerminal = false;
+
+    /**
+     * Whether this node is the result of a quantified match.
+     *
+     * @var bool
+     */
+    public $isQuantifier = false;
+
+    /**
+     * Whether this node is the result of an optional match (? quantifier).
+     *
+     * @var bool
+     */
+    public $isOptional = false;
 
     /**
      * @param string $name  The name of this node.
@@ -87,81 +108,6 @@ class Node implements \Countable, \IteratorAggregate, \ArrayAccess
         $this->attributes = $attributes;
     }
 
-    /**
-     * Returns a new transient node at this given position.
-     *
-     * A transient node signals a match that can be skipped by some expressions.
-     * This kind of node is returned by zero-width assertion expressions (`Assert`, `Not`, `EOF`, `Epsilon`)
-     * and `Skip` expressions.
-     *
-     * @param string $name
-     * @param int    $start
-     * @param int    $end
-     *
-     * @return static
-     */
-    public static function transient($name, $start, $end)
-    {
-        $node = new static($name, $start, $end);
-        $node->isTransient = true;
-
-        return $node;
-    }
-
-    /**
-     * Returns a new terminal node at the given position.
-     *
-     * A terminal node may have a value, but has no children.
-     *
-     * @param string $name
-     * @param int    $start
-     * @param int    $end
-     * @param null   $value
-     * @param array  $attributes
-     *
-     * @return static
-     */
-    public static function terminal($name, $start, $end, $value = null, array $attributes = [])
-    {
-        return new static($name, $start, $end, $value, [], $attributes);
-    }
-
-    /**
-     * Returns a new decorator node at the given position.
-     *
-     * A decorator node has only one child and no value.
-     *
-     * @param string $name
-     * @param int    $start
-     * @param int    $end
-     * @param Node   $child
-     * @param array  $attributes
-     *
-     * @return static
-     */
-    public static function decorator($name, $start, $end, Node $child, array $attributes = [])
-    {
-        return new static($name, $start, $end, null, [$child], $attributes);
-    }
-
-    /**
-     * Returns a new composite node at the given position.
-     *
-     * A composite node has no value but can have any number of children.
-     *
-     * @param string $name
-     * @param int    $start
-     * @param int    $end
-     * @param array  $children
-     * @param array  $attributes
-     *
-     * @return static
-     */
-    public static function composite($name, $start, $end, array $children = [], array $attributes = [])
-    {
-        return new static($name, $start, $end, null, $children, $attributes);
-    }
-
     public function __toString()
     {
         return $this->value ? (string)$this->value : '';
@@ -178,7 +124,7 @@ class Node implements \Countable, \IteratorAggregate, \ArrayAccess
     {
         $length = $this->end - $this->start;
 
-        return $length > 0 ? substr($input, $this->start, $length) : '';
+        return $length ? substr($input, $this->start, $length) : '';
     }
 
     /**
@@ -210,32 +156,6 @@ class Node implements \Countable, \IteratorAggregate, \ArrayAccess
         } else {
             yield $this;
         }
-    }
-
-    public function equals(Node $other = null)
-    {
-        $isEqual = $other
-            && $other instanceof $this
-            && $other->name === $this->name
-            && $other->start === $this->start
-            && $other->end === $this->end
-            && count($other->children) === count($this->children)
-            && count($other->attributes) === count($this->attributes);
-        if (!$isEqual) {
-            return false;
-        }
-        foreach ($this->attributes as $name => $value) {
-            if (!isset($other->attributes[$name]) || $other->attributes[$name] !== $this->attributes[$name]) {
-                return false;
-            }
-        }
-        foreach ($this->children as $i => $child) {
-            if (!$child->equals($other->children[$i])) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     /**

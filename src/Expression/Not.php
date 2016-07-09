@@ -41,7 +41,7 @@ class Not extends Decorator
     {
         $node = $parser->apply($this->children[0], $pos, $scope);
         if (!$node) {
-            return Node::transient($this->name, $pos, $pos);
+            return new Node\Transient($pos, $pos);
         }
     }
 }

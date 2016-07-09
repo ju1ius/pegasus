@@ -17,7 +17,7 @@ class Token extends Decorator
     public function match($text, $pos, ParserInterface $parser, Scope $scope)
     {
         if ($node = $parser->apply($this->children[0], $pos, $scope)) {
-            return new Node(
+            return new Node\Terminal(
                 $this->name,
                 $node->start,
                 $node->end,

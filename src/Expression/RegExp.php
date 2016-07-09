@@ -90,7 +90,7 @@ class RegExp extends Terminal
         if (preg_match($pattern, $text, $matches, 0, $pos)) {
             $match = $matches[0];
             $length = strlen($match);
-            $node = new Node($this->name, $pos, $pos + $length, $text, [], ['matches' => $matches]);
+            $node = new Node\Terminal($this->name, $pos, $pos + $length, $match, ['matches' => $matches]);
 
             return $node;
         }

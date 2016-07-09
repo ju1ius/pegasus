@@ -55,7 +55,7 @@ class Match extends Terminal
             $match = $matches[0];
             $length = strlen($match);
 
-            return new Node($this->name, $pos, $pos + $length, $match);
+            return new Node\Terminal($this->name, $pos, $pos + $length, $match);
         }
     }
 

@@ -5,6 +5,7 @@ namespace ju1ius\Pegasus\Tests\Expression;
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Expression\Not;
 use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\Node\Transient;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class NotTest extends ExpressionTestCase
@@ -26,17 +27,17 @@ class NotTest extends ExpressionTestCase
             [
                 [new Literal('foo')],
                 ['barbaz'],
-                Node::transient('not', 0, 0)
+                new Transient(0, 0)
             ],
             [
                 [new Literal('bar')],
                 ['foobar'],
-                Node::transient('not', 0, 0)
+                new Transient(0, 0)
             ],
             [
                 [new Literal('foo')],
                 ['foobar', 3],
-                Node::transient('not', 3, 3)
+                new Transient(3, 3)
             ],
         ];
     }

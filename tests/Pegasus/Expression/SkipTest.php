@@ -13,6 +13,7 @@ namespace ju1ius\Pegasus\Tests\Expression;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Builder;
 use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\Node\Transient;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 /**
@@ -39,7 +40,7 @@ class SkipTest extends ExpressionTestCase
             'produces a non-capturing node, with the correct positions' => [
                 Builder::create()->rule('nope')->skip()->literal('nope')->getGrammar(),
                 ['nope'],
-                Node::transient('nope', 0, 4)
+                new Transient(0, 4)
             ],
             'skip parenthesis around (foo)' => [
                 Builder::create()->rule('start')->seq()

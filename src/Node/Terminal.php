@@ -14,6 +14,8 @@ use ju1ius\Pegasus\Node;
 
 class Terminal extends Node
 {
+    public $isTerminal = true;
+
     /**
      * @param string $name
      * @param int    $start

@@ -15,7 +15,7 @@ use ju1ius\Pegasus\Node;
 /**
  * A composite node having only one child node.
  */
-abstract class Decorator extends Composite
+class Decorator extends Composite
 {
     /**
      * @param string    $name
@@ -26,6 +26,6 @@ abstract class Decorator extends Composite
      */
     public function __construct($name, $start, $end, Node $child = null, array $attributes = [])
     {
-        parent::__construct($name, $start, $end, null, $child ? [$child] : [], $attributes);
+        parent::__construct($name, $start, $end, $child ? [$child] : [], $attributes);
     }
 }

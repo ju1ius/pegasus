@@ -15,7 +15,7 @@ use ju1ius\Pegasus\Node;
 /**
  * A Node that has child nodes.
  */
-abstract class Composite extends Node
+class Composite extends Node
 {
     /**
      * @param string $name

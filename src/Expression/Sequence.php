@@ -58,6 +58,6 @@ class Sequence extends Composite
             $children[] = $node;
         }
 
-        return new Node($this->name, $pos, $pos + $totalLength, null, $children);
+        return new Node\Composite($this->name, $pos, $nextPos, $children);
     }
 }

@@ -6,6 +6,7 @@ use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Builder;
 use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\Node\Transient;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class AssertTest extends ExpressionTestCase
@@ -33,14 +34,14 @@ class AssertTest extends ExpressionTestCase
                     ->assert()->literal('foobar')
                     ->getGrammar(),
                 ['foobar'],
-                Node::transient('assert', 0, 0),
+                new Transient(0, 0),
             ],
             [
                 Builder::create()->rule('assert')
                     ->assert()->literal('bar')
                     ->getGrammar(),
                 ['foobar', 3],
-                Node::transient('assert', 3, 3),
+                new Transient(3, 3),
             ],
         ];
     }

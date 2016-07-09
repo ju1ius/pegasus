@@ -81,7 +81,7 @@ class Literal extends Terminal
             $length = strlen($value);
         }
         if ($value === substr($text, $pos, $length)) {
-            return new Node($this->name, $pos, $pos + $length, $value);
+            return new Node\Terminal($this->name, $pos, $pos + $this->length, $this->literal);
         }
     }
 }
