@@ -4,6 +4,7 @@ namespace ju1ius\Pegasus\Tests;
 
 use ju1ius\Pegasus\MetaGrammar;
 use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\Node\Terminal;
 use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
 
 class MetaGrammarTest extends PegasusTestCase
@@ -40,11 +41,11 @@ class MetaGrammarTest extends PegasusTestCase
         return [
             [
                 '# A comment',
-                new Node('comment', 0, 11, '# A comment'),
+                new Terminal('comment', 0, 11, '# A comment'),
             ],
             [
                 "# ends with line\n Nope!",
-                new Node('comment', 0, 16, "# ends with line"),
+                new Terminal('comment', 0, 16, "# ends with line"),
             ],
         ];
     }
@@ -97,25 +98,6 @@ class MetaGrammarTest extends PegasusTestCase
     }
 
     /**
-     * @depends      test_
-     * @dataProvider testArrowLeftProvider
-     */
-    public function testArrowLeft($input, $expected)
-    {
-        $node = $this->parse('arrow_left', $input);
-        $this->assertEquals($expected, $node->getText($input));
-    }
-
-    public function testArrowLeftProvider()
-    {
-        return [
-            ['<-', '<-'],
-            ['<- ', '<- '],
-            ["<-\n ", "<-\n "],
-        ];
-    }
-
-    /**
      * @depends      testIdentifier
      * @dataProvider testReferenceProvider
      */
@@ -144,8 +126,8 @@ class MetaGrammarTest extends PegasusTestCase
     public function testReferenceNotEqualsProvider()
     {
         return [
-            ['some_ref <- foo'],
-            ['some_ref  <-  bar'],
+            ['some_ref = foo'],
+            ['some_ref  =  bar'],
         ];
     }
 
@@ -165,13 +147,13 @@ class MetaGrammarTest extends PegasusTestCase
         return [
             'double-quoted with escaped quote' => [
                 '"qstring\"esc"',
-                new Node('', 0, 14, '"qstring\"esc"', [], [
+                new Terminal('', 0, 14, '"qstring\"esc"', [
                     'matches' => ['"qstring\"esc"', '"', 'qstring\"esc']
                 ]),
             ],
             'single-quoted with escaped quote' => [
                 "'qstring\'esc'",
-                new Node('', 0, 14, "'qstring\'esc'", [], [
+                new Terminal('', 0, 14, "'qstring\'esc'", [
                     'matches' => ["'qstring\'esc'", "'", "qstring\'esc"]
                 ]),
             ],
@@ -194,31 +176,31 @@ class MetaGrammarTest extends PegasusTestCase
         return [
             [
                 '*',
-                new Node('', 0, 1, '*', [], [
+                new Terminal('', 0, 1, '*', [
                     'matches' => ['*', '*',]
                 ]),
             ],
             [
                 '+',
-                new Node('', 0, 1, '+', [], [
+                new Terminal('', 0, 1, '+', [
                     'matches' => ['+', '+',]
                 ]),
             ],
             [
                 '?',
-                new Node('', 0, 1, '?', [], [
+                new Terminal('', 0, 1, '?', [
                     'matches' => ['?', '?',]
                 ]),
             ],
             [
                 '{1,2}',
-                new Node('', 0, 5, '{1,2}', [], [
+                new Terminal('', 0, 5, '{1,2}', [
                     'matches' => ['{1,2}', '', '1', '2',]
                 ]),
             ],
             [
                 '{3,}',
-                new Node('', 0, 4, '{3,}', [], [
+                new Terminal('', 0, 4, '{3,}', [
                     'matches' => ['{3,}', '', '3', '',]
                 ]),
             ],

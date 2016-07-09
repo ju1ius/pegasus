@@ -6,6 +6,8 @@ use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Expression\OneOrMore;
 use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\Node\Quantifier;
+use ju1ius\Pegasus\Node\Terminal;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class OneOrMoreTest extends ExpressionTestCase
@@ -27,10 +29,10 @@ class OneOrMoreTest extends ExpressionTestCase
             [
                 new Literal('x'),
                 ['xxx'],
-                new Node('+', 0, 3, null, [
-                    new Node('', 0, 1, 'x'),
-                    new Node('', 1, 2, 'x'),
-                    new Node('', 2, 3, 'x'),
+                new Quantifier('+', 0, 3, [
+                    new Terminal('', 0, 1, 'x'),
+                    new Terminal('', 1, 2, 'x'),
+                    new Terminal('', 2, 3, 'x'),
                 ])
             ],
         ];

@@ -4,6 +4,7 @@ namespace ju1ius\Pegasus\Tests\Expression;
 
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\Node\Terminal;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class LiteralTest extends ExpressionTestCase
@@ -24,10 +25,10 @@ class LiteralTest extends ExpressionTestCase
     public function testMatchProvider()
     {
         return [
-            ['foo', ['foo'], new Node('test', 0, 3, 'foo')],
-            ['foo', ['foobar'], new Node('test', 0, 3, 'foo')],
-            ['foo', ['barfoo', 3], new Node('test', 3, 6, 'foo')],
-            ['bar', ['foobarbaz', 3], new Node('test', 3, 6, 'bar')],
+            ['foo', ['foo'], new Terminal('test', 0, 3, 'foo')],
+            ['foo', ['foobar'], new Terminal('test', 0, 3, 'foo')],
+            ['foo', ['barfoo', 3], new Terminal('test', 3, 6, 'foo')],
+            ['bar', ['foobarbaz', 3], new Terminal('test', 3, 6, 'bar')],
         ];
     }
 }

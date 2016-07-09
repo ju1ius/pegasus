@@ -13,6 +13,8 @@ namespace ju1ius\Pegasus\Tests\Expression;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Builder;
 use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\Node\Composite;
+use ju1ius\Pegasus\Node\Terminal;
 use ju1ius\Pegasus\Node\Transient;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
@@ -49,8 +51,8 @@ class SkipTest extends ExpressionTestCase
                     ->skip()->literal(')')
                     ->getGrammar(),
                 ['(foo)'],
-                new Node('start', 0, 5, null, [
-                    new Node('', 1, 4, 'foo')
+                new Composite('start', 0, 5, [
+                    new Terminal('', 1, 4, 'foo')
                 ])
             ],
             'skip choice result at sequence start' => [
@@ -63,8 +65,8 @@ class SkipTest extends ExpressionTestCase
                     ->literal('42')
                     ->getGrammar(),
                 ['$42'],
-                new Node('start', 0, 3, null, [
-                    new Node('', 1, 3, '42')
+                new Composite('start', 0, 3, [
+                    new Terminal('', 1, 3, '42')
                 ])
             ]
         ];

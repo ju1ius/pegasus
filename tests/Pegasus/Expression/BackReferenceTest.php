@@ -4,6 +4,8 @@ namespace ju1ius\Pegasus\Tests\Expression;
 
 use ju1ius\Pegasus\Grammar\Builder;
 use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\Node\Composite;
+use ju1ius\Pegasus\Node\Terminal;
 use ju1ius\Pegasus\Parser\Exception\UndefinedBinding;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
@@ -36,10 +38,10 @@ class BackReferenceTest extends ExpressionTestCase
                         ->backref('a')
                     ->getGrammar(),
                 ['foobarfoo'],
-                new Node('start', 0, 9, null, [
-                    new Node('', 0, 3, 'foo'),
-                    new Node('', 3, 6, 'bar'),
-                    new Node('', 6, 9, 'foo'),
+                new Composite('start', 0, 9, [
+                    new Terminal('', 0, 3, 'foo'),
+                    new Terminal('', 3, 6, 'bar'),
+                    new Terminal('', 6, 9, 'foo'),
                 ])
             ]
         ];
