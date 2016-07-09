@@ -52,17 +52,19 @@ class NamedSequence extends Composite
         $startPos = $parser->pos;
         $children = [];
         foreach ($this->children as $child) {
-            $node = $child->match($text, $parser, $scope);
-            if (!$node) {
+            $result = $child->match($text, $parser, $scope);
+            if (!$result) {
                 $parser->pos = $startPos;
                 return null;
             }
-            if ($node->isTransient) {
+            if ($result === true) {
                 continue;
             }
-            $children[] = $node;
+            $children[] = $result;
         }
 
-        return new Node\Composite($this->label, $startPos, $parser->pos, $children);
+        return $parser->isCapturing
+            ? new Node\Composite($this->label, $startPos, $parser->pos, $children)
+            : true;
     }
 }

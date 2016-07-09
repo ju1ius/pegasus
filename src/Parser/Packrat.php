@@ -78,8 +78,8 @@ class Packrat extends RecursiveDescent
         $this->error->expr = $expr;
         $this->error->rule = $rule;
 
-        if (isset($this->memo[$expr->id][$pos])) {
-            $memo = $this->memo[$expr->id][$pos];
+        if (isset($this->memo[$this->isCapturing][$expr->id][$pos])) {
+            $memo = $this->memo[$this->isCapturing][$expr->id][$pos];
             $this->pos = $memo->end;
 
             return $memo->result;
@@ -90,7 +90,7 @@ class Packrat extends RecursiveDescent
         // This has the effect of making all left-recursive applications
         // (both direct and indirect) fail.
         $memo = new MemoEntry(null, $pos);
-        $this->memo[$expr->id][$pos] = $memo;
+        $this->memo[$this->isCapturing][$expr->id][$pos] = $memo;
         // evaluate expression
         $result = $this->evaluate($expr, $scope);
         // update the result in the memo table
@@ -111,8 +111,8 @@ class Packrat extends RecursiveDescent
      */
     protected function memo(Expression $expr, $startPosition)
     {
-        return isset($this->memo[$expr->id][$startPosition])
-            ? $this->memo[$expr->id][$startPosition]
+        return isset($this->memo[$this->isCapturing][$expr->id][$startPosition])
+            ? $this->memo[$this->isCapturing][$expr->id][$startPosition]
             : null;
     }
 }

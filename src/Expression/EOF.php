@@ -34,7 +34,7 @@ class EOF extends Terminal
     {
         $start = $parser->pos;
         if (!isset($text[$start])) {
-            return new Node\Transient($start, $start);
+            return true;
         }
     }
 

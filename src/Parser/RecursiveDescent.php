@@ -26,6 +26,7 @@ class RecursiveDescent extends Parser
         $this->pos = $pos;
         $this->error = new ParseError($source);
         $this->error->rule = $startRule;
+        $this->isCapturing = true;
 
         //TODO solve the folded problem with scope
         $result = $this->grammar->unfolded(function (Grammar $grammar) use ($startRule, $pos) {

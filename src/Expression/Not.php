@@ -40,10 +40,12 @@ class Not extends Decorator
     public function match($text, Parser $parser, Scope $scope)
     {
         $start = $parser->pos;
-        $node = $this->children[0]->match($text, $parser, $scope);
+        $result = $this->children[0]->match($text, $parser, $scope);
         $parser->pos = $start;
-        if (!$node) {
-            return new Node\Transient($start, $start);
+        if (!$result) {
+            return $parser->isCapturing
+                ? new Node\Transient($start, $start)
+                : true;
         }
     }
 }

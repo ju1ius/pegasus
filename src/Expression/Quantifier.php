@@ -94,14 +94,16 @@ class Quantifier extends Decorator
         $startPos = $parser->pos;
         $results = [];
         $matchCount = 0;
-        while ($node = $expr->match($text, $parser, $scope)) {
-            $results[] = $node;
+        while ($result = $expr->match($text, $parser, $scope)) {
+            $results[] = $result;
             if (++$matchCount === $this->max) {
                 break;
             }
         }
         if ($matchCount >= $this->min) {
-            return new Node\Quantifier($this->name, $startPos, $parser->pos, $results, $this->isOptional());
+            return $parser->isCapturing
+                ? new Node\Quantifier($this->name, $startPos, $parser->pos, $results, $this->isOptional())
+                : true;
         }
         $parser->pos = $startPos;
     }

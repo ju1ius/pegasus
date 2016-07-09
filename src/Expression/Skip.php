@@ -38,9 +38,13 @@ class Skip extends Decorator
 
     public function match($text, Parser $parser, Scope $scope)
     {
-        $startPos = $parser->pos;
-        if ($node = $this->children[0]->match($text, $parser, $scope)) {
-            return new Node\Transient($startPos, $parser->pos);
-        }
+        $capturing = $parser->isCapturing;
+        $parser->isCapturing = false;
+
+        $result = $this->children[0]->match($text, $parser, $scope);
+
+        $parser->isCapturing = $capturing;
+
+        return !!$result;
     }
 }

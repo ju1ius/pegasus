@@ -47,8 +47,10 @@ class OneOf extends Composite
     {
         $start = $parser->pos;
         foreach ($this->children as $child) {
-            if ($node = $child->match($text, $parser, $scope)) {
-                return new Node\Decorator($this->name, $start, $parser->pos, $node);
+            if ($result = $child->match($text, $parser, $scope)) {
+                return $parser->isCapturing
+                    ? new Node\Decorator($this->name, $start, $parser->pos, $result)
+                    : true;
             }
             $parser->pos = $start;
         }

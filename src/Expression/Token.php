@@ -16,14 +16,21 @@ class Token extends Decorator
      */
     public function match($text, Parser $parser, Scope $scope)
     {
+        $capturing = $parser->isCapturing;
+        $parser->isCapturing = false;
+
         $startPos = $parser->pos;
-        if ($node = $this->children[0]->match($text, $parser, $scope)) {
-            return new Node\Terminal(
-                $this->name,
-                $startPos,
-                $parser->pos,
-                substr($text, $startPos, $parser->pos - $startPos)
-            );
+        $result = $this->children[0]->match($text, $parser, $scope);
+
+        $parser->isCapturing = $capturing;
+        if ($result) {
+            return $capturing
+                ? new Node\Terminal(
+                    $this->name,
+                    $startPos,
+                    $parser->pos,
+                    substr($text, $startPos, $parser->pos - $startPos)
+                ) : true;
         }
     }
 

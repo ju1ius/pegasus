@@ -37,7 +37,11 @@ class BackReference extends Terminal
         $length = strlen($pattern);
 
         if ($pattern === substr($text, $start, $length)) {
-            return new Node\Terminal($this->name, $start, $parser->pos += $length, $pattern);
+            $end = $parser->pos += $length;
+
+            return $parser->isCapturing ?
+                new Node\Terminal($this->name, $start, $end, $pattern)
+                : true;
         }
     }
 

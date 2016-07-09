@@ -33,8 +33,6 @@ class Epsilon extends Terminal
 
     public function match($text, Parser $parser, Scope $scope)
     {
-        $start = $parser->pos;
-
-        return new Node\Transient($start, $start);
+        return true;
     }
 }

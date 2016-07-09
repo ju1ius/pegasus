@@ -66,14 +66,12 @@ class RegExp extends Terminal
         $start = $parser->pos;
         if (preg_match($this->compiledPattern, $text, $matches, 0, $start)) {
             $match = $matches[0];
+            $end = $parser->pos += strlen($match);
+            if (!$parser->isCapturing) {
+                return true;
+            }
 
-            return new Node\Terminal(
-                $this->name,
-                $start,
-                $parser->pos += strlen($match),
-                $match,
-                ['matches' => $matches]
-            );
+            return new Node\Terminal($this->name, $start, $end, $match, ['matches' => $matches]);
         }
     }
 }

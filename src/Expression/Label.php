@@ -48,10 +48,10 @@ class Label extends Decorator
     public function match($text, Parser $parser, Scope $scope)
     {
         $start = $parser->pos;
-        if ($node = $this->children[0]->match($text, $parser, $scope)) {
+        if ($result = $this->children[0]->match($text, $parser, $scope)) {
             $scope[$this->label] = substr($text, $start, $parser->pos);
 
-            return $node;
+            return $result;
         }
     }
 }

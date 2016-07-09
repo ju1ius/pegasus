@@ -34,6 +34,11 @@ abstract class Parser
     public $pos = 0;
 
     /**
+     * @var bool
+     */
+    public $isCapturing = true;
+
+    /**
      * @var ParseError
      */
     protected $error;

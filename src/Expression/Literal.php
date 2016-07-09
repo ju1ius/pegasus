@@ -60,7 +60,10 @@ class Literal extends Terminal
     {
         $start = $parser->pos;
         if (substr($text, $start, $this->length) === $this->literal) {
-            return new Node\Terminal($this->name, $start, $parser->pos += $this->length, $this->literal);
+            $end = $parser->pos += $this->length;
+            return $parser->isCapturing
+                ? new Node\Terminal($this->name, $start, $end, $this->literal)
+                : true;
         }
     }
 }
