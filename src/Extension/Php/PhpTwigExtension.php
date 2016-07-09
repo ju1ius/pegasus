@@ -17,38 +17,46 @@ use Twig_SimpleFunction;
 
 class PhpTwigExtension extends Twig_Extension
 {
+    /**
+     * @inheritdoc
+     */
     public function getName()
     {
         return 'pegasus-php';
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getFunctions()
     {
         return [
             new Twig_SimpleFunction('repr', [$this, 'repr']),
             new Twig_SimpleFunction('repr_regexp', [$this, 'reprRegexp']),
-            new Twig_SimpleFunction('result_varname', [$this, 'getResultVar']),
-            new Twig_SimpleFunction('position_varname', [$this, 'getPositionVar']),
+            new Twig_SimpleFunction('result_varname', [$this, 'getResultVariableName']),
+            new Twig_SimpleFunction('position_varname', [$this, 'getPositionVariableName']),
         ];
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getFilters()
     {
         return [
-            new Twig_SimpleFilter('escape_comment', [$this, 'escapeComment']),
+            new Twig_SimpleFilter('escape_comment', [$this, 'escapeBlockComment']),
         ];
     }
 
+    /**
+     * @param mixed $value
+     *
+     * @return string
+     */
     public function repr($value)
     {
         if ($value === null) {
             return 'null';
-        }
-        if (is_bool($value)) {
-            return $value ? 'true' : 'false';
-        }
-        if (is_int($value) || is_float($value)) {
-            return $value;
         }
         if (is_array($value)) {
             $out = '[';
@@ -63,10 +71,18 @@ class PhpTwigExtension extends Twig_Extension
 
             return $out . ']';
         }
+        if ($value instanceof Expression) {
+            $value = (string) $value;
+        }
 
-        return sprintf("'%s'", addcslashes($value, "'"));
+        return var_export($value, true);
     }
 
+    /**
+     * @param string $pattern
+     *
+     * @return string
+     */
     public function reprRegexp($pattern)
     {
         $pattern = str_replace('\\\\', '\\\\\\\\', $pattern);
@@ -74,17 +90,32 @@ class PhpTwigExtension extends Twig_Extension
         return sprintf("'%s'", addcslashes($pattern, "'"));
     }
 
-    public function escapeComment($value)
+    /**
+     * @param string $value
+     *
+     * @return string
+     */
+    public function escapeBlockComment($value)
     {
         return str_replace('*/', '* /', $value);
     }
 
-    public function getResultVar(Expression $expr)
+    /**
+     * @param Expression $expr
+     *
+     * @return string
+     */
+    public function getResultVariableName(Expression $expr)
     {
         return sprintf('$result_%s', $expr->id);
     }
 
-    public function getPositionVar(Expression $expr)
+    /**
+     * @param Expression $expr
+     *
+     * @return string
+     */
+    public function getPositionVariableName(Expression $expr)
     {
         return sprintf('$pos_%s', $expr->id);
     }

@@ -38,6 +38,7 @@ use ju1ius\Pegasus\Grammar;
 /**
  * This class provides a fluent interface for building grammars.
  *
+ * @author ju1ius <ju1ius@laposte.net>
  */
 class Builder
 {
