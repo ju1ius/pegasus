@@ -49,12 +49,24 @@ abstract class Parser
      * @param string      $source
      * @param string|null $startRule
      *
-     * @return Node
+     * @return Node|null
      *
      * @throws IncompleteParseError
      * @throws ParseError if there's no match there
      */
-    abstract public function parseAll($source, $startRule = null);
+    final public function parseAll($source, $startRule = null)
+    {
+        $result = $this->parse($source, 0, $startRule);
+        if ($this->pos < strlen($source)) {
+            throw new IncompleteParseError(
+                $source,
+                $this->pos,
+                $this->error
+            );
+        }
+
+        return $result;
+    }
 
     /**
      * Parse $text starting from position $pos, using start rule $startRule,
@@ -73,7 +85,7 @@ abstract class Parser
     /**
      * Applies Expression $expr at position $pos.
      *
-     * This is called internally by Expression::match to parse sub-expressions.
+     * This is called internally by Expression::match to parse rule references.
      *
      * @internal
      *

@@ -10,7 +10,6 @@
 
 namespace ju1ius\Pegasus\Parser;
 
-use ju1ius\Pegasus\Exception\IncompleteParseError;
 use ju1ius\Pegasus\Exception\ParseError;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar;
@@ -18,23 +17,6 @@ use ju1ius\Pegasus\Node;
 
 class RecursiveDescent extends Parser
 {
-    /**
-     * @inheritdoc
-     */
-    public function parseAll($source, $rule = null)
-    {
-        $result = $this->parse($source, 0, $rule);
-        if ($this->pos < strlen($source)) {
-            throw new IncompleteParseError(
-                $source,
-                $this->pos,
-                $this->error
-            );
-        }
-
-        return $result;
-    }
-
     /**
      * @inheritdoc
      */
