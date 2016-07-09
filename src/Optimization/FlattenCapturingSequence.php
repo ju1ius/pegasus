@@ -12,18 +12,21 @@
 namespace ju1ius\Pegasus\Optimization;
 
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Expression\NamedSequence;
 use ju1ius\Pegasus\Expression\Sequence;
 
 /**
  * Nested sequence expressions can be flattened without affecting how they parse
  * if the nested sequence expressions are not multi-capturing.
- *
  */
 class FlattenCapturingSequence extends FlatteningOptimization
 {
-    public function doAppliesTo(Expression $expr)
+    public function doAppliesTo(Expression $expr, OptimizationContext $context)
     {
-        return $expr instanceof Sequence && parent::doAppliesTo($expr);
+        return parent::doAppliesTo($expr, $context) && (
+            $expr instanceof Sequence
+            || $expr instanceof NamedSequence
+        );
     }
 
     public function isEligibleChild(Expression $child)

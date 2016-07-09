@@ -10,17 +10,16 @@
 
 namespace ju1ius\Pegasus\Parser;
 
-use ju1ius\Pegasus\Exception\ParseError;
 use ju1ius\Pegasus\Exception\IncompleteParseError;
-use ju1ius\Pegasus\Expression\Label;
-use ju1ius\Pegasus\GrammarInterface;
+use ju1ius\Pegasus\Exception\ParseError;
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Node;
 
 class RecursiveDescent implements ParserInterface
 {
     /**
-     * @var GrammarInterface
+     * @var Grammar
      */
     protected $grammar;
 
@@ -39,7 +38,7 @@ class RecursiveDescent implements ParserInterface
      */
     protected $error;
 
-    public function __construct(GrammarInterface $grammar)
+    public function __construct(Grammar $grammar)
     {
         $this->grammar = $grammar;
     }
@@ -61,11 +60,10 @@ class RecursiveDescent implements ParserInterface
     {
         $result = $this->parse($source, 0, $rule);
         if ($this->pos < strlen($source)) {
-            echo $result->inspect(), "\n";
             throw new IncompleteParseError(
                 $source,
                 $this->pos,
-                $this->error->expr
+                $this->error
             );
         }
 
@@ -78,26 +76,25 @@ class RecursiveDescent implements ParserInterface
      *
      * @param string $source
      * @param int    $pos
-     * @param null   $rule
+     * @param string $startRule
      *
      * @return Node|null
      *
      * @throw ParseError if there's no match there
      * @throws null
      */
-    public function parse($source, $pos = 0, $rule = null)
+    public function parse($source, $pos = 0, $startRule = null)
     {
         $this->source = $source;
         $this->pos = $pos;
         $this->error = new ParseError($source);
+        $this->error->rule = $startRule;
 
-        if (!$rule) {
-            $rule = $this->grammar->getStartRule();
-        } else {
-            $rule = $this->grammar[$rule];
-        }
+        $result = $this->grammar->folded(function (Grammar $grammar) use ($startRule, $pos) {
+            $rule = $startRule ? $grammar[$startRule] : $grammar->getStartRule();
 
-        $result = $this->apply($rule, $pos, Scope::void());
+            return $this->apply($rule, $pos, Scope::void());
+        });
 
         if (!$result) {
             throw $this->error;
@@ -120,6 +117,7 @@ class RecursiveDescent implements ParserInterface
 
     public function applyRule($ruleName, $pos, Scope $scope)
     {
+        $this->error->rule = $ruleName;
         return $this->apply($this->grammar[$ruleName], $pos, $scope);
     }
 

@@ -30,12 +30,12 @@ class LeftRecursivePackrat extends Packrat
      */
     protected $lrStack;
 
-    public function parse($source, $pos = 0, $startRule = null)
+    public function parse($source, $pos = 0, $startStartRule = null)
     {
         $this->heads = [];
         $this->lrStack = new \SplStack();
 
-        $result = parent::parse($source, $pos, $startRule);
+        $result = parent::parse($source, $pos, $startStartRule);
 
         unset($this->heads, $this->lrStack);
 

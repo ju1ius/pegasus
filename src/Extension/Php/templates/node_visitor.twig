@@ -7,12 +7,17 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+{% if namespace %}
+namespace {{ namespace }};
+{% endif %}
 
 use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Traverser\DepthFirstNodeTraverser;
+use ju1ius\Pegasus\Traverser\NamedNodeTraverser;
 
-
-class {{ grammar.name }}NodeTraverser extends DepthFirstNodeTraverser
+/**
+ * CST traverser for the `{{ grammar.name }}` grammar.
+ */
+class {{ grammar.name }}NodeTraverser extends NamedNodeTraverser
 {
     /**
      * @inheritDoc
@@ -26,28 +31,34 @@ class {{ grammar.name }}NodeTraverser extends DepthFirstNodeTraverser
      */
     protected function afterTraverse($result)
     {
-        return null;
+        return $result;
     }
 
+{% for expr in grammar %}
     /**
-     * @inheritDoc
-     */
-    public function genericVisit(Node $node, $children)
-    {
-        return $node;
-    }
-    {% for rule in grammar.rules %}
-    /**
-     * Visitor for grammar rule {{ rule.name }}.
+     * Enter visitor for rule: {{ expr.name }} = {{ expr }}.
      *
-     * @param Node  $node       The currently visited node.
-     * @param mixed $children   The result of this node's children visitation.
+     * @todo Implement this method or remove if not used.
+     *
+     * @param Node $node The currently visited node.
+     *
+     * @return void
+     */
+    protected function enter_{{ expr.name }}(Node $node) {}
+
+    /**
+     * Leave visitor for rule: {{ expr.name }} = {{ expr }}.
+     *
+     * @todo Implement this method or remove if not used.
+     *
+     * @param Node  $node           The currently visited node.
+     * @param mixed ...$children    The result of this node's children visitation.
      *
      * @return mixed The result of this node's visitation.
      */
-    public function visit_{{ rule.name }}({{ rule.nodeClass }} $node, $children)
+    protected function leave_{{ expr.name }}(Node $node, ...$children)
     {
-        return $node;
+        return $this->leaveNode($node, $children);
     }
-    {% endfor %}
+{% endfor %}
 }

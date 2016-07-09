@@ -29,15 +29,33 @@ abstract class Compiler
         $this->setupTwigEnvironment();
     }
 
+    /**
+     * @return string[]
+     */
     abstract public function getTemplateDirectories();
 
+    /**
+     * @return string
+     */
     abstract public function getParserClass();
 
+    /**
+     * @return string
+     */
     abstract public function getExtendedParserClass();
 
+    /**
+     * @return string
+     */
     abstract public function getNodeVisitorClass();
 
-    abstract protected function renderParser($outputDirectory, $args);
+    /**
+     * @param $outputDirectory
+     * @param array $args
+     *
+     * @return string
+     */
+    abstract protected function renderParser($outputDirectory, array $args = []);
 
     /**
      * @return Twig_Environment
@@ -48,7 +66,7 @@ abstract class Compiler
     }
 
     /**
-     * @return array
+     * @return \Twig_Extension[]
      */
     public function getTwigExtensions()
     {
@@ -60,13 +78,13 @@ abstract class Compiler
      * @param string $outputDirectory
      * @param array  $args
      */
-    public function compileFile($path, $outputDirectory = '', $args = [])
+    public function compileFile($path, $outputDirectory = '', array $args = [])
     {
         if (!$outputDirectory) {
             $outputDirectory = dirname($path);
         }
         if (empty($args['name'])) {
-            $args['name'] = explode('.', basename($path))[0];
+            $args['name'] = ucfirst(explode('.', basename($path))[0]);
         }
         $syntax = file_get_contents($path);
         $this->compileSyntax($syntax, $outputDirectory, $args);
@@ -77,12 +95,12 @@ abstract class Compiler
      * @param string $outputDirectory
      * @param array  $args
      */
-    public function compileSyntax($syntax, $outputDirectory, $args = [])
+    public function compileSyntax($syntax, $outputDirectory, array $args = [])
     {
         $grammar = Grammar::fromSyntax($syntax);
         $name = $grammar->getName();
         if ($name) {
-            $args['class'] = $name;
+            $args['class'] = ucfirst($name);
         } else {
             if (empty($args['name'])) {
                 throw new \InvalidArgumentException(
@@ -101,7 +119,7 @@ abstract class Compiler
      * @param string  $outputDirectory
      * @param array   $args
      */
-    public function compileGrammar(Grammar $grammar, $outputDirectory, $args = [])
+    public function compileGrammar(Grammar $grammar, $outputDirectory, array $args = [])
     {
         $args['grammar'] = $grammar;
         $args['base_class'] = $this->getParserClass();
@@ -139,23 +157,10 @@ abstract class Compiler
         return $tpl->render($args);
     }
 
-    protected static function getExpressionTemplate($expr)
-    {
-        $class = strtolower(str_replace('ju1ius\Pegasus\Expression\\', '', get_class($expr)));
-        switch ($class) {
-            case 'zeroormore':
-            case 'oneormore':
-            case 'optional':
-                return 'expression/quantifier.twig';
-            default:
-                return "expression/{$class}.twig";
-        }
-    }
-
     protected function setupTwigEnvironment()
     {
         $loader = new Twig_Loader_Filesystem($this->getTemplateDirectories());
-    $this->twig = new Twig_Environment($loader, [
+        $this->twig = new Twig_Environment($loader, [
             'autoescape' => false,
             'debug' => true,
         ]);
@@ -172,10 +177,10 @@ abstract class Compiler
     /**
      * Override this to add optimizations
      *
-     * @param GrammarInterface $grammar
-     * @param Analysis         $analysis
+     * @param Grammar  $grammar
+     * @param Analysis $analysis
      */
-    protected function optimizeGrammar(GrammarInterface $grammar, Analysis $analysis)
+    protected function optimizeGrammar(Grammar $grammar, Analysis $analysis)
     {
         //
     }

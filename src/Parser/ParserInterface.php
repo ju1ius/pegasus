@@ -20,11 +20,11 @@ interface ParserInterface
      *
      * @param string $text
      * @param int    $pos
-     * @param string $startRule
+     * @param string $startStartRule
      *
      * @return Node|null
      */
-    public function parse($text, $pos = 0, $startRule = null);
+    public function parse($text, $pos = 0, $startStartRule = null);
 
     /**
      * Applies Expression $expr at position $pos.

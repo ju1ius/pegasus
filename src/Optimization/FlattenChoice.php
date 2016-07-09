@@ -16,9 +16,9 @@ use ju1ius\Pegasus\Expression\OneOf;
 
 class FlattenChoice extends FlatteningOptimization
 {
-    protected function doAppliesTo(Expression $expr)
+    protected function doAppliesTo(Expression $expr, OptimizationContext $context)
     {
-        return $expr instanceof OneOf && parent::doAppliesTo($expr);
+        return $expr instanceof OneOf && parent::doAppliesTo($expr, $context);
     }
 
     public function isEligibleChild(Expression $child)

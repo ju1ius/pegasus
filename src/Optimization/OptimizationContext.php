@@ -10,62 +10,153 @@
 
 namespace ju1ius\Pegasus\Optimization;
 
+use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Analysis;
 
-class OptimizationContext
+/**
+ * Provides contextual information to optimizations.
+ *
+ * @author ju1ius <ju1ius@laposte.net>
+ */
+final class OptimizationContext
 {
     const TYPE_MATCHING = 1;
     const TYPE_CAPTURING = 2;
 
-    protected static $cache = [];
+    /**
+     * Instance cache.
+     *
+     * @var OptimizationContext[]
+     */
+    private static $cache = [];
 
-    public static function create(Grammar $grammar, $type = self::TYPE_CAPTURING)
-    {
-        //FIXME is this really needed ?
-        $key = md5(serialize([spl_object_hash($grammar), $type]));
-        if (!isset(self::$cache[$key])) {
-            $ctx = new OptimizationContext($grammar, $type);
-            self::$cache[$key] = $ctx;
-        }
+    /**
+     * @var Grammar
+     */
+    private $grammar;
 
-        return self::$cache[$key];
-    }
+    /**
+     * @var int
+     */
+    private $type;
 
-    public function __construct(Grammar $grammar, $type = self::TYPE_CAPTURING)
+    /**
+     * @var Analysis
+     */
+    private $analysis;
+
+    /**
+     * @param Grammar $grammar
+     * @param int     $type
+     */
+    private function __construct(Grammar $grammar, $type = self::TYPE_CAPTURING)
     {
         $this->grammar = $grammar;
         $this->type = $type;
         $this->analysis = new Analysis($grammar);
     }
 
-    public function isRelevantRule($expr)
+    /**
+     * @param Grammar $grammar
+     * @param int     $type
+     *
+     * @return OptimizationContext
+     */
+    public static function create(Grammar $grammar, $type = self::TYPE_CAPTURING)
     {
-        return $this->analysis->isReferenced($expr->name);
+        return new self($grammar, $type);
+        $key = sprintf('%s::%s', spl_object_hash($grammar), $type);
+        if (!isset(self::$cache[$key])) {
+            $ctx = new self($grammar, $type);
+            self::$cache[$key] = $ctx;
+        }
+
+        return self::$cache[$key];
     }
 
-    public function isInlineableRule($expr)
+    /**
+     * Returns a new matching context for the grammar.
+     *
+     * @return OptimizationContext
+     */
+    public function matching()
     {
-        return $this->analysis->isRegular($expr->name);
+        return self::create($this->grammar, self::TYPE_MATCHING);
     }
 
-    public function getStartRule()
+    /**
+     * Returns a new capturing context for the grammar.
+     *
+     * @return OptimizationContext
+     */
+    public function capturing()
     {
-        return $this->grammar->getStartRule()->name;
+        return self::create($this->grammar, self::TYPE_CAPTURING);
     }
 
-    public function getAnalysis()
-    {
-        return $this->analysis;
-    }
-
+    /**
+     * @return bool
+     */
     public function isCapturing()
     {
         return $this->type === self::TYPE_CAPTURING;
     }
 
+    /**
+     * @return bool
+     */
     public function isMatching()
     {
         return $this->type === self::TYPE_MATCHING;
+    }
+
+    /**
+     * @return Analysis
+     */
+    public function getAnalysis()
+    {
+        return $this->analysis;
+    }
+
+    /**
+     * @param string $ruleName
+     *
+     * @return Expression
+     * @throws Grammar\Exception\RuleNotFound If rule was not found in the grammar
+     */
+    public function getRule($ruleName)
+    {
+        return $this->grammar[$ruleName];
+    }
+
+    /**
+     * @return string
+     * @throws \ju1ius\Pegasus\Grammar\Exception\MissingStartRule
+     */
+    public function getStartRule()
+    {
+        return $this->grammar->getStartRule()->name;
+    }
+
+    /**
+     * @param string $ruleName
+     *
+     * @return bool
+     */
+    public function isRelevantRule($ruleName)
+    {
+        return $this->analysis->isReferenced($ruleName);
+    }
+
+    /**
+     * @param string $ruleName
+     *
+     * @return bool
+     */
+    public function isInlineableRule($ruleName)
+    {
+        return $this->grammar->isInlined($ruleName)
+            && $this->analysis->isRegular($ruleName);
     }
 }

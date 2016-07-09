@@ -3,14 +3,14 @@ require_once __DIR__.'/../../../vendor/autoload.php';
 
 use ju1ius\Pegasus\Grammar\Builder;
 use ju1ius\Pegasus\Parser;
-use ju1ius\Pegasus\Traverser\DepthFirstNodeTraverser;
+use ju1ius\Pegasus\Traverser\NamedNodeTraverser;
 
 $syntax = <<<'EOS'
 xs  <- xs "x"
     | "x"
 EOS;
 
-class XXXTraverser extends DepthFirstNodeTraverser
+class XXXTraverser extends NamedNodeTraverser
 {
     public function visit_x($node, $children)
     {

@@ -4,9 +4,9 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Node\Composite;
 use ju1ius\Pegasus\Parser\Packrat as Parser;
-use ju1ius\Pegasus\Traverser\DepthFirstNodeTraverser;
+use ju1ius\Pegasus\Traverser\NamedNodeTraverser;
 
-class IniFileTraverser extends DepthFirstNodeTraverser
+class IniFileTraverser extends NamedNodeTraverser
 {
     public function visit_config($node, $children)
     {
@@ -35,7 +35,7 @@ class IniFileTraverser extends DepthFirstNodeTraverser
         return $props;
     }
 
-    public function genericVisit($node, $children)
+    public function leaveNode($node, $children)
     {
         if ($node instanceof Composite) {
             return $children

@@ -24,15 +24,15 @@ class Label extends Decorator
 {
     public $label;
 
-    public function __construct($children, $label)
+    public function __construct($child, $label)
     {
-        parent::__construct($children);
+        parent::__construct($child);
         $this->label = $label;
     }
 
     public function __toString()
     {
-        return sprintf('%s:(%s)', $this->label, $this->stringMembers());
+        return sprintf('%s:(%s)', $this->label, $this->stringChildren());
     }
 
     public function isCapturing()

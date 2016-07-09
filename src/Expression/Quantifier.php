@@ -10,6 +10,7 @@
 
 namespace ju1ius\Pegasus\Expression;
 
+use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Parser\ParserInterface;
 use ju1ius\Pegasus\Parser\Scope;
@@ -19,10 +20,25 @@ use ju1ius\Pegasus\Parser\Scope;
  */
 class Quantifier extends Decorator
 {
+    /**
+     * @var int
+     */
     public $min;
+
+    /**
+     * @var int
+     */
     public $max;
 
-    public function __construct(array $children, $min, $max, $name = '')
+    /**
+     * Quantifier constructor.
+     *
+     * @param Expression|null $child
+     * @param int             $min
+     * @param int             $max
+     * @param string          $name
+     */
+    public function __construct(Expression $child = null, $min, $max, $name = '')
     {
         $this->min = abs((int)$min);
         if ($max < $min) {
@@ -30,7 +46,8 @@ class Quantifier extends Decorator
         }
         $this->max = $max === INF ? $max : (int)$max;
 
-        parent::__construct($children, $name);
+        parent::__construct($child, $name);
+    }
 
     /**
      * @return bool
@@ -65,7 +82,7 @@ class Quantifier extends Decorator
     {
         return sprintf(
             '(%s){%s,%s}',
-            $this->stringMembers(),
+            $this->stringChildren(),
             $this->min,
             $this->max === INF ? '' : $this->max
         );

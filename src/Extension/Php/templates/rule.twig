@@ -1,12 +1,14 @@
-{% set result_var = '$result_' ~ expr.id %}
+{% set result_var = result_varname(expr) %}
 /**
- * Matching rule: {{ expr.name }} <- {{ expr }}
+ * Matching rule: {{ expr.name }} = {{ expr|escape_comment }}
+ *
+ * @return Node|null
  */
 public function match_{{ expr.name }}()
 {
+    $scope = [];
+    $this->error->rule = '{{ expr.name }}';
     {{ result_var }} = null;
-{% filter indent -%}
-{% include expr_tpl(expr) with {expr: expr} only %}
-{%- endfilter %}
+    {{ render_expr(expr)|indent }}
     return {{ result_var }};
 }

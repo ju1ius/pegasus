@@ -42,52 +42,28 @@ class RegExp extends Terminal
      */
     public $compiledFlags;
 
-    /**
-     * @var boolean
-     */
-    public $hasBackReference = false;
-
-    /**
-     * @var array
-     */
-    public $subjectParts = [];
-
     public function __construct($pattern, array $flags = [], $name = '')
     {
         parent::__construct($name);
         $this->pattern = $pattern;
-        $this->flags = array_unique(array_merge($flags, ['S', 'x']));
+        $this->flags = $flags;
 
-        $this->compiledFlags = implode('', $this->flags);
+        $this->compiledFlags = array_unique(array_merge($flags, ['S', 'x']));
         $this->compiledPattern = sprintf(
             '/\G%s/%s',
             $this->pattern,
-            $this->compiledFlags
+            implode('', $this->compiledFlags)
         );
-        // check for backreferences
-        $parts = StringUtil::splitBackReferenceSubject($this->pattern);
-        if ($parts) {
-            $this->hasBackReference = true;
-            $this->subjectParts = $parts;
-        }
     }
 
     public function __toString()
     {
-        return $this->compiledPattern;
+        return sprintf('/%s/%s', $this->pattern, implode('', $this->flags));
     }
 
     public function match($text, $pos, ParserInterface $parser, Scope $scope)
     {
-        if ($this->hasBackReference) {
-            $backRef = StringUtil::replaceBackReferenceSubject($this->subjectParts, function ($label) use ($scope) {
-                return $scope[$label];
-            }, true);
-            $pattern = '/\G' . $backRef . '/' . $this->compiledFlags;
-        } else {
-            $pattern = $this->compiledPattern;
-        }
-        if (preg_match($pattern, $text, $matches, 0, $pos)) {
+        if (preg_match($this->compiledPattern, $text, $matches, 0, $pos)) {
             $match = $matches[0];
             $length = strlen($match);
             $node = new Node\Terminal($this->name, $pos, $pos + $length, $match, ['matches' => $matches]);

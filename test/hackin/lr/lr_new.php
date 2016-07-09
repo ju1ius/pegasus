@@ -56,7 +56,7 @@ $g1 = Grammar\Builder::create()
         ->ref('expr')
         ->literal(')')
     ->rule('number')
-        ->regex('[0-9]+')
+        ->match('[0-9]+')
     ->getGrammar();
 
 

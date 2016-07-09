@@ -51,11 +51,10 @@ class RecursiveDescent implements ParserInterface
     {
         $result = $this->parse($text, 0, $startRule);
         if ($this->pos < strlen($text)) {
-            //echo $result->inspect(), "\n";
             throw new IncompleteParseError(
                 $text,
                 $this->pos,
-                $this->error->expr
+                $this->error
             );
         }
 

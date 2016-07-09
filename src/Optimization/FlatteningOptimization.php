@@ -10,7 +10,7 @@ use ju1ius\Pegasus\Expression\Composite;
  */
 abstract class FlatteningOptimization extends Optimization
 {
-    protected function doAppliesTo(Expression $expr)
+    protected function doAppliesTo(Expression $expr, OptimizationContext $context)
     {
         if (!$expr instanceof Composite) {
             return false;
@@ -24,9 +24,11 @@ abstract class FlatteningOptimization extends Optimization
     /**
      * @param Expression|Composite $expr
      *
+     * @param OptimizationContext  $context
+     *
      * @return Composite
      */
-    protected function doApply(Expression $expr)
+    protected function doApply(Expression $expr, OptimizationContext $context)
     {
         $children = [];
         foreach ($expr as $child) {
@@ -37,9 +39,8 @@ abstract class FlatteningOptimization extends Optimization
                 $children[] = $child;
             }
         }
-        $class = get_class($expr);
 
-        return new $class($children, $expr->name);
+        return $expr->withChildren(...$children);
     }
 
     abstract protected function isEligibleChild(Expression $child);

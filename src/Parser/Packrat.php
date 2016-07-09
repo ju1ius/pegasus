@@ -37,16 +37,16 @@ class Packrat extends RecursiveDescent
      *
      * @param string $source
      * @param int    $pos
-     * @param null   $rule
+     * @param null   $startRule
      *
      * @return Node|null
      * @throws \ju1ius\Pegasus\Exception\ParseError
      */
-    public function parse($source, $pos = 0, $rule = null)
+    public function parse($source, $pos = 0, $startRule = null)
     {
         $this->memo = [];
 
-        $result = parent::parse($source, $pos, $rule);
+        $result = parent::parse($source, $pos, $startRule);
 
         $this->memo = [];
 

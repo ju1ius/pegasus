@@ -12,6 +12,7 @@
 namespace ju1ius\Pegasus\Optimization;
 
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Expression\NamedSequence;
 use ju1ius\Pegasus\Expression\Sequence;
 
 /**
@@ -19,9 +20,12 @@ use ju1ius\Pegasus\Expression\Sequence;
  */
 class FlattenMatchingSequence extends FlatteningOptimization
 {
-    public function doAppliesTo(Expression $expr)
+    public function doAppliesTo(Expression $expr, OptimizationContext $context)
     {
-        return $expr instanceof Sequence && parent::doAppliesTo($expr);
+        return parent::doAppliesTo($expr, $context) && (
+            $expr instanceof Sequence
+            || $expr instanceof NamedSequence
+        );
     }
 
     public function isEligibleChild(Expression $child)

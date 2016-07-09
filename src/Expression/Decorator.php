@@ -10,6 +10,8 @@
 
 namespace ju1ius\Pegasus\Expression;
 
+use ju1ius\Pegasus\Expression;
+
 /**
  * A composite expression which contains only one sub-expression.
  * ATM it does nothing more than Composite, and is here only for easier type-checking in visitors.
@@ -17,9 +19,18 @@ namespace ju1ius\Pegasus\Expression;
  */
 abstract class Decorator extends Composite
 {
-    public function stringMembers()
+    /**
+     * @param Expression $child
+     * @param string     $name
+     */
+    public function __construct(Expression $child = null, $name = '')
     {
-        return parent::stringMembers()[0];
+        parent::__construct($child ? [$child] : [], $name);
+    }
+
+    public function stringChildren()
+    {
+        return parent::stringChildren()[0];
     }
 
     public function offsetSet($offset, $value)

@@ -5,6 +5,8 @@ namespace ju1ius\Pegasus\Tests\Optimization;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Expression\OneOf;
+use ju1ius\Pegasus\Grammar;
+use ju1ius\Pegasus\Grammar\Builder;
 use ju1ius\Pegasus\Optimization\FlattenChoice;
 
 class FlattenChoiceTest extends OptimizationTestCase
@@ -12,12 +14,12 @@ class FlattenChoiceTest extends OptimizationTestCase
     /**
      * @dataProvider testApplyProvider
      *
-     * @param Expression $input
+     * @param Grammar    $grammar
      * @param Expression $expected
      */
-    public function testApply(Expression $input, Expression $expected)
+    public function testApply(Grammar $grammar, Expression $expected)
     {
-        $result = $this->applyOptimization(new FlattenChoice(), $input);
+        $result = $this->applyOptimization(new FlattenChoice(), $grammar);
         $this->assertExpressionEquals($expected, $result);
         $this->assertEquals((string)$expected, (string)$result);
     }
@@ -25,42 +27,40 @@ class FlattenChoiceTest extends OptimizationTestCase
     public function testApplyProvider()
     {
         return [
-            // (("foo" | "bar") | "baz") | "w00t" => "foo" | "bar" | "baz" | "w00t"
-            [
-                new OneOf([
-                    new OneOf([
-                        new OneOf([
-                            new Literal('foo'),
-                            new Literal('bar'),
-                        ]),
-                        new Literal('baz')
-                    ]),
-                    new Literal('w00t')
-                ], 'test'),
+            '(("foo" | "bar") | "baz") | "qux" => "foo" | "bar" | "baz" | "qux"' => [
+                Builder::create()->rule('test')->oneOf()
+                    ->oneOf()
+                        ->oneOf()
+                            ->literal('foo')
+                            ->literal('bar')
+                        ->end()
+                        ->literal('baz')
+                    ->end()
+                    ->literal('qux')
+                ->getGrammar(),
                 new OneOf([
                     new Literal('foo'),
                     new Literal('bar'),
                     new Literal('baz'),
-                    new Literal('w00t')
+                    new Literal('qux'),
                 ], 'test')
             ],
-            // "foo" | ("bar" | ("baz" | "w00t")) => "foo" | "bar" | "baz" | "w00t"
-            [
-                new OneOf([
-                    new Literal('foo'),
-                    new OneOf([
-                        new Literal('bar'),
-                        new OneOf([
-                            new Literal('baz'),
-                            new Literal('w00t'),
-                        ]),
-                    ]),
-                ], 'test'),
+            '"foo" | ("bar" | ("baz" | "qux")) => "foo" | "bar" | "baz" | "qux"' => [
+                Builder::create()->rule('test')->oneOf()
+                    ->literal('foo')
+                    ->oneOf()
+                        ->literal('bar')
+                        ->oneOf()
+                            ->literal('baz')
+                            ->literal('qux')
+                        ->end()
+                    ->end()
+                ->getGrammar(),
                 new OneOf([
                     new Literal('foo'),
                     new Literal('bar'),
                     new Literal('baz'),
-                    new Literal('w00t')
+                    new Literal('qux')
                 ], 'test')
             ],
         ];

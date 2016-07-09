@@ -25,7 +25,7 @@ class OneOf extends Composite
 {
     public function __toString()
     {
-        return implode(' | ', $this->stringMembers());
+        return implode(' | ', $this->stringChildren());
     }
 
     public function isCapturingDecidable()

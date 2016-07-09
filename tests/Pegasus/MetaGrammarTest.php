@@ -11,7 +11,7 @@ class MetaGrammarTest extends PegasusTestCase
     /**
      * @var LeftRecursivePackrat
      */
-    protected static $parser;
+    private static $parser;
 
     public static function setUpBeforeClass()
     {
@@ -19,9 +19,9 @@ class MetaGrammarTest extends PegasusTestCase
         self::$parser = new LeftRecursivePackrat($grammar);
     }
 
-    protected function parse($rule_name, $text, $pos = 0)
+    private function parse($ruleName, $text, $pos = 0)
     {
-        return self::$parser->parse($text, $pos, $rule_name);
+        return self::$parser->parse($text, $pos, $ruleName);
     }
 
     /**
@@ -51,9 +51,9 @@ class MetaGrammarTest extends PegasusTestCase
 
     /**
      * @depends      testComment
-     * @dataProvider test_Provider
+     * @dataProvider testWSProvider
      */
-    public function test_($input, $expected)
+    public function testWS($input, $expected)
     {
         $node = $this->parse('_', $input);
         $this->assertEquals(
@@ -61,8 +61,7 @@ class MetaGrammarTest extends PegasusTestCase
             $node->getText($input)
         );
     }
-
-    public function test_Provider()
+    public function testWSProvider()
     {
         return [
             [
@@ -77,7 +76,7 @@ class MetaGrammarTest extends PegasusTestCase
     }
 
     /**
-     * @depends      test_
+     * @depends      testWS
      * @dataProvider testIdentifierProvider
      */
     public function testIdentifier($input, $expected)
@@ -166,19 +165,15 @@ class MetaGrammarTest extends PegasusTestCase
         return [
             'double-quoted with escaped quote' => [
                 '"qstring\"esc"',
-                new Node('', 0, 14, '"qstring\"esc"', [], ['matches' => [
-                    '"qstring\"esc"',
-                    '"',
-                    'qstring\"esc',
-                ]]),
+                new Node('', 0, 14, '"qstring\"esc"', [], [
+                    'matches' => ['"qstring\"esc"', '"', 'qstring\"esc']
+                ]),
             ],
             'single-quoted with escaped quote' => [
                 "'qstring\'esc'",
-                new Node('', 0, 14, "'qstring\'esc'", [], ['matches' => [
-                    "'qstring\'esc'",
-                    "'",
-                    "qstring\'esc",
-                ]]),
+                new Node('', 0, 14, "'qstring\'esc'", [], [
+                    'matches' => ["'qstring\'esc'", "'", "qstring\'esc"]
+                ]),
             ],
         ];
     }
@@ -199,42 +194,33 @@ class MetaGrammarTest extends PegasusTestCase
         return [
             [
                 '*',
-                new Node('', 0, 1, '*', [], ['matches' => [
-                    '*',
-                    '*',
-                ]]),
+                new Node('', 0, 1, '*', [], [
+                    'matches' => ['*', '*',]
+                ]),
             ],
             [
                 '+',
-                new Node('', 0, 1, '+', [], ['matches' => [
-                    '+',
-                    '+',
-                ]]),
+                new Node('', 0, 1, '+', [], [
+                    'matches' => ['+', '+',]
+                ]),
             ],
             [
                 '?',
-                new Node('', 0, 1, '?', [], ['matches' => [
-                    '?',
-                    '?',
-                ]]),
+                new Node('', 0, 1, '?', [], [
+                    'matches' => ['?', '?',]
+                ]),
             ],
             [
                 '{1,2}',
-                new Node('', 0, 5, '{1,2}', [], ['matches' => [
-                    '{1,2}',
-                    '',
-                    '1',
-                    '2',
-                ]]),
+                new Node('', 0, 5, '{1,2}', [], [
+                    'matches' => ['{1,2}', '', '1', '2',]
+                ]),
             ],
             [
                 '{3,}',
-                new Node('', 0, 4, '{3,}', [], ['matches' => [
-                    '{3,}',
-                    '',
-                    '3',
-                    '',
-                ]]),
+                new Node('', 0, 4, '{3,}', [], [
+                    'matches' => ['{3,}', '', '3', '',]
+                ]),
             ],
         ];
     }
@@ -253,14 +239,14 @@ class MetaGrammarTest extends PegasusTestCase
     }
 
     /**
-     * @dataProvider testRegexProvider
+     * @dataProvider testRegExpProvider
      */
-    public function testRegex($input, $expected)
+    public function testRegExp($input, $expected)
     {
         $this->markTestIncomplete('Test not implemented');
     }
 
-    public function testRegexProvider()
+    public function testRegExpProvider()
     {
         return [[null, null]];
     }
@@ -335,12 +321,15 @@ class MetaGrammarTest extends PegasusTestCase
      */
     public function testSequence($input, $expected)
     {
-        $this->markTestIncomplete('Test not implemented');
+        $node = $this->parse('terms', $input);
+        $this->assertEquals($expected, $node->getText($input));
     }
 
     public function testSequenceProvider()
     {
-        return [[null, null]];
+        return [
+            ['foo bar baz', 'foo bar baz']
+        ];
     }
 
     /**

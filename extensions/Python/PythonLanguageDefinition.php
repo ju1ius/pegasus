@@ -37,6 +37,6 @@ class PythonLanguageDefinition extends LanguageDefinition
 
     public function getNodeVisitorClass()
     {
-        return 'pegasus.visitors.DepthFirstNodeTraverser';
+        return 'pegasus.visitors.NamedNodeTraverser';
     }
 }

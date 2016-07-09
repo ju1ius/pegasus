@@ -8,7 +8,6 @@
  * file that was distributed with this source code.
  */
 
-
 namespace ju1ius\Pegasus\Expression;
 
 use ju1ius\Pegasus\Expression;
@@ -32,8 +31,8 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
      *
      * Subclasses MUST always respect this constructor parameter order.
      *
-     * @param Expression[]  $children
-     * @param string $name
+     * @param Expression[] $children
+     * @param string       $name
      */
     public function __construct(array $children = [], $name = '')
     {
@@ -90,19 +89,18 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
     }
 
     /**
-     * Return an of string represented children,
-     * stopping descent when we hit a named node so the returned value
-     * resembles the input rule.
+     * Returns a cloned instance with the given children.
      *
+     * @param Expression[] ...$children
+     *
+     * @return static
      */
-    protected function stringMembers()
+    public function withChildren(Expression ...$children)
     {
-        return array_map(function(Expression $child) {
-            if ($child instanceof Reference) {
-                return $child->asRightHandSide();
-            }
-            return $child->name ?: $child->__toString();
-        }, $this->children);
+        $cloned = clone $this;
+        $cloned->children = [];
+
+        return $cloned->push(...$children);
     }
 
     //
@@ -127,16 +125,16 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
     /**
      * @param callable $f
      *
-     * @return $this
+     * @return static
      */
     public function map(callable $f)
     {
-        $children = [];
+        $cloned = clone $this;
         foreach ($this->children as $i => $child) {
-            $children[] = $f($child, $i);
+            $cloned[$i] = $f($child, $i);
         }
 
-        return new static($children, $this->name);
+        return $cloned;
     }
 
     /**
@@ -187,6 +185,7 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
 
     /**
      * @param int $offset
+     *
      * @return Expression
      */
     public function offsetGet($offset)
@@ -215,7 +214,7 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
                 'Value passed to `%s` should be instance of `%s`, `%s` given.',
                 __METHOD__,
                 Expression::class,
-                get_class($value)
+                is_object($value) ? get_class($value) : gettype($value)
             ));
         }
 
@@ -252,5 +251,16 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
     public function getIterator()
     {
         return new \ArrayIterator($this->children);
+    }
+
+
+    /**
+     * Return an array of string representations of this expression's children.
+     *
+     * @return string[]
+     */
+    protected function stringChildren()
+    {
+        return array_map('strval', $this->children);
     }
 }

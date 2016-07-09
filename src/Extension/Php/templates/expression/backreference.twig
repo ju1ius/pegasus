@@ -1,0 +1,10 @@
+{% set result_var = result_varname(expr) %}
+// BackReference: {{ expr }}
+$backref = $scope['{{ expr.identifier }}'];
+$length = strlen($backref);
+if ($backref === $value = substr($this->text, $this->pos, $length)) {
+    {{ result_var }} = new Node\Terminal('{{ expr.name }}', $this->pos, $this->pos + $length, $value);
+    $this->pos = {{ result_var }}->end;
+} else {
+    {{ macros.error(expr)|indent }}
+}

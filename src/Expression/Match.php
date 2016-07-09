@@ -35,15 +35,21 @@ class Match extends Terminal
     public $compiledPattern;
 
     /**
+     * @var string
+     */
+    public $compiledFlags;
+
+    /**
      * @inheritDoc
      */
     public function __construct($pattern, array $flags = [], $name = '')
     {
         parent::__construct($name);
         $this->pattern = $pattern;
-        $this->flags = array_unique(array_merge($flags, ['S', 'x']));
+        $this->flags = $flags;
 
         $this->compiledPattern = $this->compilePattern();
+        $this->compiledFlags = implode('', array_unique(array_merge($flags, ['S', 'x'])));
     }
 
     /**

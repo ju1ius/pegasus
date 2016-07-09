@@ -15,6 +15,7 @@ use ju1ius\Pegasus\Grammar\Builder;
 use ju1ius\Pegasus\Grammar\Exception\AnonymousTopLevelExpression;
 use ju1ius\Pegasus\Grammar\Exception\MissingStartRule;
 use ju1ius\Pegasus\Grammar\Exception\RuleNotFound;
+use ju1ius\Pegasus\Grammar\Optimizer;
 use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
 use ju1ius\Pegasus\Traverser\GrammarTraverser;
 use ju1ius\Pegasus\Visitor\GrammarVisitor;
@@ -23,41 +24,24 @@ use ju1ius\Pegasus\Traverser\MetaGrammarTraverser;
 /**
  * A collection of expressions that describe a language.
  *
- * <code>
- * use ju1ius\Pegasus\Grammar;
- * use ju1ius\Pegasus\Parser\Packrat as Parser;
- * // or if the grammar is left-recursive:
- * // use ju1ius\Pegasus\Parser\LeftRecursivePackrat as Parser
- *
- * $syntax = <<<'EOS'
- * polite_greeting = greeting ", my good sir"
- * greeting = Hi / Hello
- * EOS;
- *
- * $grammar = Grammar::fromSyntax($syntax);
- * $parse_tree = (new Parser($grammar))->parseAll('Hello, my good sir');
- * </code>
- *
- * Or start parsing from any of the other expressions.
- *
- * <code>
- * $parse_tree = (new Parser($grammar))->parseAll('Hi', 'greeting');
- * </code>
- *
- * You can also just construct a bunch of Expression objects yourself
- * and stitch them together into a language by using:
- * <code>
- * Grammar::fromExpression($my_expression);
- * </code>
- * But using a Grammar has some important advantages:
- *
+ * @author ju1ius <ju1ius@laposte.net>
  */
-class Grammar implements GrammarInterface
+class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
 {
     /**
      * @var Expression[] The rules used by this Grammar.
      */
     protected $rules = [];
+
+    /**
+     * @var string[]
+     */
+    protected $inlinedRules = [];
+
+    /**
+     * @var array
+     */
+    public $actions = [];
 
     /**
      * @var string The start rule of the grammar.
@@ -67,12 +51,16 @@ class Grammar implements GrammarInterface
     /**
      * @var bool True if the grammar is in folded state.
      */
-    protected $folded = true;
+    protected $folded = false;
 
     /**
      * @var string The name of the grammar
      */
     protected $name = '';
+
+    //
+    // Factory methods
+    // --------------------------------------------------------------------------------------------------------------
 
     /**
      * Factory method that constructs a Grammar object from an associative array of rules.
@@ -112,7 +100,7 @@ class Grammar implements GrammarInterface
             $grammar->setStartRule($startRule);
         }
 
-        return $grammar->unfold();
+        return $grammar->optimize();
     }
 
     /**
@@ -140,7 +128,9 @@ class Grammar implements GrammarInterface
     }
 
     /**
-     * @inheritDoc
+     * Get the grammar's name.
+     *
+     * @return string
      */
     public function getName()
     {
@@ -148,7 +138,11 @@ class Grammar implements GrammarInterface
     }
 
     /**
-     * @inheritDoc
+     * Set the grammar's name.
+     *
+     * @param string $name
+     *
+     * @return $this
      */
     public function setName($name)
     {
@@ -168,7 +162,9 @@ class Grammar implements GrammarInterface
     }
 
     /**
-     * @inheritDoc
+     * Returns the rules for this grammar, as a mapping from rule names to Expression objects.
+     *
+     * @return Expression[]
      */
     public function getRules()
     {
@@ -176,7 +172,12 @@ class Grammar implements GrammarInterface
     }
 
     /**
-     * @inheritDoc
+     * Sets the default start rule for this grammar.
+     *
+     * @param string $name The name of the rule to use as start rule.
+     *
+     * @return $this
+     * @throws RuleNotFound If the rule wasn't found in the grammar.
      */
     public function setStartRule($name)
     {
@@ -189,7 +190,10 @@ class Grammar implements GrammarInterface
     }
 
     /**
-     * @inheritDoc
+     * Returns the start rule of this grammar.
+     *
+     * @return Expression
+     * @throws MissingStartRule If no start rule was found.
      */
     public function getStartRule()
     {
@@ -201,7 +205,34 @@ class Grammar implements GrammarInterface
     }
 
     /**
-     * @inheritDoc
+     * Mark given rule names as inlineable.
+     *
+     * @param string[] ...$ruleNames
+     *
+     * @return $this
+     */
+    public function inline(...$ruleNames)
+    {
+        foreach ($ruleNames as $ruleName) {
+            $this->inlinedRules[$ruleName] = true;
+        }
+
+        return $this;
+    }
+
+    public function isInlined($ruleName)
+    {
+        return isset($this->inlinedRules[$ruleName]);
+    }
+
+    //
+    // Grammar folding / unfolding
+    // --------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Returns whether the grammar is in folded state.
+     *
+     * @return bool True if the grammar is in folded state.
      */
     public function isFolded()
     {
@@ -209,7 +240,12 @@ class Grammar implements GrammarInterface
     }
 
     /**
-     * @inheritDoc
+     * Folds the grammar by resolving Reference objects
+     * to actual references to the corresponding expressions.
+     *
+     * @param string $startRule An optional default start rule to use.
+     *
+     * @return $this
      */
     public function fold($startRule = null)
     {
@@ -227,7 +263,33 @@ class Grammar implements GrammarInterface
     }
 
     /**
-     * @inheritDoc
+     * Executes given function, while ensuring the grammar is folded.
+     *
+     * @param callable $fn
+     *
+     * @return mixed The result returned by the callback
+     */
+    public function folded(callable $fn)
+    {
+        $folded = $this->folded;
+        if (!$folded) {
+            $this->fold();
+        }
+        try {
+            $result = $fn($this);
+        } finally {
+            if (!$folded) {
+                $this->unfold();
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Unfolds the grammar by converting circular references to Reference objects.
+     *
+     * @return $this
      */
     public function unfold()
     {
@@ -241,15 +303,63 @@ class Grammar implements GrammarInterface
     }
 
     /**
-     * @inheritDoc
+     * Executes given function, while ensuring the grammar is unfolded.
+     *
+     * @param callable $fn
+     *
+     * @return mixed The result returned by the callback
+     */
+    public function unfolded(callable $fn)
+    {
+        $folded = $this->folded;
+        if ($folded) {
+            $this->unfold();
+        }
+        try {
+            $result = $fn($this);
+        } finally {
+            if ($folded) {
+                $this->fold();
+            }
+        }
+
+        return $result;
+    }
+
+    public function optimize(array $options = [])
+    {
+        $optimizer = new Optimizer();
+
+        return $optimizer->optimize($this, $options);
+    }
+
+    /**
+     * Prepares the grammar for matching.
+     *
+     * Folds the grammar and performs additional optimizations.
+     *
+     * @param string $startRule The default start rule to use.
+     *
+     * @return $this
      */
     public function finalize($startRule = null)
     {
         return $this->fold($startRule);
     }
 
+    //
+    // Grammar manipulations
+    // --------------------------------------------------------------------------------------------------------------
+
     /**
-     * @inheritDoc
+     * Returns a clone of this Grammar.
+     *
+     * If deep is false, returns a shallow clone.
+     * If deep is true, returns a deep clone, with all expressions cloned.
+     *
+     * @param bool $deep Whether to return a deep clone.
+     *
+     * @return Grammar
      */
     public function copy($deep = false)
     {
@@ -264,9 +374,16 @@ class Grammar implements GrammarInterface
     }
 
     /**
-     * @inheritDoc
+     * Returns a new (unfolded) grammar object containing the rules
+     * of this instance merged with rules of $other.
+     *
+     * Rules with the same name will be overriden.
+     *
+     * @param Grammar $other The grammar to merge into this one.
+     *
+     * @return Grammar
      */
-    public function merge(GrammarInterface $other)
+    public function merge(Grammar $other)
     {
         $new = $this->copy(true);
         $other = $other->copy(true);
@@ -279,7 +396,63 @@ class Grammar implements GrammarInterface
     }
 
     /**
-     * @inheritDoc
+     * Returns a copy of this grammar, with rules filtered by a predicate.
+     *
+     * @param callable $f `$f(Expression $expr, string $ruleName, Grammar $grammar)`
+     *
+     * @return Grammar
+     */
+    public function map(callable $f)
+    {
+        $new = $this->copy(true);
+        foreach ($new->rules as $name => $expr) {
+            $new[$name] = $f($expr, $name, $new);
+        }
+
+        return $new;
+    }
+
+    /**
+     * Returns a shallow copy of this grammar, with rules filtered by a predicate.
+     *
+     * @param callable $predicate `$predicate(Expression $expr, string $ruleName, Grammar $grammar)`
+     *
+     * @return Grammar
+     */
+    public function filter(callable $predicate)
+    {
+        $new = $this->copy();
+        foreach ($new->rules as $name => $expr) {
+            if (!$predicate($expr, $name, $new)) {
+                unset($new[$name]);
+            }
+        }
+
+        return $new;
+    }
+
+    /**
+     * Runs a reduce operation on this grammar's rules.
+     *
+     * @param callable $fn `$fn(mixed $accumulator, Expression $expr, string $ruleName, Grammar $grammar)`
+     * @param mixed    $accumulator
+     *
+     * @return mixed
+     */
+    public function reduce(callable $fn, $accumulator = null)
+    {
+        foreach ($this->rules as $name => $expr) {
+            $accumulator = $fn($accumulator, $expr, $name, $this);
+        }
+
+        return $accumulator;
+    }
+
+    /**
+     * Returns a string representation of the grammar.
+     * Should be as close as possible of the grammar's syntax.
+     *
+     * @return string
      */
     public function __toString()
     {
@@ -288,14 +461,19 @@ class Grammar implements GrammarInterface
             $out .= "%name $name\n";
         }
         $out .= "%start {$this->startRule}\n";
-
         $out .= "\n";
-        foreach ($this->rules as $name => $expr) {
-            $out .= sprintf("%s <- %s\n", $name, $expr);
-        }
 
-        return $out;
+        return $this->unfolded(function () use ($out) {
+            foreach ($this->rules as $name => $expr) {
+                $out .= sprintf("%s = %s\n", $name, $expr);
+            }
+            return $out;
+        });
     }
+
+    //
+    // SPL interfaces implementation
+    // --------------------------------------------------------------------------------------------------------------
 
     public function offsetExists($name)
     {

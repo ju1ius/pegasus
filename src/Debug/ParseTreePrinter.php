@@ -19,6 +19,11 @@ use ju1ius\Pegasus\Visitor\NodeVisitor;
 final class ParseTreePrinter extends NodeVisitor
 {
     /**
+     * @var string
+     */
+    private $input;
+
+    /**
      * @var int
      */
     private $depth = 0;
@@ -38,8 +43,9 @@ final class ParseTreePrinter extends NodeVisitor
      */
     private $returnOutput;
 
-    public function __construct($errorNode = null, $returnOutput = true)
+    public function __construct(/*$input, */$errorNode = null, $returnOutput = true)
     {
+        //$this->input = $input;
         $this->errorNode = $errorNode;
         $this->returnOutput = $returnOutput;
     }
@@ -80,13 +86,13 @@ final class ParseTreePrinter extends NodeVisitor
         $indent = str_repeat('│ ', $this->depth - 1);
         $indent .= $numChildren ? '├ ' : '└ ';
         $this->output .= sprintf(
-            '%s<%s("%s")@[%d..%d]: "%s">' . PHP_EOL,
+            '%s<%s("%s")@[%d..%d]%s>' . PHP_EOL,
             $indent,
             str_replace('ju1ius\\Pegasus\\', '', get_class($node)),
             $node->name,
             $node->start,
             $node->end,
-            $node->getText()
+            $node->value ? sprintf(': "%s"', $node->value) : ''
         );
 
         if ($this->errorNode === $node) {

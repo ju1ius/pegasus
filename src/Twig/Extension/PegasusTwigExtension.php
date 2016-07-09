@@ -66,8 +66,7 @@ class PegasusTwigExtension extends Twig_Extension
             // make it available globally
             $macros = $this->environment->loadTemplate('macros.twig');
             $globals['macros'] = $macros;
-        } catch (Twig_Error_Loader $e) {
-        }
+        } catch (Twig_Error_Loader $e) {}
 
         return $globals;
     }
@@ -95,23 +94,35 @@ class PegasusTwigExtension extends Twig_Extension
         ];
     }
 
-    public function indent($text, $prefix = '    ', callable $predicate = null)
+    public function indent($text, $level = 1, $size = 4, callable $predicate = null)
     {
-        if (null === $predicate) {
-            $predicate = 'trim';
-        }
+        $prefix = str_repeat(' ', $size * $level);
+        $predicate = $predicate ?: 'trim';
         $out = '';
         // split lines while keeping linebreak chars
-        foreach (preg_split('/(?<=\r\n|\n|\r)/S', $text) as $line) {
+        $lines = preg_split('/(?<=\r\n|\n|\r)/S', $text);
+        foreach ($lines as $i => $line) {
+            if ($i === 0) {
+                // skip first line to preserve existing space before twig opening tag
+                $out .= $line;
+                continue;
+            }
             $out .= $predicate($line) ? $prefix . $line : $line;
         }
 
         return $out;
     }
 
-    public function renderExpression(Expression $expr)
+    public function renderExpression(Expression $expr, array $args = [])
     {
-        return $this->compiler->renderExpression($expr);
+        $template = $this->getTemplateForExpression($expr);
+        $args = array_merge($args, ['expr' => $expr]);
+        if (!isset($args['capturing'])) {
+            $args['capturing'] = $expr->isCapturing();
+        }
+        $tpl = $this->environment->loadTemplate($template);
+
+        return $tpl->render($args);
     }
 
     public function getTemplateForExpression(Expression $expr)
@@ -121,9 +132,9 @@ class PegasusTwigExtension extends Twig_Extension
             case 'zeroormore':
             case 'oneormore':
             case 'optional':
-                return 'quantifier.twig';
+                return 'expression/quantifier.twig';
             default:
-                return "{$class}.twig";
+                return "expression/{$class}.twig";
         }
     }
 }

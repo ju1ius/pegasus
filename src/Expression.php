@@ -101,7 +101,7 @@ abstract class Expression
     public function asRule()
     {
         if ($this->name) {
-            return sprintf('%s <- %s', $this->name, $this->__toString());
+            return sprintf('%s = %s', $this->name, $this->__toString());
         }
 
         return $this->__toString();

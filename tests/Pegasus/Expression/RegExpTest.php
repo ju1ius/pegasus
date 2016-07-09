@@ -41,15 +41,15 @@ class RegExpTest extends ExpressionTestCase
             '/bar/ @3 with "foobar"' => [
                 Builder::create()->rule('r')->regexp('bar')->getGrammar(),
                 ['foobar', 3],
-                new Node('r', 3, 6, 'foobar', [], ['matches' => ['bar']])
+                new Node('r', 3, 6, 'bar', [], ['matches' => ['bar']])
             ],
             '/fo+/ with "fooooobar!"' => [
                 Builder::create()->rule('r')->regexp('fo+')->getGrammar(),
                 ['fooooobar!'],
-                new Node('r', 0, 6, 'fooooobar!', [], ['matches' => ['fooooo']])
+                new Node('r', 0, 6, 'fooooo', [], ['matches' => ['fooooo']])
             ],
             'complex pattern with capturing groups' => [
-                Builder::create()->rule('r')->regexp('"((?:(?:\\\\.)|[^"])*)"')->getGrammar(),
+                Builder::create()->rule('r')->regexp('"((?:\\\\.|[^"])*)"')->getGrammar(),
                 ['"quoted\\"stri\\ng"'],
                 new Node('r', 0, 17, '"quoted\\"stri\\ng"', [], ['matches' => [
                     '"quoted\\"stri\\ng"',

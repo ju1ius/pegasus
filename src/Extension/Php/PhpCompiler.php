@@ -13,10 +13,13 @@ namespace ju1ius\Pegasus\Extension\Php;
 use ju1ius\Pegasus\Compiler;
 use ju1ius\Pegasus\Parser\Generated\LeftRecursivePackrat;
 use ju1ius\Pegasus\Parser\Generated\Packrat;
-use ju1ius\Pegasus\Traverser\DepthFirstNodeTraverser;
+use ju1ius\Pegasus\Traverser\NamedNodeTraverser;
 
 class PhpCompiler extends Compiler
 {
+    /**
+     * @inheritdoc
+     */
     public function getTemplateDirectories()
     {
         return [
@@ -24,6 +27,9 @@ class PhpCompiler extends Compiler
         ];
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getTwigExtensions()
     {
         return [
@@ -31,22 +37,34 @@ class PhpCompiler extends Compiler
         ];
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getParserClass()
     {
         return Packrat::class;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getExtendedParserClass()
     {
         return LeftRecursivePackrat::class;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getNodeVisitorClass()
     {
-        return DepthFirstNodeTraverser::class;
+        return NamedNodeTraverser::class;
     }
 
-    protected function renderParser($outputDirectory, $args)
+    /**
+     * @inheritdoc
+     */
+    protected function renderParser($outputDirectory, array $args = [])
     {
         $output = $this->renderTemplate('parser.twig', $args);
         if ('php://stdout' === $outputDirectory) {
@@ -54,6 +72,7 @@ class PhpCompiler extends Compiler
         } else {
             $output_file = $outputDirectory . '/' . $args['class'] . '.php';
         }
+        echo $output_file, PHP_EOL;
         file_put_contents($output_file, $output);
     }
 }

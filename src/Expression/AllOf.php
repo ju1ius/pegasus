@@ -44,7 +44,7 @@ class AllOf extends Composite
     {
         return sprintf(
             '&<(%s)',
-            implode(' ', $this->stringMembers())
+            implode(' ', $this->stringChildren())
         );
     }
 }

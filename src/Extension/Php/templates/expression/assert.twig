@@ -1,0 +1,10 @@
+{% set result_var = result_varname(expr) %}
+{% set subres_var = result_varname(expr[0]) %}
+// Assert: {{ expr }}
+{{ result_var }} = null;
+{{ subres_var }} = null;
+{{ render_expr(expr[0], {capturing: false}) }}
+// Assert: {{ expr }}
+if ({{ subres_var }}) {
+    {{ result_var }} = new Node\Transient($this->pos, $this->pos);
+}

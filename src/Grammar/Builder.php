@@ -10,17 +10,18 @@
 
 namespace ju1ius\Pegasus\Grammar;
 
-use ju1ius\Pegasus\Expression\AttributedSequence;
+use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Expression\Assert;
 use ju1ius\Pegasus\Expression\BackReference;
 use ju1ius\Pegasus\Expression\Composite;
+use ju1ius\Pegasus\Expression\Decorator;
 use ju1ius\Pegasus\Expression\EOF;
 use ju1ius\Pegasus\Expression\Epsilon;
 use ju1ius\Pegasus\Expression\Fail;
 use ju1ius\Pegasus\Expression\Label;
 use ju1ius\Pegasus\Expression\Literal;
-use ju1ius\Pegasus\Expression\Assert;
 use ju1ius\Pegasus\Expression\Match;
-use ju1ius\Pegasus\Expression\NodeAction;
+use ju1ius\Pegasus\Expression\NamedSequence;
 use ju1ius\Pegasus\Expression\Not;
 use ju1ius\Pegasus\Expression\OneOf;
 use ju1ius\Pegasus\Expression\OneOrMore;
@@ -28,14 +29,11 @@ use ju1ius\Pegasus\Expression\Optional;
 use ju1ius\Pegasus\Expression\Quantifier;
 use ju1ius\Pegasus\Expression\Reference;
 use ju1ius\Pegasus\Expression\RegExp;
-use ju1ius\Pegasus\Expression\SemanticAction;
 use ju1ius\Pegasus\Expression\Sequence;
 use ju1ius\Pegasus\Expression\Skip;
-use ju1ius\Pegasus\Expression\Decorator;
 use ju1ius\Pegasus\Expression\Token;
 use ju1ius\Pegasus\Expression\ZeroOrMore;
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Expression;
 
 /**
  * This class provides a fluent interface for building grammars.
@@ -302,6 +300,28 @@ class Builder
     }
 
     /**
+     * @param $name
+     *
+     * @return $this
+     */
+    public function namedSequence($name)
+    {
+        return $this->add(new NamedSequence([], $name));
+    }
+
+    /**
+     * Alias of `namedSequence`
+     *
+     * @param $name
+     *
+     * @return $this
+     */
+    public function named($name)
+    {
+        return $this->namedSequence($name);
+    }
+
+    /**
      * @return $this
      */
     public function oneOf()
@@ -319,24 +339,6 @@ class Builder
         return $this->oneOf();
     }
 
-    /**
-     * @return $this
-     */
-    public function attributedSequence()
-    {
-        return $this->add(new AttributedSequence([]));
-    }
-
-    /**
-     * Alias of `attributedSequence`.
-     *
-     * @return $this
-     */
-    public function attr()
-    {
-        return $this->attributedSequence();
-    }
-
     //
     // Quantifier Expressions
     // --------------------------------------------------------------------------------------------------------------
@@ -351,7 +353,7 @@ class Builder
      */
     public function between($min = 0, $max = INF)
     {
-        return $this->add(new Quantifier([], $min, $max));
+        return $this->add(new Quantifier(null, $min, $max));
     }
 
     /**
@@ -376,7 +378,7 @@ class Builder
      */
     public function exactly($n)
     {
-        return $this->add(new Quantifier([], $n, $n));
+        return $this->add(new Quantifier(null, $n, $n));
     }
 
     /**
@@ -388,7 +390,7 @@ class Builder
      */
     public function atLeast($n)
     {
-        return $this->add(new Quantifier([], $n, INF));
+        return $this->add(new Quantifier(null, $n, INF));
     }
 
     /**
@@ -400,7 +402,7 @@ class Builder
      */
     public function atMost($n)
     {
-        return $this->add(new Quantifier([], 0, $n));
+        return $this->add(new Quantifier(null, 0, $n));
     }
 
     /**
@@ -408,7 +410,7 @@ class Builder
      */
     public function optional()
     {
-        return $this->add(new Optional([]));
+        return $this->add(new Optional());
     }
 
     /**
@@ -426,7 +428,7 @@ class Builder
      */
     public function zeroOrMore()
     {
-        return $this->add(new ZeroOrMore([]));
+        return $this->add(new ZeroOrMore());
     }
 
     /**
@@ -434,7 +436,7 @@ class Builder
      */
     public function oneOrMore()
     {
-        return $this->add(new OneOrMore([]));
+        return $this->add(new OneOrMore());
     }
 
     //
@@ -446,7 +448,7 @@ class Builder
      */
     public function not()
     {
-        return $this->add(new Not([]));
+        return $this->add(new Not());
     }
 
     /**
@@ -454,7 +456,7 @@ class Builder
      */
     public function assert()
     {
-        return $this->add(new Assert([]));
+        return $this->add(new Assert());
     }
 
     //
@@ -466,7 +468,7 @@ class Builder
      */
     public function skip()
     {
-        return $this->add(new Skip([]));
+        return $this->add(new Skip());
     }
 
     /**
@@ -474,7 +476,7 @@ class Builder
      */
     public function token()
     {
-        return $this->add(new Token([]));
+        return $this->add(new Token());
     }
 
     /**
@@ -484,43 +486,6 @@ class Builder
      */
     public function label($label)
     {
-        return $this->add(new Label([], $label));
-    }
-
-    //
-    // Semantic Expressions
-    // --------------------------------------------------------------------------------------------------------------
-
-    /**
-     * @param string $name
-     * @param string $class
-     *
-     * @return $this
-     */
-    public function node($name = '', $class = '')
-    {
-        return $this->add(new NodeAction($name, $class))->end();
-    }
-
-    /**
-     * @param \Closure $closure
-     *
-     * @return $this
-     */
-    public function semanticAction(\Closure $closure)
-    {
-        return $this->add(new SemanticAction($closure))->end();
-    }
-
-    /**
-     * Alias of `semanticAction`.
-     *
-     * @param \Closure $closure
-     *
-     * @return Builder
-     */
-    public function action(\Closure $closure)
-    {
-        return $this->semanticAction($closure);
+        return $this->add(new Label(null, $label));
     }
 }

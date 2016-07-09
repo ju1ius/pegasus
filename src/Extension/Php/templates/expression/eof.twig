@@ -1,4 +1,4 @@
-// Matching: EOF
+// EOF
 if (!isset($this->text[$this->pos])) {
-    $result_{{ expr.id }} = new Node\EOF('{{ expr.name }}', $this->text, $this->pos, $this->pos);
+    {{ result_varname(expr) }} = new Node\Transient($this->pos, $this->pos);
 }

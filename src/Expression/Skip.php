@@ -23,7 +23,7 @@ class Skip extends Decorator
 {
     public function __toString()
     {
-        return sprintf('~(%s)', $this->stringMembers());
+        return sprintf('~(%s)', $this->stringChildren());
     }
 
     public function isCapturing()

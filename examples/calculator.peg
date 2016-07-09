@@ -1,0 +1,23 @@
+%name calculator
+%start expr
+
+expr    = expr _ ~"+" _ term       <= Add
+        | expr _ ~"-" _ term       <= Substract
+        | term
+
+term    = term _ ~"*" _ primary    <= Multiply
+        | term _ ~"/" _ primary    <= Divide
+        | primary
+
+primary = ~'(' _ expr _ ~')' _
+        | number _
+
+number  = expo | float | int
+
+expo    = @((float | int) 'e' int) _
+
+float   = /-?[0-9]*\.[0-9]+/ _
+
+int     = /-?[0-9]+/ _
+
+_       = ~/\s*/

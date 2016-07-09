@@ -38,49 +38,27 @@ class Literal extends Terminal
      */
     public $length = 0;
 
-    /**
-     * @var boolean
-     */
-    public $hasBackReference = false;
-
-    /**
-     * @var array
-     */
-    public $subjectParts = [];
-
     public function __construct($literal, $name = '', $quoteCharacter = '"')
     {
         parent::__construct($name);
         $this->literal = $literal;
         $this->quoteCharacter = $quoteCharacter;
 
-        $parts = StringUtil::splitBackReferenceSubject($this->literal);
-        if ($parts) {
-            $this->hasBackReference = true;
-            $this->subjectParts = $parts;
-        } else {
-            $this->length = strlen($this->literal);
-        }
+        $this->length = strlen($this->literal);
     }
 
     public function __toString()
     {
-        //TODO backslash escaping
-        return sprintf('"%s"', $this->literal);
+        return sprintf(
+            '%1$s%2$s%1$s',
+            $this->quoteCharacter,
+            addcslashes($this->literal, $this->quoteCharacter)
+        );
     }
 
     public function match($text, $pos, ParserInterface $parser, Scope $scope)
     {
-        $value = $this->literal;
-        $length = $this->length;
-
-        if ($this->hasBackReference) {
-            $value = StringUtil::replaceBackReferenceSubject($this->subjectParts, function ($identifier) use ($scope) {
-                return $scope[$identifier];
-            });
-            $length = strlen($value);
-        }
-        if ($value === substr($text, $pos, $length)) {
+        if (substr($text, $pos, $this->length) === $this->literal) {
             return new Node\Terminal($this->name, $pos, $pos + $this->length, $this->literal);
         }
     }

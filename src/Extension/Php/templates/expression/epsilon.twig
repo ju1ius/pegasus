@@ -1,2 +1,2 @@
-//  Matching: Epsilon
-$result_{{ expr.id }} = new Node\Epsilon('{{ expr.name }}', $this->text, $this->pos, $this->pos);
+//  Epsilon
+{{ result_varname(expr) }} = new Node\Transient($this->pos, $this->pos);

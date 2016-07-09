@@ -34,31 +34,36 @@ class ParseError extends \Exception
     public $expr;
 
     /**
+     * @var string
+     */
+    public $rule;
+
+    /**
      * @var Node
      */
     public $node;
 
 
-    public function __construct($text, $pos = 0, $expr = null)
+    public function __construct($text, $pos = 0, $expr = null, $rule = '')
     {
         $this->text = $text;
         $this->position = $pos;
         $this->expr = $expr;
+        $this->rule = $rule;
 
         parent::__construct();
     }
 
     public function __toString()
     {
-        $ruleName = isset($this->expr->name)
-            ? $this->expr->name
-            : (string)$this->expr;
+        $ruleName = $this->rule ?: $this->expr->name;
 
         return sprintf(
-            '%s: rule <%s> didn\'t match on line %s, column %s ("%s").'
+            '%s: rule <%s%s> didn\'t match on line %s, column %s ("%s").'
             . "\n%s",
             __CLASS__,
-            $ruleName,
+            $ruleName ? sprintf('%s = ', $ruleName) : '',
+            (string)$this->expr,
             $this->line(),
             $this->column(),
             substr($this->text, $this->position, $this->position + 20),

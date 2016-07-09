@@ -16,98 +16,10 @@ use ju1ius\Pegasus\Grammar\Builder;
 /**
  * Factory class that builds a Grammar instance capable of parsing other grammars.
  *
+ * @author ju1ius <ju1ius@laposte.net>
  */
-class MetaGrammar
+final class MetaGrammar
 {
-    const SYNTAX = <<<'EOS'
-
-%name Pegasus
-
-grammar <- _ directives rules
-
-########### Directives ##########
-
-directives      <- directive*
-directive       <- name_directive | start_directive | ws_directive | ci_directive
-name_directive  <- '%name' _ identifier
-start_directive <- '%start' _ identifier
-ws_directive    <- '%whitespace' _ equals expression
-ci_directive    <- '%case_insensitive' _
-
-########### Rules ##########
-
-rules           <- rule+
-
-rule            <- identifier arrow_left expression
-
-expression      <- choice | sequence | term
-
-choice          <- alternative (OR alternative)+
-            
-alternative     <- sequence | term
-
-sequence        <- term{2,}
-
-term            <- labeled | labelable
-
-labeled         <- label labelable
-
-labelable       <- prefixed | prefixable
-
-prefixed        <- token | skip | assert | not
-
-token           <- '@' prefixable
-
-skip            <- '~' prefixable
-
-assert          <- '&' prefixable
-
-not             <- '!' prefixable
-
-prefixable      <- prefixed | suffixable | primary
-
-suffixable      <- suffixed | primary
-
-suffixed        <- suffixable quantifier
-
-primary         <- parenthesized | atom
-
-parenthesized   <- '(' _ expression ')' _
-
-atom            <- eof | epsilon | fail | literal | regex | reference
-
-equals          <- '=' _
-
-arrow_left      <- '<-' _
-
-reference       <- identifier !arrow_left
-
-eof             <- / EOF\b / _
-
-epsilon         <- / E\b / _
-
-fail            <- / FAIL\b / _
-
-quantifier      <- /(?> ([*+?]) | (?: \{ (\d+)(?:,(\d*))? \} ) )/ _
-
-regex           <- / \/ ((?: (?:\\.) | [^\/] )*) \/ ([imsuUX]*)? / _
-
-literal         <- / (["']) ((?: (?:\\.) | (?:(?!\1).) )*) \1 / _
-
-label           <- / ([a-zA-Z_]\w*): /
-
-identifier      <- / [a-zA-Z_]\w* / _
-
-OR              <- '|' _
-
-_               <- (ws | comment)*
-
-comment         <- / \# ([^\r\n]*) /
-
-ws              <- /\s+/
-
-EOS;
-
     /**
      * @var Grammar The unique instance of the meta grammar.
      */
@@ -152,8 +64,7 @@ EOS;
     }
 
     /**
-     * Returns the unique instance of the base grammar
-     * used to parse the MetaGrammar syntax.
+     * Returns the unique instance of the base grammar used to parse the MetaGrammar syntax.
      *
      * @return Grammar
      */
@@ -168,14 +79,16 @@ EOS;
 
     private static function buildGrammar()
     {
-        $g = Builder::create()
+        $builder = Builder::create()
             ->rule('grammar')->sequence()
                 ->ref('_')
                 ->ref('directives')
                 ->ref('rules')
-            //
-            // Directives
-            // ------------------------------------------------------------------------------------------------------
+        ;
+        //
+        // Directives
+        // ------------------------------------------------------------------------------------------------------
+        $builder
             ->rule('directives')->zeroOrMore()
                 ->ref('directive')
             ->rule('directive')->oneOf()
@@ -184,81 +97,69 @@ EOS;
                 ->ref('ws_directive')
                 ->ref('ci_directive')
             ->rule('name_directive')->sequence()
-                ->literal('%name')
+                ->skip()->literal('%name')
                 ->ref('_')
                 ->ref('identifier')
             ->rule('start_directive')->sequence()
-                ->literal('%start')
+                ->skip()->literal('%start')
                 ->ref('_')
                 ->ref('identifier')
             ->rule('ws_directive')->sequence()
-                ->literal('%whitespace')
-                ->ref('equals')
-                ->ref('expression')
+                ->skip()->literal('%whitespace')->ref('_')
+                ->skip()->literal('=')->ref('_')
+                ->ref('unattributed')
             ->rule('ci_directive')->sequence()
-                ->literal('%case_insensitive')
+                ->skip()->literal('%case_insensitive')
                 ->ref('_')
-            //
-            // rules
-            // ------------------------------------------------------------------------------------------------------
+            ->rule('lexical_directive')->sequence()
+                ->skip()->literal('%lexical')
+                ->ref('_')
+            ->rule('inline_directive')->sequence()
+                ->skip()->literal('%inline')
+                ->ref('_')
+        ;
+        //
+        // rules
+        // ------------------------------------------------------------------------------------------------------
+        $builder
             ->rule('rules')->oneOrMore()
                 ->ref('rule')
             ->rule('rule')->sequence()
                 ->ref('identifier')
-                ->ref('arrow_left')
+                ->skip()->literal('=')->ref('_')
                 ->ref('expression')
-            //
-            // composite expressions
-            // ------------------------------------------------------------------------------------------------------
-            ->rule('choice')->sequence()
-                ->ref('alternative')
-                ->oneOrMore()->sequence()
-                    ->ref('OR')
-                    ->ref('alternative')
-            ->rule('alternative')->oneOf()
-                ->ref('sequence')
-                ->ref('term')
-            ->rule('sequence')
-                ->atLeast(2)->ref('term')
-            //
-            // decorator expressions
-            // ------------------------------------------------------------------------------------------------------
+        ;
+        //
+        // decorator expressions
+        // ------------------------------------------------------------------------------------------------------
+        $builder
             ->rule('quantifier')->sequence()
                 ->regexp('(?> ([*+?]) | (?: \{ (\d+) (?:,(\d*))? \} ) )')
                 ->ref('_')
             ->rule('token')->sequence()
-                ->literal('@')
+                ->skip()->literal('@')
                 ->ref('prefixable')
             ->rule('skip')->sequence()
-                ->literal('~')
+                ->skip()->literal('~')
                 ->ref('prefixable')
             ->rule('assert')->sequence()
-                ->literal('&')
+                ->skip()->literal('&')
                 ->ref('prefixable')
             ->rule('not')->sequence()
-                ->literal('!')
+                ->skip()->literal('!')
                 ->ref('prefixable')
-            //
-            // semantic expressions
-            // ------------------------------------------------------------------------------------------------------
-            ->rule('node_action')->sequence()
-                ->literal('<')
-                ->optional()->sequence()
-                    ->ref('literal')
-                    ->literal(':')
-                ->end()
-                ->optional()->ref('literal')
-                ->literal('>')
-            //
-            // terminal expressions
-            // ------------------------------------------------------------------------------------------------------
+        ;
+        //
+        // terminal expressions
+        // ------------------------------------------------------------------------------------------------------
+        $builder
             ->rule('reference')->sequence()
                 ->ref('identifier')
-                ->not()->ref('arrow_left')
+                ->not()->literal('=')
             ->rule('literal')->sequence()
                 ->regexp('(["\']) ((?:\\\\.|(?!\1).)*) \1')
                 ->ref('_')
-            ->rule('regex')->sequence()
+            ->rule('regexp')->sequence()
                 ->regexp('\/ ((?:\\\\.|[^\/])*) \/ ([imsuUX]*)?')
                 ->ref('_')
             ->rule('eof')->sequence()
@@ -270,14 +171,46 @@ EOS;
             ->rule('fail')->sequence()
                 ->match('FAIL\b')
                 ->ref('_')
-            //
-            // expression parts
-            // ------------------------------------------------------------------------------------------------------
+        ;
+        //
+        // expression parts
+        // ------------------------------------------------------------------------------------------------------
+        $builder
+            ->rule('unattributed')->oneOf()
+                ->named('OneOf')
+                    ->ref('unattributed')
+                    ->skip()->literal('|')->ref('_')
+                    ->ref('terms')
+                ->end()
+                ->ref('terms')
             ->rule('expression')->oneOf()
-                ->ref('choice')
-                ->ref('sequence')
+                ->named('OneOf')
+                    ->ref('expression')
+                    ->skip()->literal('|')->ref('_')
+                    ->ref('attributed')
+                ->end()
+                ->ref('attributed')
+            ->rule('attributed')->oneOf()
+                ->named('NamedSequence')
+                    ->optional()->ref('attributed')
+                    ->skip()->literal('<=')->ref('_')
+                    ->ref('identifier')
+                ->end()
+                ->ref('attributed_terms')
+            ->rule('attributed_terms')->oneOf()
+                ->named('Sequence')
+                    ->ref('attributed')
+                    ->ref('term')
+                ->end()
+                ->ref('terms')
+            ->rule('terms')->oneOf()
+                ->named('Sequence')
+                    ->ref('terms')
+                    ->ref('term')
+                ->end()
                 ->ref('term')
             ->rule('term')->oneOf()
+                ->ref('fail')
                 ->ref('labeled')
                 ->ref('labelable')
             ->rule('labeled')->sequence()
@@ -289,6 +222,7 @@ EOS;
                 ->ref('prefixable')
             ->rule('prefixed')->oneOf()
                 ->ref('skip')
+                ->ref('token')
                 ->ref('assert')
                 ->ref('not')
             ->rule('prefixable')->oneOf()
@@ -305,36 +239,28 @@ EOS;
                 ->ref('parenthesized')
                 ->ref('atom')
             ->rule('parenthesized')->sequence()
-                ->literal('(')
-                ->ref('_')
+                ->skip()->literal('(')->ref('_')
                 ->ref('expression')
-                ->literal(')')
-                ->ref('_')
+                ->skip()->literal(')')->ref('_')
             ->rule('atom')->oneOf()
                 ->ref('eof')
                 ->ref('epsilon')
                 ->ref('fail')
                 ->ref('literal')
-                ->ref('regex')
+                ->ref('regexp')
                 ->ref('reference')
-            ->rule('OR')->sequence()
-                ->literal('|')
-                ->ref('_')
-            ->rule('arrow_left')->sequence()
-                ->literal('<-')
-                ->ref('_')
-            ->rule('equals')->sequence()
-                ->literal('=')
-                ->ref('_')
             ->rule('identifier')->sequence()
                 ->match('[a-zA-Z_]\w*')
                 ->ref('_')
-            ->rule('label')
-                ->regexp('([a-zA-Z_]\w*):')
-            //
-            // whitespace
-            // ------------------------------------------------------------------------------------------------------
-            ->rule('_')->zeroOrMore()
+            ->rule('label')->sequence()
+                ->match('[a-zA-Z_]\w*')
+                ->skip()->literal(':')
+        ;
+        //
+        // whitespace
+        // ------------------------------------------------------------------------------------------------------
+        $builder
+            ->rule('_')->skip()->zeroOrMore()
                 ->oneOf()
                     ->ref('ws')
                     ->ref('comment')
@@ -345,6 +271,8 @@ EOS;
             ->getGrammar()
         ;
 
-        return $g->finalize('grammar');
+        $grammar = $builder->getGrammar();
+
+        return $grammar->fold();
     }
 }

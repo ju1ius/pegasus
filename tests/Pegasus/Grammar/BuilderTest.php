@@ -69,24 +69,22 @@ class BuilderTest extends PegasusTestCase
             ],
             'Top-level decorator' => [
                 [
-                    'start' => new Quantifier([new Literal('foo')], 1, INF)
+                    'start' => new Quantifier(new Literal('foo'), 1, INF)
                 ],
                 Builder::create()->rule('start')->q(1)->literal('foo')->getGrammar()
             ],
             'Nested decorators' => [
                 [
-                    'start' => new Not([
-                        new Quantifier([new Literal('foo')], 1, 1)
-                    ])
+                    'start' => new Not(new Quantifier(new Literal('foo'), 1, 1))
                 ],
                 Builder::create()->rule('start')->not()->exactly(1)->literal('foo')->getGrammar()
             ],
             'Quantifiers' => [
                 [
                     'start' => new Seq([
-                        new Quantifier([new Literal('foo')], 1, INF),
-                        new Quantifier([new Literal('bar')], 1, 1),
-                        new Quantifier([new Literal('baz')], 2, 42),
+                        new Quantifier(new Literal('foo'), 1, INF),
+                        new Quantifier(new Literal('bar'), 1, 1),
+                        new Quantifier(new Literal('baz'), 2, 42),
                     ])
                 ],
                 Builder::create()

@@ -10,6 +10,7 @@
 
 namespace ju1ius\Pegasus\Extension\Php;
 
+use ju1ius\Pegasus\Expression;
 use Twig_Extension;
 use Twig_SimpleFilter;
 use Twig_SimpleFunction;
@@ -26,6 +27,8 @@ class PhpTwigExtension extends Twig_Extension
         return [
             new Twig_SimpleFunction('repr', [$this, 'repr']),
             new Twig_SimpleFunction('repr_regexp', [$this, 'reprRegexp']),
+            new Twig_SimpleFunction('result_varname', [$this, 'getResultVar']),
+            new Twig_SimpleFunction('position_varname', [$this, 'getPositionVar']),
         ];
     }
 
@@ -38,11 +41,16 @@ class PhpTwigExtension extends Twig_Extension
 
     public function repr($value)
     {
-        if (null === $value) {
+        if ($value === null) {
             return 'null';
-        } elseif (is_int($value) || is_float($value)) {
+        }
+        if (is_bool($value)) {
+            return $value ? 'true' : 'false';
+        }
+        if (is_int($value) || is_float($value)) {
             return $value;
-        } elseif (is_array($value)) {
+        }
+        if (is_array($value)) {
             $out = '[';
             $first = true;
             foreach ($value as $k => $v) {
@@ -68,7 +76,16 @@ class PhpTwigExtension extends Twig_Extension
 
     public function escapeComment($value)
     {
-        return str_replace('*/', '*\\/', $value);
+        return str_replace('*/', '* /', $value);
     }
 
+    public function getResultVar(Expression $expr)
+    {
+        return sprintf('$result_%s', $expr->id);
+    }
+
+    public function getPositionVar(Expression $expr)
+    {
+        return sprintf('$pos_%s', $expr->id);
+    }
 }

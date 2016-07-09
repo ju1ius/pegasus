@@ -1,4 +1,8 @@
 <?php
+use ju1ius\Pegasus\Debug\ParseTreePrinter;
+use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\Traverser\NodeTraverser;
+
 require_once __DIR__.'/../../vendor/autoload.php';
 
 /**
@@ -21,9 +25,11 @@ function get_caller()
     );
 }
 
-function dump_node($node)
+function dump_node(Node $node)
 {
-    echo $node->inspect(), "\n";
+    $t = new NodeTraverser();
+    $t->addVisitor(new ParseTreePrinter(null, false));
+    $t->traverse($node);
 }
 
 function debug()

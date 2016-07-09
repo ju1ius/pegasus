@@ -10,19 +10,21 @@
 
 namespace ju1ius\Pegasus\Expression;
 
+use ju1ius\Pegasus\Expression;
+
 /**
  * An expression wrapper like the + quantifier in regexes.
  *
  */
 class OneOrMore extends Quantifier
 {
-    public function __construct($children, $name = '')
+    public function __construct(Expression $child = null, $name = '')
     {
-        parent::__construct($children, 1, INF, $name);
+        parent::__construct($child, 1, INF, $name);
     }
 
     public function __toString()
     {
-        return sprintf('(%s)+', $this->stringMembers());
+        return sprintf('%s+', $this->stringChildren());
     }
 }

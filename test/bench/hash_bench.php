@@ -94,11 +94,11 @@ $num_keys = count($int_cache);
 echo "Test inserting $num_keys integer keys took ", $end - $start, " seconds\n";
 
 $start = microtime(true);
-$assoc_cache = test_fetch_assoc($objs, $assoc_cache);
+test_fetch_assoc($objs, $assoc_cache);
 $end = microtime(true);
 echo "Test fetching hash keys took ", $end - $start, " seconds\n";
 
 $start = microtime(true);
-$int_cache = test_fetch_index($objs, $int_cache);
+test_fetch_index($objs, $int_cache);
 $end = microtime(true);
 echo "Test fetching integer keys took ", $end - $start, " seconds\n";

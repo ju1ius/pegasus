@@ -30,23 +30,23 @@ final class GrammarPrinter extends GrammarVisitor
 
     public function enterRule(Grammar $grammar, Expression $expr)
     {
-        $this->depth = 0;
-        echo sprintf("%s <- %s\n", $expr->name, $expr);
+        $this->depth = 1;
+        echo sprintf("Rule: %s = %s\n", $expr->name, $expr);
     }
 
     public function enterExpression(Grammar $grammar, Expression $expr)
     {
-        if ($expr instanceof Composite) {
-            $this->depth++;
-        }
         $indent = str_repeat('│ ', $this->depth - 1);
         $indent .= $expr instanceof Composite ? '├ ' : '└ ';
         echo sprintf(
-            "%s<%s: %s>\n",
+            "%s%s: %s\n",
             $indent,
             str_replace('ju1ius\Pegasus\Expression\\', '', get_class($expr)),
             $expr
         );
+        if ($expr instanceof Composite) {
+            $this->depth++;
+        }
     }
 
     public function leaveExpression(Grammar $grammar, Expression $expr)

@@ -2,6 +2,7 @@
 
 namespace ju1ius\Pegasus\Tests\Expression;
 
+use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Expression\OneOrMore;
 use ju1ius\Pegasus\Node;
@@ -12,9 +13,9 @@ class OneOrMoreTest extends ExpressionTestCase
     /**
      * @dataProvider testMatchProvider
      */
-    public function testMatch($children, $match_args, $expected)
+    public function testMatch(Expression $child, array $match_args, Node $expected)
     {
-        $expr = new OneOrMore($children, '+');
+        $expr = new OneOrMore($child, '+');
         $this->assertNodeEquals(
             $expected,
             $this->parse($expr, ...$match_args)
@@ -24,7 +25,7 @@ class OneOrMoreTest extends ExpressionTestCase
     {
         return [
             [
-                [new Literal('x')],
+                new Literal('x'),
                 ['xxx'],
                 new Node('+', 0, 3, null, [
                     new Node('', 0, 1, 'x'),
@@ -39,16 +40,16 @@ class OneOrMoreTest extends ExpressionTestCase
      * @dataProvider testMatchErrorProvider
      * @expectedException \ju1ius\Pegasus\Exception\ParseError
      */
-    public function testMatchError($children, $match_args)
+    public function testMatchError(Expression $child, array $match_args)
     {
-        $expr = new OneOrMore($children, '+');
+        $expr = new OneOrMore($child, '+');
         $this->parse($expr, ...$match_args);
     }
     public function testMatchErrorProvider()
     {
         return [
             [
-                [new Literal('foo')],
+                new Literal('foo'),
                 ['barbaz'],
             ]
         ];

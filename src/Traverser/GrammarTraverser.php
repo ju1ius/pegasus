@@ -60,7 +60,6 @@ class GrammarTraverser implements GrammarTraverserInterface
      *
      * @param bool $cloneExpressions Whether expressions must be cloned before traversal.
      * @param bool $foldGrammar      Whether grammars must be folded after traversal.
-     *
      */
     public function __construct($cloneExpressions = true, $foldGrammar = false)
     {

@@ -1,0 +1,16 @@
+{% set result_var = result_varname(expr) %}
+{% set pos_var = position_varname(expr) %}
+{% set subres_var = result_varname(expr[0]) %}
+// Token: {{ expr }}
+{{ result_var }} = null;
+{{ pos_var }} = $this->pos;
+{{ render_expr(expr[0], {capturing: false})|indent }}
+// Tokenize result of: {{ expr }}
+if ({{ subres_var }}) {
+    {{ result_var }} = new Node\Terminal(
+        '{{ expr.name }}',
+        {{ pos_var }},
+        $this->pos,
+        substr($this->text, {{ pos_var }}, $this->pos - {{ pos_var }})
+    );
+}

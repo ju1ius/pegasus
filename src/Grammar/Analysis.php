@@ -110,11 +110,13 @@ class Analysis
      */
     public function isReferenced($ruleName)
     {
-        return $ruleName === $this->grammar->getStartRule()->name || $this->isReferencedFrom($ruleName, $ruleName);
+        $startRule = $this->grammar->getStartRule()->name;
+
+        return $ruleName === $startRule || $this->isReferencedFrom($startRule, $ruleName);
     }
 
     /**
-     * Returns wheter $referencer has references for $referencee.
+     * Returns whetner referencer has references for referencee.
      *
      * @param string $referencer The rule name to search in.
      * @param string $referencee The rule name to search for.

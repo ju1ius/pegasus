@@ -1,29 +1,30 @@
-{% set result_var = '$result_' ~ expr.id %}
+{% set result_var = result_varname(expr) %}
 {% set match_var = '$match_' ~ expr.id %}
-{% set pos_var = '$pos_' ~ expr.id %}
+{% set pos_var = position_varname(expr) %}
 {% set children_var = '$children_' ~ expr.id %}
-/**
- * Matching: {{ expr }}
- */
+{# node_name can be set by NamedSequence expressions #}
+{% set node_name = node_name|default(expr.name) %}
+// Sequence: {{ expr }}
 {{ match_var }} = true;
 {{ pos_var }} = $this->pos;
 {{ children_var }} = [];
 do {
-{% for child in expr.children %}
-    $result_{{ child.id }} = null;
-{% filter indent -%}
-{% include expr_tpl(child) with {expr: child} only %}
-{%- endfilter %}
-    if (!$result_{{ child.id }}) {
+{% for child in expr %}
+    {% set subres_var = result_varname(child) %}
+    {{ subres_var }} = null;
+    {{ render_expr(child)|indent }}
+    if (!{{ subres_var }}) {
         {{ match_var }} = false;
         break;
-    } else {
-        {{ children_var }}[] = $result_{{ child.id }};
     }
+    if ({{ subres_var }}->isTransient) {
+        continue;
+    }
+    {{ children_var }}[] = {{ subres_var }};
 {% endfor %}
 } while(0);
-if (true === {{ match_var }}) {
-    {{ result_var }} = new Node\Sequence('{{ expr.name }}', $this->text, {{ pos_var }}, $this->pos, {{ children_var }});
+if ({{ match_var }}) {
+    {{ result_var }} = new Node\Composite('{{ node_name }}', {{ pos_var }}, $this->pos, {{ children_var }});
 } else {
     {{ result_var }} = null;
     $this->pos = {{ pos_var }};

@@ -24,22 +24,23 @@ final class ExpressionPrinter extends ExpressionVisitor
 
     public function beforeTraverse(Expression $expr)
     {
-        $this->depth = 0;
+        $this->depth = 1;
     }
 
     public function enterExpression(Expression $expr)
     {
-        if ($expr instanceof Composite) {
-            $this->depth++;
-        }
         $indent = str_repeat('│ ', $this->depth - 1);
         $indent .= $expr instanceof Composite ? '├ ' : '└ ';
         echo sprintf(
-            "%s<%s: %s>\n",
+            "%s%s: %s\n",
             $indent,
             str_replace('ju1ius\Pegasus\Expression\\', '', get_class($expr)),
             $expr->asRule()
         );
+
+        if ($expr instanceof Composite) {
+            $this->depth++;
+        }
     }
 
     public function leaveExpression(Expression $expr)

@@ -1,0 +1,7 @@
+{% set result_var = result_varname(expr) %}
+{% set subres_var = result_varname(expr[0]) %}
+{{ render_expr(expr[0], {capturing: false}) }}
+// Skip: {{ expr }}
+if ({{ subres_var }}) {
+    {{ result_var }} =  new Node\Transient({{ subres_var }}->start, {{ subres_var }}->end);
+}

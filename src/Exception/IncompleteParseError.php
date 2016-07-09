@@ -19,13 +19,22 @@ use ju1ius\Pegasus\Expression;
  */
 class IncompleteParseError extends ParseError
 {
+    public function __construct($text, $pos, ParseError $error)
+    {
+        parent::__construct($text, $pos, $error->expr, $error->rule);
+    }
+
     public function __toString()
     {
-        $ruleName = $this->expr->name ?: (string) $this->expr;
+        $ruleName = $this->rule ?: $this->expr->name;
         return sprintf(
-            '%s: rule "%s" matched entirely but didn\'t consume all the text. '
-            . 'Beginning of non-matching portion (line %s, column %s): "%s".',
+            '%s: Expression "%s" in rule "%s" matched entirely without consuming all the input.'
+            . PHP_EOL
+            . 'Beginning of non-matching portion (line %s, column %s):'
+            . PHP_EOL
+            . '%s',
             __CLASS__,
+            (string)$this->expr,
             $ruleName,
             $this->line(),
             $this->column(),

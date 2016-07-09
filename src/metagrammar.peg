@@ -1,0 +1,79 @@
+%name Pegasus
+%start grammar
+
+grammar         = _ directives rules
+
+########### Directives ##########
+
+directives      = directive*
+directive       = name_directive | start_directive | ws_directive | ci_directive
+name_directive  = ~'%name' _ identifier
+start_directive = ~'%start' _ identifier
+ws_directive    = ~'%whitespace' _ ~'=' _ unattributed
+ci_directive    = ~'%case_insensitive' _
+
+########### Rules ##########
+
+rules           = rule+
+rule            = identifier ~'=' _ expression
+
+##### Decorator expressions #####
+
+quantifier      = /(?> ([*+?]) | (?: \{ (\d+) (?:,(\d*))? \} ) )/ _
+token           = ~'@' prefixable
+skip            = ~'~' prefixable
+assert          = ~'&' prefixable
+not             = ~'!' prefixable
+labeled         = /[a-zA-Z_]\w*/ ~':' labelable
+
+##### Terminal expressions #####
+
+reference       = identifier !'='
+literal         = / (["']) ( (?:\\.|(?!\1).)* ) \1 / _
+regexp          = / \/ ((?:\\.|[^\/])*) \/ ([imsuUX]*) / _
+eof             = /EOF\b/ _
+epsilon         = /E\b/ _
+fail            = /FAIL\b/ _
+
+##### Expression components #####
+
+unattributed    = unattributed ~'|' _ terms                    <= OneOf
+                | terms
+
+expression      = expression ~'|' _ attributed                 <= OneOf
+                | attributed
+
+attributed      = attributed? ~'<=' _ identifier               <= NamedSequence
+                | attributed_terms
+
+attributed_terms    = attributed term                          <= Sequence
+                    | terms
+
+terms           = terms term                                   <= Sequence
+                | term
+
+term            = fail | labeled | labelable
+
+labelable       = prefixed | prefixable
+
+prefixed        = token | skip | assert | not
+
+prefixable      = prefixed | suffixable | primary
+
+suffixable      = suffixed | primary
+
+suffixed        = suffixable quantifier
+
+primary         = parenthesized | atom
+
+parenthesized   = ~'(' _ expression ~')' _
+
+atom            = eof | epsilon | fail | literal | regexp | reference
+
+identifier      = /[a-zA-Z_]\w*/ _
+
+##### Whitespace & comments #####
+
+_               = ~(ws | comment)*
+comment         = /\#[^\r\n]*/
+ws              = /\s+/

@@ -1,25 +1,22 @@
-{% set result_var = '$result_' ~ expr.id %}
-{% set pos_var = '$pos_' ~ expr.id %}
-/**
- * Matching: {{ expr }}
- */
+{% set result_var = result_varname(expr) %}
+{% set pos_var = position_varname(expr) %}
+// OneOf: {{ expr }}
 {{ result_var }} = null;
 do {
     {{ pos_var }} = $this->pos;
-{% for child in expr.children %}
-    $result_{{ child.id }} = null;
-{% filter indent -%}
-{% include expr_tpl(child) with {expr: child} only %}
-{%- endfilter %}
-    if ($result_{{ child.id }}) {
-        {{ result_var }} = $result_{{ child.id }};
+{% for child in expr -%}
+    {% set subres_var = result_varname(child) %}
+    {{ subres_var }} = null;
+    {{ render_expr(child)|indent }}
+    if ({{ subres_var }}) {
+        {{ result_var }} = {{ subres_var }};
         break;
     }
     $this->pos = {{ pos_var }};
 {% endfor %}
 } while (0);
 if ({{ result_var }}) {
-    {{ result_var }} = new Node\OneOf('{{ expr.name }}', $this->text, {{ pos_var }}, $this->pos, [{{ result_var }}]);
+    {{ result_var }} = new Node\Decorator('{{ expr.name }}', {{ pos_var }}, $this->pos, {{ result_var }});
 } else {
-{{ macros.error(expr, pos_var)|indent }}
+    {{ macros.error(expr, pos_var)|indent }}
 }
