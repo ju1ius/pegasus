@@ -45,9 +45,7 @@ class Packrat extends RecursiveDescent
     public function parse($source, $pos = 0, $startRule = null)
     {
         $this->memo = [];
-
         $result = parent::parse($source, $pos, $startRule);
-
         $this->memo = [];
 
         return $result;
@@ -65,18 +63,20 @@ class Packrat extends RecursiveDescent
      * stores the result in the memo table,
      * and returns the corresponding parse tree node.
      *
-     * @param Expression $expr
-     * @param int        $pos
-     *
-     * @param Scope      $scope
+     * @param string $rule
+     * @param Scope  $scope
      *
      * @return Node|null
+     * @internal param int $pos
+     *
      */
-    public function apply(Expression $expr, $pos, Scope $scope)
+    public function apply($rule, Scope $scope)
     {
-        $this->pos = $pos;
+        $expr = $this->grammar[$rule];
+        $pos = $this->pos;
         $this->error->position = $pos;
         $this->error->expr = $expr;
+        $this->error->rule = $rule;
 
         if (isset($this->memo[$expr->id][$pos])) {
             $memo = $this->memo[$expr->id][$pos];

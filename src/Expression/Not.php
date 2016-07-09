@@ -11,7 +11,7 @@
 namespace ju1ius\Pegasus\Expression;
 
 use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Parser\ParserInterface;
+use ju1ius\Pegasus\Parser\Parser;
 use ju1ius\Pegasus\Parser\Scope;
 
 /**
@@ -37,11 +37,13 @@ class Not extends Decorator
         return true;
     }
 
-    public function match($text, $pos, ParserInterface $parser, Scope $scope)
+    public function match($text, Parser $parser, Scope $scope)
     {
-        $node = $parser->apply($this->children[0], $pos, $scope);
+        $start = $parser->pos;
+        $node = $this->children[0]->match($text, $parser, $scope);
+        $parser->pos = $start;
         if (!$node) {
-            return new Node\Transient($pos, $pos);
+            return new Node\Transient($start, $start);
         }
     }
 }

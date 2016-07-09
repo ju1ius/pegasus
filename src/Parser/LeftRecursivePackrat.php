@@ -43,23 +43,21 @@ class LeftRecursivePackrat extends Packrat
     }
 
     /**
-     * @param Expression $expr
-     * @param int        $pos
-     * @param Scope      $scope
+     * @param string $rule
+     * @param Scope  $scope
      *
      * @return \ju1ius\Pegasus\Node|mixed|null
+     * @internal param int $pos
      */
-    public function apply(Expression $expr, $pos, Scope $scope)
+    public function apply($rule, Scope $scope)
     {
-        $this->pos = $pos;
+        $expr = $this->grammar[$rule];
+        $pos = $this->pos;
         $this->error->position = $pos;
+        $this->error->rule = $rule;
         $this->error->expr = $expr;
 
         if (!$memo = $this->recall($expr, $scope)) {
-            // Store the expression in backreferences table,
-            // just enough info to retrieve the result from the memo table.
-            $this->refmap[$expr->name] = [$expr->id, $pos];
-
             // Create a new LeftRecursion and push it onto the rule invocation stack.
             $lr = new LeftRecursion($expr);
             $this->lrStack->push($lr);
@@ -122,7 +120,7 @@ class LeftRecursivePackrat extends Packrat
         }
         $memo->result = $memo->result->seed;
         if (!$memo->result) {
-            return;
+            return null;
         }
 
         return $this->growLR($expr, $pos, $memo, $head, $scope);

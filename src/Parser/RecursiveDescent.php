@@ -16,45 +16,10 @@ use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Node;
 
-class RecursiveDescent implements ParserInterface
+class RecursiveDescent extends Parser
 {
     /**
-     * @var Grammar
-     */
-    protected $grammar;
-
-    /**
-     * @var string
-     */
-    protected $source;
-
-    /**
-     * @var int
-     */
-    public $pos = 0;
-
-    /**
-     * @var ParseError
-     */
-    protected $error;
-
-    public function __construct(Grammar $grammar)
-    {
-        $this->grammar = $grammar;
-    }
-
-    /**
-     * Return the parse tree matching this expression at the given position,
-     * not necessarily extending all the way to the end of $text.
-     *
-     * @param string      $source
-     * @param string|null $rule
-     *
-     * @return Node
-     *
-     * @throws IncompleteParseError
-     * @throws ParseError if there's no match there
-     * @throws null
+     * @inheritdoc
      */
     public function parseAll($source, $rule = null)
     {
@@ -71,17 +36,7 @@ class RecursiveDescent implements ParserInterface
     }
 
     /**
-     * Return the parse tree matching this expression at the given position,
-     * not necessarily extending all the way to the end of $text.
-     *
-     * @param string $source
-     * @param int    $pos
-     * @param string $startRule
-     *
-     * @return Node|null
-     *
-     * @throw ParseError if there's no match there
-     * @throws null
+     * @inheritdoc
      */
     public function parse($source, $pos = 0, $startRule = null)
     {
@@ -90,10 +45,11 @@ class RecursiveDescent implements ParserInterface
         $this->error = new ParseError($source);
         $this->error->rule = $startRule;
 
-        $result = $this->grammar->folded(function (Grammar $grammar) use ($startRule, $pos) {
-            $rule = $startRule ? $grammar[$startRule] : $grammar->getStartRule();
+        //TODO solve the folded problem with scope
+        $result = $this->grammar->unfolded(function (Grammar $grammar) use ($startRule, $pos) {
+            $rule = $startRule ?: $grammar->getStartRule()->name;
 
-            return $this->apply($rule, $pos, Scope::void());
+            return $this->apply($rule, Scope::void());
         });
 
         if (!$result) {
@@ -103,22 +59,16 @@ class RecursiveDescent implements ParserInterface
         return $result;
     }
 
-    public function apply(Expression $expr, $pos, Scope $scope)
+    /**
+     * @inheritdoc
+     */
+    public function apply($rule, Scope $scope)
     {
-        $this->pos = $pos;
-        $this->error->position = $pos;
-        $this->error->expr = $expr;
+        $rule = $this->grammar[$rule];
+        $this->error->position = $this->pos;
+        $this->error->expr = $rule;
 
-        // evaluate expression
-        $result = $this->evaluate($expr, $scope);
-
-        return $result;
-    }
-
-    public function applyRule($ruleName, $pos, Scope $scope)
-    {
-        $this->error->rule = $ruleName;
-        return $this->apply($this->grammar[$ruleName], $pos, $scope);
+        return $this->evaluate($rule, $scope);
     }
 
     /**
@@ -132,10 +82,8 @@ class RecursiveDescent implements ParserInterface
      */
     public function evaluate(Expression $expr, Scope $scope)
     {
-        $result = $expr->match($this->source, $this->pos, $this, $scope);
+        $result = $expr->match($this->source, $this, $scope);
         if ($result) {
-            // update parser position
-            $this->pos = $result->end;
             $this->error->node = $result;
         }
 

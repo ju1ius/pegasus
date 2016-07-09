@@ -11,7 +11,7 @@
 namespace ju1ius\Pegasus\Expression;
 
 use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Parser\ParserInterface;
+use ju1ius\Pegasus\Parser\Parser;
 use ju1ius\Pegasus\Parser\Scope;
 
 /**
@@ -25,16 +25,18 @@ class AllOf extends Composite
     /**
      * @inheritdoc
      */
-    public function match($text, $pos, ParserInterface $parser, Scope $scope)
+    public function match($text, Parser $parser, Scope $scope)
     {
+        $start = $parser->pos;
         foreach ($this->children as $child) {
-            $node = $parser->apply($child, $pos, $scope);
+            $node = $child->match($text, $parser, $scope);
             if (!$node) {
+                $parser->pos = $start;
                 return null;
             }
         }
 
-        return new Node($this->name, $pos, $node->end, null, [$node]);
+        return new Node\Decorator($this->name, $start, $parser->pos, $node);
     }
 
     /**

@@ -12,7 +12,7 @@ namespace ju1ius\Pegasus\Expression;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar\Exception\UnresolvedReference;
-use ju1ius\Pegasus\Parser\ParserInterface;
+use ju1ius\Pegasus\Parser\Parser;
 use ju1ius\Pegasus\Parser\Scope;
 
 /**
@@ -54,8 +54,8 @@ class Reference extends Expression
     /**
      * @inheritDoc
      */
-    public function match($text, $pos, ParserInterface $parser, Scope $scope)
+    public function match($text, Parser $parser, Scope $scope)
     {
-        return $parser->applyRule($this->identifier, $pos, Scope::void());
+        return $parser->apply($this->identifier, Scope::void());
     }
 }

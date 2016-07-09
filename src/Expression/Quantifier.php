@@ -12,7 +12,7 @@ namespace ju1ius\Pegasus\Expression;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Parser\ParserInterface;
+use ju1ius\Pegasus\Parser\Parser;
 use ju1ius\Pegasus\Parser\Scope;
 
 /**
@@ -88,33 +88,21 @@ class Quantifier extends Decorator
         );
     }
 
-    public function match($text, $pos, ParserInterface $parser, Scope $scope)
+    public function match($text, Parser $parser, Scope $scope)
     {
-        $nextPosition = $pos;
-        $children = [];
+        $expr = $this->children[0];
+        $startPos = $parser->pos;
+        $results = [];
         $matchCount = 0;
-        while (true) {
-            $node = $parser->apply($this->children[0], $nextPosition, $scope);
-            if (!$node) {
-                break;
-            }
-            $matchCount++;
-
-            $children[] = $node;
-            $length = $node->end - $node->start;
-            if (!$length) {
-                break;
-            }
-
-            $nextPosition += $length;
-
-            if ($matchCount === $this->max) {
+        while ($node = $expr->match($text, $parser, $scope)) {
+            $results[] = $node;
+            if (++$matchCount === $this->max) {
                 break;
             }
         }
-
         if ($matchCount >= $this->min) {
-            return new Node\Quantifier($this->name, $pos, $nextPosition, $children, $this->isOptional());
+            return new Node\Quantifier($this->name, $startPos, $parser->pos, $results, $this->isOptional());
         }
+        $parser->pos = $startPos;
     }
 }
