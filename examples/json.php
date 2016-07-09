@@ -114,23 +114,23 @@ $input = empty($argv[1]) ? $test_input : $argv[1];
 
 // Pegasus parse
 
-$start = microtime(true);
+//$start = microtime(true);
 $tree = $parser->parseAll($input);
 $object = (new Json())->traverse($tree);
-$end = microtime(true);
+//$end = microtime(true);
 
-echo 'Pegasus', PHP_EOL;
-echo '>>> Time: ', number_format(($end - $start) * 1000, 3), ' milliseconds', PHP_EOL;
-echo '>>> Result: ';
-//var_dump($object);
+//echo 'Pegasus', PHP_EOL;
+//echo '>>> Time: ', number_format(($end - $start) * 1000, 3), ' milliseconds', PHP_EOL;
+//echo '>>> Result: ';
+//dump($object);
 
-// Native parse
-
-$start = microtime(true);
-$object = json_decode($input, true);
-$end = microtime(true);
-
-echo PHP_EOL, 'json_decode', PHP_EOL;
-echo '>>> Time: ', number_format(($end - $start) * 1000, 3), ' milliseconds', PHP_EOL;
-echo '>>> Result: ';
-//var_dump($object);
+//// Native parse
+//
+//$start = microtime(true);
+//$object = json_decode($input, true);
+//$end = microtime(true);
+//
+//echo PHP_EOL, 'json_decode', PHP_EOL;
+//echo '>>> Time: ', number_format(($end - $start) * 1000, 3), ' milliseconds', PHP_EOL;
+//echo '>>> Result: ';
+////var_dump($object);
