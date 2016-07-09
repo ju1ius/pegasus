@@ -1,7 +1,0 @@
-{% use 'props.twig' with properties as props %}
-class Foo
-{
-{% block properties %}{{ block('props') }}{% endblock %}
-{% include 'props_sub1.twig' %}
-{% include 'props_sub2.twig' %}
-}

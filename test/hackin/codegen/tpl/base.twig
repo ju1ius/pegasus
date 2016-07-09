@@ -1,7 +1,0 @@
-class Foo
-{
-{% postpone -%}
-{{ data_collector.retrieve('properties') | join }}
-{%- endpostpone %}
-{% block methods %}{% endblock %}
-}
