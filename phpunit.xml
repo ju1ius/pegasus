@@ -29,8 +29,7 @@
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">src</directory>
             <exclude>
-                <directory suffix=".php">/path/to/files</directory>
-                <file>/path/to/file</file>
+                <directory suffix=".php">src/Debug</directory>
             </exclude>
         </whitelist>
     </filter>
