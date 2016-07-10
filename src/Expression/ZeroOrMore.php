@@ -23,8 +23,27 @@ class ZeroOrMore extends Quantifier
         parent::__construct($child, 0, INF, $name);
     }
 
-    public function __toString()
+    /**
+     * @inheritDoc
+     */
+    public function isZeroOrMore()
     {
-        return sprintf('(%s)*', $this->stringChildren());
+        return true;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isOneOrMore()
+    {
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isOptional()
+    {
+        return false;
     }
 }

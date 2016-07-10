@@ -26,8 +26,27 @@ class Optional extends Quantifier
         parent::__construct($child, 0, 1, $name);
     }
 
-    public function __toString()
+    /**
+     * @inheritDoc
+     */
+    public function isZeroOrMore()
     {
-        return sprintf('(%s)?', $this->stringChildren());
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isOneOrMore()
+    {
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isOptional()
+    {
+        return true;
     }
 }

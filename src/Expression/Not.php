@@ -24,7 +24,7 @@ class Not extends Decorator
 {
     public function __toString()
     {
-        return sprintf('!(%s)', $this->stringChildren());
+        return sprintf('!%s', $this->stringChildren()[0]);
     }
 
     public function isCapturing()

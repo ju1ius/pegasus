@@ -28,11 +28,25 @@ abstract class Decorator extends Composite
         parent::__construct($child ? [$child] : [], $name);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function stringChildren()
     {
-        return parent::stringChildren()[0];
+        $child = $this->children[0];
+        $str = $child instanceof Composite ? sprintf('(%s)', $child) : (string)$child;
+
+        return [$str];
     }
 
+    /**
+     * @param int|null   $offset
+     * @param Expression $value
+     *
+     * @return Expression
+     *
+     * @throws \OverflowException when offset is not 0 or when trying to append a child when there's already one.
+     */
     public function offsetSet($offset, $value)
     {
         if ($offset === 0 || ($offset === null && $this->count() === 0)) {

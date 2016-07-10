@@ -10,6 +10,7 @@
 
 namespace ju1ius\Pegasus\Expression;
 
+use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Parser\Parser;
@@ -21,13 +22,8 @@ use ju1ius\Pegasus\Parser\Scope;
  * Expressions are tested in order from first to last.
  * The first to succeed wins.
  */
-class OneOf extends Composite
+class OneOf extends Combinator
 {
-    public function __toString()
-    {
-        return implode(' | ', $this->stringChildren());
-    }
-
     public function isCapturingDecidable()
     {
         $capturingChildren = 0;
@@ -54,5 +50,23 @@ class OneOf extends Composite
             }
             $parser->pos = $start;
         }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function __toString()
+    {
+        return implode(' | ', $this->stringChildren());
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function stringChildren()
+    {
+        return array_map(function (Expression $child) {
+            return $child instanceof OneOf ? sprintf('(%s)', $child) : (string)$child;
+        }, $this->children);
     }
 }

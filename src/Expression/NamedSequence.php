@@ -10,6 +10,7 @@
 
 namespace ju1ius\Pegasus\Expression;
 
+use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Parser\Parser;
 use ju1ius\Pegasus\Parser\Scope;
@@ -19,7 +20,7 @@ use ju1ius\Pegasus\Parser\Scope;
  *
  * @author ju1ius <ju1ius@laposte.net>
  */
-class NamedSequence extends Composite
+class NamedSequence extends Combinator
 {
     public $label;
 
@@ -30,18 +31,6 @@ class NamedSequence extends Composite
     {
         $this->label = $label;
         parent::__construct($children, '');
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function __toString()
-    {
-        return sprintf(
-            '%s <= %s',
-            implode(' ', $this->stringChildren()),
-            $this->label
-        );
     }
 
     /**
@@ -66,5 +55,31 @@ class NamedSequence extends Composite
         return $parser->isCapturing
             ? new Node\Composite($this->label, $startPos, $parser->pos, $children)
             : true;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function __toString()
+    {
+        return sprintf(
+            '%s <= %s',
+            implode(' ', $this->stringChildren()),
+            $this->label
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function stringChildren()
+    {
+        return array_map(function (Expression $child) {
+            if ($child instanceof OneOf || $child instanceof NamedSequence) {
+                return sprintf('(%s)', $child);
+            }
+
+            return (string)$child;
+        }, $this->children);
     }
 }

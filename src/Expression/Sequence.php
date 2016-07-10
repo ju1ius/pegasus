@@ -21,13 +21,8 @@ use ju1ius\Pegasus\Parser\Scope;
  *
  * In other words, it's a concatenation operator: each piece has to match, one after another.
  */
-class Sequence extends Composite
+class Sequence extends Combinator
 {
-    public function __toString()
-    {
-        return implode(' ', $this->stringChildren());
-    }
-
     public function getCaptureCount()
     {
         return array_reduce($this->children, function ($n, Expression $child) {
@@ -54,5 +49,24 @@ class Sequence extends Composite
         return $parser->isCapturing
             ? new Node\Composite($this->name, $startPos, $parser->pos, $children)
             : true;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function stringChildren()
+    {
+        return array_map(function (Expression $child) {
+            if ($child instanceof OneOf || $child instanceof NamedSequence) {
+                return sprintf('(%s)', $child);
+            }
+
+            return (string)$child;
+        }, $this->children);
+    }
+
+    public function __toString()
+    {
+        return implode(' ', $this->stringChildren());
     }
 }

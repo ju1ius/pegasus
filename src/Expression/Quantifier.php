@@ -80,12 +80,17 @@ class Quantifier extends Decorator
 
     public function __toString()
     {
-        return sprintf(
-            '(%s){%s,%s}',
-            $this->stringChildren(),
-            $this->min,
-            $this->max === INF ? '' : $this->max
-        );
+        if ($this->isZeroOrMore()) {
+            $q = '*';
+        } elseif ($this->isOneOrMore()) {
+            $q = '+';
+        } elseif ($this->isOptional()) {
+            $q = '?';
+        } else {
+            $q = sprintf('{%s,%s}', $this->min, $this->max === INF ? '' : $this->max);
+        }
+
+        return $this->stringChildren()[0] . $q;
     }
 
     public function match($text, Parser $parser, Scope $scope)

@@ -191,7 +191,7 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
     public function offsetGet($offset)
     {
         if (!isset($this->children[$offset])) {
-
+            // TODO: throw exception???
         }
 
         return $this->children[$offset];

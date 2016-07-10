@@ -32,7 +32,7 @@ class Label extends Decorator
 
     public function __toString()
     {
-        return sprintf('%s:(%s)', $this->label, $this->stringChildren());
+        return sprintf('%s:%s', $this->label, $this->stringChildren()[0]);
     }
 
     public function isCapturing()

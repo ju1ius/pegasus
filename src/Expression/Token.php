@@ -30,12 +30,13 @@ class Token extends Decorator
                     $startPos,
                     $parser->pos,
                     substr($text, $startPos, $parser->pos - $startPos)
-                ) : true;
+                )
+                : true;
         }
     }
 
     public function __toString()
     {
-        return sprintf('@(%s)', $this->children[0]->__toString());
+        return sprintf('@%s', $this->stringChildren()[0]);
     }
 }
