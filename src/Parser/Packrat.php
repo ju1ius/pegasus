@@ -30,17 +30,7 @@ class Packrat extends RecursiveDescent
     protected $memo = [];
 
     /**
-     * Return the parse tree matching this expression at the given position,
-     * not necessarily extending all the way to the end of $text.
-     *
-     * @throw ParseError if there's no match there
-     *
-     * @param string $source
-     * @param int    $pos
-     * @param null   $startRule
-     *
-     * @return Node|null
-     * @throws \ju1ius\Pegasus\Exception\ParseError
+     * @inheritdoc
      */
     public function parse($source, $pos = 0, $startRule = null)
     {
@@ -56,11 +46,11 @@ class Packrat extends RecursiveDescent
      * ensures that no rule is ever evaluated more than once at a given position.
      *
      * When rule R is applied at position P, APPLY-RULE consults the memo table.
+     *
      * If the memo table indicates that R was previously applied at P,
-     * the appropriate parse tree node is returned,
-     * and the parser’s current position is updated accordingly.
-     * Otherwise, APPLY-RULE evaluates the rule,
-     * stores the result in the memo table,
+     * the appropriate parse tree node is returned and the parser’s current position is updated accordingly.
+     *
+     * Otherwise, APPLY-RULE evaluates the rule, stores the result in the memo table,
      * and returns the corresponding parse tree node.
      *
      * @param string $rule
