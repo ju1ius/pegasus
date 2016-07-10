@@ -10,6 +10,8 @@
 
 namespace ju1ius\Pegasus\Visitor;
 
+use ju1ius\Pegasus\Node;
+
 /**
  * @author ju1ius <ju1ius@laposte.net>
  */
@@ -18,7 +20,7 @@ abstract class NodeVisitor implements NodeVisitorInterface
     /**
      * @inheritDoc
      */
-    public function beforeTraverse($node)
+    public function beforeTraverse(Node $node)
     {
         return null;
     }
@@ -26,7 +28,7 @@ abstract class NodeVisitor implements NodeVisitorInterface
     /**
      * @inheritDoc
      */
-    public function afterTraverse($node)
+    public function afterTraverse(Node $node)
     {
         return null;
     }
@@ -34,7 +36,7 @@ abstract class NodeVisitor implements NodeVisitorInterface
     /**
      * @inheritDoc
      */
-    public function enterNode($node)
+    public function enterNode(Node $node, Node $parent = null, $index = null)
     {
         return null;
     }
@@ -42,7 +44,7 @@ abstract class NodeVisitor implements NodeVisitorInterface
     /**
      * @inheritDoc
      */
-    public function leaveNode($node)
+    public function leaveNode(Node $node, Node $parent = null, $index = null)
     {
         return null;
     }

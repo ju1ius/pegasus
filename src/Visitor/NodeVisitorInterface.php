@@ -11,6 +11,7 @@
 
 namespace ju1ius\Pegasus\Visitor;
 
+use ju1ius\Pegasus\Node;
 
 /**
  * Generic Visitor interface
@@ -20,36 +21,40 @@ interface NodeVisitorInterface
     /**
      * Called once before traversal.
      *
-     * @param mixed $node
+     * @param Node $node
      *
-     * @return mixed
+     * @return Node
      */
-    public function beforeTraverse($node);
+    public function beforeTraverse(Node $node);
 
     /**
      * Called when entering a node.
      *
-     * @param mixed $node
+     * @param Node     $node
+     * @param Node     $parent
+     * @param int|null $index
      *
-     * @return mixed
+     * @return Node
      */
-    public function enterNode($node);
+    public function enterNode(Node $node, Node $parent = null, $index = null);
 
     /**
      * Called when leaving a node.
      *
-     * @param mixed $node
+     * @param Node     $node
+     * @param Node     $parent
+     * @param int|null $index
      *
-     * @return mixed
+     * @return Node
      */
-    public function leaveNode($node);
+    public function leaveNode(Node $node, Node $parent = null, $index = null);
 
     /**
      * Called once after traversal.
      *
-     * @param mixed $node
+     * @param Node $node
      *
-     * @return mixed
+     * @return Node
      */
-    public function afterTraverse($node);
+    public function afterTraverse(Node $node);
 }

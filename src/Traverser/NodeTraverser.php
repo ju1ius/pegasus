@@ -10,6 +10,7 @@
 
 namespace ju1ius\Pegasus\Traverser;
 
+use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Visitor\NodeVisitorInterface;
 
 /**
@@ -75,22 +76,22 @@ class NodeTraverser implements NodeTraverserInterface
         return $node;
     }
 
-    protected function traverseNode($node)
+    protected function traverseNode(Node $node, Node $parent = null, $index = null)
     {
         foreach ($this->visitors as $visitor) {
-            if (null !== $result = $visitor->enterNode($node)) {
+            if (null !== $result = $visitor->enterNode($node, $parent, $index)) {
                 $node = $result;
             }
         }
 
         foreach ($node->children as $i => $child) {
-            if (null !== $result = $this->traverseNode($child)) {
+            if (null !== $result = $this->traverseNode($child, $node, $i)) {
                 $node->children[$i] = $result;
             }
         }
 
         foreach ($this->visitors as $visitor) {
-            if (null !== $result = $visitor->leaveNode($node)) {
+            if (null !== $result = $visitor->leaveNode($node, $parent, $index)) {
                 $node = $result;
             }
         }

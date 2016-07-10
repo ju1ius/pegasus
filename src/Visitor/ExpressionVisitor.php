@@ -8,11 +8,10 @@
  * file that was distributed with this source code.
  */
 
-
 namespace ju1ius\Pegasus\Visitor;
 
 use ju1ius\Pegasus\Expression;
-
+use ju1ius\Pegasus\Expression\Composite;
 
 /**
  * Generic ExpressionVisitorInterface implementation.
@@ -32,7 +31,7 @@ abstract class ExpressionVisitor implements ExpressionVisitorInterface
     /**
      * @inheritDoc
      */
-    public function enterExpression(Expression $expr)
+    public function enterExpression(Expression $expr, Composite $parent = null, $index = null)
     {
         return null;
     }
@@ -40,7 +39,7 @@ abstract class ExpressionVisitor implements ExpressionVisitorInterface
     /**
      * @inheritDoc
      */
-    public function leaveExpression(Expression $expr)
+    public function leaveExpression(Expression $expr, Composite $parent = null, $index = null)
     {
         return null;
     }

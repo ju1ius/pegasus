@@ -2,7 +2,7 @@
 /*
  * This file is part of Pegasus
  *
- * (c) 2014 Jules Bernable 
+ * (c) 2014 Jules Bernable
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,6 +11,7 @@
 namespace ju1ius\Pegasus\Visitor;
 
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Grammar;
 
 interface GrammarVisitorInterface
@@ -78,12 +79,14 @@ interface GrammarVisitorInterface
      *  * null:      $expr stays as-is
      *  * otherwise: $expr is set to the return value
      *
-     * @param Grammar    $grammar The visited grammar.
-     * @param Expression $expr    The visited expression.
+     * @param Grammar        $grammar The visited grammar.
+     * @param Expression     $expr    The visited expression.
+     * @param Composite|null $parent  The parent expression, if any.
+     * @param int|null       $index   The index of the visited expression in it's parent.
      *
      * @return mixed
      */
-    public function enterExpression(Grammar $grammar, Expression $expr);
+    public function enterExpression(Grammar $grammar, Expression $expr, Composite $parent = null, $index = null);
 
     /**
      * Called when leaving an expression.
@@ -94,10 +97,13 @@ interface GrammarVisitorInterface
      *  * array:     The return value is merged into the parent array (at the position of the $node)
      *  * otherwise: $expr is set to the return value
      *
-     * @param Grammar    $grammar The visited grammar.
-     * @param Expression $expr    The visited expression.
+     * @param Grammar        $grammar The visited grammar.
+     * @param Expression     $expr    The visited expression.
+     * @param Composite|null $parent  The parent expression, if any.
+     * @param int|null       $index   The index of the visited expression in it's parent.
      *
      * @return mixed
+     * @internal param null $inde
      */
-    public function leaveExpression(Grammar $grammar, Expression $expr);
+    public function leaveExpression(Grammar $grammar, Expression $expr, Composite $parent = null, $index = null);
 }

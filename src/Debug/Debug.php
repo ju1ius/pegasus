@@ -13,9 +13,10 @@ namespace ju1ius\Pegasus\Debug;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Traverser\ExpressionTraverser;
-use ju1ius\Pegasus\Traverser\GrammarTraverser;
-use ju1ius\Pegasus\Traverser\NodeTraverser;
+use Symfony\Component\Console\Formatter\OutputFormatter;
+use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * @author ju1ius <ju1ius@laposte.net>
@@ -23,56 +24,75 @@ use ju1ius\Pegasus\Traverser\NodeTraverser;
 final class Debug
 {
     /**
-     * @param $value
+     * @param mixed           $value
+     * @param OutputInterface $output
      */
-    public static function dump($value)
+    public static function dump($value, OutputInterface $output = null)
     {
-        if ($value instanceof Grammar) {
-            self::dumpGrammar($value);
-        } elseif ($value instanceof Expression) {
-            self::dumpExpression($value);
-        } elseif ($value instanceof Node) {
-            self::dumpNode($value);
+        if (!$output) {
+            $output = self::createConsoleOutput();
         } else {
-            var_dump($value);
+            OutputStyles::setOutputStyles($output);
+        }
+
+        if ($value instanceof Grammar) {
+            GrammarDumper::dump($value, $output);
+        } elseif ($value instanceof Expression) {
+            ExpressionDumper::dump($value, $output);
+        } elseif ($value instanceof Node) {
+            ParseTreeDumper::dump($value, $output);
+        } else {
+            dump($value);
         }
     }
 
     /**
-     * Prints a string representation of a grammar tree.
-     *
-     * @param Grammar $grammar
-     *
-     * @throws Grammar\Exception\SelfReferencingRule
+     * @param Grammar|Expression   $value
+     * @param OutputInterface|null $output
      */
-    public static function dumpGrammar(Grammar $grammar)
+    public static function highlight($value, OutputInterface $output = null)
     {
-        $t = new GrammarTraverser(false);
-        $t->addVisitor(new GrammarPrinter);
-        $t->traverse($grammar);
+        if (!$value instanceof Grammar && !$value instanceof Expression) {
+            throw new \InvalidArgumentException(sprintf(
+                'Can only highlight grammars or expressions.'
+            ));
+        }
+        if ($value instanceof Grammar) {
+            $value = GrammarHighlighter::highlight($value);
+        } elseif ($value instanceof Expression) {
+            $value = ExpressionHighlighter::highlight($value);
+        }
+
+        if (!$output) {
+            $output = self::createConsoleOutput();
+        } else {
+            OutputStyles::setOutputStyles($output);
+        }
+
+        $output->writeln($value);
     }
 
     /**
-     * Prints a string representation of an expression tree.
-     *
-     * @param Expression $expr
+     * @return ConsoleOutput
      */
-    public static function dumpExpression(Expression $expr)
+    public static function createConsoleOutput()
     {
-        $t = new ExpressionTraverser();
-        $t->addVisitor(new ExpressionPrinter);
-        $t->traverse($expr);
+        $output = new ConsoleOutput();
+        $output->setFormatter(new OutputFormatter(true));
+        OutputStyles::setOutputStyles($output);
+
+        return $output;
     }
 
     /**
-     * Prints a string representation of a parse tree.
-     *
-     * @param Node $node
+     * @return BufferedOutput
      */
-    public static function dumpNode(Node $node)
+    public static function createBufferedOutput()
     {
-        $t = new NodeTraverser();
-        $t->addVisitor(new ParseTreePrinter(null, false));
-        $t->traverse($node);
+        $output = new BufferedOutput();
+        $output->setFormatter(new OutputFormatter(true));
+        OutputStyles::setOutputStyles($output);
+
+        return $output;
     }
 }

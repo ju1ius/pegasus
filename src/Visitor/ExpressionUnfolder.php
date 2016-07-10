@@ -11,6 +11,7 @@
 
 namespace ju1ius\Pegasus\Visitor;
 
+use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\Reference;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Expression;
@@ -45,7 +46,7 @@ class ExpressionUnfolder extends ExpressionVisitor
         $this->isTopLevel = true;
     }
 
-    public function enterExpression(Expression $expr)
+    public function enterExpression(Expression $expr, Composite $parent = null, $index = null)
     {
         if (!$this->isTopLevel && $expr->name && isset($this->grammar[$expr->name])) {
             return new Reference($expr->name);

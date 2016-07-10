@@ -11,6 +11,7 @@
 namespace ju1ius\Pegasus\Visitor;
 
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Grammar;
 
 /**
@@ -55,7 +56,7 @@ class GrammarVisitor implements GrammarVisitorInterface
     /**
      * @inheritDoc
      */
-    public function enterExpression(Grammar $grammar, Expression $expr)
+    public function enterExpression(Grammar $grammar, Expression $expr, Composite $parent = null, $index = null)
     {
         return null;
     }
@@ -63,7 +64,7 @@ class GrammarVisitor implements GrammarVisitorInterface
     /**
      * @inheritDoc
      */
-    public function leaveExpression(Grammar $grammar, Expression $expr)
+    public function leaveExpression(Grammar $grammar, Expression $expr, Composite $parent = null, $index = null)
     {
         return null;
     }

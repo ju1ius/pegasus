@@ -10,7 +10,7 @@
 
 namespace ju1ius\Pegasus\Traverser;
 
-use ju1ius\Pegasus\Exception\VisitationError;
+use ju1ius\Pegasus\Traverser\Exception\ParseTreeVisitationError;
 use ju1ius\Pegasus\Node;
 
 /**
@@ -30,6 +30,11 @@ class NamedNodeTraverser
      */
     private $leaveVisitors;
 
+    /**
+     * @var Node
+     */
+    private $rootNode;
+
     final public function traverse(Node $node)
     {
         if ($this->leaveVisitors === null) {
@@ -46,6 +51,7 @@ class NamedNodeTraverser
      */
     protected function beforeTraverse(Node $node)
     {
+        $this->rootNode = $node;
     }
 
     /**
@@ -55,6 +61,8 @@ class NamedNodeTraverser
      */
     protected function afterTraverse($node)
     {
+        $this->rootNode = null;
+
         return $node;
     }
 
@@ -118,10 +126,10 @@ class NamedNodeTraverser
             }
 
             return $this->leaveNode($node, $children);
-        } catch (VisitationError $err) {
+        } catch (ParseTreeVisitationError $err) {
             throw $err;
         } catch (\Exception $err) {
-            throw new VisitationError($node, $err->getMessage(), $err);
+            throw new ParseTreeVisitationError($node, $this->rootNode, '', $err);
         }
     }
 

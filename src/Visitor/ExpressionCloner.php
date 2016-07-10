@@ -14,7 +14,7 @@ use ju1ius\Pegasus\Expression;
 
 class ExpressionCloner extends ExpressionVisitor
 {
-    public function leaveExpression(Expression $expr)
+    public function leaveExpression(Expression $expr, Composite $parent = null, $index = null)
     {
         return clone $expr;
     }

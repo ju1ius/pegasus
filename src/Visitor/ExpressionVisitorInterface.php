@@ -11,6 +11,7 @@
 namespace ju1ius\Pegasus\Visitor;
 
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Expression\Composite;
 
 interface ExpressionVisitorInterface
 {
@@ -34,11 +35,13 @@ interface ExpressionVisitorInterface
      *  * null:      $node stays as-is
      *  * otherwise: $node is set to the return value
      *
-     * @param Expression $expr The visited expression
+     * @param Expression $expr  The visited expression
+     * @param Composite  $parent
+     * @param int|null   $index The index of the visited expression in it's parent (null inside a top-level expression).
      *
      * @return mixed
      */
-    public function enterExpression(Expression $expr);
+    public function enterExpression(Expression $expr, Composite $parent = null, $index = null);
 
     /**
      * Called when leaving a node.
@@ -49,11 +52,13 @@ interface ExpressionVisitorInterface
      *  * array:     The return value is merged into the parent array (at the position of the $node)
      *  * otherwise: $node is set to the return value
      *
-     * @param Expression $expr The visited expression
+     * @param Expression $expr  The visited expression
+     * @param Composite  $parent
+     * @param int|null   $index The index of the visited expression in it's parent (null inside a top-level expression).
      *
      * @return mixed
      */
-    public function leaveExpression(Expression $expr);
+    public function leaveExpression(Expression $expr, Composite $parent = null, $index = null);
 
     /**
      * Called once after traversal.

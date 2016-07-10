@@ -157,7 +157,7 @@ class GrammarTraverser implements GrammarTraverserInterface
         return $expr;
     }
 
-    protected function traverseExpression(Grammar $grammar, Expression $expr)
+    protected function traverseExpression(Grammar $grammar, Expression $expr, Composite $parent = null, $index = null)
     {
         // Convert all non top-level expressions to reference if needed,
         // in order to avoid infinite recursion in recursive rules.
@@ -169,21 +169,21 @@ class GrammarTraverser implements GrammarTraverserInterface
         $this->inTopLevelExpression = false;
 
         foreach ($this->visitors as $visitor) {
-            if (null !== $result = $visitor->enterExpression($grammar, $expr)) {
+            if (null !== $result = $visitor->enterExpression($grammar, $expr, $parent, $index)) {
                 $expr = $result;
             }
         }
 
         if ($expr instanceof Composite) {
             foreach ($expr as $i => $child) {
-                if (null !== $result = $this->traverseExpression($grammar, $child)) {
+                if (null !== $result = $this->traverseExpression($grammar, $child, $expr, $i)) {
                     $expr[$i] = $result;
                 }
             }
         }
 
         foreach ($this->visitors as $visitor) {
-            if (null !== $result = $visitor->leaveExpression($grammar, $expr)) {
+            if (null !== $result = $visitor->leaveExpression($grammar, $expr, $parent, $index)) {
                 $expr = $result;
             }
         }

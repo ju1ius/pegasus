@@ -12,6 +12,7 @@
 namespace ju1ius\Pegasus\Visitor;
 
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\Reference;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Exception\CircularReference;
@@ -33,7 +34,7 @@ class ExpressionFolder extends ExpressionVisitor
         $this->grammar = $grammar;
     }
 
-    public function leaveExpression(Expression $expr)
+    public function leaveExpression(Expression $expr, Composite $parent = null, $index = null)
     {
         if (!$expr instanceof Reference) {
             return null;

@@ -84,10 +84,10 @@ class ExpressionTraverser implements ExpressionTraverserInterface
         return $expr;
     }
 
-    protected function traverseExpression(Expression $expr)
+    protected function traverseExpression(Expression $expr, Expression $parent = null, $index = null)
     {
         foreach ($this->visitors as $visitor) {
-            if (null !== $result = $visitor->enterExpression($expr)) {
+            if (null !== $result = $visitor->enterExpression($expr, $parent, $index)) {
                 $expr = $result;
             }
         }
@@ -100,14 +100,14 @@ class ExpressionTraverser implements ExpressionTraverserInterface
                 }
                 $this->visited[$child->id] = true;
 
-                if (null !== $result = $this->traverseExpression($child)) {
+                if (null !== $result = $this->traverseExpression($child, $expr, $i)) {
                     $expr[$i] = $result;
                 }
             }
         }
 
         foreach ($this->visitors as $visitor) {
-            if (null !== $result = $visitor->leaveExpression($expr)) {
+            if (null !== $result = $visitor->leaveExpression($expr, $parent, $index)) {
                 $expr = $result;
             }
         }
