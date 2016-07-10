@@ -44,7 +44,7 @@ class SequenceTest extends ExpressionTestCase
 
     /**
      * @dataProvider testMatchErrorProvider
-     * @expectedException \ju1ius\Pegasus\Exception\ParseError
+     * @expectedException \ju1ius\Pegasus\Parser\Exception\ParseError
      *
      * @param Grammar $expr
      * @param array   $match_args

@@ -22,8 +22,6 @@ use ju1ius\Pegasus\Traverser\NodeTraverser;
  * about where in the parse tree the error occurred. Otherwise, it could be
  * tiresome to figure out what went wrong; you'd have to play back the whole
  * tree traversal in your head.
- *
- * @todo Make this serializable
  */
 class VisitationError extends \RuntimeException
 {
