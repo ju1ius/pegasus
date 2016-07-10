@@ -11,7 +11,7 @@
 namespace ju1ius\Pegasus\Expression;
 
 use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Parser\ParserInterface;
+use ju1ius\Pegasus\Parser\Parser;
 use ju1ius\Pegasus\Parser\Scope;
 use ju1ius\Pegasus\Utils\StringUtil;
 
@@ -61,14 +61,17 @@ class RegExp extends Terminal
         return sprintf('/%s/%s', $this->pattern, implode('', $this->flags));
     }
 
-    public function match($text, $pos, ParserInterface $parser, Scope $scope)
+    public function match($text, Parser $parser, Scope $scope)
     {
-        if (preg_match($this->compiledPattern, $text, $matches, 0, $pos)) {
+        $start = $parser->pos;
+        if (preg_match($this->compiledPattern, $text, $matches, 0, $start)) {
             $match = $matches[0];
-            $length = strlen($match);
-            $node = new Node\Terminal($this->name, $pos, $pos + $length, $match, ['matches' => $matches]);
+            $end = $parser->pos += strlen($match);
+            if (!$parser->isCapturing) {
+                return true;
+            }
 
-            return $node;
+            return new Node\Terminal($this->name, $start, $end, $match, ['matches' => $matches]);
         }
     }
 }

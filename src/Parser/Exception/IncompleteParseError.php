@@ -8,11 +8,9 @@
  * file that was distributed with this source code.
  */
 
-
-namespace ju1ius\Pegasus\Exception;
+namespace ju1ius\Pegasus\Parser\Exception;
 
 use ju1ius\Pegasus\Expression;
-
 
 /**
  * A call to parse() matched a whole Expression but did not consume the entire text.

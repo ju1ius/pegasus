@@ -10,8 +10,8 @@
 
 namespace ju1ius\Pegasus\Parser\Generated;
 
-use ju1ius\Pegasus\Exception\IncompleteParseError;
-use ju1ius\Pegasus\Exception\ParseError;
+use ju1ius\Pegasus\Parser\Exception\IncompleteParseError;
+use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Node;
 

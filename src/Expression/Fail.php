@@ -12,7 +12,7 @@
 namespace ju1ius\Pegasus\Expression;
 
 use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Parser\ParserInterface;
+use ju1ius\Pegasus\Parser\Parser;
 use ju1ius\Pegasus\Parser\Scope;
 
 /**
@@ -41,7 +41,7 @@ class Fail extends Terminal
     /**
      * @inheritdoc
      */
-    public function match($text, $pos, ParserInterface $parser, Scope $scope)
+    public function match($text, Parser $parser, Scope $scope)
     {
         return null;
     }

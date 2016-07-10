@@ -116,7 +116,7 @@ class MetaGrammarTest extends PegasusTestCase
 
     /**
      * @dataProvider testReferenceNotEqualsProvider
-     * @expectedException \ju1ius\Pegasus\Exception\ParseError
+     * @expectedException \ju1ius\Pegasus\Parser\Exception\ParseError
      */
     public function testReferenceNotEquals($input)
     {

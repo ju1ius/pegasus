@@ -11,13 +11,13 @@
 namespace ju1ius\Pegasus\Expression;
 
 use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Parser\ParserInterface;
+use ju1ius\Pegasus\Parser\Parser;
 use ju1ius\Pegasus\Parser\Scope;
 
 /**
  * Expression that skips over what his sub-expression matches.
  *
- * This is equivalent to ignoring nodes in the node visitor, but it can dramatically reduce the size of the parse tree.
+ * It can dramatically reduce the size of the parse tree.
  */
 class Skip extends Decorator
 {
@@ -36,10 +36,15 @@ class Skip extends Decorator
         return true;
     }
 
-    public function match($text, $pos, ParserInterface $parser, Scope $scope)
+    public function match($text, Parser $parser, Scope $scope)
     {
-        if ($node = $parser->apply($this->children[0], $pos, $scope)) {
-            return new Node\Transient($node->start, $node->end);
-        }
+        $capturing = $parser->isCapturing;
+        $parser->isCapturing = false;
+
+        $result = $this->children[0]->match($text, $parser, $scope);
+
+        $parser->isCapturing = $capturing;
+
+        return !!$result;
     }
 }

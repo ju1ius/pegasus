@@ -10,7 +10,7 @@
 
 namespace ju1ius\Pegasus;
 
-use ju1ius\Pegasus\Parser\ParserInterface;
+use ju1ius\Pegasus\Parser\Parser;
 use ju1ius\Pegasus\Parser\Scope;
 
 /**
@@ -72,14 +72,14 @@ abstract class Expression
      * (not necessarily extending all the way to the end of $text),
      * or null if the match failed.
      *
-     * @param string          $text   The full text of the match subject.
-     * @param int             $pos    The position at which this expression must start matching.
-     * @param ParserInterface $parser The parser used for this expression.
-     * @param Scope           $scope  The scope of bindings for the current sequence.
+     * @param string $text   The full text of the match subject.
+     * @param Parser $parser The parser used for this expression.
+     * @param Scope  $scope  The scope of bindings for the current sequence.
      *
      * @return Node|null
+     * @internal param int $pos The position at which this expression must start matching.
      */
-    abstract public function match($text, $pos, ParserInterface $parser, Scope $scope);
+    abstract public function match($text, Parser $parser, Scope $scope);
 
     /**
      * @param string                     $text

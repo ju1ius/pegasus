@@ -10,6 +10,14 @@ $SYNTAX = file_get_contents(__DIR__ . '/calculator.peg');
 
 final class Calculator extends NamedNodeTraverser
 {
+    /**
+     * @inheritDoc
+     */
+    protected function beforeTraverse(\ju1ius\Pegasus\Node $node)
+    {
+        return;
+    }
+
     protected function leave_Add($node, $lhs, $rhs)
     {
         return $lhs + $rhs;
@@ -58,7 +66,12 @@ $grammar = Grammar::fromSyntax($SYNTAX);
 //Debug::dump($grammar);
 
 $parser = new LeftRecursivePackrat($grammar);
-$tree = $parser->parseAll($argv[1]);
+$input = '3 * 12 / 24 - 7.2';
+if (!empty($argv[1])) {
+    $input = $argv[1];
+}
+$tree = $parser->parseAll($input);
+//Debug::dump($tree);
 $calculator = new Calculator();
 $result = $calculator->traverse($tree);
 echo ">>> ", $result, "\n";

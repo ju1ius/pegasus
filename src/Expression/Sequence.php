@@ -13,7 +13,7 @@ namespace ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Parser\ParserInterface;
+use ju1ius\Pegasus\Parser\Parser;
 use ju1ius\Pegasus\Parser\Scope;
 
 /**
@@ -35,23 +35,24 @@ class Sequence extends Composite
         }, 0);
     }
 
-    public function match($text, $pos, ParserInterface $parser, Scope $scope)
+    public function match($text, Parser $parser, Scope $scope)
     {
-        $nextPos = $pos;
+        $startPos = $parser->pos;
         $children = [];
         foreach ($this->children as $child) {
-            $node = $parser->apply($child, $nextPos, $scope);
-            if (!$node) {
+            $result = $child->match($text, $parser, $scope);
+            if (!$result) {
+                $parser->pos = $startPos;
                 return null;
             }
-            $length = $node->end - $node->start;
-            $nextPos += $length;
-            if ($node->isTransient) {
+            if ($result === true) {
                 continue;
             }
-            $children[] = $node;
+            $children[] = $result;
         }
 
-        return new Node\Composite($this->name, $pos, $nextPos, $children);
+        return $parser->isCapturing
+            ? new Node\Composite($this->name, $startPos, $parser->pos, $children)
+            : true;
     }
 }

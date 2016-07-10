@@ -12,7 +12,7 @@ namespace ju1ius\Pegasus\Expression;
 
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Parser\ParserInterface;
+use ju1ius\Pegasus\Parser\Parser;
 use ju1ius\Pegasus\Parser\Scope;
 use ju1ius\Pegasus\Utils\StringUtil;
 
@@ -56,10 +56,14 @@ class Literal extends Terminal
         );
     }
 
-    public function match($text, $pos, ParserInterface $parser, Scope $scope)
+    public function match($text, Parser $parser, Scope $scope)
     {
-        if (substr($text, $pos, $this->length) === $this->literal) {
-            return new Node\Terminal($this->name, $pos, $pos + $this->length, $this->literal);
+        $start = $parser->pos;
+        if (substr($text, $start, $this->length) === $this->literal) {
+            $end = $parser->pos += $this->length;
+            return $parser->isCapturing
+                ? new Node\Terminal($this->name, $start, $end, $this->literal)
+                : true;
         }
     }
 }

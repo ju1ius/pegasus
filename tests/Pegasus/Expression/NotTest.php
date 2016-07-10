@@ -45,7 +45,7 @@ class NotTest extends ExpressionTestCase
 
     /**
      * @dataProvider testMatchErrorProvider
-     * @expectedException \ju1ius\Pegasus\Exception\ParseError
+     * @expectedException \ju1ius\Pegasus\Parser\Exception\ParseError
      */
     public function testMatchError(Expression $child, $args)
     {

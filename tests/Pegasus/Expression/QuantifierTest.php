@@ -87,7 +87,7 @@ class QuantifierTest extends ExpressionTestCase
 
     /**
      * @dataProvider testMatchErrorProvider
-     * @expectedException \ju1ius\Pegasus\Exception\ParseError
+     * @expectedException \ju1ius\Pegasus\Parser\Exception\ParseError
      */
     public function testMatchError($expr, $match_args)
     {

@@ -11,7 +11,7 @@
 namespace ju1ius\Pegasus\Expression;
 
 use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Parser\ParserInterface;
+use ju1ius\Pegasus\Parser\Parser;
 use ju1ius\Pegasus\Parser\Scope;
 
 /**
@@ -55,13 +55,16 @@ class Match extends Terminal
     /**
      * @inheritDoc
      */
-    public function match($text, $pos, ParserInterface $parser, Scope $scope)
+    public function match($text, Parser $parser, Scope $scope)
     {
-        if (preg_match($this->compiledPattern, $text, $matches, 0, $pos)) {
+        $start = $parser->pos;
+        if (preg_match($this->compiledPattern, $text, $matches, 0, $start)) {
             $match = $matches[0];
-            $length = strlen($match);
+            $end = $parser->pos += strlen($match);
 
-            return new Node\Terminal($this->name, $pos, $pos + $length, $match);
+            return $parser->isCapturing
+                ? new Node\Terminal($this->name, $start, $end, $match)
+                : true;
         }
     }
 

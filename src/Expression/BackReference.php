@@ -5,7 +5,7 @@ namespace ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Parser\ParserInterface;
+use ju1ius\Pegasus\Parser\Parser;
 use ju1ius\Pegasus\Parser\Scope;
 
 /**
@@ -30,13 +30,18 @@ class BackReference extends Terminal
         parent::__construct($name);
     }
 
-    public function match($text, $pos, ParserInterface $parser, Scope $scope)
+    public function match($text, Parser $parser, Scope $scope)
     {
+        $start = $parser->pos;
         $pattern = $scope[$this->identifier];
         $length = strlen($pattern);
 
-        if ($pattern === $value = substr($text, $pos, $length)) {
-            return new Node\Terminal($this->name, $pos, $pos + $length, $value);
+        if ($pattern === substr($text, $start, $length)) {
+            $end = $parser->pos += $length;
+
+            return $parser->isCapturing ?
+                new Node\Terminal($this->name, $start, $end, $pattern)
+                : true;
         }
     }
 
