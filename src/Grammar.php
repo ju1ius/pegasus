@@ -36,7 +36,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
     /**
      * @var string[]
      */
-    protected $inlinedRules = [];
+    protected $inlineRules = [];
 
     /**
      * @var array
@@ -214,15 +214,22 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
     public function inline(...$ruleNames)
     {
         foreach ($ruleNames as $ruleName) {
-            $this->inlinedRules[$ruleName] = true;
+            $this->inlineRules[$ruleName] = true;
         }
 
         return $this;
     }
 
+    /**
+     * Returns whether the given rule is inlineable.
+     *
+     * @param string $ruleName
+     *
+     * @return bool
+     */
     public function isInlined($ruleName)
     {
-        return isset($this->inlinedRules[$ruleName]);
+        return isset($this->inlineRules[$ruleName]);
     }
 
     //

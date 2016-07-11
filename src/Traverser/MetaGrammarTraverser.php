@@ -56,12 +56,24 @@ class MetaGrammarTraverser extends NamedNodeTraverser
     private $startRule;
 
     /**
+     * @var bool
+     */
+    private $inlining;
+
+    /**
+     * @var bool
+     */
+    private $lexical;
+
+    /**
      * @inheritDoc
      */
     protected function beforeTraverse(Node $node)
     {
         $this->grammar = new Grammar();
         $this->startRule = null;
+        $this->inlining = false;
+        $this->lexical = false;
     }
 
     /**
@@ -72,6 +84,7 @@ class MetaGrammarTraverser extends NamedNodeTraverser
         if ($this->startRule) {
             $this->grammar->setStartRule($this->startRule);
         }
+
         return $this->grammar;
     }
 
@@ -99,18 +112,41 @@ class MetaGrammarTraverser extends NamedNodeTraverser
         return ['whitespace' => $expr];
     }
 
-    private function leave_tokens_directive(Node $node, Expression $expr)
+    private function leave_lexical_directive(Node $node, ...$children)
     {
-        return ['tokens' => $expr];
+        $this->lexical = true;
+
+        return 'lexical';
+    }
+
+    private function leave_inline_directive(Node $node, ...$children)
+    {
+        $this->inlining = true;
+
+        return 'inline';
     }
 
     //
     // Rules
     // --------------------------------------------------------------------------------------------------------------
 
-    private function leave_rule(Node $node, $name, Expression $expr)
+    private function leave_rule(Node $node, $directives, $name, Expression $expr)
     {
+        foreach ($directives as $directive) {
+            switch ($directive) {
+                case 'inline':
+                    $this->grammar->inline($name);
+                    break;
+                case 'lexical':
+                    // TODO: lexical rules
+                    break;
+            }
+        }
+
         $this->grammar[$name] = $expr;
+
+        $this->lexical = false;
+        $this->inlining = false;
     }
 
     //
@@ -131,11 +167,6 @@ class MetaGrammarTraverser extends NamedNodeTraverser
     private function leave_Sequence(Node $node, Expression ...$children)
     {
         return new Sequence($children);
-    }
-
-    private function leave_AttributedSequence(Node $node, Expression ...$children)
-    {
-        return new AttributedSequence($children);
     }
 
     private function leave_NamedSequence(Node $node, Expression $expr, $name)
@@ -200,10 +231,9 @@ class MetaGrammarTraverser extends NamedNodeTraverser
 
     private function leave_literal(Node $node, $matches)
     {
-        $quoteChar = $matches[1];
-        $str = $matches[2];
+        list(, $quoteChar, $literal) = $matches;
 
-        return new Literal($str, '', $quoteChar);
+        return new Literal($literal, '', $quoteChar);
     }
 
     private function leave_regexp(Node $node, $matches)
@@ -235,28 +265,5 @@ class MetaGrammarTraverser extends NamedNodeTraverser
     private function leave_fail(Node $node, ...$children)
     {
         return new Fail();
-    }
-
-    //
-    // Semantics
-    // --------------------------------------------------------------------------------------------------------------
-
-    private function leave_node_action(Node $node, $nodeClass, $nodeName)
-    {
-        return new NodeAction($nodeName, $nodeClass ?: '');
-    }
-
-    private function leave_semantic_action(Node $node, $identifier)
-    {
-        return new SemanticAction($identifier);
-    }
-
-    //
-    // Expression parts
-    // --------------------------------------------------------------------------------------------------------------
-
-    private function leave_parenthesized(Node $node, ...$children)
-    {
-        return $children[0];
     }
 }
