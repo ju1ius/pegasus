@@ -12,6 +12,7 @@ namespace ju1ius\Pegasus\Command;
 
 use ju1ius\Pegasus\Debug\Debug;
 use ju1ius\Pegasus\Grammar;
+use ju1ius\Pegasus\Grammar\Optimizer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -32,7 +33,9 @@ class DumpGrammarCommand extends Command
         $this
             ->setName('grammar:dump')
             ->addArgument('path', InputArgument::OPTIONAL, 'Path to a grammar file.')
-            ->addOption('highlight', 'H', InputOption::VALUE_NONE, 'Show a syntax-highlighted version of the grammar');
+            ->addOption('highlight', 'H', InputOption::VALUE_NONE, 'Show a syntax-highlighted version of the grammar')
+            ->addOption('optimize', 'O', InputOption::VALUE_REQUIRED, 'Optimization level to apply.', Optimizer::LEVEL_1)
+        ;
     }
 
     /**
@@ -40,11 +43,21 @@ class DumpGrammarCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $optimizationLevel = $input->getOption('optimize');
+
         if ($path = $input->getArgument('path')) {
-            $grammar = Grammar::fromSyntax(file_get_contents($path));
+            $syntax = file_get_contents($path);
         } else {
-            $grammar = Grammar::fromSyntax($this->askForGrammar($input, $output));
+            $syntax = $this->askForGrammar($input, $output);
         }
+
+        $formatter = $this->getHelper('formatter');
+
+        if (!$syntax) {
+            $output->writeln($formatter->formatBlock(['No grammar given.'], 'error'));
+            return 1;
+        }
+        $grammar = Grammar::fromSyntax($syntax, null, $optimizationLevel);
 
         if ($input->getOption('highlight')) {
             Debug::highlight($grammar, $output);
@@ -58,11 +71,15 @@ class DumpGrammarCommand extends Command
         $lines = [];
         $numBlanks = 0;
         $input->setInteractive(true);
-        $helper = $this->getHelper('question');
-        $question = new Question(
-            "<question>Write a set of rules and type enter.\nTwo empty lines ends the grammar.</question>\n",
+        $question = $this->getHelper('formatter')->formatBlock([
+            '',
+            'Write a set of rules and type enter.',
+            'Two empty lines ends the grammar.',
             ''
-        );
+        ], 'question');
+        $question = new Question($question . "\n", '');
+
+        $helper = $this->getHelper('question');
         while (true) {
             $line = $helper->ask($input, $output, $question);
             if ($line) {

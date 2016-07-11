@@ -12,6 +12,7 @@
 namespace ju1ius\Pegasus;
 
 use ju1ius\Pegasus\Grammar\Builder;
+use ju1ius\Pegasus\Grammar\Optimizer;
 
 /**
  * Factory class that builds a Grammar instance capable of parsing other grammars.
@@ -21,10 +22,13 @@ use ju1ius\Pegasus\Grammar\Builder;
 final class MetaGrammar
 {
     /**
-     * @var Grammar The unique instance of the meta grammar.
+     * @var Grammar The unique instance of the optimized meta grammar.
      */
     private static $instance = null;
 
+    /**
+     * @var Grammar Unique instance of the unoptimized grammar.
+     */
     private static $grammar = null;
 
     /**
@@ -57,7 +61,7 @@ final class MetaGrammar
             //echo self::$instance, "\n";
             self::$instance->finalize();
             */
-            self::$instance = $grammar;
+            self::$instance = Optimizer::optimize($grammar, Optimizer::LEVEL_2);
         }
 
         return self::$instance;
@@ -276,7 +280,8 @@ final class MetaGrammar
         ;
 
         $grammar = $builder->getGrammar();
+        $grammar->inline('ws', 'comment');
 
-        return $grammar->fold();
+        return $grammar;
     }
 }

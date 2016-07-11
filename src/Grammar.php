@@ -70,7 +70,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      *
      * @return Grammar
      */
-    public static function fromArray(array $rules, $startRule = null)
+    public static function fromArray(array $rules, $startRule = null, $optimizationLevel = Optimizer::LEVEL_1)
     {
         $grammar = new static();
         foreach ($rules as $name => $rule) {
@@ -80,7 +80,9 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
             $grammar->setStartRule($startRule);
         }
 
-        return $grammar->unfold();
+        return $optimizationLevel
+            ? Optimizer::optimize($grammar->unfold(), $optimizationLevel)
+            : $grammar->unfold();
     }
 
     /**
@@ -88,10 +90,12 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      *
      * @param string $syntax
      * @param string $startRule Optional start rule name for the grammar.
+     * @param int    $optimizationLevel Optional optimization level.
      *
      * @return Grammar
+     * @throws Parser\Exception\IncompleteParseError
      */
-    public static function fromSyntax($syntax, $startRule = null)
+    public static function fromSyntax($syntax, $startRule = null, $optimizationLevel = Optimizer::LEVEL_1)
     {
         $metaGrammar = MetaGrammar::create();
         $tree = (new LeftRecursivePackrat($metaGrammar))->parseAll($syntax);
@@ -100,19 +104,22 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
             $grammar->setStartRule($startRule);
         }
 
-        return $grammar->optimize();
+        return $optimizationLevel
+            ? Optimizer::optimize($grammar, $optimizationLevel)
+            : $grammar;
     }
 
     /**
      * Factory method that constructs a Grammar object from an Expression.
      *
-     * @param Expression $expr      The expression to build the grammar from.
-     * @param string     $startRule Optional start rule name for the grammar.
+     * @param Expression $expr              The expression to build the grammar from.
+     * @param string     $startRule         Optional start rule name for the grammar.
+     * @param int        $optimizationLevel Optional optimization level.
      *
      * @return Grammar
      * @throws AnonymousTopLevelExpression If no named start rule could be determined.
      */
-    public static function fromExpression(Expression $expr, $startRule = null)
+    public static function fromExpression(Expression $expr, $startRule = null, $optimizationLevel = Optimizer::LEVEL_1)
     {
         if (!$startRule) {
             if (!$expr->name) {
@@ -124,7 +131,9 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
         $grammar = new static();
         $grammar[$startRule] = $expr;
 
-        return $grammar->unfold();
+        return $optimizationLevel
+            ? Optimizer::optimize($grammar->unfold(), $optimizationLevel)
+            : $grammar->unfold();
     }
 
     /**
@@ -331,13 +340,6 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
         }
 
         return $result;
-    }
-
-    public function optimize(array $options = [])
-    {
-        $optimizer = new Optimizer();
-
-        return $optimizer->optimize($this, $options);
     }
 
     /**

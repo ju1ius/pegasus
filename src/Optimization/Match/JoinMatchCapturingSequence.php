@@ -49,7 +49,6 @@ class JoinMatchCapturingSequence extends Optimization
     {
         $groupCount = 0;
         $patterns = array_map(function ($expr) use(&$groupCount) {
-            dump($expr);
             if ($expr instanceof Match) {
                 $groupCount++;
                 if (count($expr->flags)) {
