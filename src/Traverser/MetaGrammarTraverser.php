@@ -19,6 +19,7 @@ use ju1ius\Pegasus\Expression\Epsilon;
 use ju1ius\Pegasus\Expression\Fail;
 use ju1ius\Pegasus\Expression\Label;
 use ju1ius\Pegasus\Expression\Literal;
+use ju1ius\Pegasus\Expression\Match;
 use ju1ius\Pegasus\Expression\NamedSequence;
 use ju1ius\Pegasus\Expression\NodeAction;
 use ju1ius\Pegasus\Expression\Not;
@@ -239,12 +240,14 @@ class MetaGrammarTraverser extends NamedNodeTraverser
     private function leave_regexp(Node $node, $matches)
     {
         list(, $pattern, $flags) = $matches;
+        // str_split returns [0 => ''] for the empty string !
+        $flags = $flags ? str_split($flags) : [];
 
         if (RegExpUtil::hasCapturingGroups($pattern)) {
-            return new RegExp($pattern, str_split($flags));
+            return new RegExp($pattern, $flags);
         }
 
-        return new Expression\Match($pattern, str_split($flags));
+        return new Match($pattern, $flags);
     }
 
     private function leave_reference(Node $node, $identifier)

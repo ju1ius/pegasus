@@ -46,14 +46,9 @@ class RegExp extends Terminal
     {
         parent::__construct($name);
         $this->pattern = $pattern;
-        $this->flags = $flags;
+        $this->flags = array_unique(array_filter($flags));
 
-        $this->compiledFlags = array_unique(array_merge($flags, ['S', 'x']));
-        $this->compiledPattern = sprintf(
-            '/\G%s/%s',
-            $this->pattern,
-            implode('', $this->compiledFlags)
-        );
+        $this->compiledPattern = $this->compilePattern();
     }
 
     public function __toString()
@@ -73,5 +68,17 @@ class RegExp extends Terminal
 
             return new Node\Terminal($this->name, $start, $end, $match, ['matches' => $matches]);
         }
+    }
+
+    /**
+     * @return string
+     */
+    private function compilePattern()
+    {
+        return sprintf(
+            '/\G%s/%s',
+            $this->pattern,
+            implode('', array_unique(array_merge($this->flags, ['S', 'x'])))
+        );
     }
 }
