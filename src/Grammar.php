@@ -70,7 +70,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      *
      * @return Grammar
      */
-    public static function fromArray(array $rules, $startRule = null, $optimizationLevel = Optimizer::LEVEL_1)
+    public static function fromArray(array $rules, $startRule = null)
     {
         $grammar = new static();
         foreach ($rules as $name => $rule) {
@@ -80,9 +80,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
             $grammar->setStartRule($startRule);
         }
 
-        return $optimizationLevel
-            ? Optimizer::optimize($grammar->unfold(), $optimizationLevel)
-            : $grammar->unfold();
+        return $grammar->unfold();
     }
 
     /**
@@ -114,7 +112,6 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      *
      * @param Expression $expr              The expression to build the grammar from.
      * @param string     $startRule         Optional start rule name for the grammar.
-     * @param int        $optimizationLevel Optional optimization level.
      *
      * @return Grammar
      * @throws AnonymousTopLevelExpression If no named start rule could be determined.
@@ -131,9 +128,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
         $grammar = new static();
         $grammar[$startRule] = $expr;
 
-        return $optimizationLevel
-            ? Optimizer::optimize($grammar->unfold(), $optimizationLevel)
-            : $grammar->unfold();
+        return $grammar->unfold();
     }
 
     /**
