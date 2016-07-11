@@ -16,7 +16,7 @@ class MetaGrammarTest extends PegasusTestCase
 
     public static function setUpBeforeClass()
     {
-        $grammar = MetaGrammar::create();
+        $grammar = MetaGrammar::getGrammar();
         self::$parser = new LeftRecursivePackrat($grammar);
     }
 
@@ -56,23 +56,16 @@ class MetaGrammarTest extends PegasusTestCase
      */
     public function testWS($input, $expected)
     {
-        $node = $this->parse('_', $input);
-        $this->assertEquals(
+        $this->assertNodeEquals(
             $expected,
-            $node->getText($input)
+            $this->parse('ws', $input)
         );
     }
     public function getWSProvider()
     {
         return [
-            [
-                '# A comment',
-                '# A comment',
-            ],
-            [
-                "# comment\n\n\t# comment\n",
-                "# comment\n\n\t# comment\n",
-            ],
+            [' ', new Terminal('ws', 0, 1, ' ')],
+            [" \n\n\t \n", new Terminal('ws', 0, 6, " \n\n\t \n")],
         ];
     }
 

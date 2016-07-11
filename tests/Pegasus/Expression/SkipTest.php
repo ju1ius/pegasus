@@ -26,23 +26,27 @@ class SkipTest extends ExpressionTestCase
     /**
      * @dataProvider getMatchProvider
      *
-     * @param Grammar $grammar
-     * @param array   $args
-     * @param Node    $expected
+     * @param Grammar   $grammar
+     * @param array     $args
+     * @param Node|bool $expected
      */
-    public function testMatch(Grammar $grammar, array $args, Node $expected)
+    public function testMatch(Grammar $grammar, array $args, $expected)
     {
-        $node = $this->parse($grammar, ...$args);
-        $this->assertNodeEquals($expected, $node);
+        $result = $this->parse($grammar, ...$args);
+        if ($expected instanceof Node) {
+            $this->assertNodeEquals($expected, $result);
+        } else {
+            $this->assertSame($expected, $result);
+        }
     }
 
     public function getMatchProvider()
     {
         return [
-            'produces a non-capturing node, with the correct positions' => [
+            'returns true' => [
                 Builder::create()->rule('nope')->skip()->literal('nope')->getGrammar(),
                 ['nope'],
-                new Transient(0, 4)
+                true
             ],
             'skip parenthesis around (foo)' => [
                 Builder::create()->rule('start')->seq()

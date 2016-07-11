@@ -16,14 +16,11 @@ class AssertTest extends ExpressionTestCase
      *
      * @param Grammar $expr
      * @param array   $args
-     * @param Node    $expected
+     * @param bool    $expected
      */
-    public function testMatch(Grammar $expr, array $args, Node $expected)
+    public function testMatch(Grammar $expr, array $args, $expected)
     {
-        $this->assertNodeEquals(
-            $expected,
-            $this->parse($expr, ...$args)
-        );
+        $this->assertSame($expected, $this->parse($expr, ...$args));
     }
 
     public function getMatchProvider()
@@ -34,14 +31,14 @@ class AssertTest extends ExpressionTestCase
                     ->assert()->literal('foobar')
                     ->getGrammar(),
                 ['foobar'],
-                new Transient(0, 0),
+                true,
             ],
             [
                 Builder::create()->rule('assert')
                     ->assert()->literal('bar')
                     ->getGrammar(),
                 ['foobar', 3],
-                new Transient(3, 3),
+                true,
             ],
         ];
     }
