@@ -10,7 +10,7 @@ use ju1ius\Pegasus\Tests\ExpressionTestCase;
 class MatchTest extends ExpressionTestCase
 {
     /**
-     * @dataProvider testMatchProvider
+     * @dataProvider getMatchProvider
      */
     public function testMatch($expr, $match_args, $expected)
     {
@@ -19,7 +19,7 @@ class MatchTest extends ExpressionTestCase
             $this->parse($expr, ...$match_args)
         );
     }
-    public function testMatchProvider()
+    public function getMatchProvider()
     {
         // [ [pattern(,name(,flags))], text, [name, text, start, end, children, matches] ]
         return [

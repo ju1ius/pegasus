@@ -15,7 +15,7 @@ use ju1ius\Pegasus\Tests\ExpressionTestCase;
 class OptionalTest extends ExpressionTestCase
 {
     /**
-     * @dataProvider testMatchProvider
+     * @dataProvider getMatchProvider
      */
     public function testMatch(Expression $child, array $match_args, Node $expected)
     {
@@ -25,7 +25,7 @@ class OptionalTest extends ExpressionTestCase
             $this->parse($expr, ...$match_args)
         );
     }
-    public function testMatchProvider()
+    public function getMatchProvider()
     {
         return [
             [

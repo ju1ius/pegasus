@@ -21,7 +21,7 @@ use ju1ius\Pegasus\Tests\ExpressionTestCase;
 class RegExpTest extends ExpressionTestCase
 {
     /**
-     * @dataProvider testMatchProvider
+     * @dataProvider getMatchProvider
      */
     public function testMatch($expr, $match_args, $expected)
     {
@@ -30,7 +30,7 @@ class RegExpTest extends ExpressionTestCase
             $this->parse($expr, ...$match_args)
         );
     }
-    public function testMatchProvider()
+    public function getMatchProvider()
     {
         return [
             // simple literals

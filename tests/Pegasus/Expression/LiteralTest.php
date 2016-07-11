@@ -10,7 +10,7 @@ use ju1ius\Pegasus\Tests\ExpressionTestCase;
 class LiteralTest extends ExpressionTestCase
 {
     /**
-     * @dataProvider testMatchProvider
+     * @dataProvider getMatchProvider
      *
      * @param string $literal
      * @param array  $params
@@ -22,7 +22,7 @@ class LiteralTest extends ExpressionTestCase
         $this->assertNodeEquals($expected, $this->parse($expr, ...$params));
     }
 
-    public function testMatchProvider()
+    public function getMatchProvider()
     {
         return [
             ['foo', ['foo'], new Terminal('test', 0, 3, 'foo')],

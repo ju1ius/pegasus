@@ -10,7 +10,7 @@ use ju1ius\Pegasus\Tests\ExpressionTestCase;
 class QuantifierTest extends ExpressionTestCase
 {
     /**
-     * @dataProvider testMatchProvider
+     * @dataProvider getMatchProvider
      */
     public function testMatch($expr, $match_args, $expected)
     {
@@ -19,7 +19,7 @@ class QuantifierTest extends ExpressionTestCase
             $this->parse($expr, ...$match_args)
         );
     }
-    public function testMatchProvider()
+    public function getMatchProvider()
     {
         return [
             // exact number of occurences
@@ -86,14 +86,14 @@ class QuantifierTest extends ExpressionTestCase
     }
 
     /**
-     * @dataProvider testMatchErrorProvider
+     * @dataProvider getMatchErrorProvider
      * @expectedException \ju1ius\Pegasus\Parser\Exception\ParseError
      */
     public function testMatchError($expr, $match_args)
     {
         $this->parse($expr, ...$match_args);
     }
-    public function testMatchErrorProvider()
+    public function getMatchErrorProvider()
     {
         return [
             'exactly one "x" with "foo"' => [

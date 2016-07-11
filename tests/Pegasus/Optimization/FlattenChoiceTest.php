@@ -12,7 +12,7 @@ use ju1ius\Pegasus\Optimization\FlattenChoice;
 class FlattenChoiceTest extends OptimizationTestCase
 {
     /**
-     * @dataProvider testApplyProvider
+     * @dataProvider getApplyProvider
      *
      * @param Grammar    $grammar
      * @param Expression $expected
@@ -24,7 +24,7 @@ class FlattenChoiceTest extends OptimizationTestCase
         $this->assertEquals((string)$expected, (string)$result);
     }
 
-    public function testApplyProvider()
+    public function getApplyProvider()
     {
         return [
             '(("foo" | "bar") | "baz") | "qux" => "foo" | "bar" | "baz" | "qux"' => [

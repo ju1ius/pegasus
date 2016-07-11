@@ -12,7 +12,7 @@ use ju1ius\Pegasus\Tests\ExpressionTestCase;
 class AssertTest extends ExpressionTestCase
 {
     /**
-     * @dataProvider testMatchProvider
+     * @dataProvider getMatchProvider
      *
      * @param Grammar $expr
      * @param array   $args
@@ -26,7 +26,7 @@ class AssertTest extends ExpressionTestCase
         );
     }
 
-    public function testMatchProvider()
+    public function getMatchProvider()
     {
         return [
             [
@@ -47,7 +47,7 @@ class AssertTest extends ExpressionTestCase
     }
 
     /**
-     * @dataProvider testMatchErrorProvider
+     * @dataProvider getMatchErrorProvider
      * @expectedException \ju1ius\Pegasus\Parser\Exception\ParseError
      *
      * @param Grammar $expr
@@ -58,7 +58,7 @@ class AssertTest extends ExpressionTestCase
         $this->parse($expr, ...$args);
     }
 
-    public function testMatchErrorProvider()
+    public function getMatchErrorProvider()
     {
         return [
             [

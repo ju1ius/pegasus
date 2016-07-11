@@ -24,7 +24,7 @@ use ju1ius\Pegasus\Tests\ExpressionTestCase;
 class SkipTest extends ExpressionTestCase
 {
     /**
-     * @dataProvider testMatchProvider
+     * @dataProvider getMatchProvider
      *
      * @param Grammar $grammar
      * @param array   $args
@@ -36,7 +36,7 @@ class SkipTest extends ExpressionTestCase
         $this->assertNodeEquals($expected, $node);
     }
 
-    public function testMatchProvider()
+    public function getMatchProvider()
     {
         return [
             'produces a non-capturing node, with the correct positions' => [

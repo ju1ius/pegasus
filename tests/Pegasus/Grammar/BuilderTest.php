@@ -27,14 +27,14 @@ use ju1ius\Pegasus\Tests\PegasusTestCase;
 class BuilderTest extends PegasusTestCase
 {
     /**
-     * @dataProvider testItCanBuildSimpleRulesProvider
+     * @dataProvider getItCanBuildSimpleRulesProvider
      */
     public function testItCanBuildSimpleRules($input, $expected)
     {
         $actual = Grammar::fromArray($input);
         $this->assertGrammarEquals($expected, $actual);
     }
-    public function testItCanBuildSimpleRulesProvider()
+    public function getItCanBuildSimpleRulesProvider()
     {
         return [
             // Terminals

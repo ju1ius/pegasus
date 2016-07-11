@@ -15,7 +15,7 @@ use ju1ius\Pegasus\Tests\ExpressionTestCase;
 class BackReferenceTest extends ExpressionTestCase
 {
     /**
-     * @dataProvider testMatchProvider
+     * @dataProvider getMatchProvider
      *
      * @param       $grammar
      * @param array $params
@@ -27,7 +27,7 @@ class BackReferenceTest extends ExpressionTestCase
         $this->assertNodeEquals($expected, $result);
     }
 
-    public function testMatchProvider()
+    public function getMatchProvider()
     {
         return [
             [
@@ -51,7 +51,7 @@ class BackReferenceTest extends ExpressionTestCase
      * @param       $grammar
      * @param array $params
      *
-     * @dataProvider testOutOfScopeReferenceProvider
+     * @dataProvider getOutOfScopeReferenceProvider
      */
     public function testOutOfScopeReference($grammar, array $params)
     {
@@ -59,7 +59,7 @@ class BackReferenceTest extends ExpressionTestCase
         $this->parse($grammar, ...$params);
     }
 
-    public function testOutOfScopeReferenceProvider()
+    public function getOutOfScopeReferenceProvider()
     {
         return [
             'reference in another rule' => [

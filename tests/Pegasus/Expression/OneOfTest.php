@@ -12,7 +12,7 @@ use ju1ius\Pegasus\Tests\ExpressionTestCase;
 class OneOfTest extends ExpressionTestCase
 {
     /**
-     * @dataProvider testMatchProvider
+     * @dataProvider getMatchProvider
      */
     public function testMatch($children, $match_args, $expected)
     {
@@ -22,7 +22,7 @@ class OneOfTest extends ExpressionTestCase
             $this->parse($expr, ...$match_args)
         );
     }
-    public function testMatchProvider()
+    public function getMatchProvider()
     {
         return [
             [
@@ -39,7 +39,7 @@ class OneOfTest extends ExpressionTestCase
     }
 
     /**
-     * @dataProvider testMatchErrorProvider
+     * @dataProvider getMatchErrorProvider
      * @expectedException \ju1ius\Pegasus\Parser\Exception\ParseError
      */
     public function testMatchError($children, $match_args)
@@ -47,7 +47,7 @@ class OneOfTest extends ExpressionTestCase
         $expr = new OneOf($children, 'choice');
         $this->parse($expr, ...$match_args);
     }
-    public function testMatchErrorProvider()
+    public function getMatchErrorProvider()
     {
         return [
             [

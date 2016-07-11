@@ -27,7 +27,7 @@ use ju1ius\Pegasus\Optimization\SimplifyRedundantQuantifier;
 class SimplifyRedundantQuantifierTest extends OptimizationTestCase
 {
     /**
-     * @dataProvider testApplyProvider
+     * @dataProvider getApplyProvider
      * @param Grammar    $grammar
      * @param Expression $expected
      */
@@ -39,7 +39,7 @@ class SimplifyRedundantQuantifierTest extends OptimizationTestCase
         $this->assertEquals((string)$expected, (string)$result);
     }
 
-    public function testApplyProvider()
+    public function getApplyProvider()
     {
         return [
             '("foo"*)* => "foo"*' => [

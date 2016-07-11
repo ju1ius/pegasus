@@ -26,7 +26,7 @@ class MetaGrammarTest extends PegasusTestCase
     }
 
     /**
-     * @dataProvider testCommentProvider
+     * @dataProvider getCommentProvider
      */
     public function testComment($input, $expected)
     {
@@ -36,7 +36,7 @@ class MetaGrammarTest extends PegasusTestCase
         );
     }
 
-    public function testCommentProvider()
+    public function getCommentProvider()
     {
         return [
             [
@@ -52,7 +52,7 @@ class MetaGrammarTest extends PegasusTestCase
 
     /**
      * @depends      testComment
-     * @dataProvider testWSProvider
+     * @dataProvider getWSProvider
      */
     public function testWS($input, $expected)
     {
@@ -62,7 +62,7 @@ class MetaGrammarTest extends PegasusTestCase
             $node->getText($input)
         );
     }
-    public function testWSProvider()
+    public function getWSProvider()
     {
         return [
             [
@@ -78,7 +78,7 @@ class MetaGrammarTest extends PegasusTestCase
 
     /**
      * @depends      testWS
-     * @dataProvider testIdentifierProvider
+     * @dataProvider getIdentifierProvider
      */
     public function testIdentifier($input, $expected)
     {
@@ -86,7 +86,7 @@ class MetaGrammarTest extends PegasusTestCase
         $this->assertEquals($expected, $node->getText($input));
     }
 
-    public function testIdentifierProvider()
+    public function getIdentifierProvider()
     {
         return [
             ['some_ident', 'some_ident'],
@@ -99,7 +99,7 @@ class MetaGrammarTest extends PegasusTestCase
 
     /**
      * @depends      testIdentifier
-     * @dataProvider testReferenceProvider
+     * @dataProvider getReferenceProvider
      */
     public function testReference($input, $expected)
     {
@@ -107,7 +107,7 @@ class MetaGrammarTest extends PegasusTestCase
         $this->assertEquals($expected, $node->getText($input));
     }
 
-    public function testReferenceProvider()
+    public function getReferenceProvider()
     {
         return [
             ['some_ref', 'some_ref'],
@@ -115,7 +115,7 @@ class MetaGrammarTest extends PegasusTestCase
     }
 
     /**
-     * @dataProvider testReferenceNotEqualsProvider
+     * @dataProvider getReferenceNotEqualsProvider
      * @expectedException \ju1ius\Pegasus\Parser\Exception\ParseError
      */
     public function testReferenceNotEquals($input)
@@ -123,7 +123,7 @@ class MetaGrammarTest extends PegasusTestCase
         $node = $this->parse('reference', $input);
     }
 
-    public function testReferenceNotEqualsProvider()
+    public function getReferenceNotEqualsProvider()
     {
         return [
             ['some_ref = foo'],
@@ -132,7 +132,7 @@ class MetaGrammarTest extends PegasusTestCase
     }
 
     /**
-     * @dataProvider testLiteralProvider
+     * @dataProvider getLiteralProvider
      */
     public function testLiteral($input, $expected)
     {
@@ -142,7 +142,7 @@ class MetaGrammarTest extends PegasusTestCase
         $this->assertNodeEquals($expected, $node);
     }
 
-    public function testLiteralProvider()
+    public function getLiteralProvider()
     {
         return [
             'double-quoted with escaped quote' => [
@@ -161,7 +161,7 @@ class MetaGrammarTest extends PegasusTestCase
     }
 
     /**
-     * @dataProvider testQuantifierProvider
+     * @dataProvider getQuantifierProvider
      */
     public function testQuantifier($input, $expected)
     {
@@ -171,7 +171,7 @@ class MetaGrammarTest extends PegasusTestCase
         $this->assertNodeEquals($expected, $node);
     }
 
-    public function testQuantifierProvider()
+    public function getQuantifierProvider()
     {
         return [
             [
@@ -208,98 +208,98 @@ class MetaGrammarTest extends PegasusTestCase
     }
 
     /**
-     * @dataProvider testQuantifiedProvider
+     * @dataProvider getQuantifiedProvider
      */
     public function testQuantified($input, $expected)
     {
         $this->markTestIncomplete('Test not implemented');
     }
 
-    public function testQuantifiedProvider()
+    public function getQuantifiedProvider()
     {
         return [[null, null]];
     }
 
     /**
-     * @dataProvider testRegExpProvider
+     * @dataProvider getRegExpProvider
      */
     public function testRegExp($input, $expected)
     {
         $this->markTestIncomplete('Test not implemented');
     }
 
-    public function testRegExpProvider()
+    public function getRegExpProvider()
     {
         return [[null, null]];
     }
 
     /**
-     * @dataProvider testAtomProvider
+     * @dataProvider getAtomProvider
      */
     public function testAtom($input, $expected)
     {
         $this->markTestIncomplete('Test not implemented');
     }
 
-    public function testAtomProvider()
+    public function getAtomProvider()
     {
         return [[null, null]];
     }
 
     /**
-     * @dataProvider testParenthesizedProvider
+     * @dataProvider getParenthesizedProvider
      */
     public function testParenthesized($input, $expected)
     {
         $this->markTestIncomplete('Test not implemented');
     }
 
-    public function testParenthesizedProvider()
+    public function getParenthesizedProvider()
     {
         return [[null, null]];
     }
 
     /**
-     * @dataProvider testTermProvider
+     * @dataProvider getTermProvider
      */
     public function testTerm($input, $expected)
     {
         $this->markTestIncomplete('Test not implemented');
     }
 
-    public function testTermProvider()
+    public function getTermProvider()
     {
         return [[null, null]];
     }
 
     /**
-     * @dataProvider testLookaheadTermProvider
+     * @dataProvider getLookaheadTermProvider
      */
     public function testLookaheadTerm($input, $expected)
     {
         $this->markTestIncomplete('Test not implemented');
     }
 
-    public function testLookaheadTermProvider()
+    public function getLookaheadTermProvider()
     {
         return [[null, null]];
     }
 
     /**
-     * @dataProvider testNotTermProvider
+     * @dataProvider getNotTermProvider
      */
     public function testNotTerm($input, $expected)
     {
         $this->markTestIncomplete('Test not implemented');
     }
 
-    public function testNotTermProvider()
+    public function getNotTermProvider()
     {
         return [[null, null]];
     }
 
     /**
-     * @dataProvider testSequenceProvider
+     * @dataProvider getSequenceProvider
      */
     public function testSequence($input, $expected)
     {
@@ -307,7 +307,7 @@ class MetaGrammarTest extends PegasusTestCase
         $this->assertEquals($expected, $node->getText($input));
     }
 
-    public function testSequenceProvider()
+    public function getSequenceProvider()
     {
         return [
             ['foo bar baz', 'foo bar baz']
@@ -315,66 +315,66 @@ class MetaGrammarTest extends PegasusTestCase
     }
 
     /**
-     * @dataProvider testOredProvider
+     * @dataProvider getOredProvider
      */
     public function testOred($input, $expected)
     {
         $this->markTestIncomplete('Test not implemented');
     }
 
-    public function testOredProvider()
+    public function getOredProvider()
     {
         return [[null, null]];
     }
 
     /**
-     * @dataProvider testOrTermProvider
+     * @dataProvider getOrTermProvider
      */
     public function testOrTerm($input, $expected)
     {
         $this->markTestIncomplete('Test not implemented');
     }
 
-    public function testOrTermProvider()
+    public function getOrTermProvider()
     {
         return [[null, null]];
     }
 
     /**
-     * @dataProvider testExpressionProvider
+     * @dataProvider getExpressionProvider
      */
     public function testExpression($input, $expected)
     {
         $this->markTestIncomplete('Test not implemented');
     }
 
-    public function testExpressionProvider()
+    public function getExpressionProvider()
     {
         return [[null, null]];
     }
 
     /**
-     * @dataProvider testRuleProvider
+     * @dataProvider getRuleProvider
      */
     public function testRule($input, $expected)
     {
         $this->markTestIncomplete('Test not implemented');
     }
 
-    public function testRuleProvider()
+    public function getRuleProvider()
     {
         return [[null, null]];
     }
 
     /**
-     * @dataProvider testRulesProvider
+     * @dataProvider getRulesProvider
      */
     public function testRules($input, $expected)
     {
         $this->markTestIncomplete('Test not implemented');
     }
 
-    public function testRulesProvider()
+    public function getRulesProvider()
     {
         return [[null, null]];
     }

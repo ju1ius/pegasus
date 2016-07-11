@@ -14,7 +14,7 @@ use ju1ius\Pegasus\Optimization\FlattenSequence;
 class FlattenSequenceTest extends OptimizationTestCase
 {
     /**
-     * @dataProvider testApplyProvider
+     * @dataProvider getApplyProvider
      *
      * @param Grammar $grammar
      * @param Expression $expected
@@ -29,7 +29,7 @@ class FlattenSequenceTest extends OptimizationTestCase
         $this->assertExpressionEquals($expected, $result);
         $this->assertEquals((string)$expected, (string)$result);
     }
-    public function testApplyProvider()
+    public function getApplyProvider()
     {
         return [
             // (("foo" "bar") "baz") "w00t" => "foo" "bar" "baz" "w00t"
