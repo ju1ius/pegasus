@@ -15,6 +15,7 @@ use ju1ius\Pegasus\Expression\Assert;
 use ju1ius\Pegasus\Expression\Combinator;
 use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\Decorator;
+use ju1ius\Pegasus\Expression\GroupMatch;
 use ju1ius\Pegasus\Expression\Label;
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Expression\Match;
@@ -106,6 +107,14 @@ class ExpressionHighlighter extends ExpressionVisitor
                     '<d>/</d><term>%s</term><d>/</d><term>%s</term>',
                     $expr->pattern,
                     implode('', $expr->flags)
+                ));
+            } elseif ($expr instanceof GroupMatch) {
+                $this->output->write('<class>GroupMatch</class>');
+                $this->output->write(sprintf(
+                    '[<d>/</d><term>%s</term><d>/</d><term>%s</term><d>, </d><term>%s</term>]',
+                    $expr->getPattern(),
+                    implode('', $expr->getFlags()),
+                    $expr->getCaptureCount()
                 ));
             } else {
                 $this->output->write(sprintf('<kw>%s</kw>', $expr));

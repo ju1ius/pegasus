@@ -65,6 +65,10 @@ class CombineQuantifiedMatch extends Optimization
             return '?';
         }
 
-        return sprintf('{%d,%d}', $expr->min, $expr->max);
+        return sprintf(
+            '{%d,%s}',
+            $expr->min,
+            $expr->max === INF ? '' : $expr->max
+        );
     }
 }

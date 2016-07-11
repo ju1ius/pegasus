@@ -19,12 +19,15 @@ use ju1ius\Pegasus\Expression\Composite;
 trait CompositeReducerTrait
 {
     /**
+     * Returns either a clone of an expression with the given new children,
+     * or the sole child if there's only one new child.
+     *
      * @param Composite    $expr
      * @param Expression[] $children
      *
      * @return Composite|Expression
      */
-    protected function finishReducing(Composite $expr, array $children)
+    protected function finishReduction(Composite $expr, array $children)
     {
         if (count($children) === 1) {
             $child = $children[0];
@@ -33,6 +36,6 @@ trait CompositeReducerTrait
             return $child;
         }
 
-        return $expr->withChildren($children);
+        return $expr->withChildren(...$children);
     }
 }

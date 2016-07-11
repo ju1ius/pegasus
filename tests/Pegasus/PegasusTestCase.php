@@ -3,6 +3,8 @@
 namespace ju1ius\Pegasus\Tests;
 
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Expression\Composite;
+use ju1ius\Pegasus\Expression\GroupMatch;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Node;
 
@@ -58,10 +60,12 @@ class PegasusTestCase extends \PHPUnit_Framework_TestCase
     protected function cleanupExpr(Expression $expr)
     {
         $expr->id = null;
-        if ($expr instanceof Expression\Composite) {
+        if ($expr instanceof Composite) {
             foreach ($expr as $child) {
                 $this->cleanupExpr($child);
             }
+        } elseif ($expr instanceof GroupMatch) {
+            $expr->getMatcher()->id = null;
         }
     }
 }

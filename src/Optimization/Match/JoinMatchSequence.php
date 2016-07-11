@@ -17,11 +17,8 @@ use ju1ius\Pegasus\Optimization\OptimizationSequence;
  */
 class JoinMatchSequence extends OptimizationSequence
 {
-    /**
-     * @inheritDoc
-     */
-    public function __construct(JoinMatchMatchingSequence $first, JoinMatchCapturingSequence $last)
+    public function __construct()
     {
-        parent::__construct($first, $last);
+        parent::__construct(new JoinMatchMatchingSequence(), new JoinMatchCapturingSequence());
     }
 }

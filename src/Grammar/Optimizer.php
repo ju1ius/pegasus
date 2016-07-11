@@ -18,6 +18,7 @@ use ju1ius\Pegasus\Optimization\FlattenChoice;
 use ju1ius\Pegasus\Optimization\FlattenMatchingSequence;
 use ju1ius\Pegasus\Optimization\FlattenSequence;
 use ju1ius\Pegasus\Optimization\InlineNonRecursiveRules;
+use ju1ius\Pegasus\Optimization\Match\JoinMatchSequence;
 use ju1ius\Pegasus\Optimization\OptimizationContext;
 use ju1ius\Pegasus\Optimization\OptimizationSequence;
 use ju1ius\Pegasus\Optimization\RemoveMeaninglessDecorator;
@@ -40,12 +41,12 @@ class Optimizer
             ->add(new SimplifyRedundantQuantifier())
             ->add(new RemoveMeaninglessDecorator())
             ->add(new SimplifyTerminalToken())
-            ->add(new FlattenSequence(new FlattenMatchingSequence(), new FlattenCapturingSequence()))
+            ->add(new FlattenSequence())
             ->add(new FlattenChoice())
             ->add(new CombineQuantifiedMatch())
             //->add(new JoinPredicateMatch())
             //->add(new JoinPredicateOrMatch())
-            //->add(new JoinMatchSequence())
+            ->add(new JoinMatchSequence())
             //->add(new JoinMatchChoice())
         ;
     }
