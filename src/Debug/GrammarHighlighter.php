@@ -75,7 +75,7 @@ class GrammarHighlighter extends GrammarVisitor
     public function enterRule(Grammar $grammar, Expression $expr)
     {
         if ($grammar->isInlined($expr->name)) {
-            $this->output->write(sprintf('<directive>%%sinline</directive> '));
+            $this->output->write(sprintf('<directive>%%inline</directive> '));
         }
         $this->output->write(sprintf(
             '<rule>%s</rule> <d>=</d> ',
