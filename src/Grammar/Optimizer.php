@@ -19,6 +19,7 @@ use ju1ius\Pegasus\Optimization\FlattenChoice;
 use ju1ius\Pegasus\Optimization\FlattenMatchingSequence;
 use ju1ius\Pegasus\Optimization\FlattenSequence;
 use ju1ius\Pegasus\Optimization\InlineNonRecursiveRules;
+use ju1ius\Pegasus\Optimization\Match\JoinMatchChoice;
 use ju1ius\Pegasus\Optimization\Match\JoinMatchSequence;
 use ju1ius\Pegasus\Optimization\OptimizationContext;
 use ju1ius\Pegasus\Optimization\OptimizationSequence;
@@ -31,7 +32,14 @@ use ju1ius\Pegasus\Optimization\SimplifyTerminalToken;
  */
 class Optimizer
 {
+    /**
+     * Optimization level 1.
+     */
     const LEVEL_1 = 1;
+
+    /**
+     * Optimization level 2.
+     */
     const LEVEL_2 = 2;
 
     private static $LEVELS = [
@@ -85,7 +93,7 @@ class Optimizer
                         //->add(new JoinPredicateMatch())
                         //->add(new JoinPredicateOrMatch())
                         ->add(new JoinMatchSequence())
-                        //->add(new JoinMatchChoice())
+                        ->add(new JoinMatchChoice())
                     ;
                     break;
             }
