@@ -15,6 +15,7 @@ use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Traverser\GrammarTraverser;
 use ju1ius\Pegasus\Visitor\GrammarVisitor;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * @author ju1ius <ju1ius@laposte.net>
@@ -22,7 +23,7 @@ use ju1ius\Pegasus\Visitor\GrammarVisitor;
 class GrammarHighlighter extends GrammarVisitor
 {
     /**
-     * @var string
+     * @var OutputInterface
      */
     private $output;
 
@@ -31,31 +32,23 @@ class GrammarHighlighter extends GrammarVisitor
      */
     private $highlighter;
 
-    public function __construct()
+    public function __construct(OutputInterface $output)
     {
-        $this->highlighter = new ExpressionHighlighter();
+        $this->output = $output;
+        $this->highlighter = new ExpressionHighlighter($output);
     }
 
     /**
-     * @param Grammar $grammar
+     * @param Grammar         $grammar
+     * @param OutputInterface $output
      *
      * @return string
      */
-    public static function highlight(Grammar $grammar)
+    public static function highlight(Grammar $grammar, OutputInterface $output)
     {
         (new GrammarTraverser(false))
-            ->addVisitor($highlighter = new self())
+            ->addVisitor($highlighter = new self($output))
             ->traverse($grammar);
-
-        return $highlighter->getOutput();
-    }
-
-    /**
-     * @return string
-     */
-    public function getOutput()
-    {
-        return $this->output;
     }
 
     /**
@@ -63,7 +56,17 @@ class GrammarHighlighter extends GrammarVisitor
      */
     public function beforeTraverse(Grammar $grammar)
     {
-        $this->output = '';
+        if ($name = $grammar->getName()) {
+            $this->output->writeln(sprintf(
+                '<directive>%%name</directive> <class>%s</class>',
+                $name
+            ));
+        }
+        $this->output->writeln(sprintf(
+            '<directive>%%start</directive> <rule>%s</rule>',
+            $grammar->getStartRule()->name
+        ));
+        $this->output->writeln('');
     }
 
     /**
@@ -71,10 +74,13 @@ class GrammarHighlighter extends GrammarVisitor
      */
     public function enterRule(Grammar $grammar, Expression $expr)
     {
-        $this->output .= sprintf(
+        if ($grammar->isInlined($expr->name)) {
+            $this->output->write(sprintf('<directive>%%sinline</directive> '));
+        }
+        $this->output->write(sprintf(
             '<rule>%s</rule> <d>=</d> ',
             $expr->name
-        );
+        ));
         $this->highlighter->beforeTraverse($expr);
     }
 
@@ -84,7 +90,7 @@ class GrammarHighlighter extends GrammarVisitor
     public function leaveRule(Grammar $grammar, Expression $expr)
     {
         $this->highlighter->afterTraverse($expr);
-        $this->output .= $this->highlighter->getOutput() . "\n\n";
+        $this->output->writeln(['', '']);
     }
 
     /**
@@ -92,7 +98,7 @@ class GrammarHighlighter extends GrammarVisitor
      */
     public function enterExpression(Grammar $grammar, Expression $expr, Composite $parent = null, $index = null)
     {
-        $this->highlighter->enterExpression($expr, $index);
+        $this->highlighter->enterExpression($expr, $parent, $index);
     }
 
     /**
@@ -100,6 +106,6 @@ class GrammarHighlighter extends GrammarVisitor
      */
     public function leaveExpression(Grammar $grammar, Expression $expr, Composite $parent = null, $index = null)
     {
-        $this->highlighter->leaveExpression($expr, $index);
+        $this->highlighter->leaveExpression($expr, $parent, $index);
     }
 }

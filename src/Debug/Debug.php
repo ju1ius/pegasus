@@ -57,11 +57,6 @@ final class Debug
                 'Can only highlight grammars or expressions.'
             ));
         }
-        if ($value instanceof Grammar) {
-            $value = GrammarHighlighter::highlight($value);
-        } elseif ($value instanceof Expression) {
-            $value = ExpressionHighlighter::highlight($value);
-        }
 
         if (!$output) {
             $output = self::createConsoleOutput();
@@ -69,7 +64,11 @@ final class Debug
             OutputStyles::setOutputStyles($output);
         }
 
-        $output->writeln($value);
+        if ($value instanceof Grammar) {
+            GrammarHighlighter::highlight($value, $output);
+        } elseif ($value instanceof Expression) {
+            ExpressionHighlighter::highlight($value, $output);
+        }
     }
 
     /**

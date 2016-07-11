@@ -1,14 +1,17 @@
 #! /usr/bin/env php
 <?php
 
-require_once __DIR__.'/../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
+use ju1ius\Pegasus\Command\DumpGrammarCommand;
 use ju1ius\Pegasus\Command\GenerateParserCommand;
 use ju1ius\Pegasus\Command\GenerateVisitorCommand;
-
 use Symfony\Component\Console\Application;
 
 $app = new Application();
-$app->add(new GenerateParserCommand);
-$app->add(new GenerateVisitorCommand);
+$app->addCommands([
+    new GenerateParserCommand(),
+    new GenerateVisitorCommand(),
+    new DumpGrammarCommand()
+]);
 $app->run();

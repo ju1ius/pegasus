@@ -73,20 +73,27 @@ final class ParseTreeDumper extends NodeVisitor
     public function enterNode(Node $node, Node $parent = null, $index = null)
     {
         $isLast = !$parent || $index === count($parent) - 1;
-        $indent = '';
         if ($parent) {
-            $indent .= implode('', $this->indentStack);
+            $indent = implode('', $this->indentStack);
             $indent .= $isLast ? '└ ' : '├ ';
+            $this->output->write(sprintf('<d>%s</d>', $indent));
         }
-
-        $this->output->writeln(sprintf(
-            '<d>%s</d><class>%s</class>%s%s%s' . PHP_EOL,
-            $indent,
-            str_replace('ju1ius\\Pegasus\\Node\\', '', get_class($node)),
-            $node->name ? sprintf('<d>("</d>%s<d>")</d>', $node->name) : '',
-            sprintf('<sym>@</sym><d>[</d>%d<d>..</d>%d<d>]</d>', $node->start, $node->end),
-            $node->value ? sprintf('<d>: "</d><term>%s</term><d>"</d>', $node->value) : ''
+        $this->output->write(sprintf(
+            '<class>%s</class>',
+            str_replace('ju1ius\\Pegasus\\Node\\', '', get_class($node))
         ));
+        if ($node->name) {
+            $this->output->write(sprintf('<d>("</d>%s<d>")</d>', $node->name));
+        }
+        $this->output->write(sprintf(
+            '<sym>@</sym><d>[</d>%d<d>..</d>%d<d>]</d>',
+            $node->start,
+            $node->end
+        ));
+        if ($node->value) {
+            $this->output->write(sprintf('<d>: "</d><term>%s</term><d>"</d>', $node->value));
+        }
+        $this->output->writeln('');
 
         if ($this->errorNode === $node) {
             $this->output->writeln(sprintf(

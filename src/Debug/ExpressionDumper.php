@@ -70,12 +70,13 @@ final class ExpressionDumper extends ExpressionVisitor
             $indent .= $isLast ? '└ ' : '├ ';
         }
 
-        $this->output->writeln(sprintf(
-            '<d>%s</d><class>%s</class><d>:</d> %s',
+        $this->output->write(sprintf(
+            '<d>%s</d><class>%s</class><d>:</d> ',
             $indent,
-            str_replace('ju1ius\Pegasus\Expression\\', '', get_class($expr)),
-            ExpressionHighlighter::highlight($expr)
+            str_replace('ju1ius\Pegasus\Expression\\', '', get_class($expr))
         ));
+        ExpressionHighlighter::highlight($expr, $this->output);
+        $this->output->writeln('');
 
         if ($expr instanceof Composite && $parent) {
             $this->indentStack[] = $isLast ? '  ' : '│ ';

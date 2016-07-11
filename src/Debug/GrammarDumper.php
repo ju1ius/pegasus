@@ -23,7 +23,7 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Visitor that dumps a grammar's rules & expression tree to stdout.
+ * Visitor that dumps a grammar's rules & expression tree.
  */
 final class GrammarDumper extends GrammarVisitor
 {
@@ -66,11 +66,12 @@ final class GrammarDumper extends GrammarVisitor
     public function enterRule(Grammar $grammar, Expression $expr)
     {
         $this->indentStack = [];
-        $this->output->writeln(sprintf(
-            '<class>Rule</class> <rule>%s</rule> <d>=</d> %s',
-            $expr->name,
-            $this->highlightExpression($expr)
+        $this->output->write(sprintf(
+            '<class>Rule</class> <rule>%s</rule> <d>=</d> ',
+            $expr->name
         ));
+        ExpressionHighlighter::highlight($expr, $this->output);
+        $this->output->writeln('');
     }
 
     /**
@@ -82,12 +83,14 @@ final class GrammarDumper extends GrammarVisitor
         $indent = implode('', $this->indentStack);
         $indent .= $isLast ? '└ ' : '├ ';
 
-        $this->output->writeln(sprintf(
-            "<d>%s</d><class>%s</class> %s",
+        $this->output->write(sprintf(
+            '<d>%s</d><class>%s</class> ',
             $indent,
-            str_replace('ju1ius\Pegasus\Expression\\', '', get_class($expr)),
-            $this->highlightExpression($expr)
+            str_replace('ju1ius\Pegasus\Expression\\', '', get_class($expr))
         ));
+        ExpressionHighlighter::highlight($expr, $this->output);
+        $this->output->writeln('');
+
         if ($expr instanceof Composite && $parent) {
             $this->indentStack[] = $isLast ? '  ' : '│ ';
         }
@@ -101,14 +104,5 @@ final class GrammarDumper extends GrammarVisitor
         if ($expr instanceof Composite) {
             array_pop($this->indentStack);
         }
-    }
-
-    private function highlightExpression(Expression $expr)
-    {
-        (new ExpressionTraverser())
-            ->addVisitor($highlighter = new ExpressionHighlighter())
-            ->traverse($expr);
-
-        return $highlighter->getOutput();
     }
 }

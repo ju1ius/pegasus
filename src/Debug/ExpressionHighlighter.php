@@ -31,6 +31,7 @@ use ju1ius\Pegasus\Expression\Token;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Traverser\ExpressionTraverser;
 use ju1ius\Pegasus\Visitor\ExpressionVisitor;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * @author ju1ius <ju1ius@laposte.net>
@@ -48,25 +49,26 @@ class ExpressionHighlighter extends ExpressionVisitor
     private $combinatorStack;
 
     /**
-     * @param Expression $expr
+     * ExpressionHighlighter constructor.
      *
-     * @return string
+     * @param OutputInterface $output
      */
-    public static function highlight(Expression $expr)
+    public function __construct(OutputInterface $output)
     {
-        (new ExpressionTraverser())
-            ->addVisitor($highlighter = new self())
-            ->traverse($expr);
-
-        return $highlighter->getOutput();
+        $this->output = $output;
     }
 
     /**
+     * @param Expression      $expr
+     * @param OutputInterface $output
+     *
      * @return string
      */
-    public function getOutput()
+    public static function highlight(Expression $expr, OutputInterface $output)
     {
-        return $this->output;
+        (new ExpressionTraverser())
+            ->addVisitor($highlighter = new self($output))
+            ->traverse($expr);
     }
 
     /**
@@ -74,7 +76,6 @@ class ExpressionHighlighter extends ExpressionVisitor
      */
     public function beforeTraverse(Expression $expr)
     {
-        $this->output = '';
         $this->combinatorStack = new \SplStack();
     }
 
@@ -86,53 +87,53 @@ class ExpressionHighlighter extends ExpressionVisitor
         if ($index && !$this->combinatorStack->isEmpty()) {
             $top = $this->combinatorStack->top();
             if ($top instanceof OneOf) {
-                $this->output .= ' <d>|</d> ';
+                $this->output->write(' <d>|</d> ');
             } else {
-                $this->output .= ' ';
+                $this->output->write(' ');
             }
         }
         if ($expr instanceof Reference) {
-            $this->output .= sprintf('<ref>%s</ref>', $expr->identifier);
+            $this->output->write(sprintf('<ref>%s</ref>', $expr->identifier));
         } elseif ($expr instanceof Terminal) {
             if ($expr instanceof Literal) {
-                $this->output .= sprintf(
+                $this->output->write(sprintf(
                     '<d>%1$s</d><term>%2$s</term><d>%1$s</d>',
                     $expr->quoteCharacter,
                     $expr->literal
-                );
+                ));
             } elseif ($expr instanceof Match || $expr instanceof RegExp) {
-                $this->output .= sprintf(
+                $this->output->write(sprintf(
                     '<d>/</d><term>%s</term><d>/</d><term>%s</term>',
                     $expr->pattern,
-                    implode('', $expr->flags
+                    implode('', $expr->flags)
                 ));
             } else {
-                $this->output .= sprintf('<kw>%s</kw>', $expr);
+                $this->output->write(sprintf('<kw>%s</kw>', $expr));
             }
         } elseif ($expr instanceof Decorator) {
             switch (get_class($expr)) {
                 case Assert::class:
-                    $this->output .= '<sym>&</sym>';
+                    $this->output->write('<sym>&</sym>');
                     break;
                 case Not::class:
-                    $this->output .= '<sym>!</sym>';
+                    $this->output->write('<sym>!</sym>');
                     break;
                 case Skip::class:
-                    $this->output .= '<sym>~</sym>';
+                    $this->output->write('<sym>~</sym>');
                     break;
                 case Label::class:
-                    $this->output .= sprintf('<label>%s</label><d>:</d>', $expr->label);
+                    $this->output->write(sprintf('<label>%s</label><d>:</d>', $expr->label));
                     break;
                 case Token::class:
-                    $this->output .= '<sym>@</sym>';
+                    $this->output->write('<sym>@</sym>');
                     break;
             }
             if ($this->needsParenthesesAroundDecorator($expr)) {
-                $this->output .= '<d>(</d>';
+                $this->output->write('<d>(</d>');
             }
         } elseif ($expr instanceof Combinator) {
             if ($this->needsParenthesesAroundCombinator($expr)) {
-                $this->output .= '<d>(</d>';
+                $this->output->write('<d>(</d>');
             }
             $this->combinatorStack->push($expr);
         }
@@ -145,7 +146,7 @@ class ExpressionHighlighter extends ExpressionVisitor
     {
         if ($expr instanceof Decorator) {
             if ($this->needsParenthesesAroundDecorator($expr)) {
-                $this->output .= '<d>)</d>';
+                $this->output->write('<d>)</d>');
             }
             if ($expr instanceof Quantifier) {
                 if ($expr->isOneOrMore()) {
@@ -161,15 +162,15 @@ class ExpressionHighlighter extends ExpressionVisitor
                         $expr->max === INF ? '' : $expr->max
                     );
                 }
-                $this->output .= sprintf('<q>%s</q>', $symbol);
+                $this->output->write(sprintf('<q>%s</q>', $symbol));
             }
         } elseif ($expr instanceof Combinator) {
             $this->combinatorStack->pop();
             if ($expr instanceof NamedSequence) {
-                $this->output .= sprintf(' <d><=</d> <id>%s</id>', $expr->label);
+                $this->output->write(sprintf(' <d><=</d> <id>%s</id>', $expr->label));
             }
             if ($this->needsParenthesesAroundCombinator($expr)) {
-                $this->output .= '<d>)</d>';
+                $this->output->write('<d>)</d>');
             }
         }
     }

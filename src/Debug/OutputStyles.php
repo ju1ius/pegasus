@@ -37,6 +37,8 @@ final class OutputStyles
                 'term' => new OutputFormatterStyle('green'),
                 // rule
                 'rule' => new OutputFormatterStyle('blue', null, ['bold']),
+                // directive
+                'directive' => new OutputFormatterStyle('yellow', null, ['bold']),
                 // reference
                 'ref' => new OutputFormatterStyle('cyan'),
                 // keyword (EOF, FAIL, ...)
