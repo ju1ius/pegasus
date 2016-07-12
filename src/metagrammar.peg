@@ -1,21 +1,33 @@
 %name Pegasus
 %start grammar
 
-grammar         = _ directives rules
+grammar         = _ header rules
 
 ########### Directives ##########
 
-directives      = directive*
-directive       = name_directive | start_directive | ws_directive | ci_directive
-name_directive  = ~'%name' _ identifier
-start_directive = ~'%start' _ identifier
-ws_directive    = ~'%whitespace' _ ~'=' _ unattributed
-ci_directive    = ~'%case_insensitive' _
+header              = header_directive*
+header_directive    = name_directive
+                    | start_directive
+                    | extends_directive
+                    | ws_directive
+                    | ci_directive
+
+name_directive      = ~'%name' _ identifier
+start_directive     = ~'%start' _ identifier
+extends_directive   = ~'%extends' _ identifier
+ws_directive        = ~'%whitespace' _ ~'=' _ unattributed
+ci_directive        = ~'%case_insensitive' _
+
+rule_directive      = lexical_directive
+                    | inline_directive
+
+lexical_directive   = ~'%lexical' _
+inline_directive    = ~'%inline' _
 
 ########### Rules ##########
 
 rules           = rule+
-rule            = identifier ~'=' _ expression
+rule            = rule_directive* (identifier ~'=' _ <= RuleName) expression
 
 ##### Decorator expressions #####
 
@@ -29,6 +41,8 @@ labeled         = /[a-zA-Z_]\w*/ ~':' labelable
 ##### Terminal expressions #####
 
 reference       = identifier !'='
+super           = 'super' (~'::' identifier)?
+
 literal         = / (["']) ( (?:\\.|(?!\1).)* ) \1 / _
 regexp          = / \/ ((?:\\.|[^\/])*) \/ ([imsuUX]*) / _
 eof             = /EOF\b/ _
@@ -52,23 +66,39 @@ attributed_terms    = attributed term                          <= Sequence
 terms           = terms term                                   <= Sequence
                 | term
 
-term            = fail | labeled | labelable
+term            = fail
+                | labeled
+                | labelable
 
-labelable       = prefixed | prefixable
+labelable       = prefixed
+                | prefixable
 
-prefixed        = token | skip | assert | not
+prefixed        = token
+                | skip
+                | assert
+                | not
 
-prefixable      = prefixed | suffixable | primary
+prefixable      = prefixed
+                | suffixable
+                | primary
 
-suffixable      = suffixed | primary
+suffixable      = suffixed
+                | primary
 
 suffixed        = suffixable quantifier
 
-primary         = parenthesized | atom
+primary         = parenthesized
+                | atom
 
 parenthesized   = ~'(' _ expression ~')' _
 
-atom            = eof | epsilon | fail | literal | regexp | reference
+atom            = eof
+                | epsilon
+                | fail
+                | literal
+                | regexp
+                | super
+                | reference
 
 identifier      = /[a-zA-Z_]\w*/ _
 
