@@ -32,12 +32,13 @@ class PegasusTestCase extends \PHPUnit_Framework_TestCase
      *
      * @param Expression $expected
      * @param Expression $actual
+     * @param string     $msg
      */
-    public function assertExpressionEquals(Expression $expected, Expression $actual)
+    public function assertExpressionEquals(Expression $expected, Expression $actual, $msg = '')
     {
         $this->cleanupExpr($expected);
         $this->cleanupExpr($actual);
-        $this->assertEquals($expected, $actual);
+        $this->assertEquals($expected, $actual, $msg);
     }
 
     /**

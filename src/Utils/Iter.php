@@ -50,6 +50,25 @@ final class Iter
     }
 
     /**
+     * Returns the first value in collection for which predicate returns truthy.
+     *
+     * @param callable           $fn
+     * @param array|\Traversable $col
+     *
+     * @return mixed
+     */
+    public static function find(callable $fn, $col)
+    {
+        foreach ($col as $k => $v) {
+            if ($fn($v, $k, $col)) {
+                return $v;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * @param int $size
      * @param     $col
      *
@@ -85,8 +104,8 @@ final class Iter
      */
     public static function someConsecutive(callable $predicate, $size, $collection)
     {
-        foreach (Iter::consecutive($size, $collection) as $tuple) {
-            if (Iter::every($predicate, $tuple)) {
+        foreach (self::consecutive($size, $collection) as $tuple) {
+            if (self::every($predicate, $tuple)) {
                 return true;
             }
         }

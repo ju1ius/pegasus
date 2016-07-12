@@ -33,8 +33,14 @@ class JoinMatchChoiceTest extends OptimizationTestCase
      */
     public function testApply(Grammar $input, Expression $expected)
     {
-        $result = $this->applyOptimization(new JoinMatchChoice(), $input);
-        $this->assertExpressionEquals($expected, $result);
+        $optim = new JoinMatchChoice();
+        $ctx = OptimizationContext::create($input);
+
+        $result = $this->applyOptimization($optim, $input, $ctx);
+        $this->assertExpressionEquals($expected, $result, 'In capturing context');
+
+        $result = $this->applyOptimization($optim, $input, $ctx->matching());
+        $this->assertExpressionEquals($expected, $result, 'In matching context');
     }
 
     public function getApplyProvider()
@@ -81,9 +87,15 @@ class JoinMatchChoiceTest extends OptimizationTestCase
      */
     public function testAppliesTo(Grammar $input, $applies)
     {
+        $optim = new JoinMatchChoice();
+        $expr = $input->getStartRule();
         $ctx = OptimizationContext::create($input);
-        $result = (new JoinMatchChoice())->appliesTo($input->getStartRule(), $ctx);
-        $this->assertSame($applies, $result);
+
+        $result = $optim->appliesTo($expr, $ctx);
+        $this->assertSame($applies, $result, 'In capturing context');
+
+        $result = $optim->appliesTo($expr, $ctx->matching());
+        $this->assertSame($applies, $result, 'In matching context');
     }
 
     public function getAppliesToProvider()
