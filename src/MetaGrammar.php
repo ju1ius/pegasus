@@ -98,6 +98,7 @@ final class MetaGrammar
             ->rule('directive')->oneOf()
                 ->ref('name_directive')
                 ->ref('start_directive')
+                ->ref('extends_directive')
                 ->ref('ws_directive')
                 ->ref('ci_directive')
             ->rule('name_directive')->sequence()
@@ -106,6 +107,10 @@ final class MetaGrammar
                 ->ref('identifier')
             ->rule('start_directive')->sequence()
                 ->skip()->literal('%start')
+                ->ref('_')
+                ->ref('identifier')
+            ->rule('extends_directive')->sequence()
+                ->skip()->literal('%extends')
                 ->ref('_')
                 ->ref('identifier')
             ->rule('ws_directive')->sequence()
@@ -133,8 +138,10 @@ final class MetaGrammar
                     ->ref('inline_directive')
                     ->ref('lexical_directive')
                 ->end()
-                ->ref('identifier')
-                ->skip()->literal('=')->ref('_')
+                ->named('RuleName')
+                    ->ref('identifier')
+                    ->skip()->literal('=')->ref('_')
+                ->end()
                 ->ref('expression')
         ;
         //
@@ -164,6 +171,13 @@ final class MetaGrammar
             ->rule('reference')->sequence()
                 ->ref('identifier')
                 ->not()->literal('=')
+            ->rule('super')->sequence()
+                ->skip()->literal('super')
+                ->optional()->sequence()
+                    ->skip()->literal('::')
+                    ->ref('IDENT')
+                ->end()
+                ->ref('_')
             ->rule('literal')->sequence()
                 ->regexp('(["\']) ((?:\\\\.|(?!\1).)*) \1')
                 ->ref('_')
@@ -256,14 +270,16 @@ final class MetaGrammar
                 ->ref('fail')
                 ->ref('literal')
                 ->ref('regexp')
+                ->ref('super')
                 ->ref('reference')
             ->rule('identifier')->sequence()
-                ->match('[a-zA-Z_]\w*')
+                ->ref('IDENT')
                 ->ref('_')
             ->rule('label')->sequence()
-                ->match('[a-zA-Z_]\w*')
+                ->ref('IDENT')
                 ->skip()->literal(':')
         ;
+        $builder->rule('IDENT')->match('[a-zA-Z_]\w*');
         //
         // whitespace
         // ------------------------------------------------------------------------------------------------------
@@ -280,7 +296,7 @@ final class MetaGrammar
         ;
 
         $grammar = $builder->getGrammar();
-        $grammar->inline('ws', 'comment');
+        $grammar->inline('IDENT', 'ws', 'comment');
 
         return $grammar;
     }

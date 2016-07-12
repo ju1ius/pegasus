@@ -46,9 +46,10 @@ class LeftRecursivePackrat extends Packrat
     /**
      * @inheritdoc
      */
-    public function apply($rule, Scope $scope)
+    public function apply($rule, Scope $scope, $super = false)
     {
-        $expr = $this->grammar[$rule];
+        $expr = $super ? $this->grammar->super($rule) : $this->grammar[$rule];
+
         $pos = $this->pos;
         $this->error->position = $pos;
         $this->error->rule = $rule;

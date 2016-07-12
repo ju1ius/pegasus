@@ -31,6 +31,7 @@ use ju1ius\Pegasus\Expression\Reference;
 use ju1ius\Pegasus\Expression\RegExp;
 use ju1ius\Pegasus\Expression\Sequence;
 use ju1ius\Pegasus\Expression\Skip;
+use ju1ius\Pegasus\Expression\Super;
 use ju1ius\Pegasus\Expression\Token;
 use ju1ius\Pegasus\Expression\ZeroOrMore;
 use ju1ius\Pegasus\Grammar;
@@ -254,6 +255,18 @@ class Builder
     public function ref($name)
     {
         return $this->reference($name);
+    }
+
+    /**
+     * @param string $identifier Defaults to the current rule.
+     *
+     * @return $this
+     */
+    public function super($identifier = '')
+    {
+        $identifier = $identifier ?: $this->currentRule;
+
+        return $this->add(new Super($identifier))->end();
     }
 
     /**

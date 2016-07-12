@@ -94,10 +94,11 @@ abstract class Parser
      *
      * @internal
      *
-     * @param string $rule
-     * @param Scope  $scope
+     * @param string $rule  The rule name to apply
+     * @param Scope  $scope The current scope
+     * @param bool   $super Whether we should explicitely apply a parent rule
      *
      * @return Node|null
      */
-    abstract public function apply($rule, Scope $scope);
+    abstract public function apply($rule, Scope $scope, $super = false);
 }

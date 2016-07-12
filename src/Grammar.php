@@ -29,31 +29,46 @@ use ju1ius\Pegasus\Traverser\MetaGrammarTraverser;
 class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
 {
     /**
-     * @var string The name of the grammar
+     * The name of this grammar
+     *
+     * @var string
      */
     protected $name = '';
 
+    /**
+     * The parent grammar.
+     *
+     * @var Grammar
+     */
+    protected $parent;
 
     /**
-     * @var string The start rule of the grammar.
+     * The start rule of this grammar.
+     *
+     * @var string
      */
     protected $startRule = null;
 
     /**
-     * @var Expression[] The rules used by this Grammar.
+     * The rules used by this Grammar.
+     *
+     * @var Expression[]
      */
     protected $rules = [];
 
     /**
+     * List of rule names to be inlined during optimization.
+     *
      * @var string[]
      */
     protected $inlineRules = [];
 
     /**
-     * @var bool True if the grammar is in folded state.
+     * True if the grammar is in folded state.
+     *
+     * @var bool
      */
     protected $folded = false;
-
 
     //
     // Factory methods
@@ -126,6 +141,26 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
         $grammar[$startRule] = $expr;
 
         return $grammar->unfold();
+    }
+
+    /**
+     * @param Grammar $parent
+     *
+     * @return $this
+     */
+    public function setParent(Grammar $parent)
+    {
+        $this->parent = $parent;
+
+        return $this;
+    }
+
+    /**
+     * @return Grammar
+     */
+    public function getParent()
+    {
+        return $this->parent;
     }
 
     /**
@@ -472,24 +507,73 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
         });
     }
 
+    /**
+     * Explicitely fetch a rule from the parent grammar.
+     *
+     * @param string $ruleName
+     *
+     * @return Expression
+     */
+    public function super($ruleName)
+    {
+        return $this->parent->offsetGet($ruleName);
+    }
+
     //
     // SPL interfaces implementation
     // --------------------------------------------------------------------------------------------------------------
 
+    /**
+     * {@inheritdoc}
+     * If the rule is not found in this grammar, tries to fallback to the parent grammar.
+     *
+     * @param string $name
+     *
+     * @return bool
+     */
     public function offsetExists($name)
     {
-        return isset($this->rules[$name]);
-    }
-
-    public function offsetGet($name)
-    {
-        if (!isset($this->rules[$name])) {
-            throw new RuleNotFound($name);
+        if (isset($this->rules[$name])) {
+            return true;
+        }
+        if ($this->parent) {
+            return $this->parent->offsetExists($name);
         }
 
-        return $this->rules[$name];
+        return false;
     }
 
+    /**
+     * {@inheritdoc}
+     * If the rule is not found in this grammar, tries to fallback to the parent grammar.
+     *
+     * @param string $name
+     *
+     * @return Expression
+     * @throws RuleNotFound
+     */
+    public function offsetGet($name)
+    {
+        if (isset($this->rules[$name])) {
+            return $this->rules[$name];
+        }
+        if ($this->parent) {
+            return $this->parent->offsetGet($name);
+        }
+
+        throw new RuleNotFound($name);
+    }
+
+    /**
+     * {@inheritdoc}
+     * Value must be an Expression object.
+     *
+     * @param string     $name
+     * @param Expression $expr
+     *
+     * @return Expression
+     * @throws \InvalidArgumentException If $expr is not an Expression.
+     */
     public function offsetSet($name, $expr)
     {
         if (!$expr instanceof Expression) {
@@ -506,7 +590,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
             $this->startRule = $name;
         }
 
-        $this->rules[$name] = $expr;
+        return $this->rules[$name] = $expr;
     }
 
     public function offsetUnset($name)

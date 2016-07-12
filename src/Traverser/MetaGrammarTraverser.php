@@ -32,6 +32,7 @@ use ju1ius\Pegasus\Expression\RegExp;
 use ju1ius\Pegasus\Expression\SemanticAction;
 use ju1ius\Pegasus\Expression\Sequence;
 use ju1ius\Pegasus\Expression\Skip;
+use ju1ius\Pegasus\Expression\Super;
 use ju1ius\Pegasus\Expression\Token;
 use ju1ius\Pegasus\Expression\ZeroOrMore;
 use ju1ius\Pegasus\Grammar;
@@ -54,7 +55,17 @@ class MetaGrammarTraverser extends NamedNodeTraverser
     /**
      * @var string
      */
+    private $currentRule;
+
+    /**
+     * @var string
+     */
     private $startRule;
+
+    /**
+     * @var string
+     */
+    private $parentGrammar;
 
     /**
      * @var bool
@@ -72,6 +83,8 @@ class MetaGrammarTraverser extends NamedNodeTraverser
     protected function beforeTraverse(Node $node)
     {
         $this->grammar = new Grammar();
+        $this->currentRule = null;
+        $this->parentGrammar = null;
         $this->startRule = null;
         $this->inlining = false;
         $this->lexical = false;
@@ -84,6 +97,9 @@ class MetaGrammarTraverser extends NamedNodeTraverser
     {
         if ($this->startRule) {
             $this->grammar->setStartRule($this->startRule);
+        }
+        if ($this->parentGrammar) {
+            // TODO: handle parent grammar !
         }
 
         return $this->grammar;
@@ -101,6 +117,11 @@ class MetaGrammarTraverser extends NamedNodeTraverser
     private function leave_start_directive(Node $node, $name)
     {
         $this->startRule = $name;
+    }
+
+    private function leave_extends_directive(Node $node, $name)
+    {
+        $this->parentGrammar = $name;
     }
 
     private function leave_ci_directive(Node $node, ...$children)
@@ -148,6 +169,13 @@ class MetaGrammarTraverser extends NamedNodeTraverser
 
         $this->lexical = false;
         $this->inlining = false;
+    }
+
+    private function leave_RuleName(Node $node, $identifier)
+    {
+        $this->currentRule = $identifier;
+
+        return $identifier;
     }
 
     //
@@ -253,6 +281,11 @@ class MetaGrammarTraverser extends NamedNodeTraverser
     private function leave_reference(Node $node, $identifier)
     {
         return new Reference($identifier);
+    }
+
+    private function leave_super(Node $node, $identifier)
+    {
+        return new Super($identifier ?: $this->currentRule);
     }
 
     private function leave_eof(Node $node, ...$children)

@@ -27,6 +27,7 @@ use ju1ius\Pegasus\Expression\Reference;
 use ju1ius\Pegasus\Expression\RegExp;
 use ju1ius\Pegasus\Expression\Sequence;
 use ju1ius\Pegasus\Expression\Skip;
+use ju1ius\Pegasus\Expression\Super;
 use ju1ius\Pegasus\Expression\Terminal;
 use ju1ius\Pegasus\Expression\Token;
 use ju1ius\Pegasus\Grammar;
@@ -48,6 +49,8 @@ class ExpressionHighlighter extends ExpressionVisitor
      * @var \SplStack
      */
     private $combinatorStack;
+
+    private $ruleName = '';
 
     /**
      * ExpressionHighlighter constructor.
@@ -78,6 +81,7 @@ class ExpressionHighlighter extends ExpressionVisitor
     public function beforeTraverse(Expression $expr)
     {
         $this->combinatorStack = new \SplStack();
+        $this->ruleName = $expr->name;
     }
 
     /**
@@ -95,6 +99,12 @@ class ExpressionHighlighter extends ExpressionVisitor
         }
         if ($expr instanceof Reference) {
             $this->output->write(sprintf('<ref>%s</ref>', $expr->identifier));
+        } elseif ($expr instanceof Super) {
+            $this->output->write('<class>super</class>');
+            if ($expr->identifier !== $this->ruleName) {
+                $this->output->write('<d>::</d>');
+                $this->output->write(sprintf('<ref>%s</ref>', $expr->identifier));
+            }
         } elseif ($expr instanceof Terminal) {
             if ($expr instanceof Literal) {
                 $this->output->write(sprintf(

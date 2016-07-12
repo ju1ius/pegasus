@@ -45,7 +45,7 @@ class RecursiveDescent extends Parser
     /**
      * @inheritdoc
      */
-    public function apply($rule, Scope $scope)
+    public function apply($rule, Scope $scope, $super = false)
     {
         $rule = $this->grammar[$rule];
         $this->error->position = $this->pos;
