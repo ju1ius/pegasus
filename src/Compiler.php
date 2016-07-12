@@ -30,16 +30,22 @@ abstract class Compiler
     }
 
     /**
+     * Returns an array of paths to twig template directories.
+     *
      * @return string[]
      */
     abstract public function getTemplateDirectories();
 
     /**
+     * Returns the packrat parser's FQCN.
+     *
      * @return string
      */
     abstract public function getParserClass();
 
     /**
+     * Returns the left-recursive packrat parser's FQCN.
+     *
      * @return string
      */
     abstract public function getExtendedParserClass();
@@ -135,19 +141,6 @@ abstract class Compiler
         }
         $this->optimizeGrammar($grammar, $analysis);
         $this->renderParser($outputDirectory, $args);
-    }
-
-    /**
-     * @param Expression $expr
-     *
-     * @return string
-     */
-    public function renderExpression(Expression $expr)
-    {
-        $tpl_name = self::getExpressionTemplate($expr);
-        $args = ['expr' => $expr];
-
-        return $this->renderTemplate($tpl_name, $args);
     }
 
     protected function renderTemplate($tpl, $args = [])

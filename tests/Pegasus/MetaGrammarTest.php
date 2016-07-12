@@ -51,7 +51,6 @@ class MetaGrammarTest extends PegasusTestCase
     }
 
     /**
-     * @depends      testComment
      * @dataProvider getWSProvider
      */
     public function testWS($input, $expected)
@@ -70,7 +69,6 @@ class MetaGrammarTest extends PegasusTestCase
     }
 
     /**
-     * @depends      testWS
      * @dataProvider getIdentifierProvider
      */
     public function testIdentifier($input, $expected)
@@ -91,7 +89,6 @@ class MetaGrammarTest extends PegasusTestCase
     }
 
     /**
-     * @depends      testIdentifier
      * @dataProvider getReferenceProvider
      */
     public function testReference($input, $expected)

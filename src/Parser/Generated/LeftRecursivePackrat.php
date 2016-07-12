@@ -123,7 +123,7 @@ class LeftRecursivePackrat extends Packrat
             return null;
         }
 
-        return $this->growLeftRecursion($ruleName, $position, $memo, $head);
+        return $this->growSeedParse($ruleName, $position, $memo, $head);
     }
 
     /**
@@ -134,7 +134,7 @@ class LeftRecursivePackrat extends Packrat
      *
      * @return Node|LeftRecursion|null
      */
-    private function growLeftRecursion($ruleName, $position, MemoEntry $memo, Head $head)
+    private function growSeedParse($ruleName, $position, MemoEntry $memo, Head $head)
     {
         $this->heads[$position] = $head;
         while (true) {

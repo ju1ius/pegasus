@@ -13,8 +13,8 @@ namespace ju1ius\Pegasus\Parser;
 use ju1ius\Pegasus\Expression;
 
 /**
- * A packrat parser implementing Wrath, Douglass & Millstein's
- * algorithm to fully support left-recursive rules.
+ * A packrat parser implementing Wrath, Douglass & Millstein's algorithm
+ * to fully support left-recursive rules.
  *
  * @see doc/algo/packrat-lr.pdf
  */
@@ -37,17 +37,14 @@ class LeftRecursivePackrat extends Packrat
 
         $result = parent::parse($source, $pos, $startStartRule);
 
-        unset($this->heads, $this->lrStack);
+        // free memory
+        $this->heads = $this->lrStack = null;
 
         return $result;
     }
 
     /**
-     * @param string $rule
-     * @param Scope  $scope
-     *
-     * @return \ju1ius\Pegasus\Node|mixed|null
-     * @internal param int $pos
+     * @inheritdoc
      */
     public function apply($rule, Scope $scope)
     {
@@ -75,11 +72,11 @@ class LeftRecursivePackrat extends Packrat
             }
             $lr->seed = $result;
 
-            return $this->lrAnswer($expr, $pos, $memo, $scope);
+            return $this->leftRecursionAnswer($expr, $pos, $memo, $scope);
         }
         $this->pos = $memo->end;
         if ($memo->result instanceof LeftRecursion) {
-            $this->setupLR($expr, $memo->result);
+            $this->setupLeftRecursion($expr, $memo->result);
 
             return $memo->result->seed;
         }
@@ -91,7 +88,7 @@ class LeftRecursivePackrat extends Packrat
      * @param Expression    $expr
      * @param LeftRecursion $lr
      */
-    protected function setupLR(Expression $expr, LeftRecursion $lr)
+    protected function setupLeftRecursion(Expression $expr, LeftRecursion $lr)
     {
         if (!$lr->head) {
             $lr->head = new Head($expr);
@@ -112,7 +109,7 @@ class LeftRecursivePackrat extends Packrat
      *
      * @return mixed|null
      */
-    protected function lrAnswer(Expression $expr, $pos, MemoEntry $memo, Scope $scope)
+    protected function leftRecursionAnswer(Expression $expr, $pos, MemoEntry $memo, Scope $scope)
     {
         $head = $memo->result->head;
         if ($head->rule->id !== $expr->id) {
@@ -123,7 +120,7 @@ class LeftRecursivePackrat extends Packrat
             return null;
         }
 
-        return $this->growLR($expr, $pos, $memo, $head, $scope);
+        return $this->growSeedParse($expr, $pos, $memo, $head, $scope);
     }
 
     /**
@@ -135,7 +132,7 @@ class LeftRecursivePackrat extends Packrat
      *
      * @return mixed
      */
-    protected function growLR(Expression $expr, $pos, MemoEntry $memo, Head $head, Scope $scope)
+    protected function growSeedParse(Expression $expr, $pos, MemoEntry $memo, Head $head, Scope $scope)
     {
         $this->heads[$pos] = $head;
         while (true) {

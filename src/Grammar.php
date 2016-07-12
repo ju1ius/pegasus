@@ -29,6 +29,17 @@ use ju1ius\Pegasus\Traverser\MetaGrammarTraverser;
 class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
 {
     /**
+     * @var string The name of the grammar
+     */
+    protected $name = '';
+
+
+    /**
+     * @var string The start rule of the grammar.
+     */
+    protected $startRule = null;
+
+    /**
      * @var Expression[] The rules used by this Grammar.
      */
     protected $rules = [];
@@ -39,24 +50,10 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
     protected $inlineRules = [];
 
     /**
-     * @var array
-     */
-    public $actions = [];
-
-    /**
-     * @var string The start rule of the grammar.
-     */
-    protected $startRule = null;
-
-    /**
      * @var bool True if the grammar is in folded state.
      */
     protected $folded = false;
 
-    /**
-     * @var string The name of the grammar
-     */
-    protected $name = '';
 
     //
     // Factory methods

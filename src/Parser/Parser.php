@@ -54,7 +54,7 @@ abstract class Parser
      * @param string      $source
      * @param string|null $startRule
      *
-     * @return Node|null
+     * @return Node|true|null
      *
      * @throws IncompleteParseError
      * @throws ParseError if there's no match there
@@ -81,7 +81,7 @@ abstract class Parser
      * @param int    $pos
      * @param string $startRule
      *
-     * @return Node|null
+     * @return Node|true|null
      *
      * @throws ParseError if there's no match there
      */

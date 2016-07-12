@@ -67,12 +67,11 @@ class PhpCompiler extends Compiler
     protected function renderParser($outputDirectory, array $args = [])
     {
         $output = $this->renderTemplate('parser.twig', $args);
-        if ('php://stdout' === $outputDirectory) {
+        if ($outputDirectory === 'php://stdout') {
             $output_file = $outputDirectory;
         } else {
             $output_file = $outputDirectory . '/' . $args['class'] . '.php';
         }
-        echo $output_file, PHP_EOL;
         file_put_contents($output_file, $output);
     }
 }

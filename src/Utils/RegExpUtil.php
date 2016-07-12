@@ -15,7 +15,7 @@ namespace ju1ius\Pegasus\Utils;
  */
 class RegExpUtil
 {
-    const HAS_CAPTURING_GROUP_RX = <<<'EOS'
+    const HAS_CAPTURING_GROUP_RX = <<<'REGEXP'
 /
     (?<!\\\\) (?:\\\\\\\\)*             # even number of backslashes?
     \(                                  # open parenthesis
@@ -25,7 +25,7 @@ class RegExpUtil
         (?! \? )                        # not a '?' (it's a numbered subpattern)
     )
 /Sx
-EOS;
+REGEXP;
 
     /**
      * Returns whether the pattern contains capturing groups.

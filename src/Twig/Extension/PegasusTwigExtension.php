@@ -22,8 +22,6 @@ use Twig_SimpleFunction;
 
 class PegasusTwigExtension extends Twig_Extension
 {
-    protected static $VARID = 0;
-
     /**
      * @var Twig_Environment
      */
@@ -81,7 +79,6 @@ class PegasusTwigExtension extends Twig_Extension
     public function getFunctions()
     {
         return [
-            new Twig_SimpleFunction('expr_tpl', [$this, 'getTemplateForExpression']),
             new Twig_SimpleFunction('render_expr', [$this, 'renderExpression']),
             new Twig_SimpleFunction('retrieve', [$this->collector, 'retrieve']),
         ];

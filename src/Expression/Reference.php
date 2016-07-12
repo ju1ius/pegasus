@@ -16,9 +16,9 @@ use ju1ius\Pegasus\Parser\Parser;
 use ju1ius\Pegasus\Parser\Scope;
 
 /**
- * A reference to a named expression.
+ * A reference to a grammar rule.
  *
- * References must be resolved before matching by calling Grammar::finalize().
+ * @author ju1ius <ju1ius@laposte.net>
  */
 class Reference extends Expression
 {
