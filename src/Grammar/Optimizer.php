@@ -36,6 +36,9 @@ class Optimizer
 {
     /**
      * Optimization level 1.
+     *
+     * Enables only transparent optimizations,
+     * i.e. parsing a grammar and echoing it right away should yield no visual differences.
      */
     const LEVEL_1 = 1;
 
@@ -54,18 +57,32 @@ class Optimizer
         self::LEVEL_2 => null,
     ];
 
+    /**
+     * @return int[]
+     */
+    public static function getLevels()
+    {
+        return self::$LEVELS;
+    }
+
+    /**
+     * @param Grammar $grammar
+     * @param int     $level
+     *
+     * @return Grammar
+     */
     public static function optimize(Grammar $grammar, $level = self::LEVEL_1)
     {
-        $optim = self::getOptimization($level);
+        $optimization = self::getOptimization($level);
 
-        $ctx = OptimizationContext::create($grammar);
-        $grammar = $grammar->map(function ($expr) use ($optim, $ctx) {
-            return $optim->apply($expr, $ctx, true);
+        $context = OptimizationContext::create($grammar);
+        $grammar = $grammar->map(function ($expr) use ($optimization, $context) {
+            return $optimization->apply($expr, $context, true);
         });
 
-        $ctx = OptimizationContext::create($grammar);
-        return $grammar->filter(function ($expr, $name) use ($ctx) {
-            return $ctx->isRelevantRule($name);
+        $context = OptimizationContext::create($grammar);
+        return $grammar->filter(function ($expr, $name) use ($context) {
+            return $context->isRelevantRule($name);
         });
     }
 
@@ -77,11 +94,7 @@ class Optimizer
         if (self::$OPTIMIZATIONS[$level] === null) {
             switch ($level) {
                 case self::LEVEL_1:
-                    self::$OPTIMIZATIONS[$level] = (new InlineNonRecursiveRules())
-                        ->add(new SimplifyRedundantQuantifier())
-                        ->add(new RemoveMeaninglessDecorator())
-                        ->add(new SimplifyTerminalToken())
-                        ->add(new FlattenSequence())
+                    self::$OPTIMIZATIONS[$level] = (new FlattenSequence())
                         ->add(new FlattenChoice());
                     break;
                 case self::LEVEL_2:
@@ -102,10 +115,5 @@ class Optimizer
         }
 
         return self::$OPTIMIZATIONS[$level];
-    }
-
-    public static function getLevels()
-    {
-        return self::$LEVELS;
     }
 }
