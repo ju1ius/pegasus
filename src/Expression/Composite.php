@@ -106,6 +106,19 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
     //
     // Collection
     // --------------------------------------------------------------------------------------------------------------
+    /**
+     * @inheritDoc
+     */
+    public function iterate($depthFirst = false)
+    {
+        if (!$depthFirst) yield $this;
+        foreach ($this->children as $child) {
+            foreach ($child->iterate($depthFirst) as $item) {
+                yield $item;
+            }
+        }
+        if ($depthFirst) yield $this;
+    }
 
     /**
      * @param Expression[] ...$children

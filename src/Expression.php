@@ -82,16 +82,6 @@ abstract class Expression
     abstract public function match($text, Parser $parser, Scope $scope);
 
     /**
-     * @param string                     $text
-     * @param int                        $pos
-     * @param Grammar|array|\ArrayAccess $rules
-     * @param Scope                      $scope
-     *
-     * @return mixed
-     */
-    //abstract public function parse($text, $pos, $rules, Scope $scope);
-
-    /**
      * Returns a string representation of this expression, suitable for the right-hand-side of a rule.
      *
      * @return string
@@ -119,6 +109,16 @@ abstract class Expression
         return $this instanceof $other
             && $other->id === $this->id
             && $other->name === $this->name;
+    }
+
+    /**
+     * @param bool $depthFirst
+     *
+     * @return \Generator
+     */
+    public function iterate($depthFirst = false)
+    {
+        yield $this;
     }
 
     /**

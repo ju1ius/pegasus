@@ -12,6 +12,7 @@ namespace ju1ius\Pegasus\Grammar;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Composite;
+use ju1ius\Pegasus\Expression\Label;
 use ju1ius\Pegasus\Expression\OneOf;
 use ju1ius\Pegasus\Expression\Reference;
 use ju1ius\Pegasus\Grammar;
@@ -63,6 +64,22 @@ class Analysis
         $this->leftReferences = [];
         $this->directReferences = [];
         $this->directLeftReferences = [];
+    }
+
+    /**
+     * @param string $ruleName
+     *
+     * @return bool
+     */
+    public function needsScope($ruleName)
+    {
+        foreach ($this->grammar[$ruleName]->iterate() as $expr) {
+            if ($expr instanceof Label) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
