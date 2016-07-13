@@ -8,10 +8,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Parser\Generated;
+namespace ju1ius\Pegasus\Compiler\Extension\Php\Runtime;
 
 use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Parser\MemoEntry;
 
 /**
  * A packrat parser implementing Wrath, Douglass & Millstein's algorithm
@@ -22,14 +21,14 @@ use ju1ius\Pegasus\Parser\MemoEntry;
 class LeftRecursivePackrat extends Packrat
 {
     /**
-     * @var array
+     * @var Head[]
      */
-    private $heads;
+    protected $heads;
 
     /**
-     * @var \SplStack
+     * @var \SplStack<LeftRecursion>
      */
-    private $lrStack;
+    protected $lrStack;
 
     /**
      * @inheritdoc
@@ -41,8 +40,8 @@ class LeftRecursivePackrat extends Packrat
 
         $result = parent::parse($text, $position, $startRule);
 
-        // free some memory
-        unset($this->heads, $this->lrStack);
+        // free memory
+        $this->heads = $this->lrStack = null;
 
         return $result;
     }
@@ -50,20 +49,18 @@ class LeftRecursivePackrat extends Packrat
     /**
      * @inheritdoc
      */
-    protected function apply($ruleName, $position)
+    protected function apply($ruleName)
     {
-        $this->pos = $position;
-        $this->error->position = $position;
-        $this->error->expr = $ruleName;
         $memo = $this->recall($ruleName);
 
         if (!$memo) {
+            $pos = $this->pos;
             // Create a new LeftRecursion and push it onto the rule invocation stack.
             $lr = new LeftRecursion($ruleName);
             $this->lrStack->push($lr);
             // Memoize $lr, then evaluate $name.
-            $memo = new MemoEntry($lr, $position);
-            $this->memo[$ruleName][$position] = $memo;
+            $memo = new MemoEntry($lr, $pos);
+            $this->memo[$this->isCapturing][$ruleName][$pos] = $memo;
             $result = $this->evaluate($ruleName);
             // Pop $lr off the invocation stack
             $this->lrStack->pop();
@@ -75,7 +72,7 @@ class LeftRecursivePackrat extends Packrat
             }
             $lr->seed = $result;
 
-            return $this->leftRecursionAnswer($ruleName, $position, $memo);
+            return $this->leftRecursionAnswer($ruleName, $pos, $memo);
         }
 
         $this->pos = $memo->end;
@@ -160,24 +157,25 @@ class LeftRecursivePackrat extends Packrat
      */
     private function recall($ruleName)
     {
-        $startPos = $this->pos;
-        // inline this to save a method call...
-        // $memo = $this->memo($name, $pos);
+        $pos = $this->pos;
+        // inline this to save a method call: $memo = $this->memo($name, $pos);
         /** @var MemoEntry $memo */
-        $memo = isset($this->memo[$ruleName][$startPos]) ? $this->memo[$ruleName][$startPos] : null;
+        $memo = isset($this->memo[$this->isCapturing][$ruleName][$pos])
+            ? $this->memo[$this->isCapturing][$ruleName][$pos]
+            : null;
         // If not growing a seed parse, just return what is stored in the memo table.
-        if (!isset($this->heads[$startPos])) {
+        if (!isset($this->heads[$pos])) {
             return $memo;
         }
-        $head = $this->heads[$startPos];
+        $head = $this->heads[$pos];
         // Do not evaluate any rule that is not involved in this left recursion.
         if (!$memo && !$head->involves($ruleName)) {
-            return new MemoEntry(null, $startPos);
+            return new MemoEntry(null, $pos);
         }
         // Allow involved rules to be evaluated, but only once, during a seed-growing iteration.
         if (isset($head->eval[$ruleName])) {
             unset($head->eval[$ruleName]);
-            $result = $this->evaluate($ruleName, $startPos);
+            $result = $this->evaluate($ruleName);
             $memo->result = $result;
             $memo->end = $this->pos;
         }

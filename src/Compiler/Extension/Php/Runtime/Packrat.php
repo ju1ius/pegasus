@@ -8,9 +8,8 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Parser\Generated;
+namespace ju1ius\Pegasus\Compiler\Extension\Php\Runtime;
 
-use ju1ius\Pegasus\Parser\MemoEntry;
 use ju1ius\Pegasus\Node;
 
 /**
@@ -21,7 +20,7 @@ use ju1ius\Pegasus\Node;
  *
  * @see doc/algo/packrat-lr.pdf
  */
-class Packrat extends RecursiveDescent
+class Packrat extends Parser
 {
     /**
      * @var array
@@ -54,18 +53,15 @@ class Packrat extends RecursiveDescent
      * and returns the corresponding parse tree node.
      *
      * @param string $ruleName
-     * @param int    $position
      *
      * @return Node|null
      */
-    protected function apply($ruleName, $position = 0)
+    protected function apply($ruleName)
     {
-        $this->pos = $position;
-        $this->error->position = $position;
-        $this->error->expr = $ruleName;
-
-        if (isset($this->memo[$ruleName][$position])) {
-            $memo = $this->memo[$ruleName][$position];
+        $pos = $this->pos;
+        $capturing = (int)$this->isCapturing;
+        if (isset($this->memo[$capturing][$ruleName][$pos])) {
+            $memo = $this->memo[$capturing][$ruleName][$pos];
             $this->pos = $memo->end;
 
             return $memo->result;
@@ -73,8 +69,8 @@ class Packrat extends RecursiveDescent
 
         // Store a result of FAIL in the memo table before it evaluates the body of a rule.
         // This has the effect of making all left-recursive applications (both direct and indirect) fail.
-        $memo = new MemoEntry(null, $position);
-        $this->memo[$ruleName][$position] = $memo;
+        $memo = new MemoEntry(null, $pos);
+        $this->memo[$capturing][$ruleName][$pos] = $memo;
         // evaluate expression
         $result = $this->evaluate($ruleName);
         // update the result in the memo table
@@ -82,6 +78,18 @@ class Packrat extends RecursiveDescent
         $memo->end = $this->pos;
 
         return $result;
+    }
+
+    /**
+     * Evaluates an expression & updates current position on success.
+     *
+     * @param string $ruleName
+     *
+     * @return Node|null
+     */
+    protected function evaluate($ruleName)
+    {
+        return $this->matchers[$ruleName]();
     }
 
     /**
@@ -94,6 +102,10 @@ class Packrat extends RecursiveDescent
      */
     final protected function memo($ruleName, $position)
     {
-        return isset($this->memo[$ruleName][$position]) ? $this->memo[$ruleName][$position] : null;
+        $capturing = (int)$this->isCapturing;
+
+        return isset($this->memo[$capturing][$ruleName][$position])
+            ? $this->memo[$capturing][$ruleName][$position]
+            : null;
     }
 }

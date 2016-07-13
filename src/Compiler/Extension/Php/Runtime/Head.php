@@ -8,9 +8,7 @@
  * file that was distributed with this source code.
  */
 
-
-namespace ju1ius\Pegasus\Parser\Generated;
-
+namespace ju1ius\Pegasus\Compiler\Extension\Php\Runtime;
 
 /**
  * The Head data type contains the head rule of the left recursion,
@@ -19,7 +17,7 @@ namespace ju1ius\Pegasus\Parser\Generated;
  * - `involved`: rules involved in the left recursion
  * - `eval`: subset of the involved rules that may still be evaluated during the current growth cycle.
  */
-class Head
+final class Head
 {
     /**
      * The head rule of the left recursion.

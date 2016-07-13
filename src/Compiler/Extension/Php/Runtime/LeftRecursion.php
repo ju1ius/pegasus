@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Parser\Generated;
+namespace ju1ius\Pegasus\Compiler\Extension\Php\Runtime;
 
 use ju1ius\Pegasus\Node;
 
@@ -18,7 +18,7 @@ use ju1ius\Pegasus\Node;
  * The `head` field, for a left-recursive invocation, holds information pertinent to the left recursion
  * (`head` is set to NULL for non-left-recursive invocations).
  */
-class LeftRecursion
+final class LeftRecursion
 {
     /**
      * The expression we're currently matching.

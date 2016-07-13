@@ -11,8 +11,8 @@
 namespace ju1ius\Pegasus\Compiler\Extension\Php;
 
 use ju1ius\Pegasus\Compiler\Compiler;
-use ju1ius\Pegasus\Parser\Generated\LeftRecursivePackrat;
-use ju1ius\Pegasus\Parser\Generated\Packrat;
+use ju1ius\Pegasus\Compiler\Extension\Php\Runtime\LeftRecursivePackrat;
+use ju1ius\Pegasus\Compiler\Extension\Php\Runtime\Packrat;
 use ju1ius\Pegasus\Traverser\NamedNodeTraverser;
 
 class PhpCompiler extends Compiler
