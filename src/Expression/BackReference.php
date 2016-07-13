@@ -16,7 +16,7 @@ class BackReference extends Terminal
     /**
      * @var string
      */
-    private $identifier;
+    public $identifier;
 
     /**
      * BackReference constructor.

@@ -13,6 +13,7 @@ namespace ju1ius\Pegasus\Traverser;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Assert;
 use ju1ius\Pegasus\Expression\AttributedSequence;
+use ju1ius\Pegasus\Expression\BackReference;
 use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\EOF;
 use ju1ius\Pegasus\Expression\Epsilon;
@@ -281,6 +282,11 @@ class MetaGrammarTraverser extends NamedNodeTraverser
     private function leave_reference(Node $node, $identifier)
     {
         return new Reference($identifier);
+    }
+
+    private function leave_back_reference(Node $node, $identifier)
+    {
+        return new BackReference($identifier);
     }
 
     private function leave_super(Node $node, $identifier)
