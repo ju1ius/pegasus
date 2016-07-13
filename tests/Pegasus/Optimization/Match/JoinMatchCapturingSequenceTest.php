@@ -18,8 +18,8 @@ use ju1ius\Pegasus\Expression\Sequence;
 use ju1ius\Pegasus\Expression\Skip;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Builder;
-use ju1ius\Pegasus\Optimization\Match\JoinMatchCapturingSequence;
-use ju1ius\Pegasus\Optimization\OptimizationContext;
+use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinMatchCapturingSequence;
+use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\Tests\Optimization\OptimizationTestCase;
 
 /**
@@ -45,7 +45,7 @@ class JoinMatchCapturingSequenceTest extends OptimizationTestCase
             'A ssequence of only skipping matches' => [
                 Builder::create()->rule('test')->sequence()
                     ->skip()->match('a')
-                    ->skip()->match('b')
+                    ->skip()->literal('b')
                     ->skip()->match('c')
                 ->getGrammar(),
                 new Skip(new Match('(?>a)(?>b)(?>c)'), 'test')
@@ -53,7 +53,7 @@ class JoinMatchCapturingSequenceTest extends OptimizationTestCase
             'A sequence of skipping matches before something else' => [
                 Builder::create()->rule('test')->sequence()
                     ->skip()->match('a')
-                    ->skip()->match('b')
+                    ->skip()->literal('b')
                     ->ref('c')
                     ->getGrammar(),
                 new Sequence([
@@ -64,7 +64,7 @@ class JoinMatchCapturingSequenceTest extends OptimizationTestCase
             'A sequence of skipping matches after something else' => [
                 Builder::create()->rule('test')->sequence()
                     ->ref('a')
-                    ->skip()->match('b')
+                    ->skip()->literal('b')
                     ->skip()->match('c')
                     ->getGrammar(),
                 new Sequence([
@@ -75,7 +75,7 @@ class JoinMatchCapturingSequenceTest extends OptimizationTestCase
             'A sequence of only matches' => [
                 Builder::create()->rule('test')->sequence()
                     ->match('a')
-                    ->match('b')
+                    ->literal('b')
                     ->match('c')
                     ->getGrammar(),
                 new GroupMatch(new Match('(a)(b)(c)'), 3, 'test')
@@ -122,14 +122,14 @@ class JoinMatchCapturingSequenceTest extends OptimizationTestCase
             'Sequence of matches before something non-capturing' => [
                 Builder::create()->rule('test')->sequence()
                     ->match('a')
-                    ->match('b')
+                    ->literal('b')
                     ->skip()->ref('c')
                     ->getGrammar(),
                 true
             ],
             'Sequence of matches before something capturing' => [
                 Builder::create()->rule('test')->sequence()
-                    ->match('a')
+                    ->literal('a')
                     ->match('b')
                     ->ref('c')
                     ->getGrammar(),
@@ -139,7 +139,7 @@ class JoinMatchCapturingSequenceTest extends OptimizationTestCase
                 Builder::create()->rule('test')->sequence()
                     ->skip()->ref('a')
                     ->match('b')
-                    ->match('c')
+                    ->literal('c')
                     ->getGrammar(),
                 true
             ],

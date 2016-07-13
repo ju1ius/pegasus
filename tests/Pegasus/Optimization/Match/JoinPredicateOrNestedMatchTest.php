@@ -16,8 +16,8 @@ use ju1ius\Pegasus\Expression\OneOf;
 use ju1ius\Pegasus\Expression\Reference;
 use ju1ius\Pegasus\Expression\Skip;
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Optimization\Match\JoinPredicateOrNestedMatch;
-use ju1ius\Pegasus\Optimization\OptimizationContext;
+use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinPredicateOrNestedMatch;
+use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\Tests\Optimization\OptimizationTestCase;
 
 class JoinPredicateOrNestedMatchTest extends OptimizationTestCase

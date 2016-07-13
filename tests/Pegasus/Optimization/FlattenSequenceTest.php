@@ -7,9 +7,9 @@ use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Expression\Sequence;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Builder;
-use ju1ius\Pegasus\Optimization\FlattenCapturingSequence;
-use ju1ius\Pegasus\Optimization\FlattenMatchingSequence;
-use ju1ius\Pegasus\Optimization\FlattenSequence;
+use ju1ius\Pegasus\Grammar\Optimization\Flattening\FlattenCapturingSequence;
+use ju1ius\Pegasus\Grammar\Optimization\Flattening\FlattenMatchingSequence;
+use ju1ius\Pegasus\Grammar\Optimization\FlattenSequence;
 
 class FlattenSequenceTest extends OptimizationTestCase
 {

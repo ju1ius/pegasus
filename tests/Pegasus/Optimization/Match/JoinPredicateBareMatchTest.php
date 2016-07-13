@@ -16,8 +16,8 @@ use ju1ius\Pegasus\Expression\Reference;
 use ju1ius\Pegasus\Expression\Sequence;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Builder;
-use ju1ius\Pegasus\Optimization\Match\JoinPredicateBareMatch;
-use ju1ius\Pegasus\Optimization\OptimizationContext;
+use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinPredicateBareMatch;
+use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\Tests\Optimization\OptimizationTestCase;
 
 /**

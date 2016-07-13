@@ -18,8 +18,8 @@ use ju1ius\Pegasus\Expression\Quantifier;
 use ju1ius\Pegasus\Expression\ZeroOrMore;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Builder;
-use ju1ius\Pegasus\Optimization\OptimizationContext;
-use ju1ius\Pegasus\Optimization\SimplifyRedundantQuantifier;
+use ju1ius\Pegasus\Grammar\OptimizationContext;
+use ju1ius\Pegasus\Grammar\Optimization\SimplifyRedundantQuantifier;
 
 /**
  * @author ju1ius <ju1ius@laposte.net>

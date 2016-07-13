@@ -16,8 +16,8 @@ use ju1ius\Pegasus\Expression\Reference;
 use ju1ius\Pegasus\Expression\Sequence;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Builder;
-use ju1ius\Pegasus\Optimization\Match\JoinMatchMatchingSequence;
-use ju1ius\Pegasus\Optimization\OptimizationContext;
+use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinMatchMatchingSequence;
+use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\Tests\Optimization\OptimizationTestCase;
 
 /**
@@ -56,6 +56,22 @@ class JoinMatchMatchingSequenceTest extends OptimizationTestCase
                     ->match('c')
                     ->getGrammar(),
                 new Match('(?>(?i)a)(?>(?um)b)(?>c)', [], 'test')
+            ],
+            'Joins a sequence of literals' => [
+                Builder::create()->rule('test')->sequence()
+                    ->literal('a/b')
+                    ->literal('c?')
+                    ->literal('{d}')
+                    ->getGrammar(),
+                new Match('(?>a\/b)(?>c\?)(?>\{d\})', [], 'test')
+            ],
+            'Joins a sequence of literals or matches' => [
+                Builder::create()->rule('test')->sequence()
+                    ->literal('foo/bar')
+                    ->match('c+|d')
+                    ->literal('baz')
+                    ->getGrammar(),
+                new Match('(?>foo\/bar)(?>c+|d)(?>baz)', [], 'test')
             ],
             'Joins consecutive matches before something else' => [
                 Builder::create()->rule('test')->sequence()
@@ -103,7 +119,7 @@ class JoinMatchMatchingSequenceTest extends OptimizationTestCase
             'A sequence of matches in a matching context' => [
                 Builder::create()->rule('test')->sequence()
                     ->match('a')
-                    ->match('b')
+                    ->literal('b')
                     ->match('c')
                     ->getGrammar(),
                 OptimizationContext::TYPE_MATCHING,
@@ -112,7 +128,7 @@ class JoinMatchMatchingSequenceTest extends OptimizationTestCase
             'A sequence of matches in a capturing context' => [
                 Builder::create()->rule('test')->sequence()
                     ->match('a')
-                    ->match('b')
+                    ->literal('b')
                     ->match('c')
                     ->getGrammar(),
                 OptimizationContext::TYPE_CAPTURING,

@@ -16,8 +16,8 @@ use ju1ius\Pegasus\Expression\OneOf;
 use ju1ius\Pegasus\Expression\Reference;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Builder;
-use ju1ius\Pegasus\Optimization\Match\JoinMatchChoice;
-use ju1ius\Pegasus\Optimization\OptimizationContext;
+use ju1ius\Pegasus\Grammar\Optimization\JoinMatchChoice;
+use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\Tests\Optimization\OptimizationTestCase;
 
 /**
@@ -33,7 +33,7 @@ class JoinMatchChoiceTest extends OptimizationTestCase
      */
     public function testApply(Grammar $input, Expression $expected)
     {
-        $optim = new JoinMatchChoice();
+        $optim = new \ju1ius\Pegasus\Grammar\Optimization\JoinMatchChoice();
         $ctx = OptimizationContext::create($input);
 
         $result = $this->applyOptimization($optim, $input, $ctx);
@@ -87,7 +87,7 @@ class JoinMatchChoiceTest extends OptimizationTestCase
      */
     public function testAppliesTo(Grammar $input, $applies)
     {
-        $optim = new JoinMatchChoice();
+        $optim = new \ju1ius\Pegasus\Grammar\Optimization\JoinMatchChoice();
         $expr = $input->getStartRule();
         $ctx = OptimizationContext::create($input);
 
