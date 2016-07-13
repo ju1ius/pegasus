@@ -11,6 +11,7 @@
 namespace ju1ius\Pegasus\Parser;
 
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Node;
 
 /**
  * A packrat parser implementing Wrath, Douglass & Millstein's algorithm
@@ -30,12 +31,12 @@ class LeftRecursivePackrat extends Packrat
      */
     protected $lrStack;
 
-    public function parse($source, $pos = 0, $startStartRule = null)
+    public function parse($source, $pos = 0, $startRule = null)
     {
         $this->heads = [];
         $this->lrStack = new \SplStack();
 
-        $result = parent::parse($source, $pos, $startStartRule);
+        $result = parent::parse($source, $pos, $startRule);
 
         // free memory
         $this->heads = $this->lrStack = null;
@@ -108,7 +109,7 @@ class LeftRecursivePackrat extends Packrat
      * @param MemoEntry  $memo
      * @param Scope      $scope
      *
-     * @return mixed|null
+     * @return Node|LeftRecursion|null
      */
     protected function leftRecursionAnswer(Expression $expr, $pos, MemoEntry $memo, Scope $scope)
     {
@@ -131,7 +132,7 @@ class LeftRecursivePackrat extends Packrat
      * @param Head       $head
      * @param Scope      $scope
      *
-     * @return mixed
+     * @return Node|LeftRecursion|null
      */
     protected function growSeedParse(Expression $expr, $pos, MemoEntry $memo, Head $head, Scope $scope)
     {
