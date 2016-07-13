@@ -13,6 +13,8 @@ namespace ju1ius\Pegasus\Compiler\Extension\Php;
 use ju1ius\Pegasus\Compiler\Compiler;
 use ju1ius\Pegasus\Compiler\Extension\Php\Runtime\LeftRecursivePackrat;
 use ju1ius\Pegasus\Compiler\Extension\Php\Runtime\Packrat;
+use ju1ius\Pegasus\Grammar;
+use ju1ius\Pegasus\Grammar\Optimizer;
 use ju1ius\Pegasus\Traverser\NamedNodeTraverser;
 
 class PhpCompiler extends Compiler
@@ -73,5 +75,13 @@ class PhpCompiler extends Compiler
             $output_file = $outputDirectory . '/' . $args['class'] . '.php';
         }
         file_put_contents($output_file, $output);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function optimizeGrammar(Grammar $grammar)
+    {
+        return Optimizer::optimize($grammar, Optimizer::LEVEL_2);
     }
 }

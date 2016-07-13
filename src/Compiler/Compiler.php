@@ -124,9 +124,8 @@ abstract class Compiler
      */
     public function compileGrammar(Grammar $grammar, $outputDirectory, array $args = [])
     {
-        $args['grammar'] = $grammar;
         $args['base_class'] = $this->getParserClass();
-
+        $grammar = $this->optimizeGrammar($grammar);
         // analyse grammar
         $analysis = new Analysis($grammar);
         // find the appropriate parser class
@@ -136,7 +135,10 @@ abstract class Compiler
                 break;
             }
         }
-        $this->optimizeGrammar($grammar, $analysis);
+
+        $args['grammar'] = $grammar;
+        $args['analysis'] = $analysis;
+
         $this->renderParser($outputDirectory, $args);
     }
 
@@ -153,6 +155,7 @@ abstract class Compiler
         $this->twig = new \Twig_Environment($loader, [
             'autoescape' => false,
             'debug' => true,
+            'strict_variables' => true,
         ]);
         $extensions = [
             new \Twig_Extension_Debug,
@@ -167,11 +170,9 @@ abstract class Compiler
     /**
      * Override this to add optimizations
      *
-     * @param Grammar  $grammar
-     * @param Analysis $analysis
+     * @param Grammar $grammar
+     *
+     * @return Grammar
      */
-    protected function optimizeGrammar(Grammar $grammar, Analysis $analysis)
-    {
-        //
-    }
+    abstract protected function optimizeGrammar(Grammar $grammar);
 }
