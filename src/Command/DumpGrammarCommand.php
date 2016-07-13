@@ -25,6 +25,9 @@ use Symfony\Component\Console\Question\Question;
  */
 class DumpGrammarCommand extends Command
 {
+    use InteractiveGrammarBuilderTrait;
+    use StandardInputReaderTrait;
+
     /**
      * @inheritDoc
      */
@@ -32,7 +35,11 @@ class DumpGrammarCommand extends Command
     {
         $this
             ->setName('grammar:dump')
-            ->addArgument('path', InputArgument::OPTIONAL, 'Path to a grammar file.')
+            ->addArgument(
+                'path',
+                InputArgument::OPTIONAL,
+                'Path to a grammar file. Pass - to read from STDIN or ommit for interactive grammar input.'
+            )
             ->addOption('highlight', 'H', InputOption::VALUE_NONE, 'Show a syntax-highlighted version of the grammar')
             ->addOption('optimize', 'O', InputOption::VALUE_REQUIRED, 'Optimization level to apply.', Optimizer::LEVEL_1)
         ;
@@ -44,11 +51,14 @@ class DumpGrammarCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $optimizationLevel = $input->getOption('optimize');
+        $grammarPath = $input->getArgument('path');
 
-        if ($path = $input->getArgument('path')) {
-            $syntax = file_get_contents($path);
-        } else {
+        if (!$grammarPath) {
             $syntax = $this->askForGrammar($input, $output);
+        } elseif ($grammarPath === '-') {
+            $syntax = $this->readStandardInput();
+        } else {
+            $syntax = file_get_contents($grammarPath);
         }
 
         $formatter = $this->getHelper('formatter');
@@ -64,33 +74,5 @@ class DumpGrammarCommand extends Command
         } else {
             Debug::dump($grammar, $output);
         }
-    }
-
-    private function askForGrammar(InputInterface $input, OutputInterface $output)
-    {
-        $lines = [];
-        $numBlanks = 0;
-        $input->setInteractive(true);
-        $question = $this->getHelper('formatter')->formatBlock([
-            '',
-            'Write a set of rules and type enter.',
-            'Two empty lines ends the grammar.',
-            ''
-        ], 'question');
-        $question = new Question($question . "\n", '');
-
-        $helper = $this->getHelper('question');
-        while (true) {
-            $line = $helper->ask($input, $output, $question);
-            if ($line) {
-                $lines[] = $line;
-                $numBlanks = 0;
-            } elseif (++$numBlanks === 2) {
-                break;
-            }
-            $question = new Question('', '');
-        }
-
-        return implode("\n", $lines);
     }
 }

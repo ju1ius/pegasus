@@ -10,16 +10,18 @@
 
 namespace ju1ius\Pegasus\Command;
 
-use ju1ius\Pegasus\ExtensionRepository;
+use ju1ius\Pegasus\Compiler\ExtensionRegistry;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\Question;
 
 class GenerateParserCommand extends Command
 {
+    use InteractiveGrammarBuilderTrait;
+    use StandardInputReaderTrait;
+
     /**
      * @inheritdoc
      */
@@ -27,11 +29,10 @@ class GenerateParserCommand extends Command
     {
         $this->setName('generate:parser')
             ->setDescription('Generates a parser from a grammar file, or interactively.')
-            ->addOption(
+            ->addArgument(
                 'grammar',
-                'g',
-                InputOption::VALUE_REQUIRED,
-                'Path to a grammar file.'
+                InputArgument::OPTIONAL,
+                'Path to a grammar file. Pass - to read from STDIN or ommit for interactive grammar input.'
             )
             ->addOption(
                 'name',
@@ -79,7 +80,7 @@ class GenerateParserCommand extends Command
             $input->getOption('extension-dir')
         );
 
-        $manager = new ExtensionRepository($extension_dirs);
+        $manager = new ExtensionRegistry($extension_dirs);
         $extension = $manager->getExtension($language);
         $compiler = $extension->getCompiler();
 
@@ -88,24 +89,22 @@ class GenerateParserCommand extends Command
             'name' => $input->getOption('name'),
         ];
 
-        if (!$input->getOption('grammar')) {
-            $input->setInteractive(true);
-            //$output->writeln('<info>Write rules, and type enter. An empty line ends the grammar.</info>');
-            $helper = $this->getHelper('question');
-            $question = new Question("<info>Write a rule and type enter. An empty line ends the grammar.</info>\n", '');
-            $rules = [];
-            while ($rule = $helper->ask($input, $output, $question)) {
-                $rules[] = $rule;
+        $grammarPath = $input->getArgument('grammar');
+
+        if (!$grammarPath || $grammarPath === '-') {
+            if (!$grammarPath) {
+                $syntax = $this->askForGrammar($input, $output);
+            } else {
+                $syntax = $this->readStandardInput();
             }
             $compiler->compileSyntax(
-                implode("\n", $rules),
+                $syntax,
                 $input->getOption('output-dir'),
                 $compilerOptions
             );
         } else {
-            $syntax_path = $input->getOption('grammar');
             $compiler->compileFile(
-                $syntax_path,
+                $grammarPath,
                 $input->getOption('output-dir'),
                 $compilerOptions
             );
