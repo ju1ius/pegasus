@@ -9,7 +9,6 @@ use ju1ius\Pegasus\Expression\Reference;
  */
 class CircularReference extends GrammarException
 {
-
     /**
      * @param Reference $expr
      * @param string[]  $referenceChain
