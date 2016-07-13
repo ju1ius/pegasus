@@ -88,7 +88,7 @@ final class GroupMatch extends Terminal
     {
         $start = $parser->pos;
         if (preg_match($this->matcher->compiledPattern, $text, $matches, PREG_OFFSET_CAPTURE, $start)) {
-            $end = $parser->pos += strlen($matches[0]);
+            $end = $parser->pos += strlen($matches[0][1]);
             if (!$parser->isCapturing) {
                 return true;
             }
