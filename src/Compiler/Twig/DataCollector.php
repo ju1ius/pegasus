@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Twig;
+namespace ju1ius\Pegasus\Compiler\Twig;
 
 class DataCollector
 {

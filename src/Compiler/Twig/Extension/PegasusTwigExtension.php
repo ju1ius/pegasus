@@ -8,12 +8,12 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Twig\Extension;
+namespace ju1ius\Pegasus\Compiler\Twig\Extension;
 
-use ju1ius\Pegasus\Compiler;
+use ju1ius\Pegasus\Compiler\Compiler;
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Twig\DataCollector;
-use ju1ius\Pegasus\Twig\TokenParser\CollectorTokenParser;
+use ju1ius\Pegasus\Compiler\Twig\DataCollector;
+use ju1ius\Pegasus\Compiler\Twig\TokenParser\CollectorTokenParser;
 use Twig_Environment;
 use Twig_Error_Loader;
 use Twig_Extension;

@@ -9,7 +9,7 @@
  */
 
 
-namespace ju1ius\Pegasus\Twig\Node;
+namespace ju1ius\Pegasus\Compiler\Twig\Node;
 
 use Twig_Node;
 use Twig_NodeInterface;

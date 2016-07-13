@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Extension\Php;
+namespace ju1ius\Pegasus\Compiler\Extension\Php;
 
 use ju1ius\Pegasus\Expression;
 use Twig_Extension;

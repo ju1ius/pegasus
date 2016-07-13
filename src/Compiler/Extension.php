@@ -8,7 +8,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus;
+namespace ju1ius\Pegasus\Compiler;
+
+use ju1ius\Pegasus\Compiler\Compiler;
 
 /**
  * Class Extension

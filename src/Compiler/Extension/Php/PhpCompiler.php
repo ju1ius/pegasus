@@ -8,9 +8,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Extension\Php;
+namespace ju1ius\Pegasus\Compiler\Extension\Php;
 
-use ju1ius\Pegasus\Compiler;
+use ju1ius\Pegasus\Compiler\Compiler;
 use ju1ius\Pegasus\Parser\Generated\LeftRecursivePackrat;
 use ju1ius\Pegasus\Parser\Generated\Packrat;
 use ju1ius\Pegasus\Traverser\NamedNodeTraverser;

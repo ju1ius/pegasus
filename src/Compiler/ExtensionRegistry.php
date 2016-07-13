@@ -1,8 +1,8 @@
 <?php
 
-namespace ju1ius\Pegasus;
+namespace ju1ius\Pegasus\Compiler;
 
-class ExtensionRepository
+class ExtensionRegistry
 {
 
     protected $extensions = [];

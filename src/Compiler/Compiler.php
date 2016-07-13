@@ -8,19 +8,16 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus;
+namespace ju1ius\Pegasus\Compiler;
 
+use ju1ius\Pegasus\Compiler\Twig\Extension\PegasusTwigExtension;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Analysis;
-use ju1ius\Pegasus\Twig\Extension\PegasusTwigExtension;
-use Twig_Environment;
-use Twig_Extension_Debug;
-use Twig_Loader_Filesystem;
 
 abstract class Compiler
 {
     /**
-     * @var Twig_Environment
+     * @var \Twig_Environment
      */
     protected $twig = null;
 
@@ -64,7 +61,7 @@ abstract class Compiler
     abstract protected function renderParser($outputDirectory, array $args = []);
 
     /**
-     * @return Twig_Environment
+     * @return \Twig_Environment
      */
     public function getTwigEnvironment()
     {
@@ -152,13 +149,13 @@ abstract class Compiler
 
     protected function setupTwigEnvironment()
     {
-        $loader = new Twig_Loader_Filesystem($this->getTemplateDirectories());
-        $this->twig = new Twig_Environment($loader, [
+        $loader = new \Twig_Loader_Filesystem($this->getTemplateDirectories());
+        $this->twig = new \Twig_Environment($loader, [
             'autoescape' => false,
             'debug' => true,
         ]);
         $extensions = [
-            new Twig_Extension_Debug,
+            new \Twig_Extension_Debug,
             new PegasusTwigExtension($this),
         ];
         $extensions = array_merge($extensions, $this->getTwigExtensions());

@@ -8,15 +8,6 @@
  * file that was distributed with this source code.
  */
 
+use ju1ius\Pegasus\Compiler\Extension\Php\PhpExtension;
 
-namespace ju1ius\Pegasus\Twig\NodeVisitor;
-
-use Twig_NodeVisitorInterface;
-
-use ju1ius\Pegasus\Twig\Node\CollectorNode;
-
-
-class CollectorNodeVisitor implements Twig_NodeVisitorInterface
-{
-
-} 
+return new PhpExtension();

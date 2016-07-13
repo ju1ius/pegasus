@@ -9,12 +9,12 @@
  */
 
 
-namespace ju1ius\Pegasus\Twig\TokenParser;
+namespace ju1ius\Pegasus\Compiler\Twig\TokenParser;
 
 use Twig_TokenParser;
 use Twig_Token;
 
-use ju1ius\Pegasus\Twig\Node\CollectorNode;
+use ju1ius\Pegasus\Compiler\Twig\Node\CollectorNode;
 
 
 /**
