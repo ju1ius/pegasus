@@ -1,4 +1,2 @@
-// EOF
-if (!isset($this->text[$this->pos])) {
-    {{ result_varname(expr) }} = new Node\Transient($this->pos, $this->pos);
-}
+{{ expr_comment(expr) }}
+{{ result_varname(expr) }} = !isset($this->text[$this->pos]);

@@ -1,0 +1,23 @@
+{% set result_var = result_varname(expr) %}
+{{ expr_comment(expr) }}
+{{ result_var }} = null;
+if (preg_match({{ repr_regexp(expr.matcher.compiledPattern) }}, $this->text, $matches, PREG_OFFSET_CAPTURE, $this->pos)) {
+    $start = $this->pos;
+    $end = $this->pos += strlen($matches[0][1]);
+    if (!$this->isCapturing) {
+        {{ result_var }} = true;
+    } else {
+    {% if expr.groupCount == 1 %}
+        list($offset, $match) = $matches[1];
+        {{ result_var }} = new Node\Terminal('{{ expr.name }}', $offset, $offset + strlen($match), $match);
+    {% else %}
+        $children = [];
+        foreach (array_slice($matches, 1) as list($offset, $match)) {
+            $children[] = new Node\Terminal('', $offset, $offset + strlen($match), $match);
+        }
+        {{ result_var }} = new Node\Composite('{{ expr.name }}', $start, $end, $children);
+    {% endif %}
+    }
+} else {
+    {{ macros.error(expr)|indent }}
+}

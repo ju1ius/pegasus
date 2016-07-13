@@ -13,7 +13,7 @@ namespace {{ namespace }};
 {% endif %}
 
 use ju1ius\Pegasus\Node;
-{% for import in imports %}
+{% for import in imports|default([]) %}
 use {{ import }};
 {% endfor %}
 
@@ -25,9 +25,9 @@ class {{ class }} extends {{ base_class }}
      *
      * @var string
      */
-    protected $start_rule = '{{ grammar.getStartRule().name }}';
+    protected $startRule = '{{ grammar.getStartRule().name }}';
 
-{% for rule in grammar %}
-    {{ include('rule.twig', {expr: rule})|indent }}
+{% for ruleName, expr in grammar %}
+    {{ include('rule.twig', {expr: expr})|indent }}
 {% endfor %}
 }

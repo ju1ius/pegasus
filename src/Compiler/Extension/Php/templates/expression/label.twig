@@ -1,8 +1,10 @@
+{% set pos_var = position_varname(expr) %}
 {% set subres_var = result_varname(expr[0]) %}
-// Label: {{ expr }}
-{{ subres_var }} = null;
+{{ expr_comment(expr) }}
+{{ pos_var }} = $this->pos;
 {{ render_expr(expr[0]) }}
-// Label: {{ expr }} => Storing result in scope
+{{ expr_comment(expr, 'result') }}
 if ({{ subres_var }}) {
-    $scope['{{ expr.label }}'] = substr($this->text, {{ subres_var }}->start, {{ subres_var }}->end - {{ subres_var }}->start);
+    $scope['{{ expr.label }}'] = substr($this->text, {{ pos_var }}, $this->pos - {{ pos_var }});
 }
+{{ result_varname(expr) }} = {{ subres_var }};

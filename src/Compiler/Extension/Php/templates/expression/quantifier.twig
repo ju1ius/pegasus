@@ -3,25 +3,22 @@
 {% set count_var = '$count_' ~ expr.id %}
 {% set children_var = '$children_' ~ expr.id %}
 {% set subres_var = result_varname(expr[0]) %}
-// Quantifier: {{ expr }}
+{{ expr_comment(expr) }}
+{{ result_var }} = null;
 {{ pos_var }} = $this->pos;
 {{ count_var }} = 0;
-{{ children_var }} = [];
+{{ children_var }} = $this->isCapturing ? [] : null;
 while ({{ count_var }} < {{ expr.max }}) {
-    {{ subres_var }} = null;
     {{ render_expr(expr[0])|indent }}
-    if (!{{ subres_var }}) {
-        break;
-    }
+    if (!{{ subres_var }}) break;
     {{ count_var }}++;
-    {{ children_var }}[] = {{ subres_var }};
-    $length = {{ subres_var }}->end - {{ subres_var }}->start;
-    if (!$length) {
-        break;
-    }
+    if ($this->isCapturing) {{ children_var }}[] = {{ subres_var }};
 }
 if ({{ count_var }} >= {{ expr.min }}) {
-    {{ result_var }} = new Node\Quantifier('{{ expr.name }}', {{ pos_var }}, $this->pos, {{ children_var }}, {{ repr(expr.isOptional) }});
+    {{ result_var }} = $this->isCapturing
+        ? new Node\Quantifier('{{ expr.name }}', {{ pos_var }}, $this->pos, {{ children_var }}, {{ repr(expr.isOptional) }})
+        : true;
 } else {
     $this->pos = {{ pos_var }};
+    {{ macros.error(expr)|indent }}
 }

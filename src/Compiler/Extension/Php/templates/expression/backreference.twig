@@ -1,10 +1,12 @@
 {% set result_var = result_varname(expr) %}
-// BackReference: {{ expr }}
+{{ expr_comment(expr) }}
+{{ result_var }} = null;
 $backref = $scope['{{ expr.identifier }}'];
 $length = strlen($backref);
-if ($backref === $value = substr($this->text, $this->pos, $length)) {
-    {{ result_var }} = new Node\Terminal('{{ expr.name }}', $this->pos, $this->pos + $length, $value);
-    $this->pos = {{ result_var }}->end;
+if ($backref === substr($this->text, $this->pos, $length)) {
+    $start = $this->pos;
+    $end = $this->pos += $length;
+    {{ result_var }} = $this->isCapturing ? new Node\Terminal('{{ expr.name }}', $start, $end, $backref) : true;
 } else {
     {{ macros.error(expr)|indent }}
 }

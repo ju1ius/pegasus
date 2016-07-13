@@ -1,12 +1,11 @@
 {% set result_var = result_varname(expr) %}
 {% set pos_var = position_varname(expr) %}
-// OneOf: {{ expr }}
+{{ expr_comment(expr) }}
 {{ result_var }} = null;
 do {
     {{ pos_var }} = $this->pos;
 {% for child in expr -%}
     {% set subres_var = result_varname(child) %}
-    {{ subres_var }} = null;
     {{ render_expr(child)|indent }}
     if ({{ subres_var }}) {
         {{ result_var }} = {{ subres_var }};
@@ -16,7 +15,9 @@ do {
 {% endfor %}
 } while (0);
 if ({{ result_var }}) {
-    {{ result_var }} = new Node\Decorator('{{ expr.name }}', {{ pos_var }}, $this->pos, {{ result_var }});
+    {{ result_var }} = $this->isCapturing
+        ? new Node\Decorator('{{ expr.name }}', {{ pos_var }}, $this->pos, {{ result_var }})
+        : true;
 } else {
     {{ macros.error(expr, pos_var)|indent }}
 }

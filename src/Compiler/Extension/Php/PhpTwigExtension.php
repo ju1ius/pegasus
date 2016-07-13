@@ -35,6 +35,7 @@ class PhpTwigExtension extends Twig_Extension
             new Twig_SimpleFunction('repr_regexp', [$this, 'reprRegexp']),
             new Twig_SimpleFunction('result_varname', [$this, 'getResultVariableName']),
             new Twig_SimpleFunction('position_varname', [$this, 'getPositionVariableName']),
+            new Twig_SimpleFunction('expr_comment', [$this, 'getExpressionComment']),
         ];
     }
 
@@ -108,6 +109,19 @@ class PhpTwigExtension extends Twig_Extension
     public function getResultVariableName(Expression $expr)
     {
         return sprintf('$result_%s', $expr->id);
+    }
+
+    public function getExpressionComment(Expression $expr, $msg = '')
+    {
+        $fqcn = get_class($expr);
+        $class = substr($fqcn, strrpos($fqcn, '\\') + 1);
+
+        return sprintf(
+            '/* %s%s: %s */',
+            $class,
+            $msg ? sprintf(' (%s)', $msg) : '',
+            $this->escapeBlockComment((string)$expr)
+        );
     }
 
     /**

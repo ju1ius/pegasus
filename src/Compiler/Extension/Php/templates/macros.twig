@@ -2,3 +2,20 @@
 $this->error->expr = {{ repr(expr) }};
 $this->error->position = {{ pos }};
 {%- endmacro %}
+
+{% macro store_position(expr) -%}
+{{ position_varname(expr) }} = $this->pos;
+{%- endmacro %}
+
+{% macro backtrack(expr) -%}
+$this->pos = {{ position_varname(expr) }};
+{%- endmacro %}
+
+{% macro start_non_capturing(expr) -%}
+$isCapturing_{{ expr.id }} = $this->isCapturing;
+$this->isCapturing = false;
+{%- endmacro %}
+
+{% macro end_non_capturing(expr) -%}
+$this->isCapturing = $isCapturing_{{ expr.id }};
+{%- endmacro %}

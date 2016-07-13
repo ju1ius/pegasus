@@ -4,28 +4,27 @@
 {% set children_var = '$children_' ~ expr.id %}
 {# node_name can be set by NamedSequence expressions #}
 {% set node_name = node_name|default(expr.name) %}
-// Sequence: {{ expr }}
-{{ match_var }} = true;
+{{ expr_comment(expr) }}
+{{ result_var }} = null;
 {{ pos_var }} = $this->pos;
-{{ children_var }} = [];
+{{ match_var }} = true;
+{{ children_var }} = $this->isCapturing ? [] : null;
 do {
 {% for child in expr %}
-    {% set subres_var = result_varname(child) %}
-    {{ subres_var }} = null;
     {{ render_expr(child)|indent }}
+    {%- set subres_var = result_varname(child) %}
     if (!{{ subres_var }}) {
         {{ match_var }} = false;
         break;
     }
-    if ({{ subres_var }}->isTransient) {
-        continue;
-    }
-    {{ children_var }}[] = {{ subres_var }};
+    if ({{ subres_var }} === true) continue;
+    if ($this->isCapturing) {{ children_var }}[] = {{ subres_var }};
 {% endfor %}
 } while(0);
 if ({{ match_var }}) {
-    {{ result_var }} = new Node\Composite('{{ node_name }}', {{ pos_var }}, $this->pos, {{ children_var }});
+    {{ result_var }} = $this->isCapturing
+        ? new Node\Composite('{{ node_name }}', {{ pos_var }}, $this->pos, {{ children_var }})
+        : true;
 } else {
-    {{ result_var }} = null;
     $this->pos = {{ pos_var }};
 }

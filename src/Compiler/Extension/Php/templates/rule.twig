@@ -2,13 +2,14 @@
 /**
  * Matching rule: {{ expr.name }} = {{ expr|escape_comment }}
  *
- * @return Node|null
+ * @return Node|true|null
  */
 public function match_{{ expr.name }}()
 {
+{% if analysis.needsScope(expr.name) %}
     $scope = [];
+{% endif %}
     $this->error->rule = '{{ expr.name }}';
-    {{ result_var }} = null;
     {{ render_expr(expr)|indent }}
     return {{ result_var }};
 }

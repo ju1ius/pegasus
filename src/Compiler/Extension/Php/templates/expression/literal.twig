@@ -1,9 +1,11 @@
 {% set result_var = result_varname(expr) %}
 {% set literal = repr(expr.literal) %}
-// Literal: {{ expr }}
+{{ expr_comment(expr) }}
+{{ result_var }} = null;
 if (substr($this->text, $this->pos, {{ expr.length }}) === {{ literal }}) {
-    {{ result_var }} = new Node\Terminal('{{ expr.name }}', $this->pos, $this->pos + {{ expr.length }}, {{ literal }});
-    $this->pos += {{ expr.length }};
+    $start = $this->pos;
+    $end = $this->pos += {{ expr.length }};
+    {{ result_var }} = $this->isCapturing ? new Node\Terminal('{{ expr.name }}', $start, $end, {{ literal }}) : true;
 } else {
     {{ macros.error(expr)|indent }}
 }

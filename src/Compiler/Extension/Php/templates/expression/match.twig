@@ -1,9 +1,10 @@
 {% set result_var = result_varname(expr) %}
-// Match: {{ expr }}
+{{ expr_comment(expr) }}
+{{ result_var }} = null;
 if (preg_match({{ repr_regexp(expr.compiledPattern) }}, $this->text, $matches, 0, $this->pos)) {
-    $end = $this->pos + strlen($matches[0]);
-    {{ result_var }} = new Node\Terminal('{{ expr.name }}', $this->pos, $end, $matches[0]);
-    $this->pos = $end;
+    $start = $this->pos;
+    $end = $this->pos += strlen($matches[0]);
+    {{ result_var }} = $this->isCapturing ? new Node\Terminal('{{ expr.name }}', $start, $end, $matches[0]) : true;
 } else {
     {{ macros.error(expr)|indent }}
 }
