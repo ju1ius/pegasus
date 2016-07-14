@@ -40,10 +40,16 @@ class NamedNodeTraverser
         if ($this->leaveVisitors === null) {
             $this->buildVisitors();
         }
+
+        gc_disable();
+
         $this->beforeTraverse($node);
         $node = $this->visit($node);
+        $result = $this->afterTraverse($node);
 
-        return $this->afterTraverse($node);
+        gc_enable();
+
+        return $result;
     }
 
     /**
