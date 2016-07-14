@@ -39,20 +39,21 @@ class NamedSequence extends Combinator
     public function match($text, Parser $parser, Scope $scope)
     {
         $startPos = $parser->pos;
-        $children = [];
+        $capturing = $parser->isCapturing;
+        $children = $capturing ? [] : null;
         foreach ($this->children as $child) {
             $result = $child->match($text, $parser, $scope);
             if (!$result) {
                 $parser->pos = $startPos;
                 return null;
             }
-            if ($result === true) {
+            if ($result === true || !$capturing) {
                 continue;
             }
             $children[] = $result;
         }
 
-        return $parser->isCapturing
+        return $capturing
             ? new Node\Composite($this->label, $startPos, $parser->pos, $children)
             : true;
     }

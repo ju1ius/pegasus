@@ -101,7 +101,7 @@ final class GroupMatch extends Terminal
 
             $children = [];
             foreach (array_slice($matches, 1) as list($offset, $match)) {
-                $children[] = new Node\Terminal($this->name, $offset, $offset + strlen($match), $match);
+                $children[] = new Node\Terminal('', $offset, $offset + strlen($match), $match);
             }
 
             return new Node\Composite($this->name, $start, $end, $children);
