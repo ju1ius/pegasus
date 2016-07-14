@@ -88,19 +88,19 @@ final class GroupMatch extends Terminal
     {
         $start = $parser->pos;
         if (preg_match($this->matcher->compiledPattern, $text, $matches, PREG_OFFSET_CAPTURE, $start)) {
-            $end = $parser->pos += strlen($matches[0][1]);
+            $end = $parser->pos += strlen($matches[0][0]);
             if (!$parser->isCapturing) {
                 return true;
             }
 
             if ($this->groupCount === 1) {
-                list($offset, $match) = $matches[1];
+                list($match, $offset) = $matches[1];
 
                 return new Node\Terminal($this->name, $offset, $offset + strlen($match), $match);
             }
 
             $children = [];
-            foreach (array_slice($matches, 1) as list($offset, $match)) {
+            foreach (array_slice($matches, 1) as list($match, $offset)) {
                 $children[] = new Node\Terminal('', $offset, $offset + strlen($match), $match);
             }
 

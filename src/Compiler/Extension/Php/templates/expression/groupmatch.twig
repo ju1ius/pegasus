@@ -3,7 +3,7 @@
 {{ result_var }} = null;
 if (preg_match({{ repr_regexp(expr.matcher.compiledPattern) }}, $this->text, $matches, PREG_OFFSET_CAPTURE, $this->pos)) {
     $start = $this->pos;
-    $end = $this->pos += strlen($matches[0][1]);
+    $end = $this->pos += strlen($matches[0][0]);
     if (!$this->isCapturing) {
         {{ result_var }} = true;
     } else {
@@ -12,7 +12,7 @@ if (preg_match({{ repr_regexp(expr.matcher.compiledPattern) }}, $this->text, $ma
         {{ result_var }} = new Node\Terminal('{{ expr.name }}', $offset, $offset + strlen($match), $match);
     {% else %}
         $children = [];
-        foreach (array_slice($matches, 1) as list($offset, $match)) {
+        foreach (array_slice($matches, 1) as list($match, $offset)) {
             $children[] = new Node\Terminal('', $offset, $offset + strlen($match), $match);
         }
         {{ result_var }} = new Node\Composite('{{ expr.name }}', $start, $end, $children);
