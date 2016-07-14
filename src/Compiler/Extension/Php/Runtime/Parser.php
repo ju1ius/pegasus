@@ -79,7 +79,10 @@ abstract class Parser
         $this->isCapturing = true;
         $this->error = new ParseError($text);
 
+        // disable garbage collection while parsing for speed
+        gc_disable();
         $result = $this->apply($startRule ?: $this->startRule);
+        gc_enable();
 
         if (!$result) {
             throw $this->error;
