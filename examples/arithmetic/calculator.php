@@ -1,12 +1,12 @@
 <?php
-require_once __DIR__.'/../vendor/autoload.php';
+require_once __DIR__.'/../../vendor/autoload.php';
 
 use ju1ius\Pegasus\Debug\Debug;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
 use ju1ius\Pegasus\Traverser\NamedNodeTraverser;
 
-$SYNTAX = file_get_contents(__DIR__ . '/calculator.peg');
+$SYNTAX = file_get_contents(__DIR__ . '/arithmetic.peg');
 
 final class Calculator extends NamedNodeTraverser
 {

@@ -1,5 +1,4 @@
-%name calculator
-%start expr
+%name Arithmetic
 
 expr    = expr _ ~"+" _ term       <= Add
         | expr _ ~"-" _ term       <= Substract

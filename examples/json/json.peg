@@ -1,0 +1,25 @@
+%name JSON
+
+json        = _ (object | array) EOF
+object      = ~'{' _ members? ~'}' _
+members     = pair (~',' _ pair)*
+pair        = string ~':' _ value
+array       = ~'[' _ elements? ~']' _
+elements    = value (~',' _ value)*
+
+value       = object
+            | array
+            | string
+            | number
+            | 'true' _    <= true
+            | 'false' _   <= false
+            | 'null' _    <= null
+
+string      = /"(?:\\.|[^"])*"/ _
+number      = @(int frac? expo?) _
+
+%inline int         = /-?(?:[1-9]\d*|0(?!\d))/
+%inline frac        = /\.\d+/
+%inline expo        = /[eE][+-]?\d+/
+
+%inline _           = ~/\s*/
