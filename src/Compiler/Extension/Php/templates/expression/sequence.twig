@@ -17,8 +17,7 @@ do {
         {{ match_var }} = false;
         break;
     }
-    if ({{ subres_var }} === true) continue;
-    if ($this->isCapturing) {{ children_var }}[] = {{ subres_var }};
+    if ($this->isCapturing && {{ subres_var }} !== true) {{ children_var }}[] = {{ subres_var }};
 {% endfor %}
 } while(0);
 if ({{ match_var }}) {

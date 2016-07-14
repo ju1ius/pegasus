@@ -9,7 +9,7 @@
 {{ macros.end_non_capturing(expr) }}
 {{ expr_comment(expr, 'result') }}
 if ({{ subres_var }}) {
-    {{ result_var }} = $this->isCapturing ?
+    {{ result_var }} = $this->isCapturing
         ? new Node\Terminal('{{ expr.name }}', {{ pos_var }}, $this->pos, substr($this->text, {{ pos_var }}, $this->pos - {{ pos_var }}))
         : true;
 }
