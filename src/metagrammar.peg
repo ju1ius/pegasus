@@ -1,7 +1,7 @@
 %name Pegasus
 %start grammar
 
-grammar         = _ header rules
+grammar             = _ header rules
 
 ########### Directives ##########
 
@@ -41,7 +41,8 @@ labeled         = /[a-zA-Z_]\w*/ ~':' labelable
 ##### Terminal expressions #####
 
 reference       = identifier !'='
-super           = 'super' (~'::' identifier)?
+back_reference  = ~'$' identifier
+super_call      = ~'super' (~'::' identifier)?
 
 literal         = / (["']) ( (?:\\.|(?!\1).)* ) \1 / _
 regexp          = / \/ ((?:\\.|[^\/])*) \/ ([imsuUX]*) / _
@@ -97,7 +98,8 @@ atom            = eof
                 | fail
                 | literal
                 | regexp
-                | super
+                | back_reference
+                | super_call
                 | reference
 
 identifier      = /[a-zA-Z_]\w*/ _
