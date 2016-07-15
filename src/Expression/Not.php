@@ -43,9 +43,12 @@ class Not extends Decorator
         $result = $this->children[0]->match($text, $parser, $scope);
         $parser->pos = $start;
         if (!$result) {
-            return $parser->isCapturing
-                ? new Node\Transient($start, $start)
-                : true;
+            return true;
+        }
+
+        if ($start > $parser->error->position) {
+            $parser->error->position = $start;
+            $parser->error->expr = $this;
         }
     }
 }

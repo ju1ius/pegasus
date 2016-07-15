@@ -19,30 +19,32 @@ use ju1ius\Pegasus\Node;
 class ParseError extends \Exception
 {
     /**
+     * The input text.
+     *
      * @var string
      */
     protected $text;
 
     /**
+     * The rightmost failure position.
+     *
      * @var int
      */
     public $position = 0;
 
     /**
+     * The rightmost failed expression.
+     *
      * @var Expression
      */
     public $expr;
 
     /**
+     * The rightmost failed rule.
+     *
      * @var string
      */
     public $rule;
-
-    /**
-     * @var Node
-     */
-    public $node;
-
 
     public function __construct($text, $pos = 0, $expr = null, $rule = '')
     {
@@ -56,17 +58,17 @@ class ParseError extends \Exception
 
     public function __toString()
     {
-        $ruleName = $this->rule ?: $this->expr->name;
-
+        $line = $this->line();
+        $col = $this->column();
+        $text = substr($this->text, $this->position, $this->position + 20);
         return sprintf(
-            '%s: rule <%s%s> didn\'t match on line %s, column %s ("%s").'
+            'ParseError in rule `%s`, expr `%s` on line %s, column %s.'
+            ."\n%s"
             . "\n%s",
-            __CLASS__,
-            $ruleName ? sprintf('%s = ', $ruleName) : '',
+            $this->rule,
             (string)$this->expr,
-            $this->line(),
-            $this->column(),
-            substr($this->text, $this->position, $this->position + 20),
+            $line, $col,
+            $text,
             $this->getTraceAsString()
         );
     }

@@ -43,6 +43,11 @@ class BackReference extends Terminal
                 new Node\Terminal($this->name, $start, $end, $pattern)
                 : true;
         }
+
+        if ($start > $parser->error->position) {
+            $parser->error->position = $start;
+            $parser->error->expr = $this;
+        }
     }
 
     public function __toString()

@@ -25,7 +25,6 @@ class RecursiveDescent extends Parser
         $this->source = $source;
         $this->pos = $pos;
         $this->error = new ParseError($source);
-        $this->error->rule = $startRule;
         $this->isCapturing = true;
         $rule = $startRule ?: $this->grammar->getStartRule()->name;
 
@@ -45,11 +44,10 @@ class RecursiveDescent extends Parser
      */
     public function apply($rule, Scope $scope, $super = false)
     {
-        $rule = $this->grammar[$rule];
-        $this->error->position = $this->pos;
-        $this->error->expr = $rule;
+        $this->error->rule = $rule;
+        $expr = $super ? $this->grammar->super($rule) : $this->grammar[$rule];
 
-        return $this->evaluate($rule, $scope);
+        return $this->evaluate($expr, $scope);
     }
 
     /**
@@ -64,9 +62,6 @@ class RecursiveDescent extends Parser
     public function evaluate(Expression $expr, Scope $scope)
     {
         $result = $expr->match($this->source, $this, $scope);
-        if ($result) {
-            $this->error->node = $result;
-        }
 
         return $result;
     }

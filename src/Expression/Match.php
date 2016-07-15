@@ -60,6 +60,11 @@ class Match extends Terminal
                 ? new Node\Terminal($this->name, $start, $end, $match)
                 : true;
         }
+
+        if ($start > $parser->error->position) {
+            $parser->error->position = $start;
+            $parser->error->expr = $this;
+        }
     }
 
     /**

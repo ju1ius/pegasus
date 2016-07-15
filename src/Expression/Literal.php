@@ -65,5 +65,10 @@ class Literal extends Terminal
                 ? new Node\Terminal($this->name, $start, $end, $this->literal)
                 : true;
         }
+
+        if ($start > $parser->error->position) {
+            $parser->error->position = $start;
+            $parser->error->expr = $this;
+        }
     }
 }

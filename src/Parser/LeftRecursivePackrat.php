@@ -49,12 +49,10 @@ class LeftRecursivePackrat extends Packrat
      */
     public function apply($rule, Scope $scope, $super = false)
     {
+        $this->error->rule = $rule;
         $expr = $super ? $this->grammar->super($rule) : $this->grammar[$rule];
 
         $pos = $this->pos;
-        $this->error->position = $pos;
-        $this->error->rule = $rule;
-        $this->error->expr = $expr;
 
         if (!$memo = $this->recall($expr, $scope)) {
             // Create a new LeftRecursion and push it onto the rule invocation stack.

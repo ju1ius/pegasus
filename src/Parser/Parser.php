@@ -41,7 +41,7 @@ abstract class Parser
     /**
      * @var ParseError
      */
-    protected $error;
+    public $error;
 
     public function __construct(Grammar $grammar)
     {

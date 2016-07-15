@@ -59,12 +59,10 @@ class Packrat extends RecursiveDescent
      */
     public function apply($rule, Scope $scope, $super = false)
     {
+        $this->error->rule = $rule;
         $expr = $super ? $this->grammar->super($rule) : $this->grammar[$rule];
 
         $pos = $this->pos;
-        $this->error->position = $pos;
-        $this->error->expr = $expr;
-        $this->error->rule = $rule;
 
         if (isset($this->memo[$this->isCapturing][$expr->id][$pos])) {
             $memo = $this->memo[$this->isCapturing][$expr->id][$pos];

@@ -66,7 +66,14 @@ class RegExp extends Terminal
                 return true;
             }
 
-            return new Node\Terminal($this->name, $start, $end, $match, ['matches' => $matches]);
+            return $parser->isCapturing
+                ? new Node\Terminal($this->name, $start, $end, $match, ['matches' => $matches])
+                : true;
+        }
+
+        if ($start > $parser->error->position) {
+            $parser->error->position = $start;
+            $parser->error->expr = $this;
         }
     }
 
