@@ -26,6 +26,7 @@ class RecursiveDescent extends Parser
         $this->pos = $pos;
         $this->error = new ParseError($source);
         $this->isCapturing = true;
+        $this->applicationStack = new \SplStack();
         $rule = $startRule ?: $this->grammar->getStartRule()->name;
 
         gc_disable();
@@ -35,6 +36,7 @@ class RecursiveDescent extends Parser
         if (!$result) {
             throw $this->error;
         }
+        $this->applicationStack = null;
 
         return $result;
     }
@@ -47,21 +49,5 @@ class RecursiveDescent extends Parser
         $expr = $super ? $this->grammar->super($rule) : $this->grammar[$rule];
 
         return $this->evaluate($expr, $scope);
-    }
-
-    /**
-     * Evaluates an expression & updates current position on success.
-     *
-     * @param Expression $expr
-     *
-     * @param Scope      $scope
-     *
-     * @return Node|null
-     */
-    public function evaluate(Expression $expr, Scope $scope)
-    {
-        $result = $expr->match($this->source, $this, $scope);
-
-        return $result;
     }
 }

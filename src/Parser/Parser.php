@@ -57,6 +57,13 @@ abstract class Parser
      */
     public $error;
 
+    /**
+     * The stack of currently applied grammar rules.
+     *
+     * @var \SplStack.<Expression>
+     */
+    protected $applicationStack;
+
     public function __construct(Grammar $grammar)
     {
         $this->grammar = $grammar;
@@ -104,17 +111,36 @@ abstract class Parser
     /**
      * Applies a grammar rule.
      *
-     * This is called internally by Reference::match.
+     * This is called internally by `Reference` and `Super` expressions.
      *
      * @internal
      *
      * @param string $rule  The rule name to apply
      * @param Scope  $scope The current scope
-     * @param bool   $super Whether we should explicitely apply a parent rule
+     * @param bool   $super Whether we should explicitly apply a parent rule
      *
-     * @return Node|null
+     * @return Node|true|null
      */
     abstract public function apply($rule, Scope $scope, $super = false);
+
+
+    /**
+     * Evaluates an expression & updates current position on success.
+     *
+     * @param Expression $expr
+     *
+     * @param Scope      $scope
+     *
+     * @return Node|true|null
+     */
+    final public function evaluate(Expression $expr, Scope $scope)
+    {
+        $this->applicationStack->push($expr);
+        $result = $expr->match($this->source, $this, $scope);
+        $this->applicationStack->pop();
+
+        return $result;
+    }
 
     /**
      * Registers that the given expression failed to match at the given position.
@@ -124,10 +150,11 @@ abstract class Parser
      */
     final public function registerFailure(Expression $expr, $pos)
     {
-        // We only care about rightmost failures
+        // We only care about the rightmost failure
         if ($pos > $this->error->position) {
             $this->error->position = $pos;
             $this->error->expr = $expr;
+            $this->error->rule = $this->applicationStack->top()->name;
         }
     }
 }
