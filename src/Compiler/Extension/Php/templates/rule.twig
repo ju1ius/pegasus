@@ -9,7 +9,6 @@ public function match_{{ expr.name }}()
 {% if analysis.needsScope(expr.name) %}
     $scope = [];
 {% endif %}
-    $this->error->rule = '{{ expr.name }}';
     {{ render_expr(expr)|indent }}
     return {{ result_var }};
 }

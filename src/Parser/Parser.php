@@ -19,24 +19,38 @@ use ju1ius\Pegasus\Parser\Exception\ParseError;
 abstract class Parser
 {
     /**
+     * The grammar used to parse the input string.
+     *
      * @var Grammar
      */
     protected $grammar;
 
     /**
+     * The input string.
+     *
      * @var string
      */
     protected $source;
 
     /**
+     * The current position into the input string.
+     *
      * @var int
      */
     public $pos = 0;
 
     /**
+     * Flag that can be set by expressions to signal whether their children
+     * should return parse nodes or just true on success.
+     *
      * @var bool
      */
     public $isCapturing = true;
+
+    /**
+     * @var bool
+     */
+    public $isTracing = false;
 
     /**
      * @var ParseError
@@ -49,15 +63,16 @@ abstract class Parser
     }
 
     /**
-     * Return the parse tree matching this expression at the given position.
+     * Parse the entire text, using given start rule or the grammar's one,
+     * requiring the entire input to match the grammar.
      *
      * @param string      $source
      * @param string|null $startRule
      *
      * @return Node|true|null
      *
-     * @throws IncompleteParseError
-     * @throws ParseError if there's no match there
+     * @throws IncompleteParseError If parsing was successful but did not consume all the input.
+     * @throws ParseError If the input doesn't match the grammar.
      */
     final public function parseAll($source, $startRule = null)
     {
@@ -65,8 +80,7 @@ abstract class Parser
         if ($this->pos < strlen($source)) {
             throw new IncompleteParseError(
                 $source,
-                $this->pos,
-                $this->error
+                $this->pos
             );
         }
 
@@ -74,8 +88,8 @@ abstract class Parser
     }
 
     /**
-     * Parse $text starting from position $pos, using start rule $startRule,
-     * not necessarily extending all the way to the end of $text.
+     * Parse text starting from given position, using given start rule or the grammar's one,
+     * but does not require the entire input to match the grammar.
      *
      * @param string $text
      * @param int    $pos
@@ -83,14 +97,14 @@ abstract class Parser
      *
      * @return Node|true|null
      *
-     * @throws ParseError if there's no match there
+     * @throws ParseError If the input doesn't match the grammar.
      */
     abstract public function parse($text, $pos = 0, $startRule = null);
 
     /**
-     * Applies Expression $expr at position $pos.
+     * Applies a grammar rule.
      *
-     * This is called internally by Expression::match to parse rule references.
+     * This is called internally by Reference::match.
      *
      * @internal
      *

@@ -15,9 +15,5 @@ do {
 {% endfor %}
 } while (0);
 if ({{ result_var }}) {
-    {{ result_var }} = $this->isCapturing
-        ? new Node\Decorator('{{ expr.name }}', {{ pos_var }}, $this->pos, {{ result_var }})
-        : true;
-} else {
-    {{ macros.error(expr, pos_var)|indent }}
+    {{ result_var }} = $this->isCapturing ? new Decorator('{{ expr.name }}', {{ pos_var }}, $this->pos, {{ result_var }}) : true;
 }

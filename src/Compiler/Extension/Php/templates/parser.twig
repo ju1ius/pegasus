@@ -11,8 +11,11 @@
 {% if namespace %}
 namespace {{ namespace }};
 {% endif %}
-
 use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\Node\Composite;
+use ju1ius\Pegasus\Node\Decorator;
+use ju1ius\Pegasus\Node\Quantifier;
+use ju1ius\Pegasus\Node\Terminal;
 {% for import in imports|default([]) %}
 use {{ import }};
 {% endfor %}
@@ -28,6 +31,7 @@ class {{ class }} extends {{ base_class }}
     protected $startRule = '{{ grammar.getStartRule().name }}';
 
 {% for ruleName, expr in grammar %}
-    {{ include('rule.twig', {expr: expr})|indent }}
+    {%- do context.set('rule', ruleName) %}
+    {{ render_rule(ruleName, expr)|indent }}
 {% endfor %}
 }

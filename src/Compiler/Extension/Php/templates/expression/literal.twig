@@ -5,7 +5,7 @@
 if (substr($this->text, $this->pos, {{ expr.length }}) === {{ literal }}) {
     $start = $this->pos;
     $end = $this->pos += {{ expr.length }};
-    {{ result_var }} = $this->isCapturing ? new Node\Terminal('{{ expr.name }}', $start, $end, {{ literal }}) : true;
+    {{ result_var }} = $this->isCapturing ? new Terminal('{{ expr.name }}', $start, $end, {{ literal }}) : true;
 } else {
     {{ macros.error(expr)|indent }}
 }

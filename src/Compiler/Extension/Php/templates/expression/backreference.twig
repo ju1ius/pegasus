@@ -6,7 +6,7 @@ $length = strlen($backref);
 if ($backref === substr($this->text, $this->pos, $length)) {
     $start = $this->pos;
     $end = $this->pos += $length;
-    {{ result_var }} = $this->isCapturing ? new Node\Terminal('{{ expr.name }}', $start, $end, $backref) : true;
+    {{ result_var }} = $this->isCapturing ? new Terminal('{{ expr.name }}', $start, $end, $backref) : true;
 } else {
     {{ macros.error(expr)|indent }}
 }

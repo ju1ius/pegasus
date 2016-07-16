@@ -15,10 +15,7 @@ while ({{ count_var }} < {{ expr.max }}) {
     if ($this->isCapturing) {{ children_var }}[] = {{ subres_var }};
 }
 if ({{ count_var }} >= {{ expr.min }}) {
-    {{ result_var }} = $this->isCapturing
-        ? new Node\Quantifier('{{ expr.name }}', {{ pos_var }}, $this->pos, {{ children_var }}, {{ repr(expr.isOptional) }})
-        : true;
+    {{ result_var }} = $this->isCapturing ? new Quantifier('{{ expr.name }}', {{ pos_var }}, $this->pos, {{ children_var }}, {{ repr(expr.isOptional) }}) : true;
 } else {
     $this->pos = {{ pos_var }};
-    {{ macros.error(expr)|indent }}
 }

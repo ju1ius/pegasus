@@ -129,15 +129,14 @@ abstract class Compiler
         // analyse grammar
         $analysis = new Analysis($grammar);
         // find the appropriate parser class
-        foreach ($grammar as $rule_name => $expr) {
-            if ($analysis->isLeftRecursive($rule_name)) {
+        foreach ($grammar as $ruleName => $expr) {
+            if ($analysis->isLeftRecursive($ruleName)) {
                 $args['base_class'] = $this->getExtendedParserClass();
                 break;
             }
         }
-
-        $args['grammar'] = $grammar;
-        $args['analysis'] = $analysis;
+        $this->twig->addGlobal('grammar', $grammar);
+        $this->twig->addGlobal('analysis', $analysis);
 
         $this->renderParser($outputDirectory, $args);
     }

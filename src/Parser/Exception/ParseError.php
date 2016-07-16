@@ -16,7 +16,7 @@ use ju1ius\Pegasus\Node;
 /**
  * A call to Expression::parse() or match() didn't match.
  */
-class ParseError extends \Exception
+class ParseError extends \RuntimeException
 {
     /**
      * The input text.
@@ -58,19 +58,36 @@ class ParseError extends \Exception
 
     public function __toString()
     {
+        $length = strlen($this->text);
         $line = $this->line();
-        $col = $this->column();
-        $text = substr($this->text, $this->position, $this->position + 20);
+        $col = $this->column($length);
+        $text = $this->getTextExtract($col, $length);
+
         return sprintf(
-            'ParseError in rule `%s`, expr `%s` on line %s, column %s.'
-            ."\n%s"
+            'ParseError: expression `%s` in rule `%s` failed to match on line %s, column %s.'
             . "\n%s",
-            $this->rule,
             (string)$this->expr,
+            $this->rule,
             $line, $col,
-            $text,
-            $this->getTraceAsString()
+            $text
         );
+    }
+
+    protected function getTextExtract($column, $length)
+    {
+        $line = $this->getLineText($length);
+        return sprintf("%s\n%s⬑", $line, str_repeat(' ', $column - 1));
+    }
+
+    protected function getLineText($length = null)
+    {
+        if ($length === null) {
+            $length = strlen($this->text);
+        }
+        $bol = $this->bol($length);
+        $eol = $this->eol($bol, $length);
+
+        return substr($this->text, $bol + 1, $eol - $bol);
     }
 
     public function line()
@@ -80,13 +97,57 @@ class ParseError extends \Exception
             : 1;
     }
 
-    public function column()
+    public function column($length = null)
     {
         if (!$this->position) {
             return 1;
         }
-        $i = strrpos($this->text, "\n", -(strlen($this->text) - $this->position));
+        $bol = $this->bol($length);
 
-        return $i === false ? $this->position + 1 : $this->position - $i;
+        return $this->position - $bol;
+    }
+
+    /**
+     * Returns the byte offset of the beginning of the line of the current error position.
+     *
+     * @param int $length
+     *
+     * @return int
+     */
+    protected function bol($length = null)
+    {
+        if ($length === null) {
+            $length = strlen($this->text);
+        }
+        $bol = strrpos($this->text, "\n", -($length - $this->position));
+        if ($bol === false) {
+            return 0;
+        }
+
+        return $bol;
+    }
+
+    /**
+     * Returns the byte offset of the end of the line of the current error position.
+     *
+     * @param int $bol
+     * @param int $length
+     *
+     * @return int
+     */
+    protected function eol($bol = null, $length = null)
+    {
+        if ($length === null) {
+            $length = strlen($this->text);
+        }
+        if ($bol === null) {
+            $bol = $this->bol($length);
+        }
+        $eol = strpos($this->text, "\n", $bol + 1);
+        if ($eol === false) {
+            $eol = $length;
+        }
+
+        return $eol;
     }
 }

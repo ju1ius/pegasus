@@ -11,6 +11,7 @@
 namespace ju1ius\Pegasus\Compiler\Twig\Extension;
 
 use ju1ius\Pegasus\Compiler\Compiler;
+use ju1ius\Pegasus\Compiler\Twig\Context;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Compiler\Twig\DataCollector;
 use ju1ius\Pegasus\Compiler\Twig\TokenParser\CollectorTokenParser;
@@ -58,6 +59,7 @@ class PegasusTwigExtension extends Twig_Extension
     {
         $globals = [
             'data_collector' => $this->collector,
+            'context' => new Context()
         ];
         try {
             // if a template named macros exists,
@@ -80,6 +82,7 @@ class PegasusTwigExtension extends Twig_Extension
     {
         return [
             new Twig_SimpleFunction('render_expr', [$this, 'renderExpression']),
+            new Twig_SimpleFunction('render_rule', [$this, 'renderRule']),
             new Twig_SimpleFunction('retrieve', [$this->collector, 'retrieve']),
         ];
     }
@@ -110,13 +113,24 @@ class PegasusTwigExtension extends Twig_Extension
         return $out;
     }
 
+    public function renderRule($name, Expression $expr)
+    {
+        $tpl = $this->environment->loadTemplate('rule.twig');
+        $this->environment->addGlobal('current_rule', $name);
+
+        return $tpl->render([
+            'expr' => $expr,
+            'current_rule' => $name
+        ]);
+    }
+
     public function renderExpression(Expression $expr, array $args = [])
     {
-        $template = $this->getTemplateForExpression($expr);
         $args = array_merge($args, ['expr' => $expr]);
         if (!isset($args['capturing'])) {
-            $args['capturing'] = $expr->isCapturing();
+            $args['capturing'] = $expr->isCapturingDecidable() && $expr->isCapturing();
         }
+        $template = $this->getTemplateForExpression($expr);
         $tpl = $this->environment->loadTemplate($template);
 
         return $tpl->render($args);

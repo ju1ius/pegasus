@@ -21,9 +21,7 @@ do {
 {% endfor %}
 } while(0);
 if ({{ match_var }}) {
-    {{ result_var }} = $this->isCapturing
-        ? new Node\Composite('{{ node_name }}', {{ pos_var }}, $this->pos, {{ children_var }})
-        : true;
+    {{ result_var }} = $this->isCapturing ? new Composite('{{ node_name }}', {{ pos_var }}, $this->pos, {{ children_var }}) : true;
 } else {
     $this->pos = {{ pos_var }};
 }
