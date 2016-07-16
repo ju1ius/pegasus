@@ -13,7 +13,10 @@
         }
     ],
     "autoload": {
-        "psr-4": { "ju1ius\\Pegasus\\": "src/" }
+        "psr-4": {
+            "ju1ius\\Pegasus\\": "src/",
+            "ju1ius\\Pegasus\\Compiler\\Extension\\": "extensions/"
+        }
     },
     "autoload-dev": {
         "psr-4": { "ju1ius\\Pegasus\\Tests\\": "tests/Pegasus" }
