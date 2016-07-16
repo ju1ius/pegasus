@@ -107,10 +107,7 @@ final class GroupMatch extends Terminal
             return new Node\Composite($this->name, $start, $end, $children);
         }
 
-        if ($start > $parser->error->position) {
-            $parser->error->position = $start;
-            $parser->error->expr = $this;
-        }
+        $parser->registerFailure($this, $start);
     }
 
     /**

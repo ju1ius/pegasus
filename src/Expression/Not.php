@@ -46,9 +46,6 @@ class Not extends Decorator
             return true;
         }
 
-        if ($start > $parser->error->position) {
-            $parser->error->position = $start;
-            $parser->error->expr = $this;
-        }
+        $parser->registerFailure($this, $start);
     }
 }

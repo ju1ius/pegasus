@@ -43,10 +43,6 @@ class Fail extends Terminal
      */
     public function match($text, Parser $parser, Scope $scope)
     {
-        if ($parser->pos > $parser->error->position) {
-            $parser->error->position = $parser->pos;
-            $parser->error->expr = $this;
-        }
-        return null;
+        $parser->registerFailure($this, $parser->pos);
     }
 }

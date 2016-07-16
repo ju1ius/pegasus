@@ -61,10 +61,7 @@ class Match extends Terminal
                 : true;
         }
 
-        if ($start > $parser->error->position) {
-            $parser->error->position = $start;
-            $parser->error->expr = $this;
-        }
+        $parser->registerFailure($this, $start);
     }
 
     /**

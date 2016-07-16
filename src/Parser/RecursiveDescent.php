@@ -44,7 +44,6 @@ class RecursiveDescent extends Parser
      */
     public function apply($rule, Scope $scope, $super = false)
     {
-        $this->error->rule = $rule;
         $expr = $super ? $this->grammar->super($rule) : $this->grammar[$rule];
 
         return $this->evaluate($expr, $scope);

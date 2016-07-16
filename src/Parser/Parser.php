@@ -115,4 +115,19 @@ abstract class Parser
      * @return Node|null
      */
     abstract public function apply($rule, Scope $scope, $super = false);
+
+    /**
+     * Registers that the given expression failed to match at the given position.
+     *
+     * @param Expression $expr
+     * @param int $pos
+     */
+    final public function registerFailure(Expression $expr, $pos)
+    {
+        // We only care about rightmost failures
+        if ($pos > $this->error->position) {
+            $this->error->position = $pos;
+            $this->error->expr = $expr;
+        }
+    }
 }
