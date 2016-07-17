@@ -31,23 +31,23 @@ interface NodeVisitorInterface
      * Called when entering a node.
      *
      * @param Node     $node
-     * @param Node     $parent
      * @param int|null $index
+     * @param bool     $isLast
      *
      * @return Node
      */
-    public function enterNode(Node $node, Node $parent = null, $index = null);
+    public function enterNode(Node $node, $index = null, $isLast = false);
 
     /**
      * Called when leaving a node.
      *
      * @param Node     $node
-     * @param Node     $parent
      * @param int|null $index
+     * @param bool     $isLast
      *
      * @return Node
      */
-    public function leaveNode(Node $node, Node $parent = null, $index = null);
+    public function leaveNode(Node $node, $index = null, $isLast = false);
 
     /**
      * Called once after traversal.

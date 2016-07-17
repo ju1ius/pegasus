@@ -96,16 +96,16 @@ class GrammarHighlighter extends GrammarVisitor
     /**
      * @inheritDoc
      */
-    public function enterExpression(Grammar $grammar, Expression $expr, Composite $parent = null, $index = null)
+    public function enterExpression(Grammar $grammar, Expression $expr, $index = null, $isLast = false)
     {
-        $this->highlighter->enterExpression($expr, $parent, $index);
+        $this->highlighter->enterExpression($expr, $index, $isLast);
     }
 
     /**
      * @inheritDoc
      */
-    public function leaveExpression(Grammar $grammar, Expression $expr, Composite $parent = null, $index = null)
+    public function leaveExpression(Grammar $grammar, Expression $expr, $index = null, $isLast = false)
     {
-        $this->highlighter->leaveExpression($expr, $parent, $index);
+        $this->highlighter->leaveExpression($expr, $index, $isLast);
     }
 }

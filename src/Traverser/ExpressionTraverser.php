@@ -84,15 +84,16 @@ class ExpressionTraverser implements ExpressionTraverserInterface
         return $expr;
     }
 
-    protected function traverseExpression(Expression $expr, Expression $parent = null, $index = null)
+    protected function traverseExpression(Expression $expr, $index = null, $isLast = false)
     {
         foreach ($this->visitors as $visitor) {
-            if (null !== $result = $visitor->enterExpression($expr, $parent, $index)) {
+            if (null !== $result = $visitor->enterExpression($expr, $index, $isLast)) {
                 $expr = $result;
             }
         }
 
         if ($expr instanceof Composite) {
+            $childCount = count($expr);
             foreach ($expr as $i => $child) {
                 // protect against recursive rules
                 if (isset($this->visited[$child->id])) {
@@ -100,14 +101,14 @@ class ExpressionTraverser implements ExpressionTraverserInterface
                 }
                 $this->visited[$child->id] = true;
 
-                if (null !== $result = $this->traverseExpression($child, $expr, $i)) {
+                if (null !== $result = $this->traverseExpression($child, $i, $i === $childCount - 1)) {
                     $expr[$i] = $result;
                 }
             }
         }
 
         foreach ($this->visitors as $visitor) {
-            if (null !== $result = $visitor->leaveExpression($expr, $parent, $index)) {
+            if (null !== $result = $visitor->leaveExpression($expr, $index, $isLast)) {
                 $expr = $result;
             }
         }

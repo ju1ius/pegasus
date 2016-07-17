@@ -56,7 +56,7 @@ class GrammarVisitor implements GrammarVisitorInterface
     /**
      * @inheritDoc
      */
-    public function enterExpression(Grammar $grammar, Expression $expr, Composite $parent = null, $index = null)
+    public function enterExpression(Grammar $grammar, Expression $expr, $index = null, $isLast = false)
     {
         return null;
     }
@@ -64,7 +64,7 @@ class GrammarVisitor implements GrammarVisitorInterface
     /**
      * @inheritDoc
      */
-    public function leaveExpression(Grammar $grammar, Expression $expr, Composite $parent = null, $index = null)
+    public function leaveExpression(Grammar $grammar, Expression $expr, $index = null, $isLast = false)
     {
         return null;
     }

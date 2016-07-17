@@ -36,7 +36,7 @@ abstract class NodeVisitor implements NodeVisitorInterface
     /**
      * @inheritDoc
      */
-    public function enterNode(Node $node, Node $parent = null, $index = null)
+    public function enterNode(Node $node, $index = null, $isLast = false)
     {
         return null;
     }
@@ -44,7 +44,7 @@ abstract class NodeVisitor implements NodeVisitorInterface
     /**
      * @inheritDoc
      */
-    public function leaveNode(Node $node, Node $parent = null, $index = null)
+    public function leaveNode(Node $node, $index = null, $isLast = false)
     {
         return null;
     }

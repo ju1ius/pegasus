@@ -87,7 +87,7 @@ class ExpressionHighlighter extends ExpressionVisitor
     /**
      * @inheritdoc
      */
-    public function enterExpression(Expression $expr, Composite $parent = null, $index = null)
+    public function enterExpression(Expression $expr, $index = null, $isLast = false)
     {
         if ($index && !$this->combinatorStack->isEmpty()) {
             $top = $this->combinatorStack->top();
@@ -161,7 +161,7 @@ class ExpressionHighlighter extends ExpressionVisitor
     /**
      * @inheritdoc
      */
-    public function leaveExpression(Expression $expr, Composite $parent = null, $index = null)
+    public function leaveExpression(Expression $expr, $index = null, $isLast = false)
     {
         if ($expr instanceof Decorator) {
             if ($this->needsParenthesesAroundDecorator($expr)) {

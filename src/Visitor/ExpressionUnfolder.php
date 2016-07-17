@@ -46,7 +46,7 @@ class ExpressionUnfolder extends ExpressionVisitor
         $this->isTopLevel = true;
     }
 
-    public function enterExpression(Expression $expr, Composite $parent = null, $index = null)
+    public function enterExpression(Expression $expr, $index = null, $isLast = false)
     {
         if (!$this->isTopLevel && $expr->name && isset($this->grammar[$expr->name])) {
             return new Reference($expr->name);

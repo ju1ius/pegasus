@@ -34,7 +34,7 @@ class ExpressionFolder extends ExpressionVisitor
         $this->grammar = $grammar;
     }
 
-    public function leaveExpression(Expression $expr, Composite $parent = null, $index = null)
+    public function leaveExpression(Expression $expr, $index = null, $isLast = false)
     {
         if (!$expr instanceof Reference) {
             return null;

@@ -36,12 +36,12 @@ interface ExpressionVisitorInterface
      *  * otherwise: $node is set to the return value
      *
      * @param Expression $expr  The visited expression
-     * @param Composite  $parent
      * @param int|null   $index The index of the visited expression in it's parent (null inside a top-level expression).
+     * @param bool       $isLast Whether the visited expression is the last child of it's parent
      *
      * @return mixed
      */
-    public function enterExpression(Expression $expr, Composite $parent = null, $index = null);
+    public function enterExpression(Expression $expr, $index = null, $isLast = false);
 
     /**
      * Called when leaving a node.
@@ -53,12 +53,12 @@ interface ExpressionVisitorInterface
      *  * otherwise: $node is set to the return value
      *
      * @param Expression $expr  The visited expression
-     * @param Composite  $parent
      * @param int|null   $index The index of the visited expression in it's parent (null inside a top-level expression).
+     * @param bool       $isLast Whether the visited expression is the last child of it's parent
      *
      * @return mixed
      */
-    public function leaveExpression(Expression $expr, Composite $parent = null, $index = null);
+    public function leaveExpression(Expression $expr, $index = null, $isLast = false);
 
     /**
      * Called once after traversal.

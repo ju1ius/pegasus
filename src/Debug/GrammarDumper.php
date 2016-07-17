@@ -77,9 +77,8 @@ final class GrammarDumper extends GrammarVisitor
     /**
      * @inheritdoc
      */
-    public function enterExpression(Grammar $grammar, Expression $expr, Composite $parent = null, $index = null)
+    public function enterExpression(Grammar $grammar, Expression $expr, $index = null, $isLast = false)
     {
-        $isLast = $index === count($parent) - 1;
         $indent = implode('', $this->indentStack);
         $indent .= $isLast ? '└ ' : '├ ';
 
@@ -91,7 +90,7 @@ final class GrammarDumper extends GrammarVisitor
         ExpressionHighlighter::highlight($expr, $this->output);
         $this->output->writeln('');
 
-        if ($expr instanceof Composite && $parent) {
+        if ($expr instanceof Composite && $index !== null) {
             $this->indentStack[] = $isLast ? '  ' : '│ ';
         }
     }
@@ -99,7 +98,7 @@ final class GrammarDumper extends GrammarVisitor
     /**
      * @inheritdoc
      */
-    public function leaveExpression(Grammar $grammar, Expression $expr, Composite $parent = null, $index = null)
+    public function leaveExpression(Grammar $grammar, Expression $expr, $index = null, $isLast = false)
     {
         if ($expr instanceof Composite) {
             array_pop($this->indentStack);

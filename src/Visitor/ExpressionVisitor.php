@@ -31,7 +31,7 @@ abstract class ExpressionVisitor implements ExpressionVisitorInterface
     /**
      * @inheritDoc
      */
-    public function enterExpression(Expression $expr, Composite $parent = null, $index = null)
+    public function enterExpression(Expression $expr, $index = null, $isLast = false)
     {
         return null;
     }
@@ -39,7 +39,7 @@ abstract class ExpressionVisitor implements ExpressionVisitorInterface
     /**
      * @inheritDoc
      */
-    public function leaveExpression(Expression $expr, Composite $parent = null, $index = null)
+    public function leaveExpression(Expression $expr, $index = null, $isLast = false)
     {
         return null;
     }

@@ -61,11 +61,11 @@ final class ExpressionDumper extends ExpressionVisitor
     /**
      * @inheritdoc
      */
-    public function enterExpression(Expression $expr, Composite $parent = null, $index = null)
+    public function enterExpression(Expression $expr, $index = null, $isLast = false)
     {
-        $isLast = !$parent || $index === count($parent) - 1;
         $indent = '';
-        if ($parent) {
+        $hasParent = $index !== null;
+        if ($hasParent) {
             $indent .= implode('', $this->indentStack);
             $indent .= $isLast ? '└ ' : '├ ';
         }
@@ -78,7 +78,7 @@ final class ExpressionDumper extends ExpressionVisitor
         ExpressionHighlighter::highlight($expr, $this->output);
         $this->output->writeln('');
 
-        if ($expr instanceof Composite && $parent) {
+        if ($expr instanceof Composite && $hasParent) {
             $this->indentStack[] = $isLast ? '  ' : '│ ';
         }
     }
@@ -86,7 +86,7 @@ final class ExpressionDumper extends ExpressionVisitor
     /**
      * @inheritdoc
      */
-    public function leaveExpression(Expression $expr, Composite $parent = null, $index = null)
+    public function leaveExpression(Expression $expr, $index = null, $isLast = false)
     {
         if ($expr instanceof Composite) {
             array_pop($this->indentStack);

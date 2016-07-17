@@ -70,10 +70,10 @@ final class ParseTreeDumper extends NodeVisitor
     /**
      * @inheritDoc
      */
-    public function enterNode(Node $node, Node $parent = null, $index = null)
+    public function enterNode(Node $node, $index = null, $isLast = false)
     {
-        $isLast = !$parent || $index === count($parent) - 1;
-        if ($parent) {
+        $hasParent = $index !== null;
+        if ($hasParent) {
             $indent = implode('', $this->indentStack);
             $indent .= $isLast ? '└ ' : '├ ';
             $this->output->write(sprintf('<d>%s</d>', $indent));
@@ -101,7 +101,7 @@ final class ParseTreeDumper extends NodeVisitor
                 str_repeat('▶▶', count($this->indentStack))
             ));
         }
-        if (count($node) && $parent) {
+        if (count($node) && $hasParent) {
             $this->indentStack[] = $isLast ? '  ' : '│ ';
         }
     }
@@ -109,7 +109,7 @@ final class ParseTreeDumper extends NodeVisitor
     /**
      * @inheritDoc
      */
-    public function leaveNode(Node $node, Node $parent = null, $index = null)
+    public function leaveNode(Node $node, $index = null, $isLast = false)
     {
         if (count($node)) {
             array_pop($this->indentStack);

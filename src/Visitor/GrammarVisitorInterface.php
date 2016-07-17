@@ -79,14 +79,14 @@ interface GrammarVisitorInterface
      *  * null:      $expr stays as-is
      *  * otherwise: $expr is set to the return value
      *
-     * @param Grammar        $grammar The visited grammar.
-     * @param Expression     $expr    The visited expression.
-     * @param Composite|null $parent  The parent expression, if any.
-     * @param int|null       $index   The index of the visited expression in it's parent.
+     * @param Grammar    $grammar The visited grammar.
+     * @param Expression $expr    The visited expression.
+     * @param int|null   $index   The index of the visited expression in it's parent.
+     * @param bool       $isLast  Whether the visited expression is the last child of it's parent
      *
      * @return mixed
      */
-    public function enterExpression(Grammar $grammar, Expression $expr, Composite $parent = null, $index = null);
+    public function enterExpression(Grammar $grammar, Expression $expr, $index = null, $isLast = false);
 
     /**
      * Called when leaving an expression.
@@ -97,13 +97,13 @@ interface GrammarVisitorInterface
      *  * array:     The return value is merged into the parent array (at the position of the $node)
      *  * otherwise: $expr is set to the return value
      *
-     * @param Grammar        $grammar The visited grammar.
-     * @param Expression     $expr    The visited expression.
-     * @param Composite|null $parent  The parent expression, if any.
-     * @param int|null       $index   The index of the visited expression in it's parent.
+     * @param Grammar    $grammar The visited grammar.
+     * @param Expression $expr    The visited expression.
+     * @param int|null   $index   The index of the visited expression in it's parent.
+     * @param bool       $isLast  Whether the visited expression is the last child of it's parent
      *
      * @return mixed
-     * @internal param null $inde
+     * @internal param Composite|null $parent The parent expression, if any.
      */
-    public function leaveExpression(Grammar $grammar, Expression $expr, Composite $parent = null, $index = null);
+    public function leaveExpression(Grammar $grammar, Expression $expr, $index = null, $isLast = false);
 }
