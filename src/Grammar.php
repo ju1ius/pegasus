@@ -188,16 +188,6 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
     }
 
     /**
-     * @param $ruleName
-     *
-     * @return Builder
-     */
-    public function rule($ruleName)
-    {
-        return Builder::create($this)->rule($ruleName);
-    }
-
-    /**
      * Returns the rules for this grammar, as a mapping from rule names to Expression objects.
      *
      * @return Expression[]
@@ -294,53 +284,6 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
     }
 
     /**
-     * Folds the grammar by resolving Reference objects
-     * to actual references to the corresponding expressions.
-     *
-     * @param string $startRule An optional default start rule to use.
-     *
-     * @return $this
-     */
-    public function fold($startRule = null)
-    {
-        $traverser = (new GrammarTraverser(false, true))
-            ->addVisitor(new GrammarVisitor);
-        $traverser->traverse($this);
-
-        if ($startRule) {
-            $this->setStartRule($startRule);
-        }
-
-        $this->folded = true;
-
-        return $this;
-    }
-
-    /**
-     * Executes given function, while ensuring the grammar is folded.
-     *
-     * @param callable $fn
-     *
-     * @return mixed The result returned by the callback
-     */
-    public function folded(callable $fn)
-    {
-        $folded = $this->folded;
-        if (!$folded) {
-            $this->fold();
-        }
-        try {
-            $result = $fn($this);
-        } finally {
-            if (!$folded) {
-                $this->unfold();
-            }
-        }
-
-        return $result;
-    }
-
-    /**
      * Unfolds the grammar by converting circular references to Reference objects.
      *
      * @return $this
@@ -378,20 +321,6 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
         }
 
         return $result;
-    }
-
-    /**
-     * Prepares the grammar for matching.
-     *
-     * Folds the grammar and performs additional optimizations.
-     *
-     * @param string $startRule The default start rule to use.
-     *
-     * @return $this
-     */
-    public function finalize($startRule = null)
-    {
-        return $this->fold($startRule);
     }
 
     //
@@ -443,7 +372,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
     }
 
     /**
-     * Returns a copy of this grammar, with rules filtered by a predicate.
+     * Returns a deep copy of this grammar, with rules returned by the given function.
      *
      * @param callable $f `$f(Expression $expr, string $ruleName, Grammar $grammar)`
      *
@@ -479,33 +408,20 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
     }
 
     /**
-     * Runs a reduce operation on this grammar's rules.
-     *
-     * @param callable $fn `$fn(mixed $accumulator, Expression $expr, string $ruleName, Grammar $grammar)`
-     * @param mixed    $accumulator
-     *
-     * @return mixed
-     */
-    public function reduce(callable $fn, $accumulator = null)
-    {
-        foreach ($this->rules as $name => $expr) {
-            $accumulator = $fn($accumulator, $expr, $name, $this);
-        }
-
-        return $accumulator;
-    }
-
-    /**
      * Returns a string representation of the grammar.
      * Should be as close as possible of the grammar's syntax.
      *
      * @return string
+     * @codeCoverageIgnore
      */
     public function __toString()
     {
         $out = '';
         if ($name = $this->getName()) {
             $out .= "%name $name\n";
+        }
+        if (empty($this->rules)) {
+            return $out;
         }
         $out .= "%start {$this->startRule}\n";
         $out .= "\n";
