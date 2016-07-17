@@ -6,7 +6,6 @@ use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Builder;
 use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Node\Transient;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class AssertTest extends ExpressionTestCase

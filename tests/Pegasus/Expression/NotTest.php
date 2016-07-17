@@ -28,17 +28,17 @@ class NotTest extends ExpressionTestCase
             [
                 new Literal('foo'),
                 ['barbaz'],
-                new Transient(0, 0)
+                true
             ],
             [
                 new Literal('bar'),
                 ['foobar'],
-                new Transient(0, 0)
+                true
             ],
             [
                 new Literal('foo'),
                 ['foobar', 3],
-                new Transient(3, 3)
+                true
             ],
         ];
     }

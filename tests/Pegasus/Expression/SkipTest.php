@@ -15,7 +15,6 @@ use ju1ius\Pegasus\Grammar\Builder;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Node\Composite;
 use ju1ius\Pegasus\Node\Terminal;
-use ju1ius\Pegasus\Node\Transient;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 /**
