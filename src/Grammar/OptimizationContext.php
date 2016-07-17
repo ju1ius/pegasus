@@ -136,7 +136,7 @@ final class OptimizationContext
      */
     public function getStartRule()
     {
-        return $this->grammar->getStartRule()->getName();
+        return $this->grammar->getStartRule();
     }
 
     /**

@@ -18,7 +18,7 @@ EOS;
         $g = Grammar::fromSyntax($s);
         $this->assertNotInstanceOf(
             'ju1ius\Pegasus\Expression\Reference',
-            $g->getStartRule()
+            $g->getStartExpression()
         );
     }
 

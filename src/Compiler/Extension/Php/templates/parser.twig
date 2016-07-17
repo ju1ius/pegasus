@@ -28,7 +28,7 @@ class {{ class }} extends {{ base_class }}
      *
      * @var string
      */
-    protected $startRule = '{{ grammar.getStartRule().name }}';
+    protected $startRule = '{{ grammar.startRule }}';
 
 {% for ruleName, expr in grammar %}
     {%- do context.set('rule', ruleName) %}

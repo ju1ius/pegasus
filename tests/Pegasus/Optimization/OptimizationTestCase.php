@@ -15,7 +15,7 @@ class OptimizationTestCase extends PegasusTestCase
     {
         if ($expr instanceof Grammar) {
             $ctx = $ctx ?: OptimizationContext::create($expr);
-            $expr = $expr->getStartRule();
+            $expr = $expr->getStartExpression();
         } elseif (!$ctx) {
             throw new \InvalidArgumentException(sprintf(
                 'Missing OptimizationContext for expression `%s`',

@@ -228,7 +228,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
     /**
      * Returns the start rule of this grammar.
      *
-     * @return Expression
+     * @return string
      * @throws MissingStartRule If no start rule was found.
      */
     public function getStartRule()
@@ -237,7 +237,18 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
             throw new MissingStartRule();
         }
 
-        return $this->rules[$this->startRule];
+        return $this->startRule;
+    }
+
+    /**
+     * Returns the start expression of this grammar.
+     *
+     * @return Expression
+     * @throws MissingStartRule If no start rule was found.
+     */
+    public function getStartExpression()
+    {
+        return $this->rules[$this->getStartRule()];
     }
 
     /**

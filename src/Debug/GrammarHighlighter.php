@@ -64,7 +64,7 @@ class GrammarHighlighter extends GrammarVisitor
         }
         $this->output->writeln(sprintf(
             '<directive>%%start</directive> <rule>%s</rule>',
-            $grammar->getStartRule()->getName()
+            $grammar->getStartRule()
         ));
         $this->output->writeln('');
     }

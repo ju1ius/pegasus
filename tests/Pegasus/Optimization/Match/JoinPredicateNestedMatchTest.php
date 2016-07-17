@@ -124,7 +124,7 @@ class JoinPredicateNestedMatchTest extends OptimizationTestCase
     public function testAppliesTo(Grammar $input, $applies)
     {
         $optim = new JoinPredicateNestedMatch();
-        $expr = $input->getStartRule();
+        $expr = $input->getStartExpression();
         $ctx = OptimizationContext::create($input);
 
         $result = $optim->appliesTo($expr, $ctx);

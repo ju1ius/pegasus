@@ -88,7 +88,7 @@ class JoinMatchChoiceTest extends OptimizationTestCase
     public function testAppliesTo(Grammar $input, $applies)
     {
         $optim = new \ju1ius\Pegasus\Grammar\Optimization\JoinMatchChoice();
-        $expr = $input->getStartRule();
+        $expr = $input->getStartExpression();
         $ctx = OptimizationContext::create($input);
 
         $result = $optim->appliesTo($expr, $ctx);
