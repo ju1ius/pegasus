@@ -49,11 +49,6 @@ abstract class Expression
     private static $UID = 0;
 
     /**
-     * @var string
-     */
-    protected static $DEFAULT_NODE_CLASS = Node::class;
-
-    /**
      * Expression constructor.
      *
      * All subclasses MUST call their parent constructor.
@@ -88,27 +83,13 @@ abstract class Expression
      */
     abstract public function __toString();
 
-    public function asRule()
     {
-        if ($this->name) {
-            return sprintf('%s = %s', $this->name, $this->__toString());
-        }
-
-        return $this->__toString();
     }
 
     /**
-     * Returns whether this expression is considered equal to another.
      *
-     * @param Expression $other
-     *
-     * @return boolean
      */
-    public function equals(Expression $other)
     {
-        return $this instanceof $other
-            && $other->id === $this->id
-            && $other->name === $this->name;
     }
 
     /**
@@ -148,16 +129,6 @@ abstract class Expression
      * @return bool
      */
     public function hasVariableCaptureCount()
-    {
-        return false;
-    }
-
-    /**
-     * Returns whether this expression is a semantic action.
-     *
-     * @return bool
-     */
-    public function isSemantic()
     {
         return false;
     }

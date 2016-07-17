@@ -43,24 +43,6 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
     /**
      * @inheritdoc
      */
-    public function equals(Expression $other)
-    {
-        if (!parent::equals($other)) {
-            return false;
-        }
-        /** @var Composite $other */
-        if (count($this->children) !== $other->count()) {
-            return false;
-        }
-
-        return $this->every(function (Expression $child, $i) use ($other) {
-            return isset($other[$i]) && $child->equals($other[$i]);
-        });
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function isCapturing()
     {
         return $this->some(function (Expression $child) {
@@ -75,16 +57,6 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
     {
         return $this->every(function (Expression $child) {
             return $child->isCapturingDecidable();
-        });
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function isSemantic()
-    {
-        return $this->some(function (Expression $child) {
-            return $child->isSemantic();
         });
     }
 
