@@ -5,6 +5,7 @@
 >
     <testsuites>
         <testsuite name="Grammar">
+            <file>tests/Pegasus/GrammarTest.php</file>
             <directory>tests/Pegasus/Grammar</directory>
         </testsuite>
         <testsuite name="Expressions">
