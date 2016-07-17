@@ -6,7 +6,6 @@ use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Expression\Not;
 use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Node\Transient;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class NotTest extends ExpressionTestCase
@@ -17,10 +16,7 @@ class NotTest extends ExpressionTestCase
     public function testMatch(Expression $child, $args, $expected)
     {
         $expr = new Not($child, 'not');
-        $this->assertNodeEquals(
-            $expected,
-            $this->parse($expr, ...$args)
-        );
+        $this->assertParseResult($expected, $expr, ...$args);
     }
     public function getMatchProvider()
     {
