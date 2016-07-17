@@ -4,3 +4,4 @@
 /vendor/
 cache/
 /hack/
+tests/coverage/
