@@ -45,13 +45,13 @@ trait PredicateMatchSequenceJoinerTrait
     protected function prepareBarePattern(Expression $child)
     {
         if ($child instanceof Match) {
-            return sprintf('(?>%s)', $child->pattern);
+            return sprintf('(?>%s)', $child->getPattern());
         }
         if ($child instanceof Assert) {
-            return sprintf('(?=%s)', $child[0]->pattern);
+            return sprintf('(?=%s)', $child[0]->getPattern());
         }
         if ($child instanceof Not) {
-            return sprintf('(?!%s)', $child[0]->pattern);
+            return sprintf('(?!%s)', $child[0]->getPattern());
         }
         if ($child instanceof EOF) {
             return '\z';

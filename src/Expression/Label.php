@@ -20,14 +20,22 @@ use ju1ius\Pegasus\Parser\Scope;
  *
  * This allows for example to identify an expression in a local context.
  */
-class Label extends Decorator
+final class Label extends Decorator
 {
-    public $label;
+    private $label;
 
     public function __construct($child, $label)
     {
         parent::__construct($child);
         $this->label = $label;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLabel()
+    {
+        return $this->label;
     }
 
     public function __toString()

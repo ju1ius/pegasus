@@ -104,7 +104,9 @@ abstract class Expression
     }
 
     /**
-     * @param bool $depthFirst
+     * Iterates over the expression tree.
+     *
+     * @param bool $depthFirst Whether to yield child expressions before their parent.
      *
      * @return \Generator
      */

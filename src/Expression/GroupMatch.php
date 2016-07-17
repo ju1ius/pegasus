@@ -35,6 +35,11 @@ final class GroupMatch extends Terminal
     private $groupCount;
 
     /**
+     * @var string
+     */
+    private $compiledPattern;
+
+    /**
      * GroupMatch constructor.
      *
      * @param Match  $match
@@ -45,6 +50,7 @@ final class GroupMatch extends Terminal
     {
         $this->matcher = $match;
         $this->groupCount = $groupCount;
+        $this->compiledPattern = $match->getCompiledPattern();
 
         parent::__construct($name);
     }
@@ -62,7 +68,7 @@ final class GroupMatch extends Terminal
      */
     public function getPattern()
     {
-        return $this->matcher->pattern;
+        return $this->matcher->getPattern();
     }
 
     /**
@@ -70,7 +76,7 @@ final class GroupMatch extends Terminal
      */
     public function getFlags()
     {
-        return $this->matcher->flags;
+        return $this->matcher->getFlags();
     }
 
     /**
@@ -87,7 +93,7 @@ final class GroupMatch extends Terminal
     public function match($text, Parser $parser, Scope $scope)
     {
         $start = $parser->pos;
-        if (preg_match($this->matcher->compiledPattern, $text, $matches, PREG_OFFSET_CAPTURE, $start)) {
+        if (preg_match($this->compiledPattern, $text, $matches, PREG_OFFSET_CAPTURE, $start)) {
             $end = $parser->pos += strlen($matches[0][0]);
             if (!$parser->isCapturing) {
                 return true;
@@ -115,6 +121,6 @@ final class GroupMatch extends Terminal
      */
     public function __toString()
     {
-        return sprintf('GroupMatch[%s, %d]', $this->matcher->compiledPattern, $this->groupCount);
+        return sprintf('GroupMatch[%s, %d]', $this->compiledPattern, $this->groupCount);
     }
 }

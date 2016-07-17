@@ -20,9 +20,9 @@ use ju1ius\Pegasus\Parser\Scope;
  *
  * @author ju1ius <ju1ius@laposte.net>
  */
-class NamedSequence extends Combinator
+final class NamedSequence extends Combinator
 {
-    public $label;
+    private $label;
 
     /**
      * @inheritDoc
@@ -31,6 +31,14 @@ class NamedSequence extends Combinator
     {
         $this->label = $label;
         parent::__construct($children, '');
+    }
+
+    /**
+     * @return string
+     */
+    public function getLabel()
+    {
+        return $this->label;
     }
 
     /**

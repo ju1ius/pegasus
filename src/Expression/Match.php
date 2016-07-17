@@ -22,17 +22,17 @@ class Match extends Terminal
     /**
      * @var string
      */
-    public $pattern;
+    protected $pattern;
 
     /**
      * @var string[]
      */
-    public $flags;
+    protected $flags;
 
     /**
      * @var string
      */
-    public $compiledPattern;
+    protected $compiledPattern;
 
     /**
      * @inheritDoc
@@ -44,6 +44,30 @@ class Match extends Terminal
         $this->flags = array_unique(array_filter($flags));
 
         $this->compiledPattern = $this->compilePattern();
+    }
+
+    /**
+     * @return string
+     */
+    public function getPattern()
+    {
+        return $this->pattern;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getFlags()
+    {
+        return $this->flags;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCompiledPattern()
+    {
+        return $this->compiledPattern;
     }
 
     /**

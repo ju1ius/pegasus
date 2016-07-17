@@ -104,7 +104,7 @@ class GrammarTraverser implements GrammarTraverserInterface
         }
 
         foreach ($grammar as $name => $rule) {
-            if ($rule instanceof Reference && $name === $rule->identifier) {
+            if ($rule instanceof Reference && $name === $rule->getIdentifier()) {
                 throw new SelfReferencingRule($rule);
             }
 

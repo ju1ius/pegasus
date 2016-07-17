@@ -41,13 +41,13 @@ trait PredicateMatchChoiceJoinerTrait
     protected function prepareBarePattern(Expression $child)
     {
         if ($child instanceof Match) {
-            return $child->pattern;
+            return $child->getPattern();
         }
         if ($child instanceof Expression\Assert) {
-            return sprintf('(?=%s)', $child[0]->pattern);
+            return sprintf('(?=%s)', $child[0]->getPattern());
         }
         if ($child instanceof Expression\Not) {
-            return sprintf('(?!%s)', $child[0]->pattern);
+            return sprintf('(?!%s)', $child[0]->getPattern());
         }
         if ($child instanceof Expression\EOF) {
             return '\z';

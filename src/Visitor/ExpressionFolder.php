@@ -39,32 +39,20 @@ class ExpressionFolder extends ExpressionVisitor
         if (!$expr instanceof Reference) {
             return null;
         }
-        $label = $expr->identifier;
-        $referenceChain = [$label];
+        $referencedRule = $expr->getIdentifier();
+        $referenceChain = [$referencedRule];
 
-        if (!isset($this->grammar[$label])) {
-            throw new RuleNotFound($label);
-        }
-
-        $expr = $this->grammar[$label];
-        // if reffed_expr is itself a reference to some other rule
+        $expr = $this->grammar[$referencedRule];
+        // if referenced expr is itself a reference to some other rule
         while ($expr instanceof Reference) {
-
+            $referencedRule = $expr->getIdentifier();
             // expr references itself directly or indirectly
-            if (in_array($expr->identifier, $referenceChain)) {
+            if (in_array($referencedRule, $referenceChain)) {
                 throw new CircularReference($expr, $referenceChain);
             }
 
-            if (!isset($this->grammar[$expr->identifier])) {
-                throw new GrammarException(sprintf(
-                    'Referenced rule "%s" is not defined in the grammar (Reference chain: %s).',
-                    $expr->identifier,
-                    implode(' => ', $referenceChain)
-                ));
-            }
-
-            $referenceChain[] = $expr->identifier;
-            $expr = $this->grammar[$expr->identifier];
+            $referenceChain[] = $referencedRule;
+            $expr = $this->grammar[$referencedRule];
         }
 
         return $expr;

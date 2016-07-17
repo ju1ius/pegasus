@@ -60,15 +60,15 @@ final class JoinMatchCapturingSequence extends MatchJoiningOptimization
         $patterns = array_map(function ($expr) use(&$groupCount) {
             if ($expr instanceof Match) {
                 $groupCount++;
-                if (count($expr->flags)) {
-                    return sprintf('((?%s)%s)', implode('', $expr->flags), $expr->pattern);
+                if (count($expr->getFlags())) {
+                    return sprintf('((?%s)%s)', implode('', $expr->getFlags()), $expr->getPattern());
                 }
-                return sprintf('(%s)', $expr->pattern);
+                return sprintf('(%s)', $expr->getPattern());
             }
             if ($expr instanceof Literal) {
                 $groupCount++;
 
-                return sprintf('(%s)', preg_quote($expr->literal, '/'));
+                return sprintf('(%s)', preg_quote($expr->getLiteral(), '/'));
             }
             if ($expr instanceof GroupMatch) {
                 $groupCount += $expr->getCaptureCount();
@@ -79,13 +79,13 @@ final class JoinMatchCapturingSequence extends MatchJoiningOptimization
             }
             if ($expr instanceof Skip) {
                 if ($expr[0] instanceof Literal) {
-                    return sprintf('(?>%s)', preg_quote($expr[0]->literal, '/'));
+                    return sprintf('(?>%s)', preg_quote($expr[0]->getLiteral(), '/'));
                 }
                 if ($expr[0] instanceof Match) {
-                    if (count($expr[0]->flags)) {
-                        return sprintf('(?>(?%s)%s)', implode('', $expr[0]->flags), $expr[0]->pattern);
+                    if (count($expr[0]->getFlags())) {
+                        return sprintf('(?>(?%s)%s)', implode('', $expr[0]->getFlags()), $expr[0]->getPattern());
                     }
-                    return sprintf('(?>%s)', $expr[0]->pattern);
+                    return sprintf('(?>%s)', $expr[0]->getPattern());
                 }
             }
         }, $matches);

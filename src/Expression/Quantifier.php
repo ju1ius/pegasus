@@ -23,12 +23,12 @@ class Quantifier extends Decorator
     /**
      * @var int
      */
-    public $min;
+    protected $lowerBound;
 
     /**
      * @var int
      */
-    public $max;
+    protected $upperBound;
 
     /**
      * Quantifier constructor.
@@ -40,13 +40,47 @@ class Quantifier extends Decorator
      */
     public function __construct(Expression $child = null, $min, $max, $name = '')
     {
-        $this->min = abs((int)$min);
+        $this->lowerBound = abs((int)$min);
         if ($max < $min) {
-            throw new \InvalidArgumentException('$max must be >= $min');
+            throw new \InvalidArgumentException('upper bound must be >= lower bound');
         }
-        $this->max = $max === INF ? $max : (int)$max;
+        $this->upperBound = $max === INF ? $max : (int)$max;
 
         parent::__construct($child, $name);
+    }
+
+    /**
+     * @return int
+     */
+    public function getLowerBound()
+    {
+        return $this->lowerBound;
+    }
+
+    /**
+     * @return int
+     */
+    public function getUpperBound()
+    {
+        return $this->upperBound;
+    }
+
+    /**
+     * Returns whether the upper bound is infinite.
+     *
+     * @return bool
+     */
+    public function isUnbounded()
+    {
+        return $this->upperBound === INF;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isExact()
+    {
+        return $this->lowerBound === $this->upperBound;
     }
 
     /**
@@ -54,7 +88,7 @@ class Quantifier extends Decorator
      */
     public function isZeroOrMore()
     {
-        return $this->min === 0 && $this->max === INF;
+        return $this->lowerBound === 0 && $this->upperBound === INF;
     }
 
     /**
@@ -62,7 +96,7 @@ class Quantifier extends Decorator
      */
     public function isOneOrMore()
     {
-        return $this->min === 1 && $this->max === INF;
+        return $this->lowerBound === 1 && $this->upperBound === INF;
     }
 
     /**
@@ -70,7 +104,7 @@ class Quantifier extends Decorator
      */
     public function isOptional()
     {
-        return $this->min === 0 && $this->max === 1;
+        return $this->lowerBound === 0 && $this->upperBound === 1;
     }
 
     public function hasVariableCaptureCount()
@@ -86,8 +120,10 @@ class Quantifier extends Decorator
             $q = '+';
         } elseif ($this->isOptional()) {
             $q = '?';
+        } elseif ($this->lowerBound === $this->upperBound) {
+            $q = sprintf('{%d}', $this->lowerBound);
         } else {
-            $q = sprintf('{%s,%s}', $this->min, $this->max === INF ? '' : $this->max);
+            $q = sprintf('{%d,%s}', $this->lowerBound, $this->isUnbounded() ? '' : $this->upperBound);
         }
 
         return $this->stringChildren()[0] . $q;
@@ -104,11 +140,11 @@ class Quantifier extends Decorator
             if ($capturing) {
                 $results[] = $result;
             }
-            if (++$matchCount === $this->max) {
+            if (++$matchCount === $this->upperBound) {
                 break;
             }
         }
-        if ($matchCount >= $this->min) {
+        if ($matchCount >= $this->lowerBound) {
             return $capturing
                 ? new Node\Quantifier($this->name, $startPos, $parser->pos, $results, $this->isOptional())
                 : true;

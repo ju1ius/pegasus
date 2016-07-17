@@ -15,7 +15,7 @@ class CircularReference extends GrammarException
      */
     public function __construct(Reference $expr, array $referenceChain = [])
     {
-        $msg = sprintf('Circular reference in rule <%s>.', $expr->identifier);
+        $msg = sprintf('Circular reference in rule <%s>.', $expr->getIdentifier());
         if ($referenceChain) {
             $msg .= sprintf(' Reference chain: %s', implode(' => ', $referenceChain));
         }

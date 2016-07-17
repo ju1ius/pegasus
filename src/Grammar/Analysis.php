@@ -224,7 +224,7 @@ class Analysis
     protected function directReferences(Expression $expr)
     {
         if ($expr instanceof Reference) {
-            yield $expr->identifier;
+            yield $expr->getIdentifier();
         } elseif ($expr instanceof Composite) {
             foreach ($expr as $child) {
                 foreach ($this->directReferences($child) as $ref) {
@@ -244,7 +244,7 @@ class Analysis
     protected function directLeftReferences(Expression $expr)
     {
         if ($expr instanceof Reference) {
-            yield $expr->identifier;
+            yield $expr->getIdentifier();
         } elseif ($expr instanceof OneOf) {
             foreach ($expr as $child) {
                 foreach ($this->directLeftReferences($child) as $ref) {

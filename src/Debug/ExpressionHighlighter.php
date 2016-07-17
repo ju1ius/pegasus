@@ -98,25 +98,26 @@ class ExpressionHighlighter extends ExpressionVisitor
             }
         }
         if ($expr instanceof Reference) {
-            $this->output->write(sprintf('<ref>%s</ref>', $expr->identifier));
+            $this->output->write(sprintf('<ref>%s</ref>', $expr->getIdentifier()));
         } elseif ($expr instanceof Super) {
             $this->output->write('<class>super</class>');
-            if ($expr->identifier !== $this->ruleName) {
+            $id = $expr->getIdentifier();
+            if ($id !== $this->ruleName) {
                 $this->output->write('<d>::</d>');
-                $this->output->write(sprintf('<ref>%s</ref>', $expr->identifier));
+                $this->output->write(sprintf('<ref>%s</ref>', $id));
             }
         } elseif ($expr instanceof Terminal) {
             if ($expr instanceof Literal) {
                 $this->output->write(sprintf(
                     '<d>%1$s</d><term>%2$s</term><d>%1$s</d>',
-                    $expr->quoteCharacter,
-                    $expr->literal
+                    $expr->getQuoteCharacter(),
+                    $expr->getLiteral()
                 ));
             } elseif ($expr instanceof Match || $expr instanceof RegExp) {
                 $this->output->write(sprintf(
                     '<d>/</d><term>%s</term><d>/</d><term>%s</term>',
-                    $expr->pattern,
-                    implode('', $expr->flags)
+                    $expr->getPattern(),
+                    implode('', $expr->getFlags())
                 ));
             } elseif ($expr instanceof GroupMatch) {
                 $this->output->write('<class>GroupMatch</class>');
@@ -141,7 +142,7 @@ class ExpressionHighlighter extends ExpressionVisitor
                     $this->output->write('<sym>~</sym>');
                     break;
                 case Label::class:
-                    $this->output->write(sprintf('<label>%s</label><d>:</d>', $expr->label));
+                    $this->output->write(sprintf('<label>%s</label><d>:</d>', $expr->getLabel()));
                     break;
                 case Token::class:
                     $this->output->write('<sym>@</sym>');
@@ -174,11 +175,13 @@ class ExpressionHighlighter extends ExpressionVisitor
                     $symbol = '*';
                 } elseif ($expr->isOptional()) {
                     $symbol = '?';
+                } elseif ($expr->isExact()) {
+                    $symbol = sprintf('{%d}', $expr->getLowerBound());
                 } else {
                     $symbol = sprintf(
                         '{%s,%s}',
-                        $expr->min,
-                        $expr->max === INF ? '' : $expr->max
+                        $expr->getLowerBound(),
+                        $expr->isUnbounded() ? '' : $expr->getUpperBound()
                     );
                 }
                 $this->output->write(sprintf('<q>%s</q>', $symbol));
@@ -186,7 +189,7 @@ class ExpressionHighlighter extends ExpressionVisitor
         } elseif ($expr instanceof Combinator) {
             $this->combinatorStack->pop();
             if ($expr instanceof NamedSequence) {
-                $this->output->write(sprintf(' <d><=</d> <id>%s</id>', $expr->label));
+                $this->output->write(sprintf(' <d><=</d> <id>%s</id>', $expr->getLabel()));
             }
             if ($this->needsParenthesesAroundCombinator($expr)) {
                 $this->output->write('<d>)</d>');

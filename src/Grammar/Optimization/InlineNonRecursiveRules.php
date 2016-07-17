@@ -16,10 +16,10 @@ use ju1ius\Pegasus\Grammar\Optimization;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 
 /**
- * References to regular parse rules can be inlined without affecting how they parse,
+ * References to non-recursive parse rules can be inlined without affecting how they parse,
  * assuming the referenced rule does not change.
  *
- * This optimization is only applied if the referenced rule is regular and marked for inlining.
+ * This optimization is only applied if the referenced rule is non-recursive and explicitly marked for inlining.
  *
  * @author ju1ius <ju1ius@laposte.net>
  */
@@ -30,7 +30,7 @@ class InlineNonRecursiveRules extends Optimization
      */
     protected function doAppliesTo(Expression $expr, OptimizationContext $context)
     {
-        return $expr instanceof Reference && $context->isInlineableRule($expr->identifier);
+        return $expr instanceof Reference && $context->isInlineableRule($expr->getIdentifier());
     }
 
     /**
@@ -39,6 +39,6 @@ class InlineNonRecursiveRules extends Optimization
     protected function doApply(Expression $expr, OptimizationContext $context)
     {
         /** @var Reference $expr */
-        return $context->getRule($expr->identifier);
+        return $context->getRule($expr->getIdentifier());
     }
 }

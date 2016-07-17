@@ -8,13 +8,13 @@
 {{ pos_var }} = $this->pos;
 {{ count_var }} = 0;
 {{ children_var }} = $this->isCapturing ? [] : null;
-while ({{ count_var }} < {{ expr.max }}) {
+while ({{ count_var }} < {{ expr.upperBound }}) {
     {{ render_expr(expr[0])|indent }}
     if (!{{ subres_var }}) break;
     {{ count_var }}++;
     if ($this->isCapturing) {{ children_var }}[] = {{ subres_var }};
 }
-if ({{ count_var }} >= {{ expr.min }}) {
+if ({{ count_var }} >= {{ expr.lowerBound }}) {
     {{ result_var }} = $this->isCapturing ? new Quantifier('{{ expr.name }}', {{ pos_var }}, $this->pos, {{ children_var }}, {{ repr(expr.isOptional) }}) : true;
 } else {
     $this->pos = {{ pos_var }};

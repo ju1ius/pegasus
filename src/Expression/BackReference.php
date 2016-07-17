@@ -11,12 +11,12 @@ use ju1ius\Pegasus\Parser\Scope;
 /**
  * @author ju1ius
  */
-class BackReference extends Terminal
+final class BackReference extends Terminal
 {
     /**
      * @var string
      */
-    public $identifier;
+    private $identifier;
 
     /**
      * BackReference constructor.
@@ -28,6 +28,14 @@ class BackReference extends Terminal
     {
         $this->identifier = $identifier;
         parent::__construct($name);
+    }
+
+    /**
+     * @return string
+     */
+    public function getIdentifier()
+    {
+        return $this->identifier;
     }
 
     public function match($text, Parser $parser, Scope $scope)

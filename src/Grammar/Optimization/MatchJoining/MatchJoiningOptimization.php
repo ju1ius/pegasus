@@ -117,14 +117,14 @@ abstract class MatchJoiningOptimization extends Optimization
     protected function createPattern(Expression $expr)
     {
         if ($expr instanceof Match) {
-            if (count($expr->flags)) {
-                return sprintf('(?%s:%s)', implode('', $expr->flags), $expr->pattern);
+            if (count($expr->getFlags())) {
+                return sprintf('(?%s:%s)', implode('', $expr->getFlags()), $expr->getPattern());
             }
 
-            return $expr->pattern;
+            return $expr->getPattern();
         }
         if ($expr instanceof Literal) {
-            return preg_quote($expr->literal, '/');
+            return preg_quote($expr->getLiteral(), '/');
         }
     }
 

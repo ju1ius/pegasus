@@ -20,27 +20,22 @@ use ju1ius\Pegasus\Utils\StringUtil;
  *
  * Use these as much as you can and jam as much into each one as you can: they're fast.
  */
-class RegExp extends Terminal
+final class RegExp extends Terminal
 {
     /**
      * @var string
      */
-    public $pattern;
+    private $pattern;
 
     /**
      * @var array
      */
-    public $flags;
+    private $flags;
 
     /**
      * @var string
      */
-    public $compiledPattern;
-
-    /**
-     * @var string
-     */
-    public $compiledFlags;
+    private $compiledPattern;
 
     public function __construct($pattern, array $flags = [], $name = '')
     {
@@ -49,6 +44,30 @@ class RegExp extends Terminal
         $this->flags = array_unique(array_filter($flags));
 
         $this->compiledPattern = $this->compilePattern();
+    }
+
+    /**
+     * @return string
+     */
+    public function getPattern()
+    {
+        return $this->pattern;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFlags()
+    {
+        return $this->flags;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCompiledPattern()
+    {
+        return $this->compiledPattern;
     }
 
     public function __toString()

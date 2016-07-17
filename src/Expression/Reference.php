@@ -20,19 +20,27 @@ use ju1ius\Pegasus\Parser\Scope;
  *
  * @author ju1ius <ju1ius@laposte.net>
  */
-class Reference extends Expression
+final class Reference extends Expression
 {
     /**
      * The name of the rule this expression refers to.
      *
      * @var string
      */
-    public $identifier;
+    private $identifier;
 
     public function __construct($identifier, $name = '')
     {
         parent::__construct($name);
         $this->identifier = $identifier;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIdentifier()
+    {
+        return $this->identifier;
     }
 
     /**

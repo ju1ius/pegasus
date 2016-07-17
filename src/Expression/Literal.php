@@ -21,22 +21,22 @@ use ju1ius\Pegasus\Utils\StringUtil;
  *
  * Use these if you can; they're the fastest.
  */
-class Literal extends Terminal
+final class Literal extends Terminal
 {
     /**
      * @var string
      */
-    public $literal;
+    private $literal;
 
     /**
      * @var string
      */
-    public $quoteCharacter = '"';
+    private $quoteCharacter = '"';
 
     /**
      * @var int
      */
-    public $length = 0;
+    private $length = 0;
 
     public function __construct($literal, $name = '', $quoteCharacter = '"')
     {
@@ -45,6 +45,30 @@ class Literal extends Terminal
         $this->quoteCharacter = $quoteCharacter;
 
         $this->length = strlen($this->literal);
+    }
+
+    /**
+     * @return string
+     */
+    public function getLiteral()
+    {
+        return $this->literal;
+    }
+
+    /**
+     * @return string
+     */
+    public function getQuoteCharacter()
+    {
+        return $this->quoteCharacter;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLength()
+    {
+        return $this->length;
     }
 
     public function __toString()

@@ -47,14 +47,14 @@ final class JoinMatchMatchingSequence extends MatchJoiningOptimization
     protected function createPattern(Expression $expr)
     {
         if ($expr instanceof Match) {
-            if (count($expr->flags)) {
-                return sprintf('(?>(?%s)%s)', implode('', $expr->flags), $expr->pattern);
+            if (count($expr->getFlags())) {
+                return sprintf('(?>(?%s)%s)', implode('', $expr->getFlags()), $expr->getPattern());
             }
 
-            return sprintf('(?>%s)', $expr->pattern);
+            return sprintf('(?>%s)', $expr->getPattern());
         }
         if ($expr instanceof Literal) {
-            return sprintf('(?>%s)', preg_quote($expr->literal, '/'));
+            return sprintf('(?>%s)', preg_quote($expr->getLiteral(), '/'));
         }
     }
 }

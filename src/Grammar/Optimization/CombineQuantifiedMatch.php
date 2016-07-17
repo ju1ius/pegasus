@@ -45,8 +45,8 @@ class CombineQuantifiedMatch extends Optimization
         $match = $expr[0];
 
         return new Match(
-            sprintf('(?>%s)%s', $match->pattern, $this->getQuantifier($expr)),
-            $match->flags
+            sprintf('(?>%s)%s', $match->getPattern(), $this->getQuantifier($expr)),
+            $match->getFlags()
         );
     }
 
@@ -66,11 +66,14 @@ class CombineQuantifiedMatch extends Optimization
         if ($expr->isOptional()) {
             return '?';
         }
+        if ($expr->isExact()) {
+            return sprintf('{%d}', $expr->getLowerBound());
+        }
 
         return sprintf(
             '{%d,%s}',
-            $expr->min,
-            $expr->max === INF ? '' : $expr->max
+            $expr->getLowerBound(),
+            $expr->isUnbounded() ? '' : $expr->getUpperBound()
         );
     }
 }
