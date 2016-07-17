@@ -46,11 +46,12 @@ class SimplifyRedundantQuantifier extends Optimization
             || ($expr->isOptional() && $child->isOptional())
         ) {
             $child = clone $child;
-            $child->name = $expr->name;
+            $child->setName($expr->getName());
+
             return $child;
         }
 
-        return new ZeroOrMore($child[0], $expr->name);
+        return new ZeroOrMore($child[0], $expr->getName());
     }
 
     private function isSimpleQuantifier(Expression $expr)

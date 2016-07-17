@@ -81,7 +81,7 @@ class ExpressionHighlighter extends ExpressionVisitor
     public function beforeTraverse(Expression $expr)
     {
         $this->combinatorStack = new \SplStack();
-        $this->ruleName = $expr->name;
+        $this->ruleName = $expr->getName();
     }
 
     /**

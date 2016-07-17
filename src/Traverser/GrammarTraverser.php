@@ -161,8 +161,8 @@ class GrammarTraverser implements GrammarTraverserInterface
     {
         // Convert all non top-level expressions to reference if needed,
         // in order to avoid infinite recursion in recursive rules.
-        if (!$this->inTopLevelExpression && isset($grammar[$expr->name])) {
-            $expr = new Reference($expr->name);
+        if (!$this->inTopLevelExpression && isset($grammar[$expr->getName()])) {
+            $expr = new Reference($expr->getName());
         } elseif ($this->cloneExpressions) {
             $expr = clone $expr;
         }
@@ -190,8 +190,8 @@ class GrammarTraverser implements GrammarTraverserInterface
         }
 
         //FIXME: can we really modify the grammar while iterating ?
-        if ($expr->name) {
-            $grammar[$expr->name] = $expr;
+        if ($name = $expr->getName()) {
+            $grammar[$name] = $expr;
         }
 
         return $expr;

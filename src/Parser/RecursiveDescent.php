@@ -27,7 +27,7 @@ class RecursiveDescent extends Parser
         $this->error = new ParseError($source);
         $this->isCapturing = true;
         $this->applicationStack = new \SplStack();
-        $rule = $startRule ?: $this->grammar->getStartRule()->name;
+        $rule = $startRule ?: $this->grammar->getStartRule()->getName();
 
         gc_disable();
         $result = $this->apply($rule, Scope::void());

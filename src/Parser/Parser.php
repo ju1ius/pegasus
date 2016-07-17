@@ -154,7 +154,7 @@ abstract class Parser
         if ($pos > $this->error->position) {
             $this->error->position = $pos;
             $this->error->expr = $expr;
-            $this->error->rule = $this->applicationStack->top()->name;
+            $this->error->rule = $this->applicationStack->top();
         }
     }
 }

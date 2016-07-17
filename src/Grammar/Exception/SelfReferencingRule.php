@@ -16,7 +16,7 @@ class SelfReferencingRule extends GrammarException
     {
         $msg = sprintf(
             'A rule cannot be a reference to itself: `%s = %s`',
-            $expr->name,
+            $expr->getName(),
             $expr
         );
         parent::__construct($msg);

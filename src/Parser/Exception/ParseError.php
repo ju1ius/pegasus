@@ -42,7 +42,7 @@ class ParseError extends \RuntimeException
     /**
      * The rightmost failed rule.
      *
-     * @var string
+     * @var Expression
      */
     public $rule;
 
@@ -67,7 +67,7 @@ class ParseError extends \RuntimeException
             'ParseError: expression `%s` in rule `%s` failed to match on line %s, column %s.'
             . "\n%s",
             (string)$this->expr,
-            $this->rule,
+            $this->rule->getName(),
             $line, $col,
             $text
         );

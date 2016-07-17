@@ -131,10 +131,10 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
     public static function fromExpression(Expression $expr, $startRule = null, $optimizationLevel = Optimizer::LEVEL_1)
     {
         if (!$startRule) {
-            if (!$expr->name) {
+            if (!$expr->getName()) {
                 throw new AnonymousTopLevelExpression($expr);
             }
-            $startRule = $expr->name;
+            $startRule = $expr->getName();
         }
 
         $grammar = new static();
@@ -584,7 +584,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
             ));
         }
 
-        $expr->name = $name;
+        $expr->setName($name);
 
         if (!$this->startRule) {
             $this->startRule = $name;

@@ -68,7 +68,7 @@ final class GrammarDumper extends GrammarVisitor
         $this->indentStack = [];
         $this->output->write(sprintf(
             '<class>Rule</class> <rule>%s</rule> <d>=</d> ',
-            $expr->name
+            $expr->getName()
         ));
         ExpressionHighlighter::highlight($expr, $this->output);
         $this->output->writeln('');

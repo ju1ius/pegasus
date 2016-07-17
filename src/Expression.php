@@ -41,7 +41,7 @@ abstract class Expression
      *
      * @var string
      */
-    public $name;
+    protected $name;
 
     /**
      * @var int
@@ -83,13 +83,24 @@ abstract class Expression
      */
     abstract public function __toString();
 
+    /**
+     * @return string
+     */
+    public function getName()
     {
+        return $this->name;
     }
 
     /**
+     * @param string $name
      *
+     * @return $this
      */
+    public function setName($name)
     {
+        $this->name = $name;
+
+        return $this;
     }
 
     /**

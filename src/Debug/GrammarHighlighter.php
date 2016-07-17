@@ -64,7 +64,7 @@ class GrammarHighlighter extends GrammarVisitor
         }
         $this->output->writeln(sprintf(
             '<directive>%%start</directive> <rule>%s</rule>',
-            $grammar->getStartRule()->name
+            $grammar->getStartRule()->getName()
         ));
         $this->output->writeln('');
     }
@@ -74,12 +74,12 @@ class GrammarHighlighter extends GrammarVisitor
      */
     public function enterRule(Grammar $grammar, Expression $expr)
     {
-        if ($grammar->isInlined($expr->name)) {
+        if ($grammar->isInlined($expr->getName())) {
             $this->output->write(sprintf('<directive>%%inline</directive> '));
         }
         $this->output->write(sprintf(
             '<rule>%s</rule> <d>=</d> ',
-            $expr->name
+            $expr->getName()
         ));
         $this->highlighter->beforeTraverse($expr);
     }

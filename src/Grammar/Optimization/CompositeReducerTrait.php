@@ -31,7 +31,7 @@ trait CompositeReducerTrait
     {
         if (count($children) === 1) {
             $child = $children[0];
-            $child->name = $expr->name;
+            $child->setName($expr->getName());
 
             return $child;
         }

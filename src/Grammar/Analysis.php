@@ -127,7 +127,7 @@ class Analysis
      */
     public function isReferenced($ruleName)
     {
-        $startRule = $this->grammar->getStartRule()->name;
+        $startRule = $this->grammar->getStartRule()->getName();
 
         return $ruleName === $startRule || $this->isReferencedFrom($startRule, $ruleName);
     }
