@@ -108,11 +108,6 @@ class Node implements \Countable, \IteratorAggregate, \ArrayAccess
         $this->attributes = $attributes;
     }
 
-    public function __toString()
-    {
-        return $this->value ? (string)$this->value : '';
-    }
-
     /**
      * Returns the text this node matched
      *
@@ -125,37 +120,6 @@ class Node implements \Countable, \IteratorAggregate, \ArrayAccess
         $length = $this->end - $this->start;
 
         return $length ? substr($input, $this->start, $length) : '';
-    }
-
-    /**
-     * Generator recursively yielding this node and it's children
-     *
-     * @return \Generator
-     */
-    public function iter()
-    {
-        yield $this;
-        foreach ($this->children as $child) {
-            foreach ($child->iter() as $node) {
-                yield $node;
-            }
-        }
-    }
-
-    /**
-     * Generator recursively yielding all terminal (leaf) nodes
-     */
-    public function terminals()
-    {
-        if ($this->children) {
-            foreach ($this->children as $child) {
-                foreach ($child->terminals() as $terminal) {
-                    yield $terminal;
-                }
-            }
-        } else {
-            yield $this;
-        }
     }
 
     /**
