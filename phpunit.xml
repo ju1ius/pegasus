@@ -4,6 +4,10 @@
     stopOnFailure="false"
 >
     <testsuites>
+        <testsuite name="Utils">
+            <directory>tests/Pegasus/Utils</directory>
+            <directory>tests/Pegasus/RegExp</directory>
+        </testsuite>
         <testsuite name="Grammar">
             <file>tests/Pegasus/GrammarTest.php</file>
             <directory>tests/Pegasus/Grammar</directory>

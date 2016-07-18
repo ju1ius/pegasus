@@ -12,7 +12,6 @@ namespace ju1ius\Pegasus\Traverser;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Assert;
-use ju1ius\Pegasus\Expression\AttributedSequence;
 use ju1ius\Pegasus\Expression\BackReference;
 use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\EOF;
@@ -22,7 +21,6 @@ use ju1ius\Pegasus\Expression\Label;
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Expression\Match;
 use ju1ius\Pegasus\Expression\NamedSequence;
-use ju1ius\Pegasus\Expression\NodeAction;
 use ju1ius\Pegasus\Expression\Not;
 use ju1ius\Pegasus\Expression\OneOf;
 use ju1ius\Pegasus\Expression\OneOrMore;
@@ -30,7 +28,6 @@ use ju1ius\Pegasus\Expression\Optional;
 use ju1ius\Pegasus\Expression\Quantifier;
 use ju1ius\Pegasus\Expression\Reference;
 use ju1ius\Pegasus\Expression\RegExp;
-use ju1ius\Pegasus\Expression\SemanticAction;
 use ju1ius\Pegasus\Expression\Sequence;
 use ju1ius\Pegasus\Expression\Skip;
 use ju1ius\Pegasus\Expression\Super;
@@ -38,7 +35,7 @@ use ju1ius\Pegasus\Expression\Token;
 use ju1ius\Pegasus\Expression\ZeroOrMore;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Utils\RegExpUtil;
+use ju1ius\Pegasus\RegExp\PCREGroupInfo;
 
 class MetaGrammarTraverser extends NamedNodeTraverser
 {
@@ -272,7 +269,7 @@ class MetaGrammarTraverser extends NamedNodeTraverser
         // str_split returns [0 => ''] for the empty string !
         $flags = $flags ? str_split($flags) : [];
 
-        if (RegExpUtil::hasCapturingGroups($pattern)) {
+        if (PCREGroupInfo::captureCount($pattern) > 0) {
             return new RegExp($pattern, $flags);
         }
 
