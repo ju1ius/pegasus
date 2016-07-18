@@ -69,8 +69,11 @@ final class Iter
     }
 
     /**
-     * @param int $size
-     * @param     $col
+     * Yields items from a collection grouped in chunks (n-tuples) of the given size.
+     * Iteration stops when a chunk of the given size cannot be produced.
+     *
+     * @param int                $size
+     * @param array|\Traversable $col
      *
      * @return \Generator
      */
@@ -96,9 +99,9 @@ final class Iter
      * Iterates over `$collection` in consecutive chunks of `$size` and returns true if,
      * for any chunk, `$predicate` returns true for all items in the chunk.
      *
-     * @param callable $predicate
-     * @param int      $size
-     * @param          $collection
+     * @param callable           $predicate
+     * @param int                $size
+     * @param array|\Traversable $collection
      *
      * @return bool
      */
