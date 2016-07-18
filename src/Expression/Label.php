@@ -43,16 +43,6 @@ final class Label extends Decorator
         return sprintf('%s:%s', $this->label, $this->stringChildren()[0]);
     }
 
-    public function isCapturing()
-    {
-        return $this->children[0]->isCapturing();
-    }
-
-    public function isCapturingDecidable()
-    {
-        return $this->children[0]->isCapturingDecidable();
-    }
-
     public function match($text, Parser $parser, Scope $scope)
     {
         $start = $parser->pos;

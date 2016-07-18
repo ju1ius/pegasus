@@ -24,12 +24,10 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
      *
      * @var Expression[]
      */
-    protected $children;
+    protected $children = [];
 
     /**
      * Composite constructor.
-     *
-     * Subclasses MUST always respect this constructor parameter order.
      *
      * @param Expression[] $children
      * @param string       $name
@@ -37,7 +35,7 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
     public function __construct(array $children = [], $name = '')
     {
         parent::__construct($name);
-        $this->children = array_values($children);
+        $this->push(...$children);
     }
 
     /**
@@ -115,8 +113,8 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
     public function map(callable $f)
     {
         $cloned = clone $this;
-        foreach ($this->children as $i => $child) {
-            $cloned[$i] = $f($child, $i);
+        foreach ($cloned->children as $i => $child) {
+            $cloned[$i] = $f($child, $i, $cloned);
         }
 
         return $cloned;
@@ -130,7 +128,7 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
     public function every(callable $predicate)
     {
         foreach ($this->children as $i => $child) {
-            if (!$predicate($child, $i)) {
+            if (!$predicate($child, $i, $this)) {
                 return false;
             }
         }
@@ -146,7 +144,7 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
     public function some(callable $predicate)
     {
         foreach ($this->children as $i => $child) {
-            if ($predicate($child, $i)) {
+            if ($predicate($child, $i, $this)) {
                 return true;
             }
         }
@@ -176,7 +174,7 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
     public function offsetGet($offset)
     {
         if (!isset($this->children[$offset])) {
-            // TODO: throw exception???
+            throw new \LogicException('No such offset!');
         }
 
         return $this->children[$offset];
@@ -237,7 +235,6 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
     {
         return new \ArrayIterator($this->children);
     }
-
 
     /**
      * Return an array of string representations of this expression's children.

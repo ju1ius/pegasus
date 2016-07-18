@@ -16,7 +16,7 @@ use ju1ius\Pegasus\Parser\Parser;
 use ju1ius\Pegasus\Parser\Scope;
 
 /**
- * Applyies the rule of the same name inherited from a super-grammar.
+ * Applies a rule inherited from a super-grammar.
  *
  * @author ju1ius <ju1ius@laposte.net>
  */
@@ -46,6 +46,14 @@ final class Super extends Expression
     /**
      * @inheritDoc
      */
+    public function isCapturingDecidable()
+    {
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function match($text, Parser $parser, Scope $scope)
     {
         return $parser->apply($this->identifier, $scope, true);
@@ -57,13 +65,5 @@ final class Super extends Expression
     public function __toString()
     {
         return sprintf('super::%s', $this->identifier);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function isCapturingDecidable()
-    {
-        return false;
     }
 }

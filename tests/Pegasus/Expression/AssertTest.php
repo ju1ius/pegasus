@@ -3,6 +3,7 @@
 namespace ju1ius\Pegasus\Tests\Expression;
 
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Expression\Assert;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Builder;
 use ju1ius\Pegasus\Node;
@@ -10,6 +11,15 @@ use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class AssertTest extends ExpressionTestCase
 {
+    public function testMetadata()
+    {
+        $expr = new Assert();
+
+        $this->assertTrue($expr->isCapturingDecidable());
+        $this->assertFalse($expr->isCapturing());
+        $this->assertFalse($expr->hasVariableCaptureCount());
+    }
+
     /**
      * @dataProvider getMatchProvider
      *

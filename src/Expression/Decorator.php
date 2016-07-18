@@ -28,6 +28,16 @@ abstract class Decorator extends Composite
         parent::__construct($child ? [$child] : [], $name);
     }
 
+    public function isCapturing()
+    {
+        return $this->children[0]->isCapturing();
+    }
+
+    public function isCapturingDecidable()
+    {
+        return $this->children[0]->isCapturingDecidable();
+    }
+
     /**
      * @inheritdoc
      */
@@ -54,7 +64,7 @@ abstract class Decorator extends Composite
         }
 
         throw new \OverflowException(sprintf(
-            '`%s` instances accepts only a single child.',
+            '`%s` expressions accept only a single child.',
             get_class($this)
         ));
     }

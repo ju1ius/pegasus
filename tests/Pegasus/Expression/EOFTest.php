@@ -60,7 +60,7 @@ class EOFTest extends ExpressionTestCase
     public function testMetadata()
     {
         $expr = new EOF();
-        $this->assertSame(true, $expr->isCapturingDecidable());
-        $this->assertSame(false, $expr->isCapturing());
+        $this->assertTrue($expr->isCapturingDecidable());
+        $this->assertFalse($expr->isCapturing());
     }
 }
