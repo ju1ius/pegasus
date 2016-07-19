@@ -21,6 +21,7 @@ use ju1ius\Pegasus\Expression\Fail;
 use ju1ius\Pegasus\Expression\Label;
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Expression\Match;
+use ju1ius\Pegasus\Expression\Match\Word;
 use ju1ius\Pegasus\Expression\NamedSequence;
 use ju1ius\Pegasus\Expression\Not;
 use ju1ius\Pegasus\Expression\OneOf;
@@ -164,6 +165,16 @@ class ExpressionBuilder
     public function literal($literal)
     {
         return $this->add(new Literal($literal));
+    }
+
+    /**
+     * @param string $word
+     *
+     * @return $this
+     */
+    public function word($word)
+    {
+        return $this->add(new Word($word));
     }
 
     /**

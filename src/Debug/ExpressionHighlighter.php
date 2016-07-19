@@ -19,6 +19,7 @@ use ju1ius\Pegasus\Expression\GroupMatch;
 use ju1ius\Pegasus\Expression\Label;
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Expression\Match;
+use ju1ius\Pegasus\Expression\Match\Word;
 use ju1ius\Pegasus\Expression\NamedSequence;
 use ju1ius\Pegasus\Expression\Not;
 use ju1ius\Pegasus\Expression\OneOf;
@@ -112,6 +113,11 @@ class ExpressionHighlighter extends ExpressionVisitor
                     '<d>%1$s</d><term>%2$s</term><d>%1$s</d>',
                     $expr->getQuoteCharacter(),
                     $expr->getLiteral()
+                ));
+            } elseif ($expr instanceof Word) {
+                $this->output->write(sprintf(
+                    '<d>`</d><term>%s</term><d>`</d>',
+                    $expr->getWord()
                 ));
             } elseif ($expr instanceof Match || $expr instanceof RegExp) {
                 $this->output->write(sprintf(

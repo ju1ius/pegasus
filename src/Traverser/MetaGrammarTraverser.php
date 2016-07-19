@@ -20,6 +20,7 @@ use ju1ius\Pegasus\Expression\Fail;
 use ju1ius\Pegasus\Expression\Label;
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Expression\Match;
+use ju1ius\Pegasus\Expression\Match\Word;
 use ju1ius\Pegasus\Expression\NamedSequence;
 use ju1ius\Pegasus\Expression\Not;
 use ju1ius\Pegasus\Expression\OneOf;
@@ -261,6 +262,11 @@ class MetaGrammarTraverser extends NamedNodeTraverser
         list(, $quoteChar, $literal) = $matches;
 
         return new Literal($literal, '', $quoteChar);
+    }
+
+    private function leave_word_literal(Node $node, $word)
+    {
+        return new Word($word);
     }
 
     private function leave_regexp(Node $node, $matches)
