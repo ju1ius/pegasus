@@ -2,8 +2,12 @@
 
 namespace ju1ius\Pegasus\Tests\Grammar;
 
+use ju1ius\Pegasus\Expression\Label;
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Expression\Match;
+use ju1ius\Pegasus\Expression\OneOrMore;
+use ju1ius\Pegasus\Expression\Sequence;
+use ju1ius\Pegasus\Expression\Skip;
 use ju1ius\Pegasus\Expression\Super;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Builder;
@@ -47,5 +51,33 @@ class BuilderTest extends PegasusTestCase
             'bar' => new Literal('bar')
         ]);
         $this->assertGrammarEquals($expected, $result);
+    }
+
+    /**
+     * @dataProvider getTestBuildingComplexRulesProvider
+     *
+     * @param Grammar $grammar
+     * @param array   $expected
+     */
+    public function testBuildingComplexRules(Grammar $grammar, array $expected)
+    {
+        $expected = Grammar::fromArray($expected);
+        $this->assertGrammarEquals($expected, $grammar);
+    }
+
+    public function getTestBuildingComplexRulesProvider()
+    {
+        return [
+            'Sequence with nested decorators' => [
+                Builder::create()->rule('test')->sequence()
+                    ->skip()->label('a')->oneOrMore()->literal('foo')
+                    ->literal('bar')
+                    ->getGrammar(),
+                ['test' => new Sequence([
+                    new Skip(new Label(new OneOrMore(new Literal('foo')), 'a')),
+                    new Literal('bar')
+                ], 'test')]
+            ]
+        ];
     }
 }

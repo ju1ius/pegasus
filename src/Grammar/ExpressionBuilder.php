@@ -101,12 +101,14 @@ class ExpressionBuilder
         }
 
         $top = $this->compositeStack->top();
-        // if top expression is a `Decorator` and it has already one child, end the top expression
-        if ($top instanceof Decorator && count($top) > 0) {
+        // if top expression is a `Decorator` and it has already one child, end the top expression,
+        // rinse and repeat for all parent decorators.
+        while ($top instanceof Decorator && count($top) > 0) {
             $this->end();
-            if (!$this->compositeStack->isEmpty()) {
-                $top = $this->compositeStack->top();
+            if ($this->compositeStack->isEmpty()) {
+                break;
             }
+            $top = $this->compositeStack->top();
         }
 
         // Add given expression as a child of the current parent.
