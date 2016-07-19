@@ -39,6 +39,10 @@ class InlineNonRecursiveRules extends Optimization
     protected function doApply(Expression $expr, OptimizationContext $context)
     {
         /** @var Reference $expr */
-        return $context->getRule($expr->getIdentifier());
+        $referenced = $context->getRule($expr->getIdentifier());
+        $cloned = clone $referenced;
+        $cloned->setName($expr->getName());
+
+        return $cloned;
     }
 }
