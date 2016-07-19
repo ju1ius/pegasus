@@ -11,6 +11,7 @@
 namespace ju1ius\Pegasus\RegExp;
 
 use ju1ius\Pegasus\RegExp\Exception\MissingClosingParenthesis;
+use ju1ius\Pegasus\RegExp\Exception\UnmatchedClosingParenthesis;
 
 /**
  * @author ju1ius <ju1ius@laposte.net>
@@ -62,7 +63,7 @@ REGEXP;
     /**
      * @var int Number of capturing groups.
      */
-    private $captureCount;
+    private $captureCount = 0;
 
     /**
      * Returns the number of capturing groups in the given pattern.
@@ -116,10 +117,11 @@ REGEXP;
     public function parse($pattern)
     {
         $this->pos = 0;
+        $length = strlen($pattern);
         $this->groups = [];
         $this->groupCount = 0;
         $this->groupStack = new \SplStack();
-        $length = strlen($pattern);
+        $this->captureCount = 0;
         while ($this->pos < $length) {
             $char = $pattern[$this->pos];
             switch ($char) {
@@ -130,6 +132,9 @@ REGEXP;
                     $this->handleGroupStart($pattern);
                     break;
                 case ')':
+                    if ($this->groupStack->isEmpty()) {
+                        throw new UnmatchedClosingParenthesis($pattern, $this->pos);
+                    }
                     $this->handleGroupEnd($pattern);
                     break;
                 default:

@@ -11,6 +11,7 @@
 namespace ju1ius\Pegasus\Tests\RegExp;
 
 use ju1ius\Pegasus\RegExp\Exception\MissingClosingParenthesis;
+use ju1ius\Pegasus\RegExp\Exception\UnmatchedClosingParenthesis;
 use ju1ius\Pegasus\RegExp\PCREGroupInfo;
 use ju1ius\Pegasus\Tests\PegasusTestCase;
 
@@ -20,23 +21,88 @@ use ju1ius\Pegasus\Tests\PegasusTestCase;
 class PCREGroupInfoTest extends PegasusTestCase
 {
     /**
-     * @dataProvider getParseThrowsOnMissingParenthesisProvider
+     * @dataProvider getTestCaptureCountProvider
+     *
+     * @param string $pattern
+     * @param int    $expected
+     */
+    public function testCaptureCount($pattern, $expected)
+    {
+        $this->assertSame($expected, PCREGroupInfo::captureCount($pattern));
+    }
+
+    public function getTestCaptureCountProvider()
+    {
+        return [
+            ['foo(ba([rz]))', 2],
+            ['foo(ba(?:[rz]))', 1],
+            ['foo(ba(?>r|z))', 1],
+            ['(?>foo|bar)', 0],
+        ];
+    }
+
+    /**
+     * @dataProvider getTestGroupCountProvider
+     *
+     * @param string $pattern
+     * @param int    $expected
+     */
+    public function testGroupCount($pattern, $expected)
+    {
+        $this->assertSame($expected, PCREGroupInfo::groupCount($pattern));
+    }
+
+    public function getTestGroupCountProvider()
+    {
+        return [
+            ['foo(ba([rz]))', 2],
+            ['foo(ba(?:[rz]))', 2],
+            ['foo(ba(?>r|z))', 2],
+            ['(?>foo|bar)', 1],
+        ];
+    }
+
+    /**
+     * @dataProvider getParseThrowsOnMissingClosingParenthesisProvider
+     *
      * @param string $pattern
      */
-    public function testParseThrowsOnMissingParenthesis($pattern)
+    public function testParseThrowsOnMissingClosingParenthesis($pattern)
     {
         $this->expectException(MissingClosingParenthesis::class);
         $info = new PCREGroupInfo();
         $info->parse($pattern);
     }
 
-    public function getParseThrowsOnMissingParenthesisProvider()
+    public function getParseThrowsOnMissingClosingParenthesisProvider()
     {
         return [
             ['foo(bar'],
             ['foo(ba(r|z)'],
             ['(?>foo(ba(r|z))'],
             ['foo(?(?=foo)bar|baz'],
+        ];
+    }
+
+    /**
+     * @dataProvider getParseThrowsOnUnmatchedClosingParenthesisProvider
+     *
+     * @param string $pattern
+     */
+    public function testParseThrowsOnUnmatchedClosingParenthesis($pattern)
+    {
+        $this->expectException(UnmatchedClosingParenthesis::class);
+        $info = new PCREGroupInfo();
+        $info->parse($pattern);
+    }
+
+    public function getParseThrowsOnUnmatchedClosingParenthesisProvider()
+    {
+        return [
+            ['foo)'],
+            ['foo\(bar)'],
+            ['foo\(ba\(r|z)'],
+            ['fooba(?:r|z))'],
         ];
     }
 
@@ -55,6 +121,10 @@ class PCREGroupInfoTest extends PegasusTestCase
     public function getTestParseProvider()
     {
         return [
+            'Skips escaped parentheses' => [
+                'foo\(ba\(r|z\)\)',
+                []
+            ],
             'Numbered capturing group' => [
                 'foo(bar|baz)',
                 [
