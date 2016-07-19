@@ -10,8 +10,14 @@
 
 namespace ju1ius\Pegasus\Tests\Optimization;
 
+use ju1ius\Pegasus\Debug\Debug;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Literal;
+use ju1ius\Pegasus\Expression\Match;
+use ju1ius\Pegasus\Expression\OneOf;
+use ju1ius\Pegasus\Expression\Sequence;
+use ju1ius\Pegasus\Expression\Skip;
+use ju1ius\Pegasus\Expression\ZeroOrMore;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Builder;
 use ju1ius\Pegasus\Grammar\Optimization\InlineNonRecursiveRules;
@@ -49,7 +55,7 @@ class InlineNonRecursiveRulesTest extends OptimizationTestCase
                     ->inline('b'),
                 'a',
                 new Literal('b', 'a')
-            ]
+            ],
         ];
     }
 
@@ -96,6 +102,47 @@ class InlineNonRecursiveRulesTest extends OptimizationTestCase
                 'a',
                 false
             ],
+        ];
+    }
+
+    /**
+     * @dataProvider getTestApplyOnWholeGrammarProvider
+     *
+     * @param Grammar $grammar
+     * @param         $ruleToTest
+     * @param         $expected
+     */
+    public function testApplyOnWholeGrammar(Grammar $grammar, $ruleToTest, $expected)
+    {
+        $optimized = $this->optimizeGrammar($grammar, new InlineNonRecursiveRules());
+        $actual = $optimized[$ruleToTest];
+        $this->assertExpressionEquals($expected, $actual);
+    }
+
+    public function getTestApplyOnWholeGrammarProvider()
+    {
+        return [
+            [
+                Builder::create()
+                    ->rule('test')->sequence()
+                        ->literal('foo')
+                        ->ref('junk')
+                    ->rule('junk')->skip()->zeroOrMore()->oneOf()
+                        ->ref('whitespace')
+                        ->ref('comment')
+                    ->rule('whitespace')->match('\s+')
+                    ->rule('comment')->match('\#[^\n]*')
+                    ->getGrammar()
+                    ->inline('comment', 'whitespace', 'junk'),
+                'test',
+                new Sequence([
+                    new Literal('foo'),
+                    new Skip(new ZeroOrMore(new OneOf([
+                        new Match('\s+'),
+                        new Match('\#[^\n]*'),
+                    ])))
+                ], 'test')
+            ]
         ];
     }
 }

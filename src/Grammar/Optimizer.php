@@ -20,7 +20,6 @@ use ju1ius\Pegasus\Grammar\Optimization\JoinMatchChoice;
 use ju1ius\Pegasus\Grammar\Optimization\JoinMatchSequence;
 use ju1ius\Pegasus\Grammar\Optimization\JoinPredicateMatch;
 use ju1ius\Pegasus\Grammar\Optimization\JoinPredicateOrMatch;
-use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\Grammar\Optimization\RemoveMeaninglessDecorator;
 use ju1ius\Pegasus\Grammar\Optimization\SimplifyRedundantQuantifier;
 use ju1ius\Pegasus\Grammar\Optimization\SimplifyTerminalToken;
@@ -71,17 +70,22 @@ class Optimizer
     {
         $optimization = self::getOptimization($level);
 
-        $context = OptimizationContext::of($grammar);
-        $grammar = $grammar->map(function ($expr) use ($optimization, $context) {
-            return $optimization->apply($expr, $context, true);
+        $grammar = $grammar->map(function ($expr, $i, $grammar) use ($optimization) {
+            return $optimization->apply($expr, OptimizationContext::of($grammar), true);
         });
 
-        $context = OptimizationContext::of($grammar);
-        return $grammar->filter(function ($expr, $name) use ($context) {
-            return $context->isRelevantRule($name);
+        return $grammar;
+
+        return $grammar->filter(function ($expr, $name, $grammar) {
+            return OptimizationContext::of($grammar)->isRelevantRule($name);
         });
     }
 
+    /**
+     * @param $level
+     *
+     * @return Optimization
+     */
     private static function getOptimization($level)
     {
         if (!array_key_exists($level, self::$OPTIMIZATIONS)) {

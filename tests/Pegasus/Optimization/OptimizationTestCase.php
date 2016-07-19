@@ -25,4 +25,11 @@ class OptimizationTestCase extends PegasusTestCase
 
         return $optim->apply($expr, $ctx, true);
     }
+
+    protected function optimizeGrammar(Grammar $grammar, Optimization $optimization)
+    {
+        return $grammar->map(function ($expr, $i, $grammar) use ($optimization) {
+            return $optimization->apply($expr, OptimizationContext::of($grammar), true);
+        });
+    }
 }

@@ -27,7 +27,7 @@ use ju1ius\Pegasus\Grammar\OptimizationSequence;
  */
 abstract class Optimization
 {
-    protected $appliesToCache = [];
+    //protected $appliesToCache = [];
 
     /**
      * @param Optimization $other
@@ -69,12 +69,13 @@ abstract class Optimization
      */
     final public function appliesTo(Expression $expr, OptimizationContext $context)
     {
-        $key = sprintf('%s::%s', $expr->id, spl_object_hash($context));
-        if (!isset($this->appliesToCache[$key])) {
-            $this->appliesToCache[$key] = $this->doAppliesTo($expr, $context);
-        }
-
-        return $this->appliesToCache[$key];
+        return $this->doAppliesTo($expr, $context);
+        //$key = sprintf('%s::%s', $expr->id, spl_object_hash($context));
+        //if (!isset($this->appliesToCache[$key])) {
+        //    $this->appliesToCache[$key] = $this->doAppliesTo($expr, $context);
+        //}
+        //
+        //return $this->appliesToCache[$key];
     }
 
     /**
