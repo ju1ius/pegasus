@@ -31,7 +31,7 @@ class JoinPredicateOrNestedMatchTest extends OptimizationTestCase
     public function testApply(Grammar $input, Expression $expected)
     {
         $optim = new JoinPredicateOrNestedMatch();
-        $ctx = OptimizationContext::create($input);
+        $ctx = OptimizationContext::of($input);
 
         $result = $this->applyOptimization($optim, $input, $ctx);
         $this->assertExpressionEquals($expected, $result, 'In capturing context');
@@ -122,7 +122,7 @@ class JoinPredicateOrNestedMatchTest extends OptimizationTestCase
     {
         $optim = new JoinPredicateOrNestedMatch();
         $expr = $input->getStartExpression();
-        $ctx = OptimizationContext::create($input);
+        $ctx = OptimizationContext::of($input);
 
         $result = $optim->appliesTo($expr, $ctx);
         $this->assertSame($applies, $result, 'In capturing context');

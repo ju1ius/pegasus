@@ -33,7 +33,7 @@ class JoinMatchMatchingSequenceTest extends OptimizationTestCase
      */
     public function testApply(Grammar $input, Expression $expected)
     {
-        $ctx = OptimizationContext::create($input, OptimizationContext::TYPE_MATCHING);
+        $ctx = OptimizationContext::of($input, OptimizationContext::TYPE_MATCHING);
         $result = $this->applyOptimization(new JoinMatchMatchingSequence(), $input, $ctx);
         $this->assertExpressionEquals($expected, $result);
     }
@@ -108,7 +108,7 @@ class JoinMatchMatchingSequenceTest extends OptimizationTestCase
      */
     public function testAppliesTo(Grammar $input, $context, $applies)
     {
-        $ctx = OptimizationContext::create($input, $context);
+        $ctx = OptimizationContext::of($input, $context);
         $result = (new JoinMatchMatchingSequence)->appliesTo($input->getStartExpression(), $ctx);
         $this->assertSame($applies, $result);
     }

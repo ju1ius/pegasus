@@ -71,12 +71,12 @@ class Optimizer
     {
         $optimization = self::getOptimization($level);
 
-        $context = OptimizationContext::create($grammar);
+        $context = OptimizationContext::of($grammar);
         $grammar = $grammar->map(function ($expr) use ($optimization, $context) {
             return $optimization->apply($expr, $context, true);
         });
 
-        $context = OptimizationContext::create($grammar);
+        $context = OptimizationContext::of($grammar);
         return $grammar->filter(function ($expr, $name) use ($context) {
             return $context->isRelevantRule($name);
         });

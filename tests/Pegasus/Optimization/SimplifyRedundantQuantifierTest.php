@@ -33,7 +33,7 @@ class SimplifyRedundantQuantifierTest extends OptimizationTestCase
      */
     public function testApply(Grammar $grammar, Expression $expected)
     {
-        $ctx = OptimizationContext::create($grammar, OptimizationContext::TYPE_MATCHING);
+        $ctx = OptimizationContext::of($grammar, OptimizationContext::TYPE_MATCHING);
         $result = $this->applyOptimization(new SimplifyRedundantQuantifier(), $grammar, $ctx);
         $this->assertExpressionEquals($expected, $result);
         $this->assertEquals((string)$expected, (string)$result);

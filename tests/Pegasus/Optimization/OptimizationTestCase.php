@@ -14,7 +14,7 @@ class OptimizationTestCase extends PegasusTestCase
     protected function applyOptimization(Optimization $optim, $expr, OptimizationContext $ctx = null)
     {
         if ($expr instanceof Grammar) {
-            $ctx = $ctx ?: OptimizationContext::create($expr);
+            $ctx = $ctx ?: OptimizationContext::of($expr);
             $expr = $expr->getStartExpression();
         } elseif (!$ctx) {
             throw new \InvalidArgumentException(sprintf(

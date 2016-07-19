@@ -34,7 +34,7 @@ class JoinMatchChoiceTest extends OptimizationTestCase
     public function testApply(Grammar $input, Expression $expected)
     {
         $optim = new \ju1ius\Pegasus\Grammar\Optimization\JoinMatchChoice();
-        $ctx = OptimizationContext::create($input);
+        $ctx = OptimizationContext::of($input);
 
         $result = $this->applyOptimization($optim, $input, $ctx);
         $this->assertExpressionEquals($expected, $result, 'In capturing context');
@@ -89,7 +89,7 @@ class JoinMatchChoiceTest extends OptimizationTestCase
     {
         $optim = new \ju1ius\Pegasus\Grammar\Optimization\JoinMatchChoice();
         $expr = $input->getStartExpression();
-        $ctx = OptimizationContext::create($input);
+        $ctx = OptimizationContext::of($input);
 
         $result = $optim->appliesTo($expr, $ctx);
         $this->assertSame($applies, $result, 'In capturing context');

@@ -25,13 +25,6 @@ final class OptimizationContext
     const TYPE_CAPTURING = 2;
 
     /**
-     * Instance cache.
-     *
-     * @var OptimizationContext[]
-     */
-    private static $cache = [];
-
-    /**
      * @var Grammar
      */
     private $grammar;
@@ -63,16 +56,9 @@ final class OptimizationContext
      *
      * @return OptimizationContext
      */
-    public static function create(Grammar $grammar, $type = self::TYPE_CAPTURING)
+    public static function of(Grammar $grammar, $type = self::TYPE_CAPTURING)
     {
         return new self($grammar, $type);
-        $key = sprintf('%s::%s', spl_object_hash($grammar), $type);
-        if (!isset(self::$cache[$key])) {
-            $ctx = new self($grammar, $type);
-            self::$cache[$key] = $ctx;
-        }
-
-        return self::$cache[$key];
     }
 
     /**
@@ -82,7 +68,7 @@ final class OptimizationContext
      */
     public function matching()
     {
-        return self::create($this->grammar, self::TYPE_MATCHING);
+        return self::of($this->grammar, self::TYPE_MATCHING);
     }
 
     /**
@@ -92,7 +78,7 @@ final class OptimizationContext
      */
     public function capturing()
     {
-        return self::create($this->grammar, self::TYPE_CAPTURING);
+        return self::of($this->grammar, self::TYPE_CAPTURING);
     }
 
     /**

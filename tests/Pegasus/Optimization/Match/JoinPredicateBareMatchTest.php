@@ -34,7 +34,7 @@ class JoinPredicateBareMatchTest extends OptimizationTestCase
     public function testApply(Grammar $input, Expression $expected)
     {
         $optim = new JoinPredicateBareMatch();
-        $ctx = OptimizationContext::create($input);
+        $ctx = OptimizationContext::of($input);
 
         $result = $this->applyOptimization($optim, $input, $ctx);
         $this->assertExpressionEquals($expected, $result, 'In capturing context');
@@ -124,7 +124,7 @@ class JoinPredicateBareMatchTest extends OptimizationTestCase
     {
         $optim = new JoinPredicateBareMatch();
         $expr = $input->getStartExpression();
-        $ctx = OptimizationContext::create($input);
+        $ctx = OptimizationContext::of($input);
 
         $result = $optim->appliesTo($expr, $ctx);
         $this->assertSame($applies, $result, 'In capturing context');
