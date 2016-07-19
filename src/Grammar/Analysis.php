@@ -15,6 +15,7 @@ use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\Label;
 use ju1ius\Pegasus\Expression\OneOf;
 use ju1ius\Pegasus\Expression\Reference;
+use ju1ius\Pegasus\Expression\Super;
 use ju1ius\Pegasus\Grammar;
 
 /**
@@ -28,42 +29,11 @@ class Analysis
     protected $grammar;
 
     /**
-     * @var array
-     */
-    protected $references;
-
-    /**
-     * @var array
-     */
-    protected $leftReferences;
-
-    /**
-     * @var array
-     */
-    protected $directReferences;
-
-    /**
-     * @var array
-     */
-    protected $directLeftReferences;
-
-    /**
-     * Warning: The grammar must be unfolded before analysis !
-     *
      * @param Grammar $grammar
      */
     public function __construct(Grammar $grammar)
     {
-        if ($grammar->isFolded()) {
-            throw new \RuntimeException(
-                'A grammar cannot be analyzed in folded state. You must call Grammar::unfold() first.'
-            );
-        }
         $this->grammar = $grammar;
-        $this->references = [];
-        $this->leftReferences = [];
-        $this->directReferences = [];
-        $this->directLeftReferences = [];
     }
 
     /**
@@ -71,7 +41,7 @@ class Analysis
      *
      * @return bool
      */
-    public function needsScope($ruleName)
+    public function canModifyBindings($ruleName)
     {
         foreach ($this->grammar[$ruleName]->iterate() as $expr) {
             if ($expr instanceof Label) {
@@ -83,7 +53,7 @@ class Analysis
     }
 
     /**
-     * Returns wheter a rule is regular (non-recursive).
+     * Returns whether a rule is regular (non-recursive).
      *
      * @param string $ruleName The rule name to analyze.
      *
@@ -95,15 +65,18 @@ class Analysis
     }
 
     /**
-     * Returns wheter a rule is recursive (non-regular).
+     * Returns whether a rule is recursive
+     * (contains a reference to itself, directly, indirectly or via a super call).
      *
      * @param string $ruleName The rule name to analyze.
      *
      * @return bool
+     *
+     * @todo Check that the super call is actually recursive when called like super::another_rule
      */
     public function isRecursive($ruleName)
     {
-        return $this->isReferencedFrom($ruleName, $ruleName);
+        return $this->containsSuperCall($ruleName) || $this->isReferencedFrom($ruleName, $ruleName);
     }
 
     /**
@@ -133,7 +106,7 @@ class Analysis
     }
 
     /**
-     * Returns whetner referencer has references for referencee.
+     * Returns whether `referencer` references `referencee`, directly or indirectly.
      *
      * @param string $referencer The rule name to search in.
      * @param string $referencee The rule name to search for.
@@ -142,13 +115,17 @@ class Analysis
      */
     public function isReferencedFrom($referencer, $referencee)
     {
-        $refs = $this->getReferencesFrom($referencer);
+        foreach ($this->iterateReferences($referencer) as $name => $expr) {
+            if ($name === $referencee) {
+                return true;
+            }
+        }
 
-        return isset($refs[$referencee]);
+        return false;
     }
 
     /**
-     * Returns wheter $referencer has left references for $referencee.
+     * Returns whether `referencer` left-references `referencee`, directly or indirectly.
      *
      * @param string $referencer The rule name to search in.
      * @param string $referencee The rule name to search for.
@@ -157,9 +134,13 @@ class Analysis
      */
     public function isLeftReferencedFrom($referencer, $referencee)
     {
-        $refs = $this->getLeftReferencesFrom($referencer);
+        foreach ($this->iterateLeftReferences($referencer) as $name => $expr) {
+            if ($name === $referencee) {
+                return true;
+            }
+        }
 
-        return isset($refs[$referencee]);
+        return false;
     }
 
     /**
@@ -171,13 +152,9 @@ class Analysis
      */
     public function getReferencesFrom($ruleName)
     {
-        if (!isset($this->references[$ruleName])) {
-            $refs = [];
-            $this->traceReferences($ruleName, [$this, 'directReferences'], $refs);
-            $this->references[$ruleName] = $refs;
-        }
+        $refs = iterator_to_array($this->iterateReferences($ruleName));
 
-        return $this->references[$ruleName];
+        return array_keys($refs);
     }
 
     /**
@@ -189,27 +166,73 @@ class Analysis
      */
     public function getLeftReferencesFrom($ruleName)
     {
-        if (!isset($this->leftReferences[$ruleName])) {
-            $refs = [];
-            $this->traceReferences($ruleName, [$this, 'directLeftReferences'], $refs);
-            $this->leftReferences[$ruleName] = $refs;
-        }
+        $refs = iterator_to_array($this->iterateLeftReferences($ruleName));
 
-        return $this->leftReferences[$ruleName];
+        return array_keys($refs);
     }
 
     /**
-     * @param string   $ruleName
-     * @param callable $tracer
-     * @param array    &$refs
+     * Returns whether given rule contains a super call
+     *
+     * @param string $ruleName
+     *
+     * @return bool
      */
-    protected function traceReferences($ruleName, callable $tracer, &$refs)
+    protected function containsSuperCall($ruleName)
+    {
+        foreach ($this->grammar[$ruleName]->iterate() as $expr) {
+            if ($expr instanceof Super) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Yields all references in the grammar, starting from the given rule.
+     *
+     * @param string $ruleName The rule to traverse
+     * @param array  $visited  Set of already visited rules (recursion guard)
+     *
+     * @return \Generator
+     */
+    protected function iterateReferences($ruleName, array $visited = [])
     {
         $expr = $this->grammar[$ruleName];
-        foreach ($tracer($expr) as $ref) {
-            if (!isset($refs[$ref])) {
-                $refs[$ref] = $ref;
-                $this->traceReferences($ref, $tracer, $refs);
+        if (isset($visited[$expr->id])) {
+            return;
+        }
+        $visited[$expr->id] = true;
+
+        foreach ($this->iterateDirectReferences($expr) as $name => $expr) {
+            yield $name => $expr;
+            foreach ($this->iterateReferences($name, $visited) as $k => $v) {
+                yield $k => $v;
+            }
+        }
+    }
+
+    /**
+     * Yields all left-references in the grammar, starting from the given rule.
+     *
+     * @param string $ruleName The rule to traverse
+     * @param array  $visited  Set of already visited rules (recursion guard)
+     *
+     * @return \Generator
+     */
+    protected function iterateLeftReferences($ruleName, array $visited = [])
+    {
+        $expr = $this->grammar[$ruleName];
+        if (isset($visited[$expr->id])) {
+            return;
+        }
+        $visited[$expr->id] = true;
+
+        foreach ($this->iterateDirectLeftReferences($expr) as $name => $expr) {
+            yield $name => $expr;
+            foreach ($this->iterateLeftReferences($name, $visited) as $k => $v) {
+                yield $k => $v;
             }
         }
     }
@@ -220,15 +243,18 @@ class Analysis
      * @param Expression $expr
      *
      * @return \Generator
+     *
+     * @todo handle Super calls
      */
-    protected function directReferences(Expression $expr)
+    protected function iterateDirectReferences(Expression $expr)
     {
         if ($expr instanceof Reference) {
-            yield $expr->getIdentifier();
+            yield $expr->getIdentifier() => $expr;
         } elseif ($expr instanceof Composite) {
             foreach ($expr as $child) {
-                foreach ($this->directReferences($child) as $ref) {
-                    yield $ref;
+                // PLIZ I CAN HAZ yield from !!!
+                foreach ($this->iterateDirectReferences($child) as $name => $expr) {
+                    yield $name => $expr;
                 }
             }
         }
@@ -240,21 +266,24 @@ class Analysis
      * @param Expression $expr
      *
      * @return \Generator
+     *
+     * @todo handle Super calls
      */
-    protected function directLeftReferences(Expression $expr)
+    protected function iterateDirectLeftReferences(Expression $expr)
     {
         if ($expr instanceof Reference) {
-            yield $expr->getIdentifier();
+            yield $expr->getIdentifier() => $expr;
         } elseif ($expr instanceof OneOf) {
             foreach ($expr as $child) {
-                foreach ($this->directLeftReferences($child) as $ref) {
-                    yield $ref;
+                foreach ($this->iterateDirectLeftReferences($child) as $name => $expr) {
+                    yield $name => $expr;
                 }
             }
         } elseif ($expr instanceof Composite) {
-            foreach ($this->directLeftReferences($expr[0]) as $ref) {
-                yield $ref;
+            foreach ($this->iterateDirectLeftReferences($expr[0]) as $name => $expr) {
+                yield $name => $expr;
             }
         }
     }
+
 }

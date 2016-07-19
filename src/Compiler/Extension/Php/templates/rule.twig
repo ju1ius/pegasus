@@ -6,7 +6,7 @@
  */
 public function match_{{ expr.name }}()
 {
-{% if analysis.needsScope(expr.name) %}
+{% if analysis.canModifyBindings(expr.name) %}
     $scope = [];
 {% endif %}
     {{ render_expr(expr)|indent }}
