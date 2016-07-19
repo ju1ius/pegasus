@@ -13,7 +13,6 @@ namespace ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Parser\Parser;
 use ju1ius\Pegasus\Parser\Scope;
-use ju1ius\Pegasus\Utils\StringUtil;
 
 /**
  * An expression that matches what a regex does.
