@@ -16,6 +16,7 @@ use ju1ius\Pegasus\Expression\EOF;
 use ju1ius\Pegasus\Expression\Match;
 use ju1ius\Pegasus\Expression\Not;
 use ju1ius\Pegasus\Expression\Sequence;
+use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 
 /**
@@ -26,7 +27,7 @@ trait PredicateMatchSequenceJoinerTrait
     /**
      * @inheritDoc
      */
-    protected function doAppliesTo(Expression $expr, OptimizationContext $context)
+    public function willPostProcessExpression(Expression $expr, OptimizationContext $context)
     {
         return $expr instanceof Sequence && $this->someEligiblePairs($expr);
     }

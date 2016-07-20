@@ -7,7 +7,7 @@ use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Expression\OneOf;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Builder;
-use ju1ius\Pegasus\Grammar\Optimization\FlattenChoice;
+use ju1ius\Pegasus\Grammar\Optimization\Flattening\FlattenChoice;
 
 class FlattenChoiceTest extends OptimizationTestCase
 {

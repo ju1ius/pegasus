@@ -126,10 +126,10 @@ class JoinPredicateBareMatchTest extends OptimizationTestCase
         $expr = $input->getStartExpression();
         $ctx = OptimizationContext::of($input);
 
-        $result = $optim->appliesTo($expr, $ctx);
+        $result = $optim->willPostProcessExpression($expr, $ctx);
         $this->assertSame($applies, $result, 'In capturing context');
 
-        $result = $optim->appliesTo($expr, $ctx->matching());
+        $result = $optim->willPostProcessExpression($expr, $ctx->matching());
         $this->assertSame($applies, $result, 'In matching context');
     }
 

@@ -109,7 +109,8 @@ class JoinMatchMatchingSequenceTest extends OptimizationTestCase
     public function testAppliesTo(Grammar $input, $context, $applies)
     {
         $ctx = OptimizationContext::of($input, $context);
-        $result = (new JoinMatchMatchingSequence)->appliesTo($input->getStartExpression(), $ctx);
+        $result = (new JoinMatchMatchingSequence)
+            ->willPostProcessExpression($input->getStartExpression(), $ctx);
         $this->assertSame($applies, $result);
     }
 

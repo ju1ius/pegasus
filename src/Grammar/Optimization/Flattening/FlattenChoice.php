@@ -8,18 +8,19 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Grammar\Optimization;
+namespace ju1ius\Pegasus\Grammar\Optimization\Flattening;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\OneOf;
+use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization\Flattening\FlatteningOptimization;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 
 final class FlattenChoice extends FlatteningOptimization
 {
-    protected function doAppliesTo(Expression $expr, OptimizationContext $context)
+    public function willPostProcessExpression(Expression $expr, OptimizationContext $context)
     {
-        return $expr instanceof OneOf && parent::doAppliesTo($expr, $context);
+        return $expr instanceof OneOf && parent::willPostProcessExpression($expr, $context);
     }
 
     public function isEligibleChild(Expression $child)

@@ -7,29 +7,33 @@ use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
+use ju1ius\Pegasus\Grammar\OptimizationPass;
 use ju1ius\Pegasus\Tests\PegasusTestCase;
 
 class OptimizationTestCase extends PegasusTestCase
 {
-    protected function applyOptimization(Optimization $optim, $expr, OptimizationContext $ctx = null)
+    protected function applyOptimization($optim, $grammar, OptimizationContext $ctx = null)
     {
-        if ($expr instanceof Grammar) {
-            $ctx = $ctx ?: OptimizationContext::of($expr);
-            $expr = $expr->getStartExpression();
-        } elseif (!$ctx) {
-            throw new \InvalidArgumentException(sprintf(
-                'Missing OptimizationContext for expression `%s`',
-                $expr
-            ));
+        if ($grammar instanceof Expression) {
+            $rule = $grammar->getName() ?: 'start';
+            $grammar = Grammar::fromArray([$rule => $grammar]);
         }
+        $traverser = new OptimizationPass(true);
+        if (is_array($optim)) {
+            $traverser->add(...$optim);
+        } else {
+            $traverser->add($optim);
+        }
+        $grammar = $traverser->process($grammar, $ctx);
 
-        return $optim->apply($expr, $ctx, true);
+        return $grammar->getStartExpression();
     }
 
     protected function optimizeGrammar(Grammar $grammar, Optimization $optimization)
     {
-        return $grammar->map(function ($expr, $i, $grammar) use ($optimization) {
-            return $optimization->apply($expr, OptimizationContext::of($grammar), true);
-        });
+        $traverser = new OptimizationPass(true);
+        $traverser->add($optimization);
+
+        return $traverser->process($grammar);
     }
 }

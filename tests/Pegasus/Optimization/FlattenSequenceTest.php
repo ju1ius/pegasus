@@ -21,10 +21,10 @@ class FlattenSequenceTest extends OptimizationTestCase
      */
     public function testApply(Grammar $grammar, Expression $expected)
     {
-        $optim = new FlattenSequence(
+        $optim = [
             new FlattenMatchingSequence(),
             new FlattenCapturingSequence()
-        );
+        ];
         $result = $this->applyOptimization($optim, $grammar);
         $this->assertExpressionEquals($expected, $result);
         $this->assertEquals((string)$expected, (string)$result);

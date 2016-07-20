@@ -16,6 +16,7 @@ use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\EOF;
 use ju1ius\Pegasus\Expression\Match;
 use ju1ius\Pegasus\Expression\Not;
+use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization\CompositeReducerTrait;
 use ju1ius\Pegasus\Grammar\Optimization;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
@@ -31,7 +32,7 @@ abstract class PredicateMatchJoiningOptimization extends Optimization
     /**
      * @inheritdoc
      */
-    protected function doApply(Expression $expr, OptimizationContext $context)
+    public function postProcessExpression(Expression $expr, OptimizationContext $context)
     {
         $children = [];
         foreach ($expr as $child) {

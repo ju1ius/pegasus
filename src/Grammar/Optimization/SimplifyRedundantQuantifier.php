@@ -13,6 +13,7 @@ namespace ju1ius\Pegasus\Grammar\Optimization;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Quantifier;
 use ju1ius\Pegasus\Expression\ZeroOrMore;
+use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 
@@ -26,7 +27,7 @@ class SimplifyRedundantQuantifier extends Optimization
     /**
      * @inheritDoc
      */
-    protected function doAppliesTo(Expression $expr, OptimizationContext $context)
+    public function willPostProcessExpression(Expression $expr, OptimizationContext $context)
     {
         return $context->isMatching()
             && $this->isSimpleQuantifier($expr)
@@ -36,7 +37,7 @@ class SimplifyRedundantQuantifier extends Optimization
     /**
      * @inheritDoc
      */
-    protected function doApply(Expression $expr, OptimizationContext $context)
+    public function postProcessExpression(Expression $expr, OptimizationContext $context)
     {
         /** @var Quantifier $expr */
         /** @var Quantifier $child */

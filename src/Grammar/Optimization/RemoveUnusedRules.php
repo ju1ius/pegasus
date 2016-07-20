@@ -11,35 +11,32 @@
 namespace ju1ius\Pegasus\Grammar\Optimization;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Terminal;
-use ju1ius\Pegasus\Expression\Token;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 
 /**
- * A token wrapping a terminal expression is redundant.
+ * Removes rules that are not referenced from other rules.
+ *
+ * This should be done in a separate OptimizationPass, at the end of the optimization process.
  *
  * @author ju1ius <ju1ius@laposte.net>
  */
-class SimplifyTerminalToken extends Optimization
+class RemoveUnusedRules extends Optimization
 {
     /**
      * @inheritDoc
      */
-    public function postProcessExpression(Expression $expr, OptimizationContext $context)
+    public function willPostProcessRule(Grammar $grammar, Expression $expr, OptimizationContext $context)
     {
-        return $expr[0];
+        return !$context->isRelevantRule($expr->getName());
     }
 
     /**
      * @inheritDoc
      */
-    public function willPostProcessExpression(Expression $expr, OptimizationContext $context)
+    public function postProcessRule(Grammar $grammar, Expression $expr, OptimizationContext $context)
     {
-        return $expr instanceof Token && (
-            $expr[0] instanceof Terminal
-            || $expr[0] instanceof Token
-        );
+        return false;
     }
 }

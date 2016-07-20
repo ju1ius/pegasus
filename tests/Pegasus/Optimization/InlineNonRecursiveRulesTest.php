@@ -69,7 +69,7 @@ class InlineNonRecursiveRulesTest extends OptimizationTestCase
     public function testAppliesTo(Grammar $grammar, $rule, $expected)
     {
         $result = (new InlineNonRecursiveRules)
-            ->appliesTo($grammar[$rule], OptimizationContext::of($grammar));
+            ->willPreProcessExpression($grammar[$rule], OptimizationContext::of($grammar));
         $this->assertSame($expected, $result);
     }
 
@@ -125,6 +125,7 @@ class InlineNonRecursiveRulesTest extends OptimizationTestCase
             [
                 Builder::create()
                     ->rule('test')->sequence()
+                        ->ref('junk')
                         ->literal('foo')
                         ->ref('junk')
                     ->rule('junk')->skip()->zeroOrMore()->oneOf()
@@ -136,6 +137,10 @@ class InlineNonRecursiveRulesTest extends OptimizationTestCase
                     ->inline('comment', 'whitespace', 'junk'),
                 'test',
                 new Sequence([
+                    new Skip(new ZeroOrMore(new OneOf([
+                        new Match('\s+'),
+                        new Match('\#[^\n]*'),
+                    ]))),
                     new Literal('foo'),
                     new Skip(new ZeroOrMore(new OneOf([
                         new Match('\s+'),

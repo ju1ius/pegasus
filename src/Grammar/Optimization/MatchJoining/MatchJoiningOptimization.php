@@ -14,6 +14,7 @@ use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Expression\Match;
+use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization;
 use ju1ius\Pegasus\Grammar\Optimization\CompositeReducerTrait;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
@@ -29,7 +30,7 @@ abstract class MatchJoiningOptimization extends Optimization
     /**
      * @inheritDoc
      */
-    protected function doAppliesTo(Expression $expr, OptimizationContext $context)
+    public function willPostProcessExpression(Expression $expr, OptimizationContext $context)
     {
         return Iter::someConsecutive(function ($child) {
             return $this->isEligibleChild($child);
@@ -39,7 +40,7 @@ abstract class MatchJoiningOptimization extends Optimization
     /**
      * @inheritDoc
      */
-    protected function doApply(Expression $expr, OptimizationContext $context)
+    public function postProcessExpression(Expression $expr, OptimizationContext $context)
     {
         $newChildren = [];
         $matches = [];

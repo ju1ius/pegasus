@@ -14,6 +14,7 @@ namespace ju1ius\Pegasus\Grammar\Optimization\Flattening;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\NamedSequence;
 use ju1ius\Pegasus\Expression\Sequence;
+use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 
 /**
@@ -21,9 +22,9 @@ use ju1ius\Pegasus\Grammar\OptimizationContext;
  */
 final class FlattenMatchingSequence extends FlatteningOptimization
 {
-    public function doAppliesTo(Expression $expr, OptimizationContext $context)
+    public function willPostProcessExpression(Expression $expr, OptimizationContext $context)
     {
-        return parent::doAppliesTo($expr, $context) && (
+        return parent::willPostProcessExpression($expr, $context) && (
             $expr instanceof Sequence
             || $expr instanceof NamedSequence
         );

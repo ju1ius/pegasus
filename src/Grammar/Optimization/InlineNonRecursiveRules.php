@@ -12,6 +12,7 @@ namespace ju1ius\Pegasus\Grammar\Optimization;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Reference;
+use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 
@@ -28,7 +29,7 @@ class InlineNonRecursiveRules extends Optimization
     /**
      * @inheritDoc
      */
-    protected function doAppliesTo(Expression $expr, OptimizationContext $context)
+    public function willPreProcessExpression(Expression $expr, OptimizationContext $context)
     {
         return $expr instanceof Reference && $context->isInlineableRule($expr->getIdentifier());
     }
@@ -36,7 +37,7 @@ class InlineNonRecursiveRules extends Optimization
     /**
      * @inheritDoc
      */
-    protected function doApply(Expression $expr, OptimizationContext $context)
+    public function preProcessExpression(Expression $expr, OptimizationContext $context)
     {
         /** @var Reference $expr */
         $referenced = $context->getRule($expr->getIdentifier());

@@ -16,7 +16,7 @@ use ju1ius\Pegasus\Expression\OneOf;
 use ju1ius\Pegasus\Expression\Reference;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Builder;
-use ju1ius\Pegasus\Grammar\Optimization\JoinMatchChoice;
+use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinMatchChoice;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\Tests\Optimization\OptimizationTestCase;
 
@@ -33,7 +33,7 @@ class JoinMatchChoiceTest extends OptimizationTestCase
      */
     public function testApply(Grammar $input, Expression $expected)
     {
-        $optim = new \ju1ius\Pegasus\Grammar\Optimization\JoinMatchChoice();
+        $optim = new JoinMatchChoice();
         $ctx = OptimizationContext::of($input);
 
         $result = $this->applyOptimization($optim, $input, $ctx);
@@ -87,14 +87,14 @@ class JoinMatchChoiceTest extends OptimizationTestCase
      */
     public function testAppliesTo(Grammar $input, $applies)
     {
-        $optim = new \ju1ius\Pegasus\Grammar\Optimization\JoinMatchChoice();
+        $optim = new JoinMatchChoice();
         $expr = $input->getStartExpression();
         $ctx = OptimizationContext::of($input);
 
-        $result = $optim->appliesTo($expr, $ctx);
+        $result = $optim->willPostProcessExpression($expr, $ctx);
         $this->assertSame($applies, $result, 'In capturing context');
 
-        $result = $optim->appliesTo($expr, $ctx->matching());
+        $result = $optim->willPostProcessExpression($expr, $ctx->matching());
         $this->assertSame($applies, $result, 'In matching context');
     }
 

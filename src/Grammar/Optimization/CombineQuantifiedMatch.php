@@ -14,6 +14,7 @@ use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Match;
 use ju1ius\Pegasus\Expression\Quantifier;
 use ju1ius\Pegasus\Expression\RegExp;
+use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 
@@ -27,18 +28,17 @@ class CombineQuantifiedMatch extends Optimization
     /**
      * @inheritDoc
      */
-    protected function doAppliesTo(Expression $expr, OptimizationContext $context)
+    public function willPostProcessExpression(Expression $expr, OptimizationContext $context)
     {
         return $context->isMatching()
             && $expr instanceof Quantifier
-            && ($expr[0] instanceof Match
-                || $expr[0] instanceof RegExp);
+            && ($expr[0] instanceof Match || $expr[0] instanceof RegExp);
     }
 
     /**
      * @inheritDoc
      */
-    protected function doApply(Expression $expr, OptimizationContext $context)
+    public function postProcessExpression(Expression $expr, OptimizationContext $context)
     {
         /** @var Quantifier $expr */
         /** @var Match $match */

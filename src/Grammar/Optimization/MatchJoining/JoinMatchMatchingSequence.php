@@ -14,6 +14,7 @@ use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Expression\Match;
 use ju1ius\Pegasus\Expression\Sequence;
+use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\Utils\Iter;
@@ -30,7 +31,7 @@ final class JoinMatchMatchingSequence extends MatchJoiningOptimization
      *
      * @todo Should we handle NamedSequences too ?
      */
-    protected function doAppliesTo(Expression $expr, OptimizationContext $context)
+    public function willPostProcessExpression(Expression $expr, OptimizationContext $context)
     {
         return $context->isMatching()
             && $expr instanceof Sequence

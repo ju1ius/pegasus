@@ -294,19 +294,17 @@ final class MetaGrammar
         // whitespace
         // ------------------------------------------------------------------------------------------------------
         $builder
-            ->rule('_')->skip()->zeroOrMore()
-                ->oneOf()
-                    ->ref('ws')
-                    ->ref('comment')
+            ->rule('_')->skip()->zeroOrMore()->oneOf()
+                ->ref('ws')
+                ->ref('comment')
             ->rule('ws')
                 ->match('\s+')
             ->rule('comment')
                 ->match('\#[^\n]*')
-            ->getGrammar()
         ;
 
         $grammar = $builder->getGrammar();
-        $grammar->inline('IDENT', 'ws', 'comment');
+        $grammar->inline('IDENT', 'ws', 'comment', '_');
 
         return $grammar;
     }
