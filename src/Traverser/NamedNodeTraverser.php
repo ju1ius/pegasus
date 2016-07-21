@@ -37,6 +37,8 @@ class NamedNodeTraverser
 
     final public function traverse(Node $node)
     {
+        $this->rootNode = $node;
+
         if ($this->leaveVisitors === null) {
             $this->buildVisitors();
         }
@@ -49,6 +51,8 @@ class NamedNodeTraverser
 
         gc_enable();
 
+        $this->rootNode = null;
+
         return $result;
     }
 
@@ -57,7 +61,6 @@ class NamedNodeTraverser
      */
     protected function beforeTraverse(Node $node)
     {
-        $this->rootNode = $node;
     }
 
     /**
@@ -67,8 +70,6 @@ class NamedNodeTraverser
      */
     protected function afterTraverse($node)
     {
-        $this->rootNode = null;
-
         return $node;
     }
 
@@ -80,10 +81,6 @@ class NamedNodeTraverser
      */
     protected function leaveNode(Node $node, array $children)
     {
-        if ($node->isTransient) {
-            // skip transient nodes (shouldn't happen)
-            return null;
-        }
         if ($node->isTerminal) {
             if (isset($node['matches'])) {
                 return $node['matches'];
