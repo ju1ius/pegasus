@@ -296,7 +296,7 @@ class MetaGrammarTraverser extends NamedNodeTraverser
         return new BackReference($identifier);
     }
 
-    private function leave_super(Node $node, $identifier)
+    private function leave_super_call(Node $node, $identifier = null)
     {
         return new Super($identifier ?: $this->currentRule);
     }
