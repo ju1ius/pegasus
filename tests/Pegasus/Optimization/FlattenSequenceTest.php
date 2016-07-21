@@ -6,7 +6,7 @@ use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Expression\Sequence;
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Grammar\Builder;
+use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Grammar\Optimization\Flattening\FlattenCapturingSequence;
 use ju1ius\Pegasus\Grammar\Optimization\Flattening\FlattenMatchingSequence;
 use ju1ius\Pegasus\Grammar\Optimization\FlattenSequence;
@@ -34,7 +34,7 @@ class FlattenSequenceTest extends OptimizationTestCase
         return [
             // (("foo" "bar") "baz") "w00t" => "foo" "bar" "baz" "w00t"
             '(("foo" "bar") "baz") "qux" => "foo" "bar" "baz" "qux"' => [
-                Builder::create()->rule('test')->seq()
+                GrammarBuilder::create()->rule('test')->seq()
                     ->seq()
                         ->seq()
                             ->literal('foo')
@@ -52,7 +52,7 @@ class FlattenSequenceTest extends OptimizationTestCase
                 ], 'test')
             ],
             '"foo" ("bar" ("baz" "qux")) => "foo" "bar" "baz" "qux"' => [
-                Builder::create()->rule('test')->seq()
+                GrammarBuilder::create()->rule('test')->seq()
                     ->literal('foo')
                     ->seq()
                         ->literal('bar')

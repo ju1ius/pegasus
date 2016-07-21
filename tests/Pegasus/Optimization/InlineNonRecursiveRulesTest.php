@@ -19,7 +19,7 @@ use ju1ius\Pegasus\Expression\Sequence;
 use ju1ius\Pegasus\Expression\Skip;
 use ju1ius\Pegasus\Expression\ZeroOrMore;
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Grammar\Builder;
+use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Grammar\Optimization\InlineNonRecursiveRules;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 
@@ -48,7 +48,7 @@ class InlineNonRecursiveRulesTest extends OptimizationTestCase
     {
         return [
             [
-                Builder::create()
+                GrammarBuilder::create()
                     ->rule('a')->ref('b')
                     ->rule('b')->literal('b')
                     ->getGrammar()
@@ -77,7 +77,7 @@ class InlineNonRecursiveRulesTest extends OptimizationTestCase
     {
         return [
             'Reference to a non-recursive rule' => [
-                Builder::create()
+                GrammarBuilder::create()
                     ->rule('a')->ref('b')
                     ->rule('b')->literal('b')
                     ->getGrammar()
@@ -86,7 +86,7 @@ class InlineNonRecursiveRulesTest extends OptimizationTestCase
                 true
             ],
             'Reference to a non-recursive rule, not explicitly inlined' => [
-                Builder::create()
+                GrammarBuilder::create()
                     ->rule('a')->ref('b')
                     ->rule('b')->literal('b')
                     ->getGrammar(),
@@ -94,7 +94,7 @@ class InlineNonRecursiveRulesTest extends OptimizationTestCase
                 false
             ],
             'Not a reference' => [
-                Builder::create()
+                GrammarBuilder::create()
                     ->rule('a')->literal('b')
                     ->rule('b')->literal('b')
                     ->getGrammar()
@@ -123,7 +123,7 @@ class InlineNonRecursiveRulesTest extends OptimizationTestCase
     {
         return [
             [
-                Builder::create()
+                GrammarBuilder::create()
                     ->rule('test')->sequence()
                         ->ref('junk')
                         ->literal('foo')

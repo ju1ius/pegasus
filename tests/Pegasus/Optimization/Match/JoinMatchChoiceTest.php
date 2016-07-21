@@ -15,7 +15,7 @@ use ju1ius\Pegasus\Expression\Match;
 use ju1ius\Pegasus\Expression\OneOf;
 use ju1ius\Pegasus\Expression\Reference;
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Grammar\Builder;
+use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinMatchChoice;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\Tests\Optimization\OptimizationTestCase;
@@ -47,7 +47,7 @@ class JoinMatchChoiceTest extends OptimizationTestCase
     {
         return [
             'Choice of matches only' => [
-                Builder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->match('a')
                     ->match('b')
                     ->match('c')
@@ -55,7 +55,7 @@ class JoinMatchChoiceTest extends OptimizationTestCase
                 new Match('a|b|c', [], 'test')
             ],
             'Choice of matches before something else' => [
-                Builder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->match('a')
                     ->match('b')
                     ->ref('c')
@@ -66,7 +66,7 @@ class JoinMatchChoiceTest extends OptimizationTestCase
                 ], 'test')
             ],
             'Choice of matches after something else' => [
-                Builder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->ref('a')
                     ->match('b')
                     ->match('c')
@@ -102,7 +102,7 @@ class JoinMatchChoiceTest extends OptimizationTestCase
     {
         return [
             'Choice of matches only' => [
-                Builder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->match('a')
                     ->match('b')
                     ->match('c')
@@ -110,7 +110,7 @@ class JoinMatchChoiceTest extends OptimizationTestCase
                 true
             ],
             'Choice of matches before something else' => [
-                Builder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->match('a')
                     ->match('b')
                     ->ref('c')
@@ -118,7 +118,7 @@ class JoinMatchChoiceTest extends OptimizationTestCase
                 true
             ],
             'Choice of matches after something else' => [
-                Builder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->ref('a')
                     ->match('b')
                     ->match('c')
@@ -126,7 +126,7 @@ class JoinMatchChoiceTest extends OptimizationTestCase
                 true
             ],
             'Choice with only one match' => [
-                Builder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->ref('a')
                     ->match('b')
                     ->ref('c')
@@ -134,7 +134,7 @@ class JoinMatchChoiceTest extends OptimizationTestCase
                 false
             ],
             'Choice with non-consecutive matches' => [
-                Builder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->match('a')
                     ->ref('b')
                     ->match('c')
@@ -142,7 +142,7 @@ class JoinMatchChoiceTest extends OptimizationTestCase
                 false
             ],
             'Not a choice' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->match('a')
                     ->match('b')
                     ->match('c')

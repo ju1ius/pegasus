@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Grammar;
+namespace ju1ius\Pegasus;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Assert;

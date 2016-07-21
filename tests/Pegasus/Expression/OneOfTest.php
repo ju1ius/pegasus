@@ -4,6 +4,7 @@ namespace ju1ius\Pegasus\Tests\Expression;
 
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Expression\OneOf;
+use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Node\Decorator;
 use ju1ius\Pegasus\Node\Terminal;
@@ -14,26 +15,33 @@ class OneOfTest extends ExpressionTestCase
     /**
      * @dataProvider getMatchProvider
      */
-    public function testMatch($children, $match_args, $expected)
+    public function testMatch($expr, $args, $expected)
     {
-        $expr = new OneOf($children, 'choice');
-        $this->assertNodeEquals(
-            $expected,
-            $this->parse($expr, ...$match_args)
-        );
+        $result = $this->parse($expr, ...$args);
+        if ($expected instanceof Node) {
+            $this->assertNodeEquals($expected, $result);
+        } else {
+            $this->assertSame($expected, $result);
+        }
     }
     public function getMatchProvider()
     {
         return [
-            [
-                [new Literal('bar'), new Literal('foo')],
+            'Returns the first matching result' => [
+                GrammarBuilder::create()->rule('test')->oneOf()
+                    ->literal('bar')
+                    ->literal('foo')
+                    ->getGrammar(),
                 ['foobar'],
-                new Decorator('choice', 0, 3, new Terminal('', 0, 3, 'foo'))
+                new Decorator('test', 0, 3, new Terminal('', 0, 3, 'foo'))
             ],
-            'must return the first matched expression' => [
-                [new Literal('foo', 'FOO'), new Literal('foo', 'FOO2')],
-                ['foobar'],
-                new Decorator('choice', 0, 3, new Terminal('FOO', 0, 3, 'foo'))
+            'With no capturing expressions' => [
+                GrammarBuilder::create()->rule('test')->oneOf()
+                    ->skip()->literal('foo')
+                    ->skip()->literal('bar')
+                    ->getGrammar(),
+                ['bar'],
+                true
             ],
         ];
     }

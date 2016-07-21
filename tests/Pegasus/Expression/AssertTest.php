@@ -5,7 +5,7 @@ namespace ju1ius\Pegasus\Tests\Expression;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Assert;
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Grammar\Builder;
+use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
@@ -36,14 +36,14 @@ class AssertTest extends ExpressionTestCase
     {
         return [
             [
-                Builder::create()->rule('assert')
+                GrammarBuilder::create()->rule('assert')
                     ->assert()->literal('foobar')
                     ->getGrammar(),
                 ['foobar'],
                 true,
             ],
             [
-                Builder::create()->rule('assert')
+                GrammarBuilder::create()->rule('assert')
                     ->assert()->literal('bar')
                     ->getGrammar(),
                 ['foobar', 3],
@@ -68,7 +68,7 @@ class AssertTest extends ExpressionTestCase
     {
         return [
             [
-                Builder::create()->rule('assert')
+                GrammarBuilder::create()->rule('assert')
                     ->assert()->literal('foo')
                     ->getGrammar(),
                 ['barbaz'],

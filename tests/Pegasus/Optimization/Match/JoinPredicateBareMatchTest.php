@@ -15,7 +15,7 @@ use ju1ius\Pegasus\Expression\Match;
 use ju1ius\Pegasus\Expression\Reference;
 use ju1ius\Pegasus\Expression\Sequence;
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Grammar\Builder;
+use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinPredicateBareMatch;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\Tests\Optimization\OptimizationTestCase;
@@ -47,7 +47,7 @@ class JoinPredicateBareMatchTest extends OptimizationTestCase
     {
         return [
             'Sequence with a Match before an Assert of a Match' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
                     ->match('b')
                     ->assert()->match('c')
@@ -60,7 +60,7 @@ class JoinPredicateBareMatchTest extends OptimizationTestCase
                 ], 'test')
             ],
             'Sequence with a Match before a Not of a Match' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
                     ->match('b')
                     ->not()->match('c')
@@ -73,7 +73,7 @@ class JoinPredicateBareMatchTest extends OptimizationTestCase
                 ], 'test')
             ],
             'Sequence with a Match before EOF' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
                     ->match('b')
                     ->eof()
@@ -86,7 +86,7 @@ class JoinPredicateBareMatchTest extends OptimizationTestCase
                 ], 'test')
             ],
             'Sequence with a Match after an Assert of a Match' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
                     ->assert()->match('b')
                     ->match('c')
@@ -99,7 +99,7 @@ class JoinPredicateBareMatchTest extends OptimizationTestCase
                 ], 'test')
             ],
             'Sequence with a Match after a Not of a Match' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
                     ->not()->match('b')
                     ->match('c')
@@ -137,7 +137,7 @@ class JoinPredicateBareMatchTest extends OptimizationTestCase
     {
         return [
             'Sequence with a Match before an Assert of a Match' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
                     ->match('b')
                     ->assert()->match('c')
@@ -146,7 +146,7 @@ class JoinPredicateBareMatchTest extends OptimizationTestCase
                 true
             ],
             'Sequence with a Match before a Not of a Match' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
                     ->match('b')
                     ->not()->match('c')
@@ -155,7 +155,7 @@ class JoinPredicateBareMatchTest extends OptimizationTestCase
                 true
             ],
             'Sequence with a Match before EOF' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
                     ->match('b')
                     ->eof()
@@ -164,7 +164,7 @@ class JoinPredicateBareMatchTest extends OptimizationTestCase
                 true
             ],
             'Sequence with a Match before an Assert of something else' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
                     ->match('b')
                     ->assert()->ref('c')
@@ -173,7 +173,7 @@ class JoinPredicateBareMatchTest extends OptimizationTestCase
                 false
             ],
             'Sequence with a Match before a Not of something else' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
                     ->match('b')
                     ->not()->ref('c')
@@ -182,7 +182,7 @@ class JoinPredicateBareMatchTest extends OptimizationTestCase
                 false
             ],
             'Sequence with a Match after an Assert of a Match' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
                     ->assert()->match('b')
                     ->match('c')
@@ -191,7 +191,7 @@ class JoinPredicateBareMatchTest extends OptimizationTestCase
                 true
             ],
             'Sequence with a Match after a Not of a Match' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
                     ->not()->match('b')
                     ->match('c')
@@ -200,7 +200,7 @@ class JoinPredicateBareMatchTest extends OptimizationTestCase
                 true
             ],
             'Sequence with a Match after an Assert of something else' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
                     ->assert()->ref('b')
                     ->match('c')
@@ -209,7 +209,7 @@ class JoinPredicateBareMatchTest extends OptimizationTestCase
                 false
             ],
             'Sequence with a Match after a Not of something else' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
                     ->not()->ref('b')
                     ->match('c')
@@ -218,7 +218,7 @@ class JoinPredicateBareMatchTest extends OptimizationTestCase
                 false
             ],
             'Sequence with a Match after a EOF' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
                     ->eof()
                     ->match('c')
@@ -227,7 +227,7 @@ class JoinPredicateBareMatchTest extends OptimizationTestCase
                 true
             ],
             'Sequence with non-consecutive match & predicate' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
                     ->match('b')
                     ->ref('c')

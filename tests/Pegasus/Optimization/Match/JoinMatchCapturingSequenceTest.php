@@ -17,7 +17,7 @@ use ju1ius\Pegasus\Expression\Reference;
 use ju1ius\Pegasus\Expression\Sequence;
 use ju1ius\Pegasus\Expression\Skip;
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Grammar\Builder;
+use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinMatchCapturingSequence;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\Tests\Optimization\OptimizationTestCase;
@@ -43,7 +43,7 @@ class JoinMatchCapturingSequenceTest extends OptimizationTestCase
     {
         return [
             'A ssequence of only skipping matches' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->skip()->match('a')
                     ->skip()->literal('b')
                     ->skip()->match('c')
@@ -51,7 +51,7 @@ class JoinMatchCapturingSequenceTest extends OptimizationTestCase
                 new Skip(new Match('(?>a)(?>b)(?>c)'), 'test')
             ],
             'A sequence of skipping matches before something else' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->skip()->match('a')
                     ->skip()->literal('b')
                     ->ref('c')
@@ -62,7 +62,7 @@ class JoinMatchCapturingSequenceTest extends OptimizationTestCase
                 ], 'test')
             ],
             'A sequence of skipping matches after something else' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
                     ->skip()->literal('b')
                     ->skip()->match('c')
@@ -73,7 +73,7 @@ class JoinMatchCapturingSequenceTest extends OptimizationTestCase
                 ], 'test')
             ],
             'A sequence of only matches' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->match('a')
                     ->literal('b')
                     ->match('c')
@@ -121,7 +121,7 @@ class JoinMatchCapturingSequenceTest extends OptimizationTestCase
     {
         return [
             'Sequence of matches before something non-capturing' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->match('a')
                     ->literal('b')
                     ->skip()->ref('c')
@@ -129,7 +129,7 @@ class JoinMatchCapturingSequenceTest extends OptimizationTestCase
                 true
             ],
             'Sequence of matches before something capturing' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->literal('a')
                     ->match('b')
                     ->ref('c')
@@ -137,7 +137,7 @@ class JoinMatchCapturingSequenceTest extends OptimizationTestCase
                 false
             ],
             'Sequence of matches after something non-capturing' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->skip()->ref('a')
                     ->match('b')
                     ->literal('c')
@@ -145,7 +145,7 @@ class JoinMatchCapturingSequenceTest extends OptimizationTestCase
                 true
             ],
             'Sequence of matches after something capturing' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
                     ->match('b')
                     ->match('c')
@@ -153,7 +153,7 @@ class JoinMatchCapturingSequenceTest extends OptimizationTestCase
                 false
             ],
             'Sequence of skipping matches before something else' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->skip()->match('a')
                     ->skip()->match('b')
                     ->ref('c')
@@ -161,7 +161,7 @@ class JoinMatchCapturingSequenceTest extends OptimizationTestCase
                 true
             ],
             'Sequence of skipping matches after something else' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
                     ->skip()->match('b')
                     ->skip()->match('c')
@@ -229,7 +229,7 @@ class JoinMatchCapturingSequenceTest extends OptimizationTestCase
                 false
             ],
             'Sequence with only one match' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
                     ->skip()->match('b')
                     ->ref('c')
@@ -237,7 +237,7 @@ class JoinMatchCapturingSequenceTest extends OptimizationTestCase
                 false
             ],
             'Sequence of non-consecutive matches' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->skip()->match('a')
                     ->ref('b')
                     ->skip()->match('c')
@@ -245,7 +245,7 @@ class JoinMatchCapturingSequenceTest extends OptimizationTestCase
                 false
             ],
             'A non-sequence' => [
-                Builder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->skip()->match('a')
                     ->skip()->match('b')
                     ->skip()->match('c')

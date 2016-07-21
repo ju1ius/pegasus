@@ -6,7 +6,7 @@ use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Literal;
 use ju1ius\Pegasus\Expression\OneOf;
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Grammar\Builder;
+use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Grammar\Optimization\Flattening\FlattenChoice;
 
 class FlattenChoiceTest extends OptimizationTestCase
@@ -28,7 +28,7 @@ class FlattenChoiceTest extends OptimizationTestCase
     {
         return [
             '(("foo" | "bar") | "baz") | "qux" => "foo" | "bar" | "baz" | "qux"' => [
-                Builder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->oneOf()
                         ->oneOf()
                             ->literal('foo')
@@ -46,7 +46,7 @@ class FlattenChoiceTest extends OptimizationTestCase
                 ], 'test')
             ],
             '"foo" | ("bar" | ("baz" | "qux")) => "foo" | "bar" | "baz" | "qux"' => [
-                Builder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->literal('foo')
                     ->oneOf()
                         ->literal('bar')

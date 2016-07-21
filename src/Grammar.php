@@ -11,7 +11,6 @@
 namespace ju1ius\Pegasus;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Grammar\Builder;
 use ju1ius\Pegasus\Grammar\Exception\AnonymousTopLevelExpression;
 use ju1ius\Pegasus\Grammar\Exception\MissingStartRule;
 use ju1ius\Pegasus\Grammar\Exception\RuleNotFound;

@@ -10,14 +10,14 @@ use ju1ius\Pegasus\Expression\Sequence;
 use ju1ius\Pegasus\Expression\Skip;
 use ju1ius\Pegasus\Expression\Super;
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Grammar\Builder;
+use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Tests\PegasusTestCase;
 
 class BuilderTest extends PegasusTestCase
 {
     public function testCreate()
     {
-        $grammar = Builder::create('foo')->getGrammar();
+        $grammar = \ju1ius\Pegasus\GrammarBuilder::create('foo')->getGrammar();
         $this->assertInstanceOf(Grammar::class, $grammar);
         $this->assertSame('foo', $grammar->getName());
     }
@@ -25,24 +25,24 @@ class BuilderTest extends PegasusTestCase
     public function testOf()
     {
         $grammar = new Grammar();
-        $this->assertSame($grammar, Builder::of($grammar)->getGrammar());
+        $this->assertSame($grammar, \ju1ius\Pegasus\GrammarBuilder::of($grammar)->getGrammar());
     }
 
     public function testSuperWithIdentifier()
     {
-        $grammar = Builder::create()->rule('test')->super('foo')->getGrammar();
+        $grammar = \ju1ius\Pegasus\GrammarBuilder::create()->rule('test')->super('foo')->getGrammar();
         $this->assertExpressionEquals(new Super('foo', 'test'), $grammar['test']);
     }
 
     public function testSuperWithoutIdentifier()
     {
-        $grammar = Builder::create()->rule('test')->super()->getGrammar();
+        $grammar = \ju1ius\Pegasus\GrammarBuilder::create()->rule('test')->super()->getGrammar();
         $this->assertExpressionEquals(new Super('test', 'test'), $grammar['test']);
     }
 
     public function testItCanAddSeveralRules()
     {
-        $result = Builder::create()
+        $result = \ju1ius\Pegasus\GrammarBuilder::create()
             ->rule('foo')->literal('foo')
             ->rule('bar')->literal('bar')
             ->getGrammar();
@@ -69,7 +69,7 @@ class BuilderTest extends PegasusTestCase
     {
         return [
             'Sequence with nested decorators' => [
-                Builder::create()->rule('test')->sequence()
+                \ju1ius\Pegasus\GrammarBuilder::create()->rule('test')->sequence()
                     ->skip()->label('a')->oneOrMore()->literal('foo')
                     ->literal('bar')
                     ->getGrammar(),

@@ -12,7 +12,7 @@ namespace ju1ius\Pegasus\Tests\Grammar;
 
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Analysis;
-use ju1ius\Pegasus\Grammar\Builder;
+use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Tests\PegasusTestCase;
 
 /**
@@ -36,14 +36,14 @@ class AnalysisTest extends PegasusTestCase
     {
         return [
             'No label' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->literal('foo')
                     ->literal('bar')
                     ->getGrammar(),
                 false
             ],
             'Top-level label' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->label('foo')->literal('foo')
                     ->skip()->match('\s*')
                     ->backReference('foo')
@@ -51,7 +51,7 @@ class AnalysisTest extends PegasusTestCase
                 true
             ],
             'Skipped label' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->skip()->label('foo')->literal('foo')
                     ->backReference('foo')
                     ->getGrammar(),
@@ -78,7 +78,7 @@ class AnalysisTest extends PegasusTestCase
     {
         return [
             'Directly recursive rule' => [
-                Builder::create()->rule('a')->sequence()
+                \ju1ius\Pegasus\GrammarBuilder::create()->rule('a')->sequence()
                     ->literal('a')
                     ->ref('a')
                     ->getGrammar(),
@@ -86,7 +86,7 @@ class AnalysisTest extends PegasusTestCase
                 true
             ],
             'Indirectly recursive rule' => [
-                Builder::create()
+                GrammarBuilder::create()
                     ->rule('a')->sequence()
                         ->literal('a')
                         ->ref('b')
@@ -101,7 +101,7 @@ class AnalysisTest extends PegasusTestCase
                 true
             ],
             'Non-recursive rule' => [
-                Builder::create()
+                GrammarBuilder::create()
                     ->rule('a')->sequence()
                         ->literal('a')
                         ->ref('b')
@@ -116,7 +116,7 @@ class AnalysisTest extends PegasusTestCase
                 false
             ],
             'A rule with a super call' => [
-                Builder::create()->rule('a')->sequence()
+                GrammarBuilder::create()->rule('a')->sequence()
                     ->literal('a')
                     ->super('a')
                     ->getGrammar(),
@@ -143,7 +143,7 @@ class AnalysisTest extends PegasusTestCase
     {
         return [
             'Directly left-recursive rule' => [
-                Builder::create()->rule('a')->oneOf()
+                GrammarBuilder::create()->rule('a')->oneOf()
                     ->ref('a')
                     ->literal('a')
                     ->getGrammar(),
@@ -151,7 +151,7 @@ class AnalysisTest extends PegasusTestCase
                 true
             ],
             'Indirectly left-recursive rule' => [
-                Builder::create()
+                GrammarBuilder::create()
                     ->rule('a')->ref('b')
                     ->rule('b')->ref('c')
                     ->rule('c')->ref('a')
@@ -160,7 +160,7 @@ class AnalysisTest extends PegasusTestCase
                 true
             ],
             'Non-recursive rule' => [
-                Builder::create()
+                GrammarBuilder::create()
                     ->rule('a')->ref('b')
                     ->rule('b')->ref('c')
                     ->rule('c')->ref('b')
@@ -169,7 +169,7 @@ class AnalysisTest extends PegasusTestCase
                 false
             ],
             'Recursive but not left-recursive rule' => [
-                Builder::create()->rule('a')->sequence()
+                GrammarBuilder::create()->rule('a')->sequence()
                     ->literal('a')
                     ->ref('a')
                     ->getGrammar(),
@@ -181,7 +181,7 @@ class AnalysisTest extends PegasusTestCase
 
     public function testIsReferenced()
     {
-        $grammar = Builder::create()
+        $grammar = GrammarBuilder::create()
             ->rule('foobarbaz')->oneOf()
                 ->ref('foobarbaz')
                 ->ref('foobar')
@@ -202,7 +202,7 @@ class AnalysisTest extends PegasusTestCase
 
     public function testGetReferencesFrom()
     {
-        $grammar = Builder::create()
+        $grammar = GrammarBuilder::create()
             ->rule('foobarbaz')->oneOf()
                 ->ref('foobarbaz')
                 ->ref('foobar')
@@ -227,7 +227,7 @@ class AnalysisTest extends PegasusTestCase
 
     public function testGetLeftReferencesFrom()
     {
-        $grammar = Builder::create()
+        $grammar = GrammarBuilder::create()
             ->rule('xs')->oneOf()
                 ->sequence()
                     ->ref('xs')

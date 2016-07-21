@@ -8,18 +8,19 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Grammar;
+namespace ju1ius\Pegasus;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Match;
 use ju1ius\Pegasus\Grammar;
+use ju1ius\Pegasus\ExpressionBuilder;
 
 /**
  * This class provides a fluent interface for building grammars.
  *
  * @author ju1ius <ju1ius@laposte.net>
  */
-class Builder extends ExpressionBuilder
+class GrammarBuilder extends ExpressionBuilder
 {
     /**
      * Current rule name.
@@ -34,7 +35,7 @@ class Builder extends ExpressionBuilder
     protected $grammar;
 
     /**
-     * Builder constructor.
+     * GrammarBuilder constructor.
      *
      * @param Grammar $grammar
      */
@@ -47,7 +48,7 @@ class Builder extends ExpressionBuilder
     /**
      * @param string $name
      *
-     * @return Builder
+     * @return GrammarBuilder
      */
     public static function create($name = '')
     {
@@ -62,7 +63,7 @@ class Builder extends ExpressionBuilder
     /**
      * @param Grammar $grammar
      *
-     * @return Builder
+     * @return GrammarBuilder
      */
     public static function of(Grammar $grammar)
     {

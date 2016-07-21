@@ -15,7 +15,7 @@ use ju1ius\Pegasus\Expression\Match;
 use ju1ius\Pegasus\Expression\Reference;
 use ju1ius\Pegasus\Expression\Sequence;
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Grammar\Builder;
+use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinMatchMatchingSequence;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\Tests\Optimization\OptimizationTestCase;
@@ -42,7 +42,7 @@ class JoinMatchMatchingSequenceTest extends OptimizationTestCase
     {
         return [
             'Joins a sequence of only matches' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->match('a')
                     ->match('b')
                     ->match('c')
@@ -50,7 +50,7 @@ class JoinMatchMatchingSequenceTest extends OptimizationTestCase
                 new Match('(?>a)(?>b)(?>c)', [], 'test')
             ],
             'Joins a sequence of only matches with flags' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->match('a', ['i'])
                     ->match('b', ['um'])
                     ->match('c')
@@ -58,7 +58,7 @@ class JoinMatchMatchingSequenceTest extends OptimizationTestCase
                 new Match('(?>(?i)a)(?>(?um)b)(?>c)', [], 'test')
             ],
             'Joins a sequence of literals' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->literal('a/b')
                     ->literal('c?')
                     ->literal('{d}')
@@ -66,7 +66,7 @@ class JoinMatchMatchingSequenceTest extends OptimizationTestCase
                 new Match('(?>a\/b)(?>c\?)(?>\{d\})', [], 'test')
             ],
             'Joins a sequence of literals or matches' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->literal('foo/bar')
                     ->match('c+|d')
                     ->literal('baz')
@@ -74,7 +74,7 @@ class JoinMatchMatchingSequenceTest extends OptimizationTestCase
                 new Match('(?>foo\/bar)(?>c+|d)(?>baz)', [], 'test')
             ],
             'Joins consecutive matches before something else' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->match('a', ['i'])
                     ->match('b')
                     ->ref('c')
@@ -85,7 +85,7 @@ class JoinMatchMatchingSequenceTest extends OptimizationTestCase
                 ], 'test')
             ],
             'Joins consecutive matches after something else' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('c')
                     ->match('a', ['i'])
                     ->match('b')
@@ -118,7 +118,7 @@ class JoinMatchMatchingSequenceTest extends OptimizationTestCase
     {
         return [
             'A sequence of matches in a matching context' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->match('a')
                     ->literal('b')
                     ->match('c')
@@ -127,7 +127,7 @@ class JoinMatchMatchingSequenceTest extends OptimizationTestCase
                 true
             ],
             'A sequence of matches in a capturing context' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->match('a')
                     ->literal('b')
                     ->match('c')
@@ -136,7 +136,7 @@ class JoinMatchMatchingSequenceTest extends OptimizationTestCase
                 false
             ],
             'Consecutive matches before something else' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->match('a', ['i'])
                     ->match('b')
                     ->ref('c')
@@ -145,7 +145,7 @@ class JoinMatchMatchingSequenceTest extends OptimizationTestCase
                 true
             ],
             'Consecutive matches after something else' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('c')
                     ->match('a', ['i'])
                     ->match('b')
@@ -154,7 +154,7 @@ class JoinMatchMatchingSequenceTest extends OptimizationTestCase
                 true
             ],
             'A sequence with only one match' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
                     ->match('b')
                     ->ref('c')
@@ -163,7 +163,7 @@ class JoinMatchMatchingSequenceTest extends OptimizationTestCase
                 false
             ],
             'Non-consecutive matches' => [
-                Builder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->match('a')
                     ->ref('b')
                     ->match('c')
@@ -172,7 +172,7 @@ class JoinMatchMatchingSequenceTest extends OptimizationTestCase
                 false
             ],
             'A non sequence' => [
-                Builder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->match('a')
                     ->match('b')
                     ->match('c')

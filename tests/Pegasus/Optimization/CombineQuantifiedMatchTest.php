@@ -13,8 +13,8 @@ namespace ju1ius\Pegasus\Tests\Optimization;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Match;
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Grammar\Builder as GrammarBuilder;
-use ju1ius\Pegasus\Grammar\ExpressionBuilder;
+use ju1ius\Pegasus\GrammarBuilder as GrammarBuilder;
+use ju1ius\Pegasus\ExpressionBuilder;
 use ju1ius\Pegasus\Grammar\Optimization\CombineQuantifiedMatch;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 

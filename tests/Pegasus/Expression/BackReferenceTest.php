@@ -2,7 +2,7 @@
 
 namespace ju1ius\Pegasus\Tests\Expression;
 
-use ju1ius\Pegasus\Grammar\Builder;
+use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Node\Composite;
 use ju1ius\Pegasus\Node\Terminal;
@@ -31,7 +31,7 @@ class BackReferenceTest extends ExpressionTestCase
     {
         return [
             [
-                Builder::create()
+                GrammarBuilder::create()
                     ->rule('start')->seq()
                         ->label('a')->literal('foo')
                         ->literal('bar')
@@ -63,7 +63,7 @@ class BackReferenceTest extends ExpressionTestCase
     {
         return [
             'reference in another rule' => [
-                Builder::create()
+                GrammarBuilder::create()
                     ->rule('foobarfoo')->seq()
                         ->ref('foo')->ref('bar')->backref('a')
                     ->rule('foo')

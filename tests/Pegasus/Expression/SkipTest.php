@@ -11,9 +11,10 @@
 namespace ju1ius\Pegasus\Tests\Expression;
 
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Grammar\Builder;
+use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Node\Composite;
+use ju1ius\Pegasus\Node\Decorator;
 use ju1ius\Pegasus\Node\Terminal;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
@@ -43,23 +44,21 @@ class SkipTest extends ExpressionTestCase
     {
         return [
             'returns true' => [
-                Builder::create()->rule('nope')->skip()->literal('nope')->getGrammar(),
+                GrammarBuilder::create()->rule('nope')->skip()->literal('nope')->getGrammar(),
                 ['nope'],
                 true
             ],
             'skip parenthesis around (foo)' => [
-                Builder::create()->rule('start')->seq()
+                GrammarBuilder::create()->rule('start')->seq()
                     ->skip()->literal('(')
                     ->literal('foo')
                     ->skip()->literal(')')
                     ->getGrammar(),
                 ['(foo)'],
-                new Composite('start', 0, 5, [
-                    new Terminal('', 1, 4, 'foo')
-                ])
+                new Decorator('start', 0, 5, new Terminal('', 1, 4, 'foo'))
             ],
             'skip choice result at sequence start' => [
-                Builder::create()->rule('start')->seq()
+                GrammarBuilder::create()->rule('start')->seq()
                     ->skip()->oneOf()
                         ->literal('€')
                         ->literal('$')
@@ -68,9 +67,7 @@ class SkipTest extends ExpressionTestCase
                     ->literal('42')
                     ->getGrammar(),
                 ['$42'],
-                new Composite('start', 0, 3, [
-                    new Terminal('', 1, 3, '42')
-                ])
+                new Decorator('start', 0, 3, new Terminal('', 1, 3, '42'))
             ]
         ];
     }

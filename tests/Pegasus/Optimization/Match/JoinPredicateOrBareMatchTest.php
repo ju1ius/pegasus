@@ -15,7 +15,7 @@ use ju1ius\Pegasus\Expression\Match;
 use ju1ius\Pegasus\Expression\OneOf;
 use ju1ius\Pegasus\Expression\Reference;
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Grammar\Builder;
+use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinPredicateOrBareMatch;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\Tests\Optimization\OptimizationTestCase;
@@ -44,7 +44,7 @@ class JoinPredicateOrBareMatchTest extends OptimizationTestCase
     {
         return [
             'Choice with Match before an Assert of a Match' => [
-                Builder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->ref('a')
                     ->match('b')
                     ->assert()->match('c')
@@ -55,7 +55,7 @@ class JoinPredicateOrBareMatchTest extends OptimizationTestCase
                 ], 'test')
             ],
             'Choice with Match before a Not of a Match' => [
-                Builder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->ref('a')
                     ->match('b')
                     ->not()->match('c')
@@ -66,7 +66,7 @@ class JoinPredicateOrBareMatchTest extends OptimizationTestCase
                 ], 'test')
             ],
             'Choice with Match before EOF' => [
-                Builder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->ref('a')
                     ->match('b')
                     ->eof()
@@ -77,7 +77,7 @@ class JoinPredicateOrBareMatchTest extends OptimizationTestCase
                 ], 'test')
             ],
             'Choice with Match after an Assert of a Match' => [
-                Builder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->ref('a')
                     ->assert()->match('b')
                     ->match('c')
@@ -88,7 +88,7 @@ class JoinPredicateOrBareMatchTest extends OptimizationTestCase
                 ], 'test')
             ],
             'Choice with Match after a Not of a Match' => [
-                Builder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->ref('a')
                     ->not()->match('b')
                     ->match('c')
@@ -99,7 +99,7 @@ class JoinPredicateOrBareMatchTest extends OptimizationTestCase
                 ], 'test')
             ],
             'Choice with Match after EOF' => [
-                Builder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->ref('a')
                     ->eof()
                     ->match('c')
@@ -135,7 +135,7 @@ class JoinPredicateOrBareMatchTest extends OptimizationTestCase
     {
         return [
             'Choice with Match before an Assert of a Match' => [
-                Builder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->ref('a')
                     ->match('b')
                     ->assert()->match('c')
@@ -143,7 +143,7 @@ class JoinPredicateOrBareMatchTest extends OptimizationTestCase
                 true
             ],
             'Choice with Match before a Not of a Match' => [
-                Builder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->ref('a')
                     ->match('b')
                     ->not()->match('c')
@@ -151,7 +151,7 @@ class JoinPredicateOrBareMatchTest extends OptimizationTestCase
                 true
             ],
             'Choice with Match before EOF' => [
-                Builder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->ref('a')
                     ->match('b')
                     ->eof()
@@ -159,7 +159,7 @@ class JoinPredicateOrBareMatchTest extends OptimizationTestCase
                 true
             ],
             'Choice with Match after an Assert of a Match' => [
-                Builder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->ref('a')
                     ->assert()->match('b')
                     ->match('c')
@@ -167,7 +167,7 @@ class JoinPredicateOrBareMatchTest extends OptimizationTestCase
                 true
             ],
             'Choice with Match after a Not of a Match' => [
-                Builder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->ref('a')
                     ->not()->match('b')
                     ->match('c')
@@ -175,7 +175,7 @@ class JoinPredicateOrBareMatchTest extends OptimizationTestCase
                 true
             ],
             'Choice with Match after EOF' => [
-                Builder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->ref('a')
                     ->eof()
                     ->match('c')

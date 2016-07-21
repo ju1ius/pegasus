@@ -32,11 +32,11 @@ use ju1ius\Pegasus\Expression\Sequence as Seq;
 use ju1ius\Pegasus\Expression\Skip;
 use ju1ius\Pegasus\Expression\Terminal;
 use ju1ius\Pegasus\Expression\Token;
-use ju1ius\Pegasus\Grammar\ExpressionBuilder as Builder;
+use ju1ius\Pegasus\ExpressionBuilder as Builder;
 use ju1ius\Pegasus\Tests\PegasusTestCase;
 
 /**
- * @coversDefaultClass \ju1ius\Pegasus\Grammar\ExpressionBuilder
+ * @coversDefaultClass \ju1ius\Pegasus\ExpressionBuilder
  *
  * @author ju1ius <ju1ius@laposte.net>
  */

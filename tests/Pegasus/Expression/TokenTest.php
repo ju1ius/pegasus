@@ -10,7 +10,7 @@
 
 namespace ju1ius\Pegasus\Tests\Expression;
 
-use ju1ius\Pegasus\Grammar\Builder;
+use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Node\Terminal;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
@@ -37,7 +37,7 @@ class TokenTest extends ExpressionTestCase
     {
         return [
             "Returns the entire string match by it's child" => [
-                Builder::create()->rule('test')->token()
+                GrammarBuilder::create()->rule('test')->token()
                     ->sequence()
                         ->match('\w+')
                         ->match('=')
@@ -47,14 +47,14 @@ class TokenTest extends ExpressionTestCase
                 new Terminal('test', 0, 6, 'foo=42')
             ],
             "Even if the child is non-capturing" => [
-                Builder::create()->rule('test')->token()
+                GrammarBuilder::create()->rule('test')->token()
                     ->skip()->match('\w+')
                     ->getGrammar(),
                 ['foo_bar'],
                 new Terminal('test', 0, 7, 'foo_bar')
             ],
             "Should fail if the child fails" => [
-                Builder::create()->rule('test')->token()
+                GrammarBuilder::create()->rule('test')->token()
                     ->match('[a-z]+')
                     ->getGrammar(),
                 ['666'],

@@ -11,7 +11,7 @@
 namespace ju1ius\Pegasus\Tests\Expression;
 
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Grammar\Builder;
+use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Node\Terminal;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
@@ -37,7 +37,7 @@ class ReferenceTest extends ExpressionTestCase
     {
         return [
             [
-                Builder::create()
+                GrammarBuilder::create()
                     ->rule('test')->ref('foo')
                     ->rule('foo')->literal('foo')
                 ->getGrammar(),

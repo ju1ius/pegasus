@@ -11,7 +11,7 @@
 
 namespace ju1ius\Pegasus;
 
-use ju1ius\Pegasus\Grammar\Builder;
+use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Grammar\Optimizer;
 
 /**
@@ -83,7 +83,7 @@ final class MetaGrammar
 
     private static function buildGrammar()
     {
-        $builder = Builder::create()
+        $builder = GrammarBuilder::create()
             ->rule('grammar')->sequence()
                 ->ref('_')
                 ->ref('directives')

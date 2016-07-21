@@ -12,7 +12,7 @@ namespace ju1ius\Pegasus\Tests\Expression;
 
 use ju1ius\Pegasus\Expression\Super;
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Grammar\Builder;
+use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Node\Terminal;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
@@ -37,7 +37,7 @@ class SuperTest extends ExpressionTestCase
      */
     public function testMatch($grammar, $args, $expected)
     {
-        $parent = Builder::create()
+        $parent = GrammarBuilder::create()
             ->rule('foo')->literal('foo')
             ->rule('bar')->literal('bar')
             ->getGrammar();
@@ -49,7 +49,7 @@ class SuperTest extends ExpressionTestCase
     {
         return [
             [
-                Builder::create()
+                GrammarBuilder::create()
                     ->rule('foo')->oneOf()
                         ->literal('foobar')
                         ->super()
@@ -58,7 +58,7 @@ class SuperTest extends ExpressionTestCase
                 new Node\Decorator('foo', 0, 3, new Terminal('foo', 0, 3, 'foo'))
             ],
             [
-                Builder::create()
+                GrammarBuilder::create()
                     ->rule('foo')->oneOf()
                         ->literal('foobar')
                         ->super('bar')
