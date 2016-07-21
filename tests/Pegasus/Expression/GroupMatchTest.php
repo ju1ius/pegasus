@@ -13,6 +13,7 @@ namespace ju1ius\Pegasus\Tests\Expression;
 use ju1ius\Pegasus\Expression\Terminal\GroupMatch;
 use ju1ius\Pegasus\Expression\Terminal\Match;
 use ju1ius\Pegasus\Node\Composite;
+use ju1ius\Pegasus\Node\Decorator;
 use ju1ius\Pegasus\Node\Terminal;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
@@ -38,7 +39,7 @@ class GroupMatchTest extends ExpressionTestCase
             'Single capturing group' => [
                 ['test' => new GroupMatch(new Match('\s*(\w+)'), 1, 'test')],
                 ['   abc123   '],
-                new Terminal('test', 3, 9, 'abc123')
+                new Decorator('test', 0, 9, new Terminal('', 3, 9, 'abc123'))
             ],
             'Multiple capturing group' => [
                 ['test' => new GroupMatch(new Match('\s*(\w+)\s+(\w+)'), 2, 'test')],

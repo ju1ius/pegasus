@@ -103,7 +103,9 @@ final class GroupMatch extends Terminal
             if ($this->groupCount === 1) {
                 list($match, $offset) = $matches[1];
 
-                return new Node\Terminal($this->name, $offset, $offset + strlen($match), $match);
+                return new Node\Decorator($this->name, $start, $end,
+                    new Node\Terminal('', $offset, $offset + strlen($match), $match)
+                );
             }
 
             $children = [];

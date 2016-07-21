@@ -45,9 +45,9 @@ use ju1ius\Pegasus\Traverser\MetaGrammarTraverser;
  */
 class GrammarParserTest extends PegasusTestCase
 {
-    private function parseSyntax($syntax, $optimizationLevel = 0)
+    private function parseSyntax($syntax, $optimizationLevel = 0, $optimizedMeta = false)
     {
-        $meta = MetaGrammar::getGrammar();
+        $meta = $optimizedMeta ? MetaGrammar::create() : MetaGrammar::getGrammar();
         $parser = new LeftRecursivePackrat($meta);
         $tree = $parser->parseAll($syntax);
 
@@ -62,12 +62,24 @@ class GrammarParserTest extends PegasusTestCase
     /**
      * @dataProvider getTestItParsesTerminalRulesProvider
      *
-     * @param string $syntax
+     * @param string  $syntax
      * @param Grammar $expected
      */
     public function testItParsesTerminalRules($syntax, $expected)
     {
         $grammar = $this->parseSyntax($syntax);
+        $this->assertGrammarEquals($expected, $grammar);
+    }
+
+    /**
+     * @dataProvider getTestItParsesTerminalRulesProvider
+     *
+     * @param string  $syntax
+     * @param Grammar $expected
+     */
+    public function testItParsesTerminalRulesWithOptimizedMeta($syntax, $expected)
+    {
+        $grammar = $this->parseSyntax($syntax, 0, true);
         $this->assertGrammarEquals($expected, $grammar);
     }
 
@@ -123,10 +135,25 @@ class GrammarParserTest extends PegasusTestCase
 
     /**
      * @dataProvider getTestItParsesCombinatorsProvider
+     *
+     * @param string  $syntax
+     * @param Grammar $expected
      */
     public function testItParsesCombinators($syntax, $expected)
     {
         $grammar = $this->parseSyntax($syntax, Optimizer::LEVEL_1);
+        $this->assertGrammarEquals($expected, $grammar);
+    }
+
+    /**
+     * @dataProvider getTestItParsesCombinatorsProvider
+     *
+     * @param string  $syntax
+     * @param Grammar $expected
+     */
+    public function testItParsesCombinatorsWithOptimizedMeta($syntax, $expected)
+    {
+        $grammar = $this->parseSyntax($syntax, Optimizer::LEVEL_1, true);
         $this->assertGrammarEquals($expected, $grammar);
     }
 
@@ -173,7 +200,19 @@ class GrammarParserTest extends PegasusTestCase
      */
     public function testItParsesDecorators($syntax, $expected)
     {
-        $grammar = $this->parseSyntax($syntax, Optimizer::LEVEL_1);
+        $grammar = $this->parseSyntax($syntax, 0);
+        $this->assertGrammarEquals($expected, $grammar);
+    }
+
+    /**
+     * @dataProvider getTestItParsesDecoratorsProvider
+     *
+     * @param string  $syntax
+     * @param Grammar $expected
+     */
+    public function testItParsesDecoratorsWithOptimizedMeta($syntax, $expected)
+    {
+        $grammar = $this->parseSyntax($syntax, 0, true);
         $this->assertGrammarEquals($expected, $grammar);
     }
 
@@ -229,10 +268,25 @@ class GrammarParserTest extends PegasusTestCase
 
     /**
      * @dataProvider getTestItParsesReferencesProvider
+     *
+     * @param string  $syntax
+     * @param Grammar $expected
      */
     public function testItParsesReferences($syntax, $expected)
     {
         $grammar = $this->parseSyntax($syntax);
+        $this->assertGrammarEquals($expected, $grammar);
+    }
+
+    /**
+     * @dataProvider getTestItParsesReferencesProvider
+     *
+     * @param string  $syntax
+     * @param Grammar $expected
+     */
+    public function testItParsesReferencesWithOptimizedMeta($syntax, $expected)
+    {
+        $grammar = $this->parseSyntax($syntax, 0, true);
         $this->assertGrammarEquals($expected, $grammar);
     }
 
