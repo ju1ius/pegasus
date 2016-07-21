@@ -23,15 +23,16 @@
         <testsuite name="ParseNodes">
             <file>tests/Pegasus/NodeTest.php</file>
             <directory>tests/Pegasus/Node</directory>
+            <file>tests/Pegasus/Traverser/NamedNodeTraverserTest.php</file>
         </testsuite>
         <testsuite name="Parsers">
             <directory>tests/Pegasus/Parser</directory>
         </testsuite>
-        <testsuite name="MetaGrammar">
-            <file>tests/Pegasus/MetaGrammarTest.php</file>
-        </testsuite>
         <testsuite name="Optimizations">
             <directory>tests/Pegasus/Optimization</directory>
+        </testsuite>
+        <testsuite name="MetaGrammar">
+            <directory>tests/Pegasus/MetaGrammar</directory>
         </testsuite>
     </testsuites>
 
