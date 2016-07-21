@@ -8,12 +8,12 @@
  * file that was distributed with this source code.
  */
 
-
 namespace ju1ius\Pegasus\Debug;
 
 use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Traverser\ExpressionTraverser;
 use ju1ius\Pegasus\Traverser\GrammarTraverser;
+use ju1ius\Pegasus\Utils\Str;
 use ju1ius\Pegasus\Visitor\GrammarVisitor;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Expression;
@@ -66,10 +66,12 @@ final class GrammarDumper extends GrammarVisitor
     public function enterRule(Grammar $grammar, Expression $expr)
     {
         $this->indentStack = [];
-        $this->output->write(sprintf(
-            '<class>Rule</class> <rule>%s</rule> <d>=</d> ',
-            $expr->getName()
-        ));
+        $this->output->write(
+            sprintf(
+                '<class>Rule</class> <rule>%s</rule> <d>=</d> ',
+                $expr->getName()
+            )
+        );
         ExpressionHighlighter::highlight($expr, $this->output);
         $this->output->writeln('');
     }
@@ -85,7 +87,7 @@ final class GrammarDumper extends GrammarVisitor
         $this->output->write(sprintf(
             '<d>%s</d><class>%s</class> ',
             $indent,
-            str_replace('ju1ius\Pegasus\Expression\\', '', get_class($expr))
+            Str::className($expr)
         ));
         ExpressionHighlighter::highlight($expr, $this->output);
         $this->output->writeln('');

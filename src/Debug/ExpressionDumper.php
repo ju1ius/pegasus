@@ -14,6 +14,7 @@ namespace ju1ius\Pegasus\Debug;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Traverser\ExpressionTraverser;
+use ju1ius\Pegasus\Utils\Str;
 use ju1ius\Pegasus\Visitor\ExpressionVisitor;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -73,7 +74,7 @@ final class ExpressionDumper extends ExpressionVisitor
         $this->output->write(sprintf(
             '<d>%s</d><class>%s</class><d>:</d> ',
             $indent,
-            str_replace('ju1ius\Pegasus\Expression\\', '', get_class($expr))
+            Str::className($expr)
         ));
         ExpressionHighlighter::highlight($expr, $this->output);
         $this->output->writeln('');
