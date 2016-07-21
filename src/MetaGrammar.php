@@ -149,7 +149,7 @@ final class MetaGrammar
         // ------------------------------------------------------------------------------------------------------
         $builder
             ->rule('quantifier')->sequence()
-                ->regexp('(?> ([*+?]) | (?: \{ (\d+) (?:,(\d*))? \} ) )')
+                ->regexp('(?> (?<symbol>[*+?]) | (?: \{ (?<min>\d+) (?<not_exact>,(?<max>\d*))? \} ) )')
                 ->ref('_')
             ->rule('token')->sequence()
                 ->skip()->literal('@')

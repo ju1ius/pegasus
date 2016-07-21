@@ -235,13 +235,17 @@ class MetaGrammarTraverser extends NamedNodeTraverser
 
     private function leave_quantifier(Node $node, $matches)
     {
-        if (!empty($matches[1])) {
-            $class = self::$QUANTIFIER_CLASSES[$matches[1]];
+        if (!empty($matches['symbol'])) {
+            $class = self::$QUANTIFIER_CLASSES[$matches['symbol']];
 
             return new $class();
         }
-        $min = (int)$matches[2];
-        $max = !empty($matches[3]) ? (int)$matches[3] : INF;
+        $min = (int)$matches['min'];
+        if (empty($matches['not_exact'])) {
+            $max = $min;
+        } else {
+            $max = empty($matches['max']) ? INF : (int)$matches['max'];
+        }
 
         return new Quantifier(null, $min, $max);
     }
