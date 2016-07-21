@@ -8,9 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Expression\Match;
-
-use ju1ius\Pegasus\Expression\Match;
+namespace ju1ius\Pegasus\Expression\Terminal;
 
 /**
  * @author ju1ius <ju1ius@laposte.net>

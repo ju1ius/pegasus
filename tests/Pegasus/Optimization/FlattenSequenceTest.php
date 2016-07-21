@@ -3,8 +3,8 @@
 namespace ju1ius\Pegasus\Tests\Optimization;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Literal;
-use ju1ius\Pegasus\Expression\Sequence;
+use ju1ius\Pegasus\Expression\Terminal\Literal;
+use ju1ius\Pegasus\Expression\Combinator\Sequence;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Grammar\Optimization\Flattening\FlattenCapturingSequence;

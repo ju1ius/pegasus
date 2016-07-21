@@ -8,8 +8,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Expression;
+namespace ju1ius\Pegasus\Expression\Terminal;
 
+use ju1ius\Pegasus\Expression\Terminal;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Parser\Parser;

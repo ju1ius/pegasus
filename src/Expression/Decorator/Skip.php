@@ -8,23 +8,23 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Expression;
+namespace ju1ius\Pegasus\Expression\Decorator;
 
+use ju1ius\Pegasus\Expression\Decorator;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Parser\Parser;
 use ju1ius\Pegasus\Parser\Scope;
 
 /**
- * Decorates an expression and succeeds or fails like the decorated expression,
- * but never consumes any input (zero-width positive lookahead).
+ * Expression that skips over what his sub-expression matches.
  *
- * @author ju1ius <ju1ius@laposte.net>
+ * It can dramatically reduce the size of the parse tree.
  */
-class Assert extends Decorator
+class Skip extends Decorator
 {
     public function __toString()
     {
-        return sprintf('&:%s', $this->stringChildren()[0]);
+        return sprintf('~%s', $this->stringChildren()[0]);
     }
 
     public function isCapturing()
@@ -42,9 +42,7 @@ class Assert extends Decorator
         $capturing = $parser->isCapturing;
         $parser->isCapturing = false;
 
-        $start = $parser->pos;
         $result = $this->children[0]->match($text, $parser, $scope);
-        $parser->pos = $start;
 
         $parser->isCapturing = $capturing;
 

@@ -11,11 +11,11 @@
 namespace ju1ius\Pegasus\Grammar\Optimization\MatchJoining;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Assert;
+use ju1ius\Pegasus\Expression\Decorator\Assert;
 use ju1ius\Pegasus\Expression\Composite;
-use ju1ius\Pegasus\Expression\EOF;
-use ju1ius\Pegasus\Expression\Match;
-use ju1ius\Pegasus\Expression\Not;
+use ju1ius\Pegasus\Expression\Terminal\EOF;
+use ju1ius\Pegasus\Expression\Terminal\Match;
+use ju1ius\Pegasus\Expression\Decorator\Not;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization\CompositeReducerTrait;
 use ju1ius\Pegasus\Grammar\Optimization;

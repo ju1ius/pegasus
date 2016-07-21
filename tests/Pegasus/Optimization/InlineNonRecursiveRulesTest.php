@@ -12,12 +12,12 @@ namespace ju1ius\Pegasus\Tests\Optimization;
 
 use ju1ius\Pegasus\Debug\Debug;
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Literal;
-use ju1ius\Pegasus\Expression\Match;
-use ju1ius\Pegasus\Expression\OneOf;
-use ju1ius\Pegasus\Expression\Sequence;
-use ju1ius\Pegasus\Expression\Skip;
-use ju1ius\Pegasus\Expression\ZeroOrMore;
+use ju1ius\Pegasus\Expression\Terminal\Literal;
+use ju1ius\Pegasus\Expression\Terminal\Match;
+use ju1ius\Pegasus\Expression\Combinator\OneOf;
+use ju1ius\Pegasus\Expression\Combinator\Sequence;
+use ju1ius\Pegasus\Expression\Decorator\Skip;
+use ju1ius\Pegasus\Expression\Decorator\ZeroOrMore;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Grammar\Optimization\InlineNonRecursiveRules;

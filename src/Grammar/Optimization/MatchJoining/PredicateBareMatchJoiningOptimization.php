@@ -11,7 +11,7 @@
 namespace ju1ius\Pegasus\Grammar\Optimization\MatchJoining;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Match;
+use ju1ius\Pegasus\Expression\Terminal\Match;
 
 /**
  * @author ju1ius <ju1ius@laposte.net>

@@ -3,10 +3,8 @@
 namespace ju1ius\Pegasus\Tests\Expression;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Literal;
-use ju1ius\Pegasus\Expression\Match;
-use ju1ius\Pegasus\Expression\Optional;
-use ju1ius\Pegasus\Expression\RegExp;
+use ju1ius\Pegasus\Expression\Terminal\Literal;
+use ju1ius\Pegasus\Expression\Terminal\Match;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Node\Quantifier;
 use ju1ius\Pegasus\Node\Terminal;
@@ -19,7 +17,7 @@ class OptionalTest extends ExpressionTestCase
      */
     public function testMatch(Expression $child, array $match_args, Node $expected)
     {
-        $expr = new Optional($child, '?');
+        $expr = new Expression\Decorator\Optional($child, '?');
         $this->assertNodeEquals(
             $expected,
             $this->parse($expr, ...$match_args)

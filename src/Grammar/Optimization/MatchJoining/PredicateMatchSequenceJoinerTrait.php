@@ -11,11 +11,12 @@
 namespace ju1ius\Pegasus\Grammar\Optimization\MatchJoining;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Assert;
-use ju1ius\Pegasus\Expression\EOF;
-use ju1ius\Pegasus\Expression\Match;
-use ju1ius\Pegasus\Expression\Not;
-use ju1ius\Pegasus\Expression\Sequence;
+use ju1ius\Pegasus\Expression\Decorator\Assert;
+use ju1ius\Pegasus\Expression\Composite;
+use ju1ius\Pegasus\Expression\Terminal\EOF;
+use ju1ius\Pegasus\Expression\Terminal\Match;
+use ju1ius\Pegasus\Expression\Decorator\Not;
+use ju1ius\Pegasus\Expression\Combinator\Sequence;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 
@@ -31,6 +32,13 @@ trait PredicateMatchSequenceJoinerTrait
     {
         return $expr instanceof Sequence && $this->someEligiblePairs($expr);
     }
+
+    /**
+     * @param Composite|Expression[] $children
+     *
+     * @return bool
+     */
+    abstract protected function someEligiblePairs($children);
 
     /**
      * @inheritDoc

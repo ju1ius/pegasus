@@ -11,10 +11,10 @@
 namespace ju1ius\Pegasus\Tests\Optimization\Match;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Match;
-use ju1ius\Pegasus\Expression\OneOf;
+use ju1ius\Pegasus\Expression\Terminal\Match;
+use ju1ius\Pegasus\Expression\Combinator\OneOf;
 use ju1ius\Pegasus\Expression\Reference;
-use ju1ius\Pegasus\Expression\Skip;
+use ju1ius\Pegasus\Expression\Decorator\Skip;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinPredicateOrNestedMatch;
 use ju1ius\Pegasus\Grammar\OptimizationContext;

@@ -11,7 +11,7 @@
 namespace ju1ius\Pegasus\Grammar\Optimization\Flattening;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\OneOf;
+use ju1ius\Pegasus\Expression\Combinator\OneOf;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization\Flattening\FlatteningOptimization;
 use ju1ius\Pegasus\Grammar\OptimizationContext;

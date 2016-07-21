@@ -12,8 +12,8 @@ namespace ju1ius\Pegasus\Grammar\Optimization\MatchJoining;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Composite;
-use ju1ius\Pegasus\Expression\Literal;
-use ju1ius\Pegasus\Expression\Match;
+use ju1ius\Pegasus\Expression\Terminal\Literal;
+use ju1ius\Pegasus\Expression\Terminal\Match;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization;
 use ju1ius\Pegasus\Grammar\Optimization\CompositeReducerTrait;
@@ -112,8 +112,6 @@ abstract class MatchJoiningOptimization extends Optimization
      * @param Expression $expr
      *
      * @return string
-     * @internal param Match $match
-     *
      */
     protected function createPattern(Expression $expr)
     {

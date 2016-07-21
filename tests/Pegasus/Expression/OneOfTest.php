@@ -2,8 +2,8 @@
 
 namespace ju1ius\Pegasus\Tests\Expression;
 
-use ju1ius\Pegasus\Expression\Literal;
-use ju1ius\Pegasus\Expression\OneOf;
+use ju1ius\Pegasus\Expression\Combinator\OneOf;
+use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Node\Decorator;

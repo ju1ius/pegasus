@@ -2,34 +2,49 @@
 /*
  * This file is part of Pegasus
  *
- * (c) 2014 Jules Bernable
+ * © 2014 Jules Bernable
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Expression;
+namespace ju1ius\Pegasus\Expression\Combinator;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Grammar;
+use ju1ius\Pegasus\Expression\Combinator;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Parser\Parser;
 use ju1ius\Pegasus\Parser\Scope;
 
 /**
- * A series of expressions that must match contiguous, ordered pieces of the text.
+ * A sequence that must have a name, used to create "inline" rules.
  *
- * In other words, it's a concatenation operator: each piece has to match, one after another.
+ * @author ju1ius <ju1ius@laposte.net>
  */
-class Sequence extends Combinator
+final class NamedSequence extends Combinator
 {
-    public function getCaptureCount()
+    private $label;
+
+    /**
+     * @inheritDoc
+     */
+    public function __construct(array $children, $label)
     {
-        return array_reduce($this->children, function ($n, Expression $child) {
-            return $child->isCapturing() ? $n + 1 : $n;
-        }, 0);
+        $this->label = $label;
+        parent::__construct($children, '');
     }
 
+    /**
+     * @return string
+     */
+    public function getLabel()
+    {
+        return $this->label;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function match($text, Parser $parser, Scope $scope)
     {
         $startPos = $parser->pos;
@@ -48,8 +63,20 @@ class Sequence extends Combinator
         }
 
         return $capturing
-            ? new Node\Composite($this->name, $startPos, $parser->pos, $children)
+            ? new Node\Composite($this->label, $startPos, $parser->pos, $children)
             : true;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function __toString()
+    {
+        return sprintf(
+            '%s <= %s',
+            implode(' ', $this->stringChildren()),
+            $this->label
+        );
     }
 
     /**
@@ -64,10 +91,5 @@ class Sequence extends Combinator
 
             return (string)$child;
         }, $this->children);
-    }
-
-    public function __toString()
-    {
-        return implode(' ', $this->stringChildren());
     }
 }

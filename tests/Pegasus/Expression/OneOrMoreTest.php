@@ -3,8 +3,8 @@
 namespace ju1ius\Pegasus\Tests\Expression;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Literal;
-use ju1ius\Pegasus\Expression\OneOrMore;
+use ju1ius\Pegasus\Expression\Terminal\Literal;
+use ju1ius\Pegasus\Expression\Decorator\OneOrMore;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Node\Quantifier;
 use ju1ius\Pegasus\Node\Terminal;

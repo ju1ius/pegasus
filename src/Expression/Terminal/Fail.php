@@ -9,8 +9,9 @@
  */
 
 
-namespace ju1ius\Pegasus\Expression;
+namespace ju1ius\Pegasus\Expression\Terminal;
 
+use ju1ius\Pegasus\Expression\Terminal;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Parser\Parser;
 use ju1ius\Pegasus\Parser\Scope;

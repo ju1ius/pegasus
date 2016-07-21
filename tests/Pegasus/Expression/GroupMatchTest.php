@@ -10,8 +10,8 @@
 
 namespace ju1ius\Pegasus\Tests\Expression;
 
-use ju1ius\Pegasus\Expression\GroupMatch;
-use ju1ius\Pegasus\Expression\Match;
+use ju1ius\Pegasus\Expression\Terminal\GroupMatch;
+use ju1ius\Pegasus\Expression\Terminal\Match;
 use ju1ius\Pegasus\Node\Composite;
 use ju1ius\Pegasus\Node\Terminal;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;

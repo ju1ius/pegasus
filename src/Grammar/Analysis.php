@@ -12,8 +12,8 @@ namespace ju1ius\Pegasus\Grammar;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Composite;
-use ju1ius\Pegasus\Expression\Label;
-use ju1ius\Pegasus\Expression\OneOf;
+use ju1ius\Pegasus\Expression\Decorator\Label;
+use ju1ius\Pegasus\Expression\Combinator\OneOf;
 use ju1ius\Pegasus\Expression\Reference;
 use ju1ius\Pegasus\Expression\Super;
 use ju1ius\Pegasus\Grammar;

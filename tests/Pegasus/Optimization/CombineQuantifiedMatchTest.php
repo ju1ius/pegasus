@@ -11,7 +11,7 @@
 namespace ju1ius\Pegasus\Tests\Optimization;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Match;
+use ju1ius\Pegasus\Expression\Terminal\Match;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarBuilder as GrammarBuilder;
 use ju1ius\Pegasus\ExpressionBuilder;

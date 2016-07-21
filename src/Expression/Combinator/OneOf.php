@@ -8,9 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Expression;
+namespace ju1ius\Pegasus\Expression\Combinator;
 
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Expression\Combinator;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Parser\Parser;
@@ -44,6 +45,10 @@ class OneOf extends Combinator
         $start = $parser->pos;
         foreach ($this->children as $child) {
             if ($result = $child->match($text, $parser, $scope)) {
+                if ($result === true) {
+                    return true;
+                }
+
                 return $parser->isCapturing
                     ? new Node\Decorator($this->name, $start, $parser->pos, $result)
                     : true;

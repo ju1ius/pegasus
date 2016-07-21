@@ -3,7 +3,7 @@
 namespace ju1ius\Pegasus\Tests\Expression;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Assert;
+use ju1ius\Pegasus\Expression\Decorator\Assert;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Node;

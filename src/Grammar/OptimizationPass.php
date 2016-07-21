@@ -11,11 +11,11 @@
 namespace ju1ius\Pegasus\Grammar;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Assert;
+use ju1ius\Pegasus\Expression\Decorator\Assert;
 use ju1ius\Pegasus\Expression\Composite;
-use ju1ius\Pegasus\Expression\Not;
-use ju1ius\Pegasus\Expression\Skip;
-use ju1ius\Pegasus\Expression\Token;
+use ju1ius\Pegasus\Expression\Decorator\Not;
+use ju1ius\Pegasus\Expression\Decorator\Skip;
+use ju1ius\Pegasus\Expression\Decorator\Token;
 use ju1ius\Pegasus\Grammar;
 
 /**

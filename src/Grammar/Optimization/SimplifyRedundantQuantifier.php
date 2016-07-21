@@ -11,8 +11,8 @@
 namespace ju1ius\Pegasus\Grammar\Optimization;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Quantifier;
-use ju1ius\Pegasus\Expression\ZeroOrMore;
+use ju1ius\Pegasus\Expression\Decorator\Quantifier;
+use ju1ius\Pegasus\Expression\Decorator\ZeroOrMore;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization;
 use ju1ius\Pegasus\Grammar\OptimizationContext;

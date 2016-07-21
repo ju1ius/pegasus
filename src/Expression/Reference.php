@@ -11,7 +11,7 @@
 namespace ju1ius\Pegasus\Expression;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Grammar\Exception\UnresolvedReference;
+use ju1ius\Pegasus\Node;
 use ju1ius\Pegasus\Parser\Parser;
 use ju1ius\Pegasus\Parser\Scope;
 
@@ -64,6 +64,8 @@ final class Reference extends Expression
      */
     public function match($text, Parser $parser, Scope $scope)
     {
-        return $parser->apply($this->identifier, Scope::void());
+        $result = $parser->apply($this->identifier, Scope::void());
+
+        return $result;
     }
 }

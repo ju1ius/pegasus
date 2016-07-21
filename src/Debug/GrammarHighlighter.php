@@ -11,7 +11,6 @@
 namespace ju1ius\Pegasus\Debug;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Traverser\GrammarTraverser;
 use ju1ius\Pegasus\Visitor\GrammarVisitor;
