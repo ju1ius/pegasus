@@ -63,8 +63,8 @@ class Packrat extends RecursiveDescent
 
         $pos = $this->pos;
 
-        if (isset($this->memo[$this->isCapturing][$expr->id][$pos])) {
-            $memo = $this->memo[$this->isCapturing][$expr->id][$pos];
+        if (isset($this->memo[$this->isCapturing][$pos][$expr->id])) {
+            $memo = $this->memo[$this->isCapturing][$pos][$expr->id];
             $this->pos = $memo->end;
 
             return $memo->result;
@@ -73,7 +73,7 @@ class Packrat extends RecursiveDescent
         // Store a result of FAIL in the memo table before it evaluates the body of a rule.
         // This has the effect of making all left-recursive applications (both direct and indirect) fail.
         $memo = new MemoEntry(null, $pos);
-        $this->memo[$this->isCapturing][$expr->id][$pos] = $memo;
+        $this->memo[$this->isCapturing][$pos][$expr->id] = $memo;
         // evaluate expression
         $result = $this->evaluate($expr, $scope);
         // update the result in the memo table

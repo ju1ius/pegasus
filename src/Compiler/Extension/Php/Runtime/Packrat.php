@@ -60,8 +60,8 @@ class Packrat extends Parser
     {
         $pos = $this->pos;
         $capturing = (int)$this->isCapturing;
-        if (isset($this->memo[$capturing][$ruleName][$pos])) {
-            $memo = $this->memo[$capturing][$ruleName][$pos];
+        if (isset($this->memo[$capturing][$pos][$ruleName])) {
+            $memo = $this->memo[$capturing][$pos][$ruleName];
             $this->pos = $memo->end;
 
             return $memo->result;
@@ -70,7 +70,7 @@ class Packrat extends Parser
         // Store a result of FAIL in the memo table before it evaluates the body of a rule.
         // This has the effect of making all left-recursive applications (both direct and indirect) fail.
         $memo = new MemoEntry(null, $pos);
-        $this->memo[$capturing][$ruleName][$pos] = $memo;
+        $this->memo[$capturing][$pos][$ruleName] = $memo;
         // evaluate expression
         $result = $this->evaluate($ruleName);
         // update the result in the memo table
