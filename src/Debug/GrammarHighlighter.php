@@ -12,8 +12,8 @@ namespace ju1ius\Pegasus\Debug;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Traverser\GrammarTraverser;
-use ju1ius\Pegasus\Visitor\GrammarVisitor;
+use ju1ius\Pegasus\Grammar\GrammarTraverser;
+use ju1ius\Pegasus\Grammar\GrammarVisitor;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -95,7 +95,7 @@ class GrammarHighlighter extends GrammarVisitor
     /**
      * @inheritDoc
      */
-    public function enterExpression(Grammar $grammar, Expression $expr, $index = null, $isLast = false)
+    public function enterExpression(Expression $expr, $index = null, $isLast = false)
     {
         $this->highlighter->enterExpression($expr, $index, $isLast);
     }
@@ -103,7 +103,7 @@ class GrammarHighlighter extends GrammarVisitor
     /**
      * @inheritDoc
      */
-    public function leaveExpression(Grammar $grammar, Expression $expr, $index = null, $isLast = false)
+    public function leaveExpression(Expression $expr, $index = null, $isLast = false)
     {
         $this->highlighter->leaveExpression($expr, $index, $isLast);
     }

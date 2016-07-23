@@ -8,10 +8,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Visitor;
+namespace ju1ius\Pegasus\Expression;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Composite;
 
 interface ExpressionVisitorInterface
 {

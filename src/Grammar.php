@@ -10,15 +10,14 @@
 
 namespace ju1ius\Pegasus;
 
+use ju1ius\Pegasus\CST\Transform\MetaGrammarTransform;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar\Exception\AnonymousTopLevelExpression;
 use ju1ius\Pegasus\Grammar\Exception\MissingStartRule;
 use ju1ius\Pegasus\Grammar\Exception\RuleNotFound;
+use ju1ius\Pegasus\Grammar\GrammarTraverser;
 use ju1ius\Pegasus\Grammar\Optimizer;
 use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
-use ju1ius\Pegasus\Traverser\GrammarTraverser;
-use ju1ius\Pegasus\Visitor\GrammarVisitor;
-use ju1ius\Pegasus\CST\Transform\MetaGrammarTransform;
 
 /**
  * A collection of expressions that describe a language.
@@ -62,13 +61,6 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      */
     protected $inlineRules = [];
 
-    /**
-     * True if the grammar is in folded state.
-     *
-     * @var bool
-     */
-    protected $folded = false;
-
     //
     // Factory methods
     // --------------------------------------------------------------------------------------------------------------
@@ -78,10 +70,12 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      *
      * @param Expression[] $rules     An array of ['rule_name' => $expression].
      * @param Expression   $startRule The top level expression of this grammar.
+     * @param int          $optimizationLevel
      *
      * @return Grammar
+     * @throws RuleNotFound
      */
-    public static function fromArray(array $rules, $startRule = null)
+    public static function fromArray(array $rules, $startRule = null, $optimizationLevel = 0)
     {
         $grammar = new static();
         foreach ($rules as $name => $rule) {
@@ -91,7 +85,9 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
             $grammar->setStartRule($startRule);
         }
 
-        return $grammar->unfold();
+        return $optimizationLevel
+            ? Optimizer::optimize($grammar, $optimizationLevel)
+            : $grammar;
     }
 
     /**
@@ -121,13 +117,14 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
     /**
      * Factory method that constructs a Grammar object from an Expression.
      *
-     * @param Expression $expr              The expression to build the grammar from.
-     * @param string     $startRule         Optional start rule name for the grammar.
+     * @param Expression $expr      The expression to build the grammar from.
+     * @param string     $startRule Optional start rule name for the grammar.
+     * @param int        $optimizationLevel
      *
      * @return Grammar
      * @throws AnonymousTopLevelExpression If no named start rule could be determined.
      */
-    public static function fromExpression(Expression $expr, $startRule = null, $optimizationLevel = Optimizer::LEVEL_1)
+    public static function fromExpression(Expression $expr, $startRule = null, $optimizationLevel = 0)
     {
         if (!$startRule) {
             if (!$expr->getName()) {
@@ -139,7 +136,9 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
         $grammar = new static();
         $grammar[$startRule] = $expr;
 
-        return $grammar->unfold();
+        return $optimizationLevel
+            ? Optimizer::optimize($grammar, $optimizationLevel)
+            : $grammar;
     }
 
     /**
@@ -269,60 +268,6 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
     }
 
     //
-    // Grammar folding / unfolding
-    // --------------------------------------------------------------------------------------------------------------
-
-    /**
-     * Returns whether the grammar is in folded state.
-     *
-     * @return bool True if the grammar is in folded state.
-     */
-    public function isFolded()
-    {
-        return $this->folded;
-    }
-
-    /**
-     * Unfolds the grammar by converting circular references to Reference objects.
-     *
-     * @return $this
-     */
-    public function unfold()
-    {
-        $traverser = (new GrammarTraverser(false, false))
-            ->addVisitor(new GrammarVisitor);
-        $traverser->traverse($this);
-
-        $this->folded = false;
-
-        return $this;
-    }
-
-    /**
-     * Executes given function, while ensuring the grammar is unfolded.
-     *
-     * @param callable $fn
-     *
-     * @return mixed The result returned by the callback
-     */
-    public function unfolded(callable $fn)
-    {
-        $folded = $this->folded;
-        if ($folded) {
-            $this->unfold();
-        }
-        try {
-            $result = $fn($this);
-        } finally {
-            if ($folded) {
-                $this->fold();
-            }
-        }
-
-        return $result;
-    }
-
-    //
     // Grammar manipulations
     // --------------------------------------------------------------------------------------------------------------
 
@@ -340,9 +285,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
     {
         $clone = clone $this;
         if ($deep) {
-            $traverser = (new GrammarTraverser(true, $this->isFolded()))
-                ->addVisitor(new GrammarVisitor);
-            $traverser->traverse($clone);
+            return (new GrammarTraverser(true))->traverse($clone);
         }
 
         return $clone;
@@ -367,7 +310,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
             $new[$name] = $rule;
         }
 
-        return $new->unfold();
+        return $new;
     }
 
     /**
@@ -425,16 +368,15 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
         $out .= "%start {$this->startRule}\n";
         $out .= "\n";
 
-        return $this->unfolded(function () use ($out) {
-            foreach ($this->rules as $name => $expr) {
-                $out .= sprintf("%s = %s\n", $name, $expr);
-            }
-            return $out;
-        });
+        foreach ($this->rules as $name => $expr) {
+            $out .= sprintf("%s = %s\n", $name, $expr);
+        }
+
+        return $out;
     }
 
     /**
-     * Explicitely fetch a rule from the parent grammar.
+     * Explicitly fetch a rule from the parent grammar.
      *
      * @param string $ruleName
      *

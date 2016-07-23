@@ -8,44 +8,20 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Traverser;
+namespace ju1ius\Pegasus\Grammar;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\Reference;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Exception\SelfReferencingRule;
-use ju1ius\Pegasus\Visitor\ExpressionFolder;
-use ju1ius\Pegasus\Visitor\GrammarVisitorInterface;
 
-/**
- * Class for recursion-safe traversal of a grammar's expression graph.
- *
- * Before traversal:
- *   * Converts all rule references to Reference objects,
- *   * clone each expression
- *
- * After traversal:
- *   * Converts Reference objects back to actual expressions.
- *   * Adds all named expressions as rule to the grammar.
- *
- */
 class GrammarTraverser implements GrammarTraverserInterface
 {
     /**
-     * @var \SplObjectStorage.<GrammarVisitorInterface>
+     * @var \SplObjectStorage|GrammarVisitorInterface[]
      */
     private $visitors;
-
-    /**
-     * @var bool
-     */
-    private $foldGrammar = true;
-
-    /**
-     * @var bool
-     */
-    private $inTopLevelExpression = true;
 
     /**
      * @var bool
@@ -53,18 +29,11 @@ class GrammarTraverser implements GrammarTraverserInterface
     private $cloneExpressions;
 
     /**
-     * Constructor for GrammarTraverser.
-     *
-     * If `$foldGrammar` if false, the references will not be converted back to actual expression objects.
-     * This can be useful if you need ie to serialize the grammar in some way.
-     *
      * @param bool $cloneExpressions Whether expressions must be cloned before traversal.
-     * @param bool $foldGrammar      Whether grammars must be folded after traversal.
      */
-    public function __construct($cloneExpressions = true, $foldGrammar = false)
+    public function __construct($cloneExpressions = true)
     {
         $this->cloneExpressions = $cloneExpressions;
-        $this->foldGrammar = $foldGrammar;
         $this->visitors = new \SplObjectStorage();
     }
 
@@ -123,21 +92,11 @@ class GrammarTraverser implements GrammarTraverserInterface
             }
         }
 
-        if ($this->foldGrammar) {
-            // reference resolving has to be done in a full additional pass
-            $resolver = (new ExpressionTraverser)->addVisitor(new ExpressionFolder($grammar));
-            foreach ($grammar as $name => $rule) {
-                $resolver->traverse($rule);
-            }
-        }
-
         return $grammar;
     }
 
     protected function traverseRule(Grammar $grammar, Expression $expr)
     {
-        $this->inTopLevelExpression = true;
-
         foreach ($this->visitors as $visitor) {
             if (null !== $result = $visitor->enterRule($grammar, $expr)) {
                 $expr = $result;
@@ -159,17 +118,12 @@ class GrammarTraverser implements GrammarTraverserInterface
 
     protected function traverseExpression(Grammar $grammar, Expression $expr, $index = null, $isLast = false)
     {
-        // Convert all non top-level expressions to reference if needed,
-        // in order to avoid infinite recursion in recursive rules.
-        if (!$this->inTopLevelExpression && isset($grammar[$expr->getName()])) {
-            $expr = new Reference($expr->getName());
-        } elseif ($this->cloneExpressions) {
+        if ($this->cloneExpressions) {
             $expr = clone $expr;
         }
-        $this->inTopLevelExpression = false;
 
         foreach ($this->visitors as $visitor) {
-            if (null !== $result = $visitor->enterExpression($grammar, $expr, $index, $isLast)) {
+            if (null !== $result = $visitor->enterExpression($expr, $index, $isLast)) {
                 $expr = $result;
             }
         }
@@ -184,14 +138,9 @@ class GrammarTraverser implements GrammarTraverserInterface
         }
 
         foreach ($this->visitors as $visitor) {
-            if (null !== $result = $visitor->leaveExpression($grammar, $expr, $index, $isLast)) {
+            if (null !== $result = $visitor->leaveExpression($expr, $index, $isLast)) {
                 $expr = $result;
             }
-        }
-
-        //FIXME: can we really modify the grammar while iterating ?
-        if ($name = $expr->getName()) {
-            $grammar[$name] = $expr;
         }
 
         return $expr;

@@ -32,8 +32,8 @@ use ju1ius\Pegasus\Expression\Super;
 use ju1ius\Pegasus\Expression\Terminal;
 use ju1ius\Pegasus\Expression\Decorator\Token;
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Traverser\ExpressionTraverser;
-use ju1ius\Pegasus\Visitor\ExpressionVisitor;
+use ju1ius\Pegasus\Expression\ExpressionTraverser;
+use ju1ius\Pegasus\Expression\ExpressionVisitor;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**

@@ -8,17 +8,16 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Traverser;
+namespace ju1ius\Pegasus\Expression;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Visitor\ExpressionVisitorInterface;
 
 interface ExpressionTraverserInterface
 {
     /**
      * Adds a visitor.
      *
-     * @param ExpressionVisitorInterface[] ...$visitors Visitor to add
+     * @param \ju1ius\Pegasus\Expression\ExpressionVisitorInterface[] ...$visitors Visitor to add
      *
      * @return $this
      */
@@ -34,7 +33,7 @@ interface ExpressionTraverserInterface
     public function removeVisitor(ExpressionVisitorInterface ...$visitors);
 
     /**
-     * Traverses an expression using the registered visitors.
+     * Traverses an expression using the registered optimizations.
      *
      * @param Expression $expr The expression to traverse
      *

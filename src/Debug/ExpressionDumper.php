@@ -13,9 +13,9 @@ namespace ju1ius\Pegasus\Debug;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Composite;
-use ju1ius\Pegasus\Traverser\ExpressionTraverser;
+use ju1ius\Pegasus\Expression\ExpressionTraverser;
 use ju1ius\Pegasus\Utils\Str;
-use ju1ius\Pegasus\Visitor\ExpressionVisitor;
+use ju1ius\Pegasus\Expression\ExpressionVisitor;
 use Symfony\Component\Console\Output\OutputInterface;
 
 final class ExpressionDumper extends ExpressionVisitor

@@ -8,12 +8,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Traverser;
+namespace ju1ius\Pegasus\Expression;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Composite;
-use ju1ius\Pegasus\Visitor\ExpressionVisitor;
-use ju1ius\Pegasus\Visitor\ExpressionVisitorInterface;
 
 class ExpressionTraverser implements ExpressionTraverserInterface
 {

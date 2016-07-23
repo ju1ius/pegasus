@@ -11,10 +11,10 @@
 namespace ju1ius\Pegasus\Debug;
 
 use ju1ius\Pegasus\Expression\Composite;
-use ju1ius\Pegasus\Traverser\ExpressionTraverser;
-use ju1ius\Pegasus\Traverser\GrammarTraverser;
+use ju1ius\Pegasus\Expression\ExpressionTraverser;
+use ju1ius\Pegasus\Grammar\GrammarTraverser;
 use ju1ius\Pegasus\Utils\Str;
-use ju1ius\Pegasus\Visitor\GrammarVisitor;
+use ju1ius\Pegasus\Grammar\GrammarVisitor;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Expression;
 use Symfony\Component\Console\Formatter\OutputFormatter;
@@ -79,7 +79,7 @@ final class GrammarDumper extends GrammarVisitor
     /**
      * @inheritdoc
      */
-    public function enterExpression(Grammar $grammar, Expression $expr, $index = null, $isLast = false)
+    public function enterExpression(Expression $expr, $index = null, $isLast = false)
     {
         $indent = implode('', $this->indentStack);
         $indent .= $isLast ? '└ ' : '├ ';
@@ -100,7 +100,7 @@ final class GrammarDumper extends GrammarVisitor
     /**
      * @inheritdoc
      */
-    public function leaveExpression(Grammar $grammar, Expression $expr, $index = null, $isLast = false)
+    public function leaveExpression(Expression $expr, $index = null, $isLast = false)
     {
         if ($expr instanceof Composite) {
             array_pop($this->indentStack);

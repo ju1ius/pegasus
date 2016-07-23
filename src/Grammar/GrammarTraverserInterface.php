@@ -8,10 +8,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Traverser;
+namespace ju1ius\Pegasus\Grammar;
 
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Visitor\GrammarVisitorInterface;
 
 /**
  * Interface for Grammar traversers.
@@ -38,7 +37,7 @@ interface GrammarTraverserInterface
     public function removeVisitor(GrammarVisitorInterface ...$visitors);
 
     /**
-     * Traverses a grammar and it's expression tree using the registered visitors.
+     * Traverses a grammar and it's expression tree using the registered optimizations.
      *
      * @param Grammar $grammar The grammar to traverse
      *

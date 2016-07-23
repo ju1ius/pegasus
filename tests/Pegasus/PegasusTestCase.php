@@ -44,14 +44,9 @@ class PegasusTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @param Grammar $expected
      * @param Grammar $actual
-     * @param bool    $unfold
      */
-    public function assertGrammarEquals(Grammar $expected, Grammar $actual, $unfold = false)
+    public function assertGrammarEquals(Grammar $expected, Grammar $actual)
     {
-        if ($unfold) {
-            $expected->unfold();
-            $actual->unfold();
-        }
         foreach ($expected as $name => $expr) {
             $this->assertArrayHasKey($name, $actual);
             $this->assertExpressionEquals($expr, $actual[$name]);

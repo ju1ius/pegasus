@@ -8,16 +8,13 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Visitor;
+namespace ju1ius\Pegasus\Grammar;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Grammar;
 
 /**
  * Generic GrammarVisitorInterface implementation.
- *
- * @codeCoverageIgnore
  */
 class GrammarVisitor implements GrammarVisitorInterface
 {
@@ -56,7 +53,7 @@ class GrammarVisitor implements GrammarVisitorInterface
     /**
      * @inheritDoc
      */
-    public function enterExpression(Grammar $grammar, Expression $expr, $index = null, $isLast = false)
+    public function enterExpression(Expression $expr, $index = null, $isLast = false)
     {
         return null;
     }
@@ -64,7 +61,7 @@ class GrammarVisitor implements GrammarVisitorInterface
     /**
      * @inheritDoc
      */
-    public function leaveExpression(Grammar $grammar, Expression $expr, $index = null, $isLast = false)
+    public function leaveExpression(Expression $expr, $index = null, $isLast = false)
     {
         return null;
     }

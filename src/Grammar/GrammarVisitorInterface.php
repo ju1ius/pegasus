@@ -8,10 +8,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Visitor;
+namespace ju1ius\Pegasus\Grammar;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Grammar;
 
 interface GrammarVisitorInterface
@@ -79,14 +78,13 @@ interface GrammarVisitorInterface
      *  * null:      $expr stays as-is
      *  * otherwise: $expr is set to the return value
      *
-     * @param Grammar    $grammar The visited grammar.
-     * @param Expression $expr    The visited expression.
-     * @param int|null   $index   The index of the visited expression in it's parent.
-     * @param bool       $isLast  Whether the visited expression is the last child of it's parent
+     * @param Expression $expr   The visited expression.
+     * @param int|null   $index  The index of the visited expression in it's parent.
+     * @param bool       $isLast Whether the visited expression is the last child of it's parent
      *
      * @return mixed
      */
-    public function enterExpression(Grammar $grammar, Expression $expr, $index = null, $isLast = false);
+    public function enterExpression(Expression $expr, $index = null, $isLast = false);
 
     /**
      * Called when leaving an expression.
@@ -97,13 +95,11 @@ interface GrammarVisitorInterface
      *  * array:     The return value is merged into the parent array (at the position of the $node)
      *  * otherwise: $expr is set to the return value
      *
-     * @param Grammar    $grammar The visited grammar.
-     * @param Expression $expr    The visited expression.
-     * @param int|null   $index   The index of the visited expression in it's parent.
-     * @param bool       $isLast  Whether the visited expression is the last child of it's parent
+     * @param Expression $expr   The visited expression.
+     * @param int|null   $index  The index of the visited expression in it's parent.
+     * @param bool       $isLast Whether the visited expression is the last child of it's parent
      *
      * @return mixed
-     * @internal param Composite|null $parent The parent expression, if any.
      */
-    public function leaveExpression(Grammar $grammar, Expression $expr, $index = null, $isLast = false);
+    public function leaveExpression(Expression $expr, $index = null, $isLast = false);
 }
