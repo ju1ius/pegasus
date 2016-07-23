@@ -13,6 +13,7 @@ namespace ju1ius\Pegasus\Debug;
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\CST\NodeTraverser;
 use ju1ius\Pegasus\CST\NodeVisitor;
+use ju1ius\Pegasus\Utils\Str;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -80,7 +81,7 @@ final class CSTDumper extends NodeVisitor
         }
         $this->output->write(sprintf(
             '<class>%s</class>',
-            str_replace('ju1ius\\Pegasus\\CST\\Node\\', '', get_class($node))
+            Str::className($node)
         ));
         if ($node->name) {
             $this->output->write(sprintf('<d>("</d>%s<d>")</d>', $node->name));
