@@ -125,14 +125,11 @@ final class OptimizationContext
         return $this->grammar->getStartRule();
     }
 
-    /**
-     * @param string $ruleName
-     *
-     * @return bool
-     */
-    public function isRelevantRule($ruleName)
+    public function getReferencedRules()
     {
-        return $this->analysis->isReferenced($ruleName);
+        $startRule = $this->getStartRule();
+
+        return array_merge([$startRule], $this->analysis->getReferencesFrom($startRule));
     }
 
     /**

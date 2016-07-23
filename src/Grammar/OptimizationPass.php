@@ -77,7 +77,7 @@ class OptimizationPass
         $context = $context ?: OptimizationContext::of($grammar);
 
         foreach ($this->optimizations as $optimization) {
-            if (null !== $result = $optimization->beforeTraverse($grammar)) {
+            if (null !== $result = $optimization->beforeTraverse($grammar, $context)) {
                 $grammar = $result;
             }
         }
@@ -92,7 +92,7 @@ class OptimizationPass
         }
 
         foreach ($this->optimizations as $optimization) {
-            if (null !== $result = $optimization->afterTraverse($grammar)) {
+            if (null !== $result = $optimization->afterTraverse($grammar, $context)) {
                 $grammar = $result;
             }
         }

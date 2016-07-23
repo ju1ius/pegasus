@@ -25,7 +25,7 @@ abstract class Optimization
     /**
      * @inheritDoc
      */
-    public function beforeTraverse(Grammar $grammar)
+    public function beforeTraverse(Grammar $grammar, OptimizationContext $context)
     {
         return null;
     }
@@ -33,7 +33,7 @@ abstract class Optimization
     /**
      * @inheritDoc
      */
-    public function afterTraverse(Grammar $grammar)
+    public function afterTraverse(Grammar $grammar, OptimizationContext $context)
     {
         return null;
     }

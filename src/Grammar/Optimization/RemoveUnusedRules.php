@@ -27,16 +27,16 @@ class RemoveUnusedRules extends Optimization
     /**
      * @inheritDoc
      */
-    public function willPostProcessRule(Grammar $grammar, Expression $expr, OptimizationContext $context)
+    public function afterTraverse(Grammar $grammar, OptimizationContext $context)
     {
-        return !$context->isRelevantRule($expr->getName());
-    }
+        $references = array_flip($context->getReferencedRules());
 
-    /**
-     * @inheritDoc
-     */
-    public function postProcessRule(Grammar $grammar, Expression $expr, OptimizationContext $context)
-    {
-        return false;
+        foreach ($grammar as $name => $expr) {
+            if (!isset($references[$name])) {
+                unset($grammar[$name]);
+            }
+        }
+
+        return $grammar;
     }
 }
