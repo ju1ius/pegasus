@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus;
+namespace ju1ius\Pegasus\CST;
 
 /**
  * A parse tree node.

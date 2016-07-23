@@ -34,11 +34,10 @@ use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Expression\Terminal\Word;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimizer;
-use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\MetaGrammar;
 use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
 use ju1ius\Pegasus\Tests\PegasusTestCase;
-use ju1ius\Pegasus\Traverser\MetaGrammarTraverser;
+use ju1ius\Pegasus\CST\Transform\MetaGrammarTransform;
 
 /**
  * @author ju1ius <ju1ius@laposte.net>
@@ -51,7 +50,7 @@ class GrammarParserTest extends PegasusTestCase
         $parser = new LeftRecursivePackrat($meta);
         $tree = $parser->parseAll($syntax);
 
-        $grammar = (new MetaGrammarTraverser())->traverse($tree);
+        $grammar = (new MetaGrammarTransform())->transform($tree);
         if ($optimizationLevel) {
             return Optimizer::optimize($grammar, $optimizationLevel);
         }

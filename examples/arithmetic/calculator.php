@@ -4,16 +4,16 @@ require_once __DIR__.'/../../vendor/autoload.php';
 use ju1ius\Pegasus\Debug\Debug;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
-use ju1ius\Pegasus\Traverser\NamedNodeTraverser;
+use ju1ius\Pegasus\CST\Transform;
 
 $SYNTAX = file_get_contents(__DIR__ . '/arithmetic.peg');
 
-final class Calculator extends NamedNodeTraverser
+final class Calculator extends Transform
 {
     /**
      * @inheritDoc
      */
-    protected function beforeTraverse(\ju1ius\Pegasus\Node $node)
+    protected function beforeTraverse(\ju1ius\Pegasus\CST\Node $node)
     {
         return;
     }
@@ -58,7 +58,7 @@ final class Calculator extends NamedNodeTraverser
 //$parser = new LeftRecursivePackrat($meta->fold());
 //$tree = $parser->parseAll($syntax);
 //Debug::dump($tree);
-//$t = new MetaGrammarTraverser();
+//$t = new MetaGrammarTransform();
 //$grammar = $t->traverse($tree);
 
 $grammar = Grammar::fromSyntax($SYNTAX);
@@ -73,5 +73,5 @@ if (!empty($argv[1])) {
 $tree = $parser->parseAll($input);
 //Debug::dump($tree);
 $calculator = new Calculator();
-$result = $calculator->traverse($tree);
+$result = $calculator->transform($tree);
 echo ">>> ", $result, "\n";

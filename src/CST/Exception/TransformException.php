@@ -8,18 +8,18 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Traverser\Exception;
+namespace ju1ius\Pegasus\CST\Exception;
 
 use ju1ius\Pegasus\Debug\Debug;
-use ju1ius\Pegasus\Debug\ParseTreeDumper;
-use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\Debug\CSTDumper;
+use ju1ius\Pegasus\CST\Node;
 
 /**
  * Something went wrong while traversing a parse tree.
  *
  * @author ju1ius <ju1ius@laposte.net>
  */
-class ParseTreeVisitationError extends \RuntimeException
+class TransformException extends \RuntimeException
 {
     /**
      * @param Node       $node     The node at which the error occurred
@@ -30,7 +30,7 @@ class ParseTreeVisitationError extends \RuntimeException
     public function __construct(Node $node, Node $rootNode, $msg = '', \Exception $previous = null)
     {
         $msg = sprintf(
-            "%s: %s\n\nParse tree:\n%s",
+            "%s: %s\n\nConcrete Syntax Tree:\n%s",
             __CLASS__,
             $msg ?: ($previous ? $previous->getMessage() : ''),
             $this->printParseTree($node, $rootNode)
@@ -47,7 +47,7 @@ class ParseTreeVisitationError extends \RuntimeException
     private function printParseTree(Node $node, Node $rootNode)
     {
         $output = Debug::createBufferedOutput();
-        ParseTreeDumper::dump($rootNode, $output, $node);
+        CSTDumper::dump($rootNode, $output, $node);
 
         return $output->fetch();
     }

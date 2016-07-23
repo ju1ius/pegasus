@@ -12,7 +12,7 @@ namespace ju1ius\Pegasus\Tests\Expression;
 
 use ju1ius\Pegasus\Expression\Terminal\EOF;
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Parser\RecursiveDescent;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;

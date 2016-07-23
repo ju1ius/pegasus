@@ -10,10 +10,10 @@
 
 namespace ju1ius\Pegasus\Tests\Expression;
 
+use ju1ius\Pegasus\CST\Node;
+use ju1ius\Pegasus\CST\Node\Terminal;
+use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarBuilder;
-use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Node\Terminal;
-use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 /**
@@ -24,9 +24,9 @@ class TokenTest extends ExpressionTestCase
     /**
      * @dataProvider getMatchProvider
      *
-     * @param       $grammar
-     * @param array $params
-     * @param Node  $expected
+     * @param Grammar $grammar
+     * @param array   $params
+     * @param Node    $expected
      */
     public function testMatch($grammar, array $params, $expected)
     {

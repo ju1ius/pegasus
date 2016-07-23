@@ -11,13 +11,13 @@
 namespace {{ namespace }};
 {% endif %}
 
-use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Traverser\NamedNodeTraverser;
+use ju1ius\Pegasus\CST\Node;
+use ju1ius\Pegasus\CST\Transform;
 
 /**
  * CST traverser for the `{{ grammar.name }}` grammar.
  */
-class {{ grammar.name }}NodeTraverser extends NamedNodeTraverser
+class {{ grammar.name }}Transform extends Transform
 {
     /**
      * @inheritDoc

@@ -20,10 +20,8 @@
             <file>tests/Pegasus/Expression/QuantifierTest.php</file>
             <directory>tests/Pegasus/Expression</directory>
         </testsuite>
-        <testsuite name="ParseNodes">
-            <file>tests/Pegasus/NodeTest.php</file>
-            <directory>tests/Pegasus/Node</directory>
-            <file>tests/Pegasus/Traverser/NamedNodeTraverserTest.php</file>
+        <testsuite name="CST">
+            <directory>tests/Pegasus/CST</directory>
         </testsuite>
         <testsuite name="Parsers">
             <directory>tests/Pegasus/Parser</directory>

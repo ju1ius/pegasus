@@ -8,9 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Tests;
+namespace ju1ius\Pegasus\Tests\CST;
 
-use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\CST\Node;
+use ju1ius\Pegasus\Tests\PegasusTestCase;
 
 /**
  * @author ju1ius <ju1ius@laposte.net>

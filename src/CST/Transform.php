@@ -8,17 +8,17 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Traverser;
+namespace ju1ius\Pegasus\CST;
 
-use ju1ius\Pegasus\Traverser\Exception\ParseTreeVisitationError;
-use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\CST\Exception\TransformException;
+use ju1ius\Pegasus\CST\Node;
 
 /**
  * Performs a depth-first traversal of a parse tree.
  *
  * @author ju1ius <ju1ius@laposte.net>
  */
-class NamedNodeTraverser
+class Transform
 {
     /**
      * @var array
@@ -35,7 +35,7 @@ class NamedNodeTraverser
      */
     private $rootNode;
 
-    final public function traverse(Node $node)
+    final public function transform(Node $node)
     {
         $this->rootNode = $node;
 
@@ -129,10 +129,10 @@ class NamedNodeTraverser
             }
 
             return $this->leaveNode($node, $children);
-        } catch (ParseTreeVisitationError $err) {
+        } catch (TransformException $err) {
             throw $err;
         } catch (\Exception $err) {
-            throw new ParseTreeVisitationError($node, $this->rootNode, '', $err);
+            throw new TransformException($node, $this->rootNode, '', $err);
         }
     }
 

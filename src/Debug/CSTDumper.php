@@ -10,15 +10,15 @@
 
 namespace ju1ius\Pegasus\Debug;
 
-use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Traverser\NodeTraverser;
-use ju1ius\Pegasus\Visitor\NodeVisitor;
+use ju1ius\Pegasus\CST\Node;
+use ju1ius\Pegasus\CST\NodeTraverser;
+use ju1ius\Pegasus\CST\NodeVisitor;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * @author ju1ius <ju1ius@laposte.net>
  */
-final class ParseTreeDumper extends NodeVisitor
+final class CSTDumper extends NodeVisitor
 {
     /**
      * @var OutputInterface
@@ -36,10 +36,10 @@ final class ParseTreeDumper extends NodeVisitor
     private $indentStack;
 
     /**
-     * ParseTreeDumper constructor.
+     * CSTDumper constructor.
      *
-     * @param OutputInterface $output
-     * @param Node|null       $errorNode
+     * @param OutputInterface               $output
+     * @param \ju1ius\Pegasus\CST\Node|null $errorNode
      */
     public function __construct(OutputInterface $output, Node $errorNode = null)
     {
@@ -80,7 +80,7 @@ final class ParseTreeDumper extends NodeVisitor
         }
         $this->output->write(sprintf(
             '<class>%s</class>',
-            str_replace('ju1ius\\Pegasus\\Node\\', '', get_class($node))
+            str_replace('ju1ius\\Pegasus\\CST\\Node\\', '', get_class($node))
         ));
         if ($node->name) {
             $this->output->write(sprintf('<d>("</d>%s<d>")</d>', $node->name));
@@ -97,8 +97,8 @@ final class ParseTreeDumper extends NodeVisitor
 
         if ($this->errorNode === $node) {
             $this->output->writeln(sprintf(
-                "<error>%s ▲▲ Error was here.</error>",
-                str_repeat('▶▶', count($this->indentStack))
+                "<error>%s╌╌┘ Error was here. </error>",
+                str_repeat('╌╌', count($this->indentStack))
             ));
         }
         if (count($node) && $hasParent) {

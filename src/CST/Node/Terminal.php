@@ -8,24 +8,23 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Node;
+namespace ju1ius\Pegasus\CST\Node;
 
-use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\CST\Node;
 
-/**
- * A Node that has child nodes.
- */
-class Composite extends Node
+class Terminal extends Node
 {
+    public $isTerminal = true;
+
     /**
      * @param string $name
      * @param int    $start
      * @param int    $end
-     * @param array  $children
+     * @param null   $value
      * @param array  $attributes
      */
-    public function __construct($name, $start, $end, array $children, array $attributes = [])
+    public function __construct($name, $start, $end, $value = null, array $attributes = [])
     {
-        parent::__construct($name, $start, $end, null, $children, $attributes);
+        parent::__construct($name, $start, $end, $value, [], $attributes);
     }
 }

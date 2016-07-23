@@ -8,24 +8,24 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Tests\Traverser;
+namespace ju1ius\Pegasus\Tests\CST;
 
-use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Node\Composite;
-use ju1ius\Pegasus\Node\Decorator;
-use ju1ius\Pegasus\Node\Quantifier;
-use ju1ius\Pegasus\Node\Terminal;
-use ju1ius\Pegasus\Traverser\Exception\ParseTreeVisitationError;
-use ju1ius\Pegasus\Traverser\NamedNodeTraverser;
+use ju1ius\Pegasus\CST\Node;
+use ju1ius\Pegasus\CST\Node\Composite;
+use ju1ius\Pegasus\CST\Node\Decorator;
+use ju1ius\Pegasus\CST\Node\Quantifier;
+use ju1ius\Pegasus\CST\Node\Terminal;
+use ju1ius\Pegasus\CST\Exception\TransformException;
+use ju1ius\Pegasus\CST\Transform;
 
 /**
  * @author ju1ius <ju1ius@laposte.net>
  */
-class NamedNodeTraverserTest extends \PHPUnit_Framework_TestCase
+class TransformTest extends \PHPUnit_Framework_TestCase
 {
     public function testDefaultBeforeAndAfterTraverse()
     {
-        $traverser = $this->getMockBuilder(NamedNodeTraverser::class)
+        $traverser = $this->getMockBuilder(Transform::class)
             ->setMethods(['beforeTraverse', 'afterTraverse'])
             ->getMock();
         $node = new Node('', 0, 0);
@@ -39,7 +39,7 @@ class NamedNodeTraverserTest extends \PHPUnit_Framework_TestCase
             ->method('afterTraverse')
             ->willReturnArgument(0);
 
-        $traverser->traverse($node);
+        $traverser->transform($node);
     }
 
     /**
@@ -50,8 +50,8 @@ class NamedNodeTraverserTest extends \PHPUnit_Framework_TestCase
      */
     public function testDefaultVisitationBehavior(Node $node, $expected)
     {
-        $traverser = new NamedNodeTraverser();
-        $result = $traverser->traverse($node);
+        $traverser = new Transform();
+        $result = $traverser->transform($node);
         $this->assertEquals($expected, $result);
     }
 
@@ -106,7 +106,7 @@ class NamedNodeTraverserTest extends \PHPUnit_Framework_TestCase
 
     public function testCustomVisitationMethodsAreCalled()
     {
-        $traverser = $this->getMockBuilder(NamedNodeTraverser::class)
+        $traverser = $this->getMockBuilder(Transform::class)
             ->setMethods(['enter_Foo', 'leave_Foo'])
             ->getMock();
         $node = new Terminal('Foo', 0, 3, 'foo');
@@ -121,13 +121,13 @@ class NamedNodeTraverserTest extends \PHPUnit_Framework_TestCase
             ->with($node)
             ->willReturn('foo');
 
-        $result = $traverser->traverse($node);
+        $result = $traverser->transform($node);
         $this->assertSame('foo', $result);
     }
 
     public function testItConvertsExceptionsToVisitationError()
     {
-        $traverser = $this->getMockBuilder(NamedNodeTraverser::class)
+        $traverser = $this->getMockBuilder(Transform::class)
             ->setMethods(['leaveNode'])
             ->getMock();
 
@@ -135,25 +135,25 @@ class NamedNodeTraverserTest extends \PHPUnit_Framework_TestCase
             ->method('leaveNode')
             ->willThrowException(new \RuntimeException());
 
-        $this->expectException(ParseTreeVisitationError::class);
+        $this->expectException(TransformException::class);
 
         $node = new Terminal('Foo', 0, 3, 'foo');
-        $traverser->traverse($node);
+        $traverser->transform($node);
     }
 
     public function testItCanThrowVisitationErrors()
     {
-        $traverser = $this->getMockBuilder(NamedNodeTraverser::class)
+        $traverser = $this->getMockBuilder(Transform::class)
             ->setMethods(['leaveNode'])
             ->getMock();
         $node = new Terminal('Foo', 0, 3, 'foo');
 
         $traverser->expects($this->any())
             ->method('leaveNode')
-            ->willThrowException(new ParseTreeVisitationError($node, $node, 'I fucked up.'));
+            ->willThrowException(new TransformException($node, $node, 'I fucked up.'));
 
-        $this->expectException(ParseTreeVisitationError::class);
+        $this->expectException(TransformException::class);
 
-        $traverser->traverse($node);
+        $traverser->transform($node);
     }
 }

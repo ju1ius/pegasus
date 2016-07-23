@@ -10,7 +10,7 @@
 
 namespace ju1ius\Pegasus\Parser;
 
-use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\CST\Node;
 
 class MemoEntry
 {

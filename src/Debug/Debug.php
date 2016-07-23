@@ -12,7 +12,7 @@ namespace ju1ius\Pegasus\Debug;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\CST\Node;
 use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -40,7 +40,7 @@ final class Debug
         } elseif ($value instanceof Expression) {
             ExpressionDumper::dump($value, $output);
         } elseif ($value instanceof Node) {
-            ParseTreeDumper::dump($value, $output);
+            CSTDumper::dump($value, $output);
         } else {
             dump($value);
         }

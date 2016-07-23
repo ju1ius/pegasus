@@ -11,7 +11,7 @@
 namespace ju1ius\Pegasus\Parser\Exception;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Utils\SourceExcerpt;
 
 /**

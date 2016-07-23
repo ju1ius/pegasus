@@ -13,8 +13,8 @@ namespace ju1ius\Pegasus\Tests\Expression;
 use ju1ius\Pegasus\Expression\Super;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarBuilder;
-use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Node\Terminal;
+use ju1ius\Pegasus\CST\Node;
+use ju1ius\Pegasus\CST\Node\Terminal;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 /**
@@ -32,8 +32,8 @@ class SuperTest extends ExpressionTestCase
      * @dataProvider getMatchProvider
      *
      * @param Grammar $grammar
-     * @param array  $args
-     * @param Node   $expected
+     * @param array   $args
+     * @param Node    $expected
      */
     public function testMatch($grammar, $args, $expected)
     {

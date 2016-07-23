@@ -11,12 +11,12 @@
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
 use ju1ius\Pegasus\Parser\Packrat;
-use ju1ius\Pegasus\Traverser\NamedNodeTraverser;
+use ju1ius\Pegasus\CST\Transform;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 
-class JSONTraverser extends NamedNodeTraverser
+class JSONTraverser extends Transform
 {
     protected function leave_object($node, $elements)
     {
@@ -72,7 +72,18 @@ class JSONTraverser extends NamedNodeTraverser
         return false;
     }
 }
+\Symfony\Component\Debug\Debug::enable();
+$stopwatch = new \Symfony\Component\Stopwatch\Stopwatch();
 
+$syntax = file_get_contents(__DIR__ . '/json.peg');
+
+$stopwatch->openSection();
+$stopwatch->start('parse_syntax');
+$grammar = Grammar::fromSyntax($syntax, null, 2);
+$stopwatch->stop('parse_syntax');
+
+$parser = new Packrat($grammar);
+//$parser = new \ju1ius\Pegasus\Parser\RecursiveDescent($grammar);
 //require_once __DIR__.'/JSON.php';
 //$parser = new JSON();
 //$test_input = <<<'JSON'
@@ -84,16 +95,20 @@ class JSONTraverser extends NamedNodeTraverser
 //JSON;
 //
 //$input = empty($argv[1]) ? $test_input : $argv[1];
+$stopwatch->start('load_data');
 $input = file_get_contents('/home/ju1ius/www/embo/vhosts/www/embo/composer.lock');
+$stopwatch->stop('load_data');
 
 // Pegasus parse
-$start = microtime(true);
+$stopwatch->start('parse_json');
+//mb_regex_encoding('ASCII');
 $tree = $parser->parseAll($input);
-$object = (new JSONTraverser())->traverse($tree);
-$end = microtime(true);
-//
-echo 'Pegasus', PHP_EOL;
-echo '>>> Time: ', number_format(($end - $start) * 1000, 3), ' milliseconds', PHP_EOL;
-echo '>>> Memory: ', memory_get_peak_usage(true), PHP_EOL;
-echo '>>> Result: ';
-dump($object);
+$stopwatch->stop('parse_json');
+$stopwatch->start('visit');
+$object = (new JSONTraverser())->transform($tree);
+$stopwatch->stop('visit');
+
+$stopwatch->stopSection('script');
+foreach ($stopwatch->getSectionEvents('script') as $name => $event) {
+    echo $name, ': ', $event, PHP_EOL;
+}

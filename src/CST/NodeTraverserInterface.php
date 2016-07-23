@@ -8,9 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Traverser;
-
-use ju1ius\Pegasus\Visitor\NodeVisitorInterface;
+namespace ju1ius\Pegasus\CST;
 
 /**
  * Generic traverser interface
@@ -20,7 +18,7 @@ interface NodeTraverserInterface
     /**
      * Adds a visitor.
      *
-     * @param NodeVisitorInterface[] ...$visitors
+     * @param \ju1ius\Pegasus\CST\NodeVisitorInterface[] ...$visitors
      *
      * @return $this
      */
@@ -29,14 +27,14 @@ interface NodeTraverserInterface
     /**
      * Removes an added visitor.
      *
-     * @param NodeVisitorInterface[] ...$visitors
+     * @param \ju1ius\Pegasus\CST\NodeVisitorInterface[] ...$visitors
      *
      * @return $this
      */
     public function removeVisitor(NodeVisitorInterface ...$visitors);
 
     /**
-     * Traverses a node using the registered visitors.
+     * Traverses a node using the registered optimizations.
      *
      * @param mixed $node The node to traverse.
      *

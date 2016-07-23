@@ -11,11 +11,11 @@
 {% if namespace %}
 namespace {{ namespace }};
 {% endif %}
-use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Node\Composite;
-use ju1ius\Pegasus\Node\Decorator;
-use ju1ius\Pegasus\Node\Quantifier;
-use ju1ius\Pegasus\Node\Terminal;
+use ju1ius\Pegasus\CST\Node;
+use ju1ius\Pegasus\CST\Node\Composite;
+use ju1ius\Pegasus\CST\Node\Decorator;
+use ju1ius\Pegasus\CST\Node\Quantifier;
+use ju1ius\Pegasus\CST\Node\Terminal;
 {% for import in imports|default([]) %}
 use {{ import }};
 {% endfor %}

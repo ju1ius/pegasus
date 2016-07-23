@@ -5,7 +5,7 @@ namespace ju1ius\Pegasus\Tests\Expression;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\Expression\Decorator\Not;
-use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class NotTest extends ExpressionTestCase

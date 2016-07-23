@@ -5,9 +5,9 @@ namespace ju1ius\Pegasus\Tests\Expression;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\Expression\Decorator\OneOrMore;
-use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Node\Quantifier;
-use ju1ius\Pegasus\Node\Terminal;
+use ju1ius\Pegasus\CST\Node;
+use ju1ius\Pegasus\CST\Node\Quantifier;
+use ju1ius\Pegasus\CST\Node\Terminal;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class OneOrMoreTest extends ExpressionTestCase

@@ -6,7 +6,7 @@ use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\Terminal\GroupMatch;
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\CST\Node;
 
 /**
  * Class PegasusTestCase
@@ -16,9 +16,9 @@ class PegasusTestCase extends \PHPUnit_Framework_TestCase
 {
 	/**
 	 * Compares two nodes.
-	 *
-	 * @param Node $expected
-	 * @param Node $actual
+     *
+     * @param Node $expected
+     * @param Node $actual
 	 *
 	 * @return bool
 	 */

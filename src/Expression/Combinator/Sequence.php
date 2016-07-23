@@ -13,7 +13,7 @@ namespace ju1ius\Pegasus\Expression\Combinator;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Combinator;
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Parser\Parser;
 use ju1ius\Pegasus\Parser\Scope;
 

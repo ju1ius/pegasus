@@ -8,9 +8,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Node;
+namespace ju1ius\Pegasus\CST\Node;
 
-use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\CST\Node;
 
 /**
  * A composite node having only one child node.

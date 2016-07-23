@@ -11,7 +11,7 @@
 namespace ju1ius\Pegasus\Parser;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Node;
+use ju1ius\Pegasus\CST\Node;
 
 /**
  * A packrat parser implementing Wrath, Douglass & Millstein's algorithm

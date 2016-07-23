@@ -15,7 +15,7 @@ use ju1ius\Pegasus\Compiler\Extension\Php\Runtime\LeftRecursivePackrat;
 use ju1ius\Pegasus\Compiler\Extension\Php\Runtime\Packrat;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimizer;
-use ju1ius\Pegasus\Traverser\NamedNodeTraverser;
+use ju1ius\Pegasus\CST\Transform;
 
 class PhpCompiler extends Compiler
 {
@@ -60,7 +60,7 @@ class PhpCompiler extends Compiler
      */
     public function getNodeVisitorClass()
     {
-        return NamedNodeTraverser::class;
+        return Transform::class;
     }
 
     /**

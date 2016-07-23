@@ -8,10 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Traverser;
-
-use ju1ius\Pegasus\Node;
-use ju1ius\Pegasus\Visitor\NodeVisitorInterface;
+namespace ju1ius\Pegasus\CST;
 
 /**
  * @author ju1ius <ju1ius@laposte.net>

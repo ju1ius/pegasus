@@ -18,7 +18,7 @@ use ju1ius\Pegasus\Grammar\Optimizer;
 use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
 use ju1ius\Pegasus\Traverser\GrammarTraverser;
 use ju1ius\Pegasus\Visitor\GrammarVisitor;
-use ju1ius\Pegasus\Traverser\MetaGrammarTraverser;
+use ju1ius\Pegasus\CST\Transform\MetaGrammarTransform;
 
 /**
  * A collection of expressions that describe a language.
@@ -108,7 +108,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
     {
         $metaGrammar = MetaGrammar::create();
         $tree = (new LeftRecursivePackrat($metaGrammar))->parseAll($syntax);
-        $grammar = (new MetaGrammarTraverser)->traverse($tree);
+        $grammar = (new MetaGrammarTransform)->transform($tree);
         if ($startRule) {
             $grammar->setStartRule($startRule);
         }
