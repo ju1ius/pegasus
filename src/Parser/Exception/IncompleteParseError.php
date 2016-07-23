@@ -24,15 +24,9 @@ class IncompleteParseError extends ParseError
 
     public function __toString()
     {
-        $length = strlen($this->text);
-        $col = $this->column($length);
         return sprintf(
-            'IncompleteParseError: Parsing succeeded without consuming all the input from line %s, column %s.'
-            . PHP_EOL
-            . '%s',
-            $this->line(),
-            $col,
-            $this->getTextExtract($col, $length)
+            "IncompleteParseError: Parsing succeeded without consuming all the input.\n%s",
+            $this->sourceExcerpt->getExcerpt($this->position)
         );
     }
 }

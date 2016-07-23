@@ -22,7 +22,7 @@ class StrTest extends \PHPUnit_Framework_TestCase
      * @dataProvider getTestClassNameProvider
      *
      * @param object|string $input
-     * @param string $expected
+     * @param string        $expected
      */
     public function testClassName($input, $expected)
     {
@@ -34,23 +34,56 @@ class StrTest extends \PHPUnit_Framework_TestCase
         return [
             'A FQCN as a string' => [
                 'Acme\Demo\FooBar',
-                'FooBar'
+                'FooBar',
             ],
             'A FQCN in top-level namespace as a string' => [
                 '\FooBar',
-                'FooBar'
+                'FooBar',
             ],
             'A FQCN in top-level namespace (without leading backslash) as a string' => [
                 'stdClass',
-                'stdClass'
+                'stdClass',
             ],
             'An stdClass instance' => [
                 new \stdClass(),
-                'stdClass'
+                'stdClass',
             ],
             'An Expression instance' => [
                 new Literal('foo'),
-                'Literal'
+                'Literal',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider getTestTruncateProvider
+     *
+     * @param array  $args
+     * @param string $expected
+     */
+    public function testTruncate(array $args, $expected)
+    {
+        $this->assertSame($expected, Str::truncate(...$args));
+    }
+
+    public function getTestTruncateProvider()
+    {
+        return [
+            'No truncation' => [
+                ['foobar bazqux', INF],
+                'foobar bazqux',
+            ],
+            'Simple truncation' => [
+                ['foobar bazqux', 8],
+                'foobar …',
+            ],
+            'Target column < max width' => [
+                ['foobar bazqux', 8, 4],
+                'foobar …',
+            ],
+            'Target column > max width' => [
+                ['foobar bazqux', 8, 8],
+                '… obar baz',
             ],
         ];
     }
