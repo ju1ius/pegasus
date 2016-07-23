@@ -73,22 +73,23 @@ class NodeTraverser implements NodeTraverserInterface
         return $node;
     }
 
-    protected function traverseNode(Node $node, Node $parent = null, $index = null)
+    protected function traverseNode(Node $node, $index = null, $isLast = false)
     {
         foreach ($this->visitors as $visitor) {
-            if (null !== $result = $visitor->enterNode($node, $parent, $index)) {
+            if (null !== $result = $visitor->enterNode($node, $index, $isLast)) {
                 $node = $result;
             }
         }
 
+        $childCount = count($node->children);
         foreach ($node->children as $i => $child) {
-            if (null !== $result = $this->traverseNode($child, $node, $i)) {
+            if (null !== $result = $this->traverseNode($child, $i, $i === $childCount - 1)) {
                 $node->children[$i] = $result;
             }
         }
 
         foreach ($this->visitors as $visitor) {
-            if (null !== $result = $visitor->leaveNode($node, $parent, $index)) {
+            if (null !== $result = $visitor->leaveNode($node, $index, $isLast)) {
                 $node = $result;
             }
         }
