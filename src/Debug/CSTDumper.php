@@ -91,7 +91,12 @@ final class CSTDumper extends NodeVisitor
             $node->start,
             $node->end
         ));
-        if ($node->value) {
+        if ($node instanceof Node\Invalid) {
+            $this->output->write(sprintf(
+                '<error> Node expected, got: `%s` </error>',
+                var_export($node->value, true)
+            ));
+        } elseif ($node->value) {
             $this->output->write(sprintf('<d>: "</d><term>%s</term><d>"</d>', $node->value));
         }
         $this->output->writeln('');

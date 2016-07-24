@@ -10,6 +10,8 @@
 
 namespace ju1ius\Pegasus\CST;
 
+use ju1ius\Pegasus\CST\Node\Invalid;
+
 /**
  * @author ju1ius <ju1ius@laposte.net>
  */
@@ -83,6 +85,9 @@ class NodeTraverser implements NodeTraverserInterface
 
         $childCount = count($node->children);
         foreach ($node->children as $i => $child) {
+            if (!$child instanceof Node) {
+                $child = new Invalid($child);
+            }
             if (null !== $result = $this->traverseNode($child, $i, $i === $childCount - 1)) {
                 $node->children[$i] = $result;
             }
