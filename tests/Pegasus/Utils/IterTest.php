@@ -17,6 +17,20 @@ use ju1ius\Pegasus\Utils\Iter;
  */
 class IterTest extends \PHPUnit_Framework_TestCase
 {
+    public function testMap()
+    {
+        $mock = $this->getMockBuilder('stdClass')
+            ->setMethods(['callback'])
+            ->getMock();
+        $mock->expects($this->exactly(4))
+            ->method('callback')
+            ->willReturnArgument(0);
+
+        $input = new \ArrayIterator([1, 2, 3, 4]);
+        $result = iterator_to_array(Iter::map([$mock, 'callback'], $input));
+        $this->assertEquals([1, 2, 3, 4], $result);
+    }
+
     public function testEvery()
     {
         $input = new \ArrayIterator([1, 2, 3, 4, 5, 6, 7, 8, 9]);

@@ -30,8 +30,7 @@ class TransformException extends \RuntimeException
     public function __construct(Node $node, Node $rootNode, $msg = '', \Exception $previous = null)
     {
         $msg = sprintf(
-            "%s: %s\n\nConcrete Syntax Tree:\n%s",
-            __CLASS__,
+            "%s\n\nConcrete Syntax Tree:\n%s",
             $msg ?: ($previous ? $previous->getMessage() : ''),
             $this->printParseTree($node, $rootNode)
         );

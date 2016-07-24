@@ -302,4 +302,40 @@ class GrammarParserTest extends PegasusTestCase
             ],
         ];
     }
+
+    public function testNameDirective()
+    {
+        $syntax = "%name Foo\nx = y";
+        $expected = 'Foo';
+
+        $grammar = $this->parseSyntax($syntax);
+        $this->assertSame($expected, $grammar->getName());
+
+        $grammar = $this->parseSyntax($syntax, 0, true);
+        $this->assertSame($expected, $grammar->getName(), 'With optimized meta');
+    }
+
+    public function testStartDirective()
+    {
+        $syntax = "%start y\nx = y\ny = z";
+        $start = 'y';
+
+        $grammar = $this->parseSyntax($syntax);
+        $this->assertSame($start, $grammar->getStartRule());
+
+        $grammar = $this->parseSyntax($syntax, 0, true);
+        $this->assertSame($start, $grammar->getStartRule(), 'With optimized meta');
+    }
+
+    public function testInlineDirective()
+    {
+        $syntax = '%inline x = y';
+        $start = 'y';
+
+        $grammar = $this->parseSyntax($syntax);
+        $this->assertTrue($grammar->isInlined('x'));
+
+        $grammar = $this->parseSyntax($syntax, 0, true);
+        $this->assertTrue($grammar->isInlined('x'), 'With optimized meta');
+    }
 }

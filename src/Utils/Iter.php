@@ -16,6 +16,21 @@ namespace ju1ius\Pegasus\Utils;
 final class Iter
 {
     /**
+     * Like array_map, but yields and passes the key & the collection to the callable.
+     *
+     * @param callable           $fn
+     * @param array|\Traversable $col
+     *
+     * @return \Generator
+     */
+    public static function map(callable $fn, $col)
+    {
+        foreach ($col as $k => $v) {
+            yield $fn($v, $k, $col);
+        }
+    }
+
+    /**
      * @param callable           $fn
      * @param array|\Traversable $col
      *
