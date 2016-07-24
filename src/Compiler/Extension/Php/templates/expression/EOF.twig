@@ -1,0 +1,14 @@
+{% extends "expr.twig" %}
+
+
+{% block matching %}
+{{ result_var }} = !isset($this->text[$this->pos]);
+if (!{{ result_var }}) {
+    {{ macros.error(context.rule, expr)|indent }}
+}
+{%- endblock matching %}
+
+
+{% block capturing %}
+{{ block('matching') }}
+{%- endblock capturing %}

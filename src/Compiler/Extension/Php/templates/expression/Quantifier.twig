@@ -9,7 +9,7 @@
 {{ count_var }} = 0;
 {{ children_var }} = $this->isCapturing ? [] : null;
 while ({{ count_var }} < {{ expr.upperBound }}) {
-    {{ render_expr(expr[0])|indent }}
+    {{ render_expr(expr[0], context)|indent }}
     if (!{{ subres_var }}) break;
     {{ count_var }}++;
     if ($this->isCapturing) {{ children_var }}[] = {{ subres_var }};

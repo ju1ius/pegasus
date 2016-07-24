@@ -1,10 +1,19 @@
-{% set pos_var = position_varname(expr) %}
+{% extends "expr.twig" %}
+
 {% set subres_var = result_varname(expr[0]) %}
-{{ expr_comment(expr) }}
+
+
+{% block matching %}
 {{ pos_var }} = $this->pos;
-{{ render_expr(expr[0]) }}
+{{ render_expr(expr[0], context) }}
 {{ expr_comment(expr, 'result') }}
 if ({{ subres_var }}) {
     $scope['{{ expr.label }}'] = substr($this->text, {{ pos_var }}, $this->pos - {{ pos_var }});
 }
-{{ result_varname(expr) }} = {{ subres_var }};
+{{ result_var }} = {{ subres_var }};
+{%- endblock matching %}
+
+
+{% block capturing %}
+{{ block('matching') }}
+{%- endblock capturing %}

@@ -126,8 +126,9 @@ abstract class Compiler
     {
         $args['base_class'] = $this->getParserClass();
         $grammar = $this->optimizeGrammar($grammar);
+        $context = CompilationContext::of($grammar);
         // analyse grammar
-        $analysis = new Analysis($grammar);
+        $analysis = $context->getAnalysis();
         // find the appropriate parser class
         foreach ($grammar as $ruleName => $expr) {
             if ($analysis->isLeftRecursive($ruleName)) {
@@ -135,8 +136,7 @@ abstract class Compiler
                 break;
             }
         }
-        $this->twig->addGlobal('grammar', $grammar);
-        $this->twig->addGlobal('analysis', $analysis);
+        $args['context'] = $context;
 
         $this->renderParser($outputDirectory, $args);
     }

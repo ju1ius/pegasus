@@ -1,0 +1,7 @@
+{%- set result_var = result_varname(expr) -%}
+{%- set pos_var = position_varname(expr) -%}
+
+{%- block expr -%}
+{{ expr_comment(expr) }}
+{{ context.isCapturing ? block('capturing') : block('matching') }}
+{%- endblock expr -%}

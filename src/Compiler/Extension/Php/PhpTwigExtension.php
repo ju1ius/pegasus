@@ -11,6 +11,7 @@
 namespace ju1ius\Pegasus\Compiler\Extension\Php;
 
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Utils\Str;
 use Twig_Extension;
 use Twig_SimpleFilter;
 use Twig_SimpleFunction;
@@ -113,12 +114,12 @@ class PhpTwigExtension extends Twig_Extension
 
     public function getExpressionComment(Expression $expr, $msg = '')
     {
-        $fqcn = get_class($expr);
-        $class = substr($fqcn, strrpos($fqcn, '\\') + 1);
+        $class = Str::className($expr);
 
         return sprintf(
-            '/* %s%s: %s */',
+            '/* %s#%s%s: %s */',
             $class,
+            $expr->id,
             $msg ? sprintf(' (%s)', $msg) : '',
             $this->escapeBlockComment((string)$expr)
         );

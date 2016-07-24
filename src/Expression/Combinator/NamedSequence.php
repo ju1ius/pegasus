@@ -42,6 +42,13 @@ final class NamedSequence extends Combinator
         return $this->label;
     }
 
+    public function getCaptureCount()
+    {
+        return array_reduce($this->children, function ($n, Expression $child) {
+            return $child->isCapturing() ? $n + 1 : $n;
+        }, 0);
+    }
+
     /**
      * @inheritDoc
      */

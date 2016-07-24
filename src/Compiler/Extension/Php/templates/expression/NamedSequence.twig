@@ -1,0 +1,12 @@
+{% extends "expression/Sequence.twig" %}
+
+
+{% block capturing_success %}
+    {{ result_var }} = new Composite('{{ expr.label }}', {{ pos_var }}, $this->pos, {{ children_var }});
+{%- endblock capturing_success %}
+
+
+{%- block expr -%}
+{{ expr_comment(expr) }}
+{{ context.isMatching ? block('matching') : block('capturing') }}
+{%- endblock expr -%}

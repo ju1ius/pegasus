@@ -10,11 +10,15 @@
 
 namespace ju1ius\Pegasus\Compiler\Twig\Extension;
 
+use ju1ius\Pegasus\Compiler\CompilationContext;
 use ju1ius\Pegasus\Compiler\Compiler;
 use ju1ius\Pegasus\Compiler\Twig\Context;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Compiler\Twig\DataCollector;
 use ju1ius\Pegasus\Compiler\Twig\TokenParser\CollectorTokenParser;
+use ju1ius\Pegasus\Expression\Decorator\Quantifier;
+use ju1ius\Pegasus\Expression\Terminal\Match;
+use ju1ius\Pegasus\Utils\Str;
 use Twig_Environment;
 use Twig_Error_Loader;
 use Twig_Extension;
@@ -58,8 +62,7 @@ class PegasusTwigExtension extends Twig_Extension
     public function getGlobals()
     {
         $globals = [
-            'data_collector' => $this->collector,
-            'context' => new Context()
+            'data_collector' => $this->collector
         ];
         try {
             // if a template named macros exists,
@@ -113,23 +116,23 @@ class PegasusTwigExtension extends Twig_Extension
         return $out;
     }
 
-    public function renderRule($name, Expression $expr)
+    public function renderRule($name, Expression $expr, CompilationContext $context)
     {
         $tpl = $this->environment->loadTemplate('rule.twig');
-        $this->environment->addGlobal('current_rule', $name);
 
         return $tpl->render([
             'expr' => $expr,
-            'current_rule' => $name
+            'context' => $context->ofRule($name)
         ]);
     }
 
-    public function renderExpression(Expression $expr, array $args = [])
+    public function renderExpression(Expression $expr, CompilationContext $context, array $args = [])
     {
-        $args = array_merge($args, ['expr' => $expr]);
-        if (!isset($args['capturing'])) {
-            $args['capturing'] = $expr->isCapturingDecidable() && $expr->isCapturing();
-        }
+        $args = array_merge($args, [
+            'expr' => $expr,
+            'context' => $context
+        ]);
+
         $template = $this->getTemplateForExpression($expr);
         $tpl = $this->environment->loadTemplate($template);
 
@@ -138,14 +141,13 @@ class PegasusTwigExtension extends Twig_Extension
 
     public function getTemplateForExpression(Expression $expr)
     {
-        $class = strtolower(str_replace('ju1ius\Pegasus\Expression\\', '', get_class($expr)));
-        switch ($class) {
-            case 'zeroormore':
-            case 'oneormore':
-            case 'optional':
-                return 'expression/quantifier.twig';
-            default:
-                return "expression/{$class}.twig";
+        if ($expr instanceof Quantifier) {
+            return 'expression/Quantifier.twig';
         }
+        if ($expr instanceof Match) {
+            return 'expression/Match.twig';
+        }
+
+        return sprintf('expression/%s.twig', Str::className($expr));
     }
 }

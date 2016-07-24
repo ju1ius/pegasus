@@ -1,0 +1,12 @@
+{% extends "expr.twig" %}
+
+
+{% block matching %}
+{{ result_var }} = null;
+{{ macros.error(context.rule, expr) }}
+{%- endblock matching %}
+
+
+{% block capturing %}
+{{ block('matching') }}
+{%- endblock capturing %}

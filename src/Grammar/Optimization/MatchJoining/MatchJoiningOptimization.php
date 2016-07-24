@@ -90,6 +90,8 @@ abstract class MatchJoiningOptimization extends Optimization
 
     /**
      * @param Match[] $matches
+     *
+     * @return array
      */
     protected function createPatterns(array $matches)
     {

@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-{% if namespace %}
+{% if namespace|default %}
 namespace {{ namespace }};
 {% endif %}
 use ju1ius\Pegasus\CST\Node;
@@ -28,10 +28,9 @@ class {{ class }} extends {{ base_class }}
      *
      * @var string
      */
-    protected $startRule = '{{ grammar.startRule }}';
+    protected $startRule = '{{ context.grammar.startRule }}';
 
-{% for ruleName, expr in grammar %}
-    {%- do context.set('rule', ruleName) %}
-    {{ render_rule(ruleName, expr)|indent }}
+{% for ruleName, expr in context.grammar %}
+    {{ render_rule(ruleName, expr, context)|indent }}
 {% endfor %}
 }

@@ -1,6 +1,0 @@
-{% set result_var = result_varname(expr) %}
-{{ expr_comment(expr) }}
-{{ result_var }} = !isset($this->text[$this->pos]);
-if (!{{ result_var }}) {
-    {{ macros.error(expr)|indent }}
-}

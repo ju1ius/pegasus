@@ -105,6 +105,20 @@ abstract class Parser
     abstract protected function apply($rule);
 
     /**
+     * @param string $rule
+     * @param string $expr
+     * @param int $pos
+     */
+    protected function registerFailure($rule, $expr, $pos)
+    {
+        if ($pos > $this->error->position) {
+            $this->error->rule = $rule;
+            $this->error->expr = $expr;
+            $this->error->position = $pos;
+        }
+    }
+
+    /**
      * @return \Closure[]
      */
     private function buildMatchers()

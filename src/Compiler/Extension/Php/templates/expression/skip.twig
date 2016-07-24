@@ -1,8 +1,0 @@
-{% set result_var = result_varname(expr) -%}
-{% set subres_var = result_varname(expr[0]) -%}
-{{ expr_comment(expr) }}
-{{ macros.start_non_capturing(expr) }}
-{{ render_expr(expr[0], {capturing: false}) }}
-{{ expr_comment(expr, 'result') }}
-{{ result_var }} = {{ subres_var }};
-{{ macros.end_non_capturing(expr) }}

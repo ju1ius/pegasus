@@ -1,9 +1,5 @@
-{% macro error(expr, pos = '$this->pos') -%}
-if ({{ pos }} > $this->error->position) {
-    $this->error->rule = '{{ context.rule }}';
-    $this->error->expr = {{ repr(expr) }};
-    $this->error->position = {{ pos }};
-}
+{% macro error(rule, expr, pos = '$this->pos') -%}
+$this->registerFailure('{{ rule }}', {{ repr(expr) }}, {{ pos }});
 {%- endmacro %}
 
 {% macro store_position(expr) -%}

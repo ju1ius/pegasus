@@ -81,6 +81,14 @@ final class GroupMatch extends Terminal
     }
 
     /**
+     * @return string
+     */
+    public function getCompiledPattern()
+    {
+        return $this->compiledPattern;
+    }
+
+    /**
      * @return int
      */
     public function getCaptureCount()

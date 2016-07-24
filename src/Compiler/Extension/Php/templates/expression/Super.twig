@@ -1,0 +1,11 @@
+{% extends "expr.twig" %}
+
+
+{% block matching %}
+{{ result_var }} = parent::apply('{{ expr.identifier }}');
+{%- endblock matching %}
+
+
+{% block capturing %}
+{{ block('matching') }}
+{%- endblock capturing %}

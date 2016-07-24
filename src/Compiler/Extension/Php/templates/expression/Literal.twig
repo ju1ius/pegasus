@@ -1,0 +1,23 @@
+{% extends "expr.twig" %}
+{#
+    TODO: check performance of substr_compare
+#}
+{% set literal = repr(expr.literal) %}
+
+{% block matching %}
+if ({{ result_var }} = substr($this->text, $this->pos, {{ expr.length }}) === {{ literal }}) {
+    $this->pos += {{ expr.length }};
+} else {
+    {{ macros.error(context.rule, expr)|indent }}
+}
+{%- endblock matching %}
+
+{% block capturing %}
+if ({{ result_var }} = substr($this->text, $this->pos, {{ expr.length }}) === {{ literal }}) {
+    $start = $this->pos;
+    $end = $this->pos += {{ expr.length }};
+    if ($this->isCapturing) {{ result_var }} = new Terminal('{{ expr.name }}', $start, $end, {{ literal }});
+} else {
+    {{ macros.error(context.rule, expr)|indent }}
+}
+{%- endblock capturing %}

@@ -1,0 +1,56 @@
+{% extends "expr.twig" %}
+
+{% set capture_count = expr.captureCount %}
+
+
+{% block matching %}
+{{ result_var }} = null;
+{{ pos_var }} = $this->pos;
+do {
+{% for child in expr %}
+    {{ render_expr(child, context)|indent }}
+    if (!{{ result_varname(child) }}) break;
+{% endfor %}
+    {{ result_var }} = true;
+} while(0);
+if (!{{ result_var }}) {
+    $this->pos = {{ pos_var }};
+}
+{%- endblock matching %}
+
+
+{% block capturing %}
+{% set children_var = '$children_' ~ expr.id %}
+{{ result_var }} = null;
+{{ pos_var }} = $this->pos;
+{{ children_var }} = $this->isCapturing ? [] : null;
+do {
+{% for child in expr %}
+    {% set subres_var = result_varname(child) -%}
+    {{ render_expr(child, context)|indent }}
+    if (!{{ subres_var }}) break;
+    if ($this->isCapturing && {{ subres_var }} !== true) {{ children_var }}[] = {{ subres_var }};
+{% endfor %}
+    {{ result_var }} = true;
+} while(0);
+if (!{{ result_var }}) {
+    $this->pos = {{ pos_var }};
+} elseif ($this->isCapturing) {
+{{ block('capturing_success') }}
+}
+{%- endblock capturing %}
+
+
+{% block capturing_success %}
+{% if capture_count == 1 %}
+    {{ result_var }} = new Decorator('{{ expr.name }}', {{ pos_var }}, $this->pos, {{ children_var }}[0]);
+{% else %}
+    {{ result_var }} = new Composite('{{ expr.name }}', {{ pos_var }}, $this->pos, {{ children_var }});
+{% endif %}
+{%- endblock capturing_success %}
+
+
+{%- block expr -%}
+{{ expr_comment(expr) }}
+{{ context.isMatching or not capture_count ? block('matching') : block('capturing') }}
+{%- endblock expr -%}
