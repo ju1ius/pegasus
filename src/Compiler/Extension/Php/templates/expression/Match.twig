@@ -6,7 +6,7 @@ if ({{ result_var }} = (bool)preg_match({{ repr_regexp(expr.compiledPattern) }},
 } else {
     {{ macros.error(context.rule, expr)|indent }}
 }
-{% endblock matching %}
+{%- endblock matching %}
 
 {% block capturing %}
 if ({{ result_var }} = (bool)preg_match({{ repr_regexp(expr.compiledPattern) }}, $this->text, $matches, 0, $this->pos)) {
@@ -16,4 +16,4 @@ if ({{ result_var }} = (bool)preg_match({{ repr_regexp(expr.compiledPattern) }},
 } else {
     {{ macros.error(context.rule, expr)|indent }}
 }
-{% endblock capturing %}
+{%- endblock capturing %}

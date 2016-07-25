@@ -46,14 +46,16 @@ class OneOf extends Combinator
         $capturing = $parser->isCapturing;
         foreach ($this->children as $child) {
             if ($result = $child->match($text, $parser, $scope)) {
-                if ($result === true || !$capturing) {
+                if (!$capturing || $result === true) {
                     return true;
                 }
-                // Tree decimation:
-                // Try to skip one tree level if either this expression or it's matching child is not a grammar rule
+                // [CST decimation] Try to skip one tree level if:
                 if (!$this->name) {
+                    // this expression is not a grammar rule, so we can safely
                     return $result;
                 } elseif (!$result->name) {
+                    // this expression is a grammar rule but the matching child is not,
+                    // masquerade the node and return it
                     $result->name = $this->name;
 
                     return $result;

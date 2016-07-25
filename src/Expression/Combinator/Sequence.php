@@ -36,34 +36,40 @@ class Sequence extends Combinator
         $startPos = $parser->pos;
         $capturing = $parser->isCapturing;
         $children = $capturing ? [] : null;
+        $captureCount = 0;
         foreach ($this->children as $child) {
             $result = $child->match($text, $parser, $scope);
             if (!$result) {
                 $parser->pos = $startPos;
                 return null;
             }
-            if ($result === true || !$capturing) {
+            if (!$capturing || $result === true) {
                 continue;
             }
             $children[] = $result;
+            $captureCount++;
         }
 
         if (!$capturing) {
             return true;
         }
-        switch (count($children)) {
+        switch ($captureCount) {
             case 0:
                 return true;
             case 1:
-                // Tree decimation:
-                // Try to skip one tree level if either this expression or it's child is not a grammar rule
                 $child = $children[0];
+                // [CST decimation] Try to skip one tree level if:
                 if (!$this->name) {
+                    // this expression is not a grammar rule, so we can safely
                     return $child;
                 } elseif (!$child->name) {
+                    // this expression is a grammar rule but the matching child is not,
+                    // masquerade the node and return it
                     $child->name = $this->name;
+
                     return $child;
                 }
+
                 return new Node\Decorator($this->name, $startPos, $parser->pos, $child);
             default:
                 return new Node\Composite($this->name, $startPos, $parser->pos, $children);
