@@ -10,9 +10,9 @@ if ({{ result_var }} = (bool)preg_match({{ repr_regexp(expr.compiledPattern) }},
 
 
 {% block capturing %}
-if ({{ result_var }} = (bool)preg_match({{ repr_regexp(expr.compiledPattern) }}, $this->text, $matches, \PREG_OFFSET_CAPTURE, $this->pos)) {
+if ({{ result_var }} = (bool)preg_match({{ repr_regexp(expr.compiledPattern) }}, $this->text, $matches, 0, $this->pos)) {
     $start = $this->pos;
-    $end = $this->pos += strlen($matches[0][0]);
+    $end = $this->pos += strlen($matches[0]);
     if ($this->isCapturing) {
         {{ block('caturing_success')|indent(2) }}
     }
@@ -25,15 +25,9 @@ if ({{ result_var }} = (bool)preg_match({{ repr_regexp(expr.compiledPattern) }},
 {% block caturing_success -%}
 
 {% if expr.captureCount == 1 %}
-{{ result_var }} = new Decorator('{{ expr.name }}', $start, $end,
-    new Terminal('', $matches[1][1], $matches[1][1] + strlen($matches[1][0]), $matches[1][0])
-);
+{{ result_var }} = new Terminal('{{ expr.name }}', $start, $end, $matches[1]);
 {%- else %}
-{{ result_var }} = new Composite('{{ expr.name }}', $start, $end, [
-{% for i in range(1, expr.captureCount) %}
-    new Terminal('', $matches[{{ i }}][1], $matches[{{ i }}][1] + strlen($matches[{{ i }}][0]), $matches[{{ i }}][0]),
-{% endfor %}
-]);
+{{ result_var }} = new Terminal('{{ expr.name }}', $start, $end, $matches[0], ['captures' => array_slice($matches, 1)]);
 {%- endif %}
 
 {%- endblock caturing_success %}

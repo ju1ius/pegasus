@@ -37,22 +37,22 @@ class RegExpTest extends ExpressionTestCase
             '/foo/ with "foo"' => [
                 GrammarBuilder::create()->rule('r')->regexp('foo')->getGrammar(),
                 ['foo'],
-                new Terminal('r', 0, 3, 'foo', ['matches' => ['foo']])
+                new Terminal('r', 0, 3, 'foo', ['groups' => ['foo']])
             ],
             '/bar/ @3 with "foobar"' => [
                 GrammarBuilder::create()->rule('r')->regexp('bar')->getGrammar(),
                 ['foobar', 3],
-                new Terminal('r', 3, 6, 'bar', ['matches' => ['bar']])
+                new Terminal('r', 3, 6, 'bar', ['groups' => ['bar']])
             ],
             '/fo+/ with "fooooobar!"' => [
                 GrammarBuilder::create()->rule('r')->regexp('fo+')->getGrammar(),
                 ['fooooobar!'],
-                new Terminal('r', 0, 6, 'fooooo', ['matches' => ['fooooo']])
+                new Terminal('r', 0, 6, 'fooooo', ['groups' => ['fooooo']])
             ],
             'complex pattern with capturing groups' => [
                 GrammarBuilder::create()->rule('r')->regexp('"((?:\\\\.|[^"])*)"')->getGrammar(),
                 ['"quoted\\"stri\\ng"'],
-                new Terminal('r', 0, 17, '"quoted\\"stri\\ng"', ['matches' => [
+                new Terminal('r', 0, 17, '"quoted\\"stri\\ng"', ['groups' => [
                     '"quoted\\"stri\\ng"',
                     'quoted\\"stri\\ng'
                 ]])

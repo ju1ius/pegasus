@@ -102,26 +102,19 @@ final class GroupMatch extends Terminal
     public function match($text, Parser $parser, Scope $scope)
     {
         $start = $parser->pos;
-        if (preg_match($this->compiledPattern, $text, $matches, PREG_OFFSET_CAPTURE, $start)) {
-            $end = $parser->pos += strlen($matches[0][0]);
+        if (preg_match($this->compiledPattern, $text, $matches, 0, $start)) {
+            $end = $parser->pos += strlen($matches[0]);
             if (!$parser->isCapturing) {
                 return true;
             }
 
             if ($this->groupCount === 1) {
-                list($match, $offset) = $matches[1];
-
-                return new Node\Decorator($this->name, $start, $end,
-                    new Node\Terminal('', $offset, $offset + strlen($match), $match)
-                );
+                return new Node\Terminal($this->name, $start, $end, $matches[1]);
             }
 
-            $children = [];
-            foreach (array_slice($matches, 1) as list($match, $offset)) {
-                $children[] = new Node\Terminal('', $offset, $offset + strlen($match), $match);
-            }
-
-            return new Node\Composite($this->name, $start, $end, $children);
+            return new Node\Terminal($this->name, $start, $end, $matches[0], [
+                'captures' => array_slice($matches, 1)
+            ]);
         }
 
         $parser->registerFailure($this, $start);

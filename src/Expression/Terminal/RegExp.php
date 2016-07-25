@@ -86,7 +86,7 @@ final class RegExp extends Terminal
             }
 
             return $parser->isCapturing
-                ? new Node\Terminal($this->name, $start, $end, $match, ['matches' => $matches])
+                ? new Node\Terminal($this->name, $start, $end, $match, ['groups' => $matches])
                 : true;
         }
 

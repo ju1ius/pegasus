@@ -12,6 +12,7 @@ namespace ju1ius\Pegasus\CST;
 
 use ju1ius\Pegasus\CST\Exception\TransformException;
 use ju1ius\Pegasus\CST\Node;
+use ju1ius\Pegasus\CST\Node\Terminal;
 
 /**
  * Performs a depth-first traversal of a parse tree.
@@ -74,20 +75,32 @@ class Transform
     }
 
     /**
+     * @param Terminal $node The node we're visiting
+     *
+     * @return string|string[]|Terminal
+     */
+    protected function leaveTerminal(Terminal $node)
+    {
+        if (isset($node->attributes['captures'])) {
+            // used by GroupMatch
+            return $node->attributes['captures'];
+        }
+        if (isset($node->attributes['groups'])) {
+            // used by RegExp
+            return $node;
+        }
+
+        return $node->value;
+    }
+
+    /**
      * @param Node  $node     The node we're visiting
      * @param array $children The results of visiting the children of that node
      *
      * @return mixed
      */
-    protected function leaveNode(Node $node, array $children)
+    protected function leaveNonTerminal(Node $node, array $children)
     {
-        if ($node->isTerminal) {
-            if (isset($node['matches'])) {
-                return $node['matches'];
-            }
-
-            return $node->value;
-        }
         if ($node->isQuantifier) {
             if ($node->isOptional) {
                 return $children ? $children[0] : null;
@@ -112,23 +125,36 @@ class Transform
      */
     private function visit(Node $node)
     {
-        $label = $node->name;
+        $name = $node->name;
 
         try {
-            if (isset($this->enterVisitors[$label])) {
-                $this->enterVisitors[$label]($node);
+            if ($name && isset($this->enterVisitors[$name])) {
+                $this->enterVisitors[$name]($node);
             }
 
-            $children = [];
-            foreach ($node->children as $child) {
-                $children[] = $this->visit($child);
+            if ($node instanceof Node\Composite) {
+                $children = [];
+                foreach ($node->children as $child) {
+                    $children[] = $this->visit($child);
+                }
+
+                if ($name && isset($this->leaveVisitors[$name])) {
+                    return $this->leaveVisitors[$name]($node, ...$children);
+                }
+
+                return $this->leaveNonTerminal($node, $children);
             }
 
-            if (isset($this->leaveVisitors[$label])) {
-                return $this->leaveVisitors[$label]($node, ...$children);
+            $value = $this->leaveTerminal($node);
+
+            if ($name && isset($this->leaveVisitors[$name])) {
+                $args = is_array($value) ? $value : [$value];
+
+                return $this->leaveVisitors[$name]($node, ...$args);
             }
 
-            return $this->leaveNode($node, $children);
+            return $value;
+
         } catch (TransformException $err) {
             throw $err;
         } catch (\Exception $err) {

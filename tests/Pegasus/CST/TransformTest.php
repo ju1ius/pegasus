@@ -28,7 +28,7 @@ class TransformTest extends \PHPUnit_Framework_TestCase
         $traverser = $this->getMockBuilder(Transform::class)
             ->setMethods(['beforeTraverse', 'afterTraverse'])
             ->getMock();
-        $node = new Node('', 0, 0);
+        $node = new Terminal('', 0, 0);
 
         $traverser->expects($this->once())
             ->method('beforeTraverse')
@@ -62,9 +62,13 @@ class TransformTest extends \PHPUnit_Framework_TestCase
                 new Terminal('foo', 0, 3, 'foo'),
                 'foo'
             ],
-            'Returns the matches attribute of a terminal node.' => [
-                new Terminal('foo', 0, 3, 'foo', ['matches' => ['bar', 'baz']]),
-                ['bar', 'baz']
+            'Returns the node if a terminal node has a groups attribute.' => [
+                new Terminal('foo', 0, 3, 'foo', ['groups' => ['bar', 'baz']]),
+                new Terminal('foo', 0, 3, 'foo', ['groups' => ['bar', 'baz']]),
+            ],
+            'Returns a terminal `captures` attribute if present.' => [
+                new Terminal('foo', 0, 3, 'foobar', ['captures' => ['foo', 'bar']]),
+                ['foo', 'bar'],
             ],
             'Returns the child of a decorator node' => [
                 new Decorator('foo', 0, 3, new Terminal('', 0, 3, 'foo')),
@@ -128,11 +132,11 @@ class TransformTest extends \PHPUnit_Framework_TestCase
     public function testItConvertsExceptionsToVisitationError()
     {
         $traverser = $this->getMockBuilder(Transform::class)
-            ->setMethods(['leaveNode'])
+            ->setMethods(['leaveTerminal'])
             ->getMock();
 
         $traverser->expects($this->any())
-            ->method('leaveNode')
+            ->method('leaveTerminal')
             ->willThrowException(new \RuntimeException());
 
         $this->expectException(TransformException::class);
@@ -144,12 +148,12 @@ class TransformTest extends \PHPUnit_Framework_TestCase
     public function testItCanThrowVisitationErrors()
     {
         $traverser = $this->getMockBuilder(Transform::class)
-            ->setMethods(['leaveNode'])
+            ->setMethods(['leaveTerminal'])
             ->getMock();
         $node = new Terminal('Foo', 0, 3, 'foo');
 
         $traverser->expects($this->any())
-            ->method('leaveNode')
+            ->method('leaveTerminal')
             ->willThrowException(new TransformException($node, $node, 'I fucked up.'));
 
         $this->expectException(TransformException::class);

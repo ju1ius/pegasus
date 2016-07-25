@@ -234,18 +234,19 @@ class MetaGrammarTransform extends Transform
         return new Token($prefixable);
     }
 
-    private function leave_quantifier(Node $node, $matches)
+    private function leave_quantifier(Node $node, $regexp)
     {
-        if (!empty($matches['symbol'])) {
-            $class = self::$QUANTIFIER_CLASSES[$matches['symbol']];
+        $groups = $regexp['groups'];
+        if (!empty($groups['symbol'])) {
+            $class = self::$QUANTIFIER_CLASSES[$groups['symbol']];
 
             return new $class();
         }
-        $min = (int)$matches['min'];
-        if (empty($matches['not_exact'])) {
+        $min = (int)$groups['min'];
+        if (empty($groups['not_exact'])) {
             $max = $min;
         } else {
-            $max = empty($matches['max']) ? INF : (int)$matches['max'];
+            $max = empty($groups['max']) ? INF : (int)$groups['max'];
         }
 
         return new Quantifier(null, $min, $max);
@@ -262,9 +263,9 @@ class MetaGrammarTransform extends Transform
     // Terminal Expressions
     // --------------------------------------------------------------------------------------------------------------
 
-    private function leave_literal(Node $node, $matches)
+    private function leave_literal(Node $node, $regexp)
     {
-        list(, $quoteChar, $literal) = $matches;
+        list(, $quoteChar, $literal) = $regexp['groups'];
 
         return new Literal($literal, '', $quoteChar);
     }
@@ -274,9 +275,9 @@ class MetaGrammarTransform extends Transform
         return new Word($word);
     }
 
-    private function leave_regexp(Node $node, $matches)
+    private function leave_regexp(Node $node, $regexp)
     {
-        list(, $pattern, $flags) = $matches;
+        list(, $pattern, $flags) = $regexp['groups'];
         // str_split returns [0 => ''] for the empty string !
         $flags = $flags ? str_split($flags) : [];
 
