@@ -92,17 +92,25 @@ abstract class Parser
     }
 
     /**
-     * Applies Expression $expr at position $pos.
+     * Applies a grammar rule at the current position.
      *
-     * This is called internally by Expression::match to parse rule references.
-     *
-     * @internal
-     *
-     * @param string $rule  The rule name to apply
+     * @param string $rule The rule name to apply
      *
      * @return Node|true|null
      */
     abstract protected function apply($rule);
+
+    /**
+     * Evaluates an expression.
+     *
+     * @param string $ruleName
+     *
+     * @return Node|true|null
+     */
+    final protected function evaluate($ruleName)
+    {
+        return $this->matchers[$ruleName]();
+    }
 
     /**
      * @param string $rule

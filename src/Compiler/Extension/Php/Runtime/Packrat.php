@@ -42,24 +42,13 @@ class Packrat extends Parser
     }
 
     /**
-     * The APPLY-RULE procedure, used in every rule application,
-     * ensures that no rule is ever evaluated more than once at a given position.
-     *
-     * When rule R is applied at position P, APPLY-RULE consults the memo table.
-     * If the memo table indicates that R was previously applied at P,
-     * the appropriate parse tree node is returned
-     * and the parser’s current position is updated accordingly.
-     * Otherwise, APPLY-RULE evaluates the rule, stores the result in the memo table,
-     * and returns the corresponding parse tree node.
-     *
-     * @param string $ruleName
-     *
-     * @return Node|null
+     * @inheritdoc
      */
     protected function apply($ruleName)
     {
         $pos = $this->pos;
         $capturing = (int)$this->isCapturing;
+
         if (isset($this->memo[$capturing][$pos][$ruleName])) {
             $memo = $this->memo[$capturing][$pos][$ruleName];
             $this->pos = $memo->end;
@@ -72,24 +61,12 @@ class Packrat extends Parser
         $memo = new MemoEntry(null, $pos);
         $this->memo[$capturing][$pos][$ruleName] = $memo;
         // evaluate expression
-        $result = $this->evaluate($ruleName);
+        $result = $this->matchers[$ruleName]();
         // update the result in the memo table
         $memo->result = $result;
         $memo->end = $this->pos;
 
         return $result;
-    }
-
-    /**
-     * Evaluates an expression & updates current position on success.
-     *
-     * @param string $ruleName
-     *
-     * @return Node|null
-     */
-    protected function evaluate($ruleName)
-    {
-        return $this->matchers[$ruleName]();
     }
 
     /**
