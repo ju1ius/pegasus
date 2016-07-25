@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Tests\Expression;
+namespace ju1ius\Pegasus\Tests\Expression\Decorator;
 
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\CST\Node\Terminal;

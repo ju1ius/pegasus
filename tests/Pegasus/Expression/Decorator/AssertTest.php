@@ -1,12 +1,10 @@
 <?php
 
-namespace ju1ius\Pegasus\Tests\Expression;
+namespace ju1ius\Pegasus\Tests\Expression\Decorator;
 
-use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Decorator\Assert;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarBuilder;
-use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class AssertTest extends ExpressionTestCase

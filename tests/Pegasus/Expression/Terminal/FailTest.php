@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Tests\Expression;
+namespace ju1ius\Pegasus\Tests\Expression\Terminal;
 
 use ju1ius\Pegasus\Expression\Terminal\Fail;
 use ju1ius\Pegasus\Grammar;

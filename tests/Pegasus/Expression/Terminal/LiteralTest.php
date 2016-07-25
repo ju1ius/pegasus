@@ -1,10 +1,10 @@
 <?php
 
-namespace ju1ius\Pegasus\Tests\Expression;
+namespace ju1ius\Pegasus\Tests\Expression\Terminal;
 
-use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\CST\Node\Terminal;
+use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class LiteralTest extends ExpressionTestCase

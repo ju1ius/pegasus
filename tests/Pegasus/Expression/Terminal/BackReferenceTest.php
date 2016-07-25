@@ -1,11 +1,11 @@
 <?php
 
-namespace ju1ius\Pegasus\Tests\Expression;
+namespace ju1ius\Pegasus\Tests\Expression\Terminal;
 
-use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\CST\Node\Composite;
 use ju1ius\Pegasus\CST\Node\Terminal;
+use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Parser\Exception\UndefinedBinding;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 

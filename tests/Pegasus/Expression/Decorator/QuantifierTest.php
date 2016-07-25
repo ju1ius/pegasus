@@ -1,10 +1,10 @@
 <?php
 
-namespace ju1ius\Pegasus\Tests\Expression;
+namespace ju1ius\Pegasus\Tests\Expression\Decorator;
 
-use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\CST\Node\Terminal;
+use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class QuantifierTest extends ExpressionTestCase

@@ -8,11 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Tests\Expression;
+namespace ju1ius\Pegasus\Tests\Expression\Terminal;
 
 use ju1ius\Pegasus\Expression\Terminal\EOF;
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Parser\RecursiveDescent;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
