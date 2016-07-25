@@ -43,15 +43,23 @@ class OneOf extends Combinator
     public function match($text, Parser $parser, Scope $scope)
     {
         $start = $parser->pos;
+        $capturing = $parser->isCapturing;
         foreach ($this->children as $child) {
             if ($result = $child->match($text, $parser, $scope)) {
-                if ($result === true) {
+                if ($result === true || !$capturing) {
                     return true;
                 }
+                // Tree decimation:
+                // Try to skip one tree level if either this expression or it's matching child is not a grammar rule
+                if (!$this->name) {
+                    return $result;
+                } elseif (!$result->name) {
+                    $result->name = $this->name;
 
-                return $parser->isCapturing
-                    ? new Node\Decorator($this->name, $start, $parser->pos, $result)
-                    : true;
+                    return $result;
+                }
+
+                return new Node\Decorator($this->name, $start, $parser->pos, $result);
             }
             $parser->pos = $start;
         }

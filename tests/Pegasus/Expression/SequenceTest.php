@@ -56,15 +56,25 @@ class SequenceTest extends ExpressionTestCase
                     new Terminal('', 6, 9, 'baz'),
                 ])
             ],
-            'With only one capturing expression' => [
+            'With only one capturing expression, lifts the result if it is not a grammar rule.' => [
                 GrammarBuilder::create()->rule('seq')->seq()
                     ->literal('foo')
                     ->skip()->literal('bar')
                     ->getGrammar(),
                 ['foobar'],
-                new Decorator('seq', 0, 6, new Terminal('', 0, 3, 'foo'))
+                new Terminal('seq', 0, 3, 'foo')
             ],
-            'With no capturing expression' => [
+            'With only one capturing expression, decorates the result if it is a grammar rule.' => [
+                GrammarBuilder::create()
+                    ->rule('seq')->seq()
+                        ->ref('foo')
+                        ->skip()->literal('bar')
+                    ->rule('foo')->literal('foo')
+                    ->getGrammar(),
+                ['foobar'],
+                new Decorator('seq', 0, 6, new Terminal('foo', 0, 3, 'foo'))
+            ],
+            'With no capturing expression, returns true' => [
                 GrammarBuilder::create()->rule('seq')->seq()
                     ->skip()->literal('foo')
                     ->skip()->literal('bar')
@@ -72,7 +82,7 @@ class SequenceTest extends ExpressionTestCase
                 ['foobar'],
                 true
             ],
-            'With a reference to a non-capturing rule' => [
+            'Skips a reference to a non-capturing rule' => [
                 GrammarBuilder::create()
                     ->rule('seq')->sequence()
                         ->literal('a')

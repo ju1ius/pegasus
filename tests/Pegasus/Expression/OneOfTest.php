@@ -27,21 +27,31 @@ class OneOfTest extends ExpressionTestCase
     public function getMatchProvider()
     {
         return [
-            'Returns the first matching result' => [
-                GrammarBuilder::create()->rule('test')->oneOf()
-                    ->literal('bar')
-                    ->literal('foo')
-                    ->getGrammar(),
-                ['foobar'],
-                new Decorator('test', 0, 3, new Terminal('', 0, 3, 'foo'))
-            ],
-            'With no capturing expressions' => [
+            'Returns true with no capturing children' => [
                 GrammarBuilder::create()->rule('test')->oneOf()
                     ->skip()->literal('foo')
                     ->skip()->literal('bar')
                     ->getGrammar(),
                 ['bar'],
                 true
+            ],
+            'Lifts the first matching result if it is not a grammar rule.' => [
+                GrammarBuilder::create()->rule('test')->oneOf()
+                    ->literal('bar')
+                    ->literal('foo')
+                    ->getGrammar(),
+                ['foo'],
+                new Terminal('test', 0, 3, 'foo')
+            ],
+            'Decorates the first matching result if is a grammar rule.' => [
+                GrammarBuilder::create()
+                    ->rule('test')->oneOf()
+                        ->literal('bar')
+                        ->ref('foo')
+                    ->rule('foo')->literal('foo')
+                    ->getGrammar(),
+                ['foo'],
+                new Decorator('test', 0, 3, new Terminal('foo', 0, 3, 'foo'))
             ],
         ];
     }

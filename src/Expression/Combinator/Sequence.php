@@ -55,7 +55,16 @@ class Sequence extends Combinator
             case 0:
                 return true;
             case 1:
-                return new Node\Decorator($this->name, $startPos, $parser->pos, $children[0]);
+                // Tree decimation:
+                // Try to skip one tree level if either this expression or it's child is not a grammar rule
+                $child = $children[0];
+                if (!$this->name) {
+                    return $child;
+                } elseif (!$child->name) {
+                    $child->name = $this->name;
+                    return $child;
+                }
+                return new Node\Decorator($this->name, $startPos, $parser->pos, $child);
             default:
                 return new Node\Composite($this->name, $startPos, $parser->pos, $children);
         }

@@ -55,7 +55,7 @@ class SkipTest extends ExpressionTestCase
                     ->skip()->literal(')')
                     ->getGrammar(),
                 ['(foo)'],
-                new Decorator('start', 0, 5, new Terminal('', 1, 4, 'foo'))
+                new Terminal('start', 1, 4, 'foo')
             ],
             'skip choice result at sequence start' => [
                 GrammarBuilder::create()->rule('start')->seq()
@@ -67,7 +67,7 @@ class SkipTest extends ExpressionTestCase
                     ->literal('42')
                     ->getGrammar(),
                 ['$42'],
-                new Decorator('start', 0, 3, new Terminal('', 1, 3, '42'))
+                new Terminal('start', 1, 3, '42')
             ]
         ];
     }
