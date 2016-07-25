@@ -84,6 +84,10 @@ class CompilationContext
      */
     public function matching()
     {
+        if ($this->isMatching()) {
+            return $this;
+        }
+
         $ctx = clone $this;
         $ctx->type = self::TYPE_MATCHING;
 
@@ -97,6 +101,10 @@ class CompilationContext
      */
     public function capturing()
     {
+        if ($this->isCapturing()) {
+            return $this;
+        }
+
         $ctx = clone $this;
         $ctx->type = self::TYPE_CAPTURING;
 
