@@ -24,13 +24,14 @@ class RecursiveDescent extends Parser
     {
         $this->source = $source;
         $this->pos = $pos;
+        $this->bindings = [];
         $this->error = new ParseError($source);
         $this->isCapturing = true;
         $this->applicationStack = new \SplStack();
         $rule = $startRule ?: $this->grammar->getStartRule();
 
         gc_disable();
-        $result = $this->apply($rule, Scope::void());
+        $result = $this->apply($rule);
         gc_enable();
 
         if (!$result) {
@@ -44,10 +45,10 @@ class RecursiveDescent extends Parser
     /**
      * @inheritdoc
      */
-    public function apply($rule, Scope $scope, $super = false)
+    public function apply($rule, $super = false)
     {
         $expr = $super ? $this->grammar->super($rule) : $this->grammar[$rule];
 
-        return $this->evaluate($expr, $scope);
+        return $this->evaluate($expr);
     }
 }

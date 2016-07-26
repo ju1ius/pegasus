@@ -37,12 +37,12 @@ class Skip extends Decorator
         return true;
     }
 
-    public function match($text, Parser $parser, Scope $scope)
+    public function match($text, Parser $parser)
     {
         $capturing = $parser->isCapturing;
         $parser->isCapturing = false;
 
-        $result = $this->children[0]->match($text, $parser, $scope);
+        $result = $this->children[0]->match($text, $parser);
 
         $parser->isCapturing = $capturing;
 

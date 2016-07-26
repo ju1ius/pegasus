@@ -74,7 +74,7 @@ class Match extends Terminal
     /**
      * @inheritDoc
      */
-    public function match($text, Parser $parser, Scope $scope)
+    public function match($text, Parser $parser)
     {
         $start = $parser->pos;
         if (preg_match($this->compiledPattern, $text, $matches, 0, $start)) {

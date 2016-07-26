@@ -80,7 +80,7 @@ final class Literal extends Terminal
         );
     }
 
-    public function match($text, Parser $parser, Scope $scope)
+    public function match($text, Parser $parser)
     {
         $start = $parser->pos;
         if (substr($text, $start, $this->length) === $this->literal) {

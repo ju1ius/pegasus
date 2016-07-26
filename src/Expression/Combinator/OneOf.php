@@ -40,12 +40,12 @@ class OneOf extends Combinator
         return !$capturingChildren || $capturingChildren === count($this->children);
     }
 
-    public function match($text, Parser $parser, Scope $scope)
+    public function match($text, Parser $parser)
     {
         $start = $parser->pos;
         $capturing = $parser->isCapturing;
         foreach ($this->children as $child) {
-            if ($result = $child->match($text, $parser, $scope)) {
+            if ($result = $child->match($text, $parser)) {
                 if (!$capturing || $result === true) {
                     return true;
                 }

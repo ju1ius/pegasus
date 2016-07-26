@@ -48,20 +48,20 @@ class LeftRecursivePackrat extends Packrat
     /**
      * @inheritdoc
      */
-    public function apply($rule, Scope $scope, $super = false)
+    public function apply($rule, $super = false)
     {
         $expr = $super ? $this->grammar->super($rule) : $this->grammar[$rule];
 
         $pos = $this->pos;
 
-        if (!$memo = $this->recall($expr, $scope)) {
+        if (!$memo = $this->recall($expr)) {
             // Create a new LeftRecursion and push it onto the rule invocation stack.
             $lr = new LeftRecursion($expr);
             $this->lrStack->push($lr);
             // Memoize $lr, then evaluate $expr.
             $memo = new MemoEntry($lr, $pos);
             $this->memo[$this->isCapturing][$pos][$expr->id] = $memo;
-            $result = $this->evaluate($expr, $scope);
+            $result = $this->evaluate($expr);
             // Pop $lr off the invocation stack
             $this->lrStack->pop();
             $memo->end = $this->pos;
@@ -72,7 +72,7 @@ class LeftRecursivePackrat extends Packrat
             }
             $lr->seed = $result;
 
-            return $this->leftRecursionAnswer($expr, $pos, $memo, $scope);
+            return $this->leftRecursionAnswer($expr, $pos, $memo);
         }
         $this->pos = $memo->end;
         if ($memo->result instanceof LeftRecursion) {
@@ -105,11 +105,10 @@ class LeftRecursivePackrat extends Packrat
      * @param Expression $expr
      * @param int        $pos
      * @param MemoEntry  $memo
-     * @param Scope      $scope
      *
      * @return Node|LeftRecursion|null
      */
-    protected function leftRecursionAnswer(Expression $expr, $pos, MemoEntry $memo, Scope $scope)
+    protected function leftRecursionAnswer(Expression $expr, $pos, MemoEntry $memo)
     {
         $head = $memo->result->head;
         if ($head->rule->id !== $expr->id) {
@@ -120,7 +119,7 @@ class LeftRecursivePackrat extends Packrat
             return null;
         }
 
-        return $this->growSeedParse($expr, $pos, $memo, $head, $scope);
+        return $this->growSeedParse($expr, $pos, $memo, $head);
     }
 
     /**
@@ -128,17 +127,16 @@ class LeftRecursivePackrat extends Packrat
      * @param int        $pos
      * @param MemoEntry  $memo
      * @param Head       $head
-     * @param Scope      $scope
      *
      * @return Node|LeftRecursion|null
      */
-    protected function growSeedParse(Expression $expr, $pos, MemoEntry $memo, Head $head, Scope $scope)
+    protected function growSeedParse(Expression $expr, $pos, MemoEntry $memo, Head $head)
     {
         $this->heads[$pos] = $head;
         while (true) {
             $this->pos = $pos;
             $head->eval = $head->involved;
-            $result = $this->evaluate($expr, $scope);
+            $result = $this->evaluate($expr);
             if (!$result || $this->pos <= $memo->end) {
                 break;
             }
@@ -153,11 +151,10 @@ class LeftRecursivePackrat extends Packrat
 
     /**
      * @param Expression $expr
-     * @param Scope      $scope
      *
      * @return MemoEntry
      */
-    protected function recall(Expression $expr, Scope $scope)
+    protected function recall(Expression $expr)
     {
         $pos = $this->pos;
         // inline this to save a method call: $memo = $this->memo($expr, $pos);
@@ -177,7 +174,7 @@ class LeftRecursivePackrat extends Packrat
         // Allow involved rules to be evaluated, but only once, during a seed-growing iteration.
         if (isset($head->eval[$expr->id])) {
             unset($head->eval[$expr->id]);
-            $result = $this->evaluate($expr, $scope);
+            $result = $this->evaluate($expr);
             $memo->result = $result;
             $memo->end = $this->pos;
         }

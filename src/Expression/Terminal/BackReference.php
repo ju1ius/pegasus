@@ -6,6 +6,7 @@ use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Terminal;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\CST\Node;
+use ju1ius\Pegasus\Parser\Exception\UndefinedBinding;
 use ju1ius\Pegasus\Parser\Parser;
 use ju1ius\Pegasus\Parser\Scope;
 
@@ -39,10 +40,19 @@ final class BackReference extends Terminal
         return $this->identifier;
     }
 
-    public function match($text, Parser $parser, Scope $scope)
+    /**
+     * @inheritdoc
+     *
+     * @todo What if the binding is equal to the empty string ?
+     */
+    public function match($text, Parser $parser)
     {
+        if (!isset($parser->bindings[$this->identifier])) {
+            throw new UndefinedBinding($this->identifier, $parser->bindings);
+        }
+
         $start = $parser->pos;
-        $pattern = $scope[$this->identifier];
+        $pattern = $parser->bindings[$this->identifier];
         $length = strlen($pattern);
 
         if ($pattern === substr($text, $start, $length)) {

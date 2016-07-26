@@ -32,14 +32,14 @@ class Sequence extends Combinator
         }, 0);
     }
 
-    public function match($text, Parser $parser, Scope $scope)
+    public function match($text, Parser $parser)
     {
         $startPos = $parser->pos;
         $capturing = $parser->isCapturing;
         $children = $capturing ? [] : null;
         $captureCount = 0;
         foreach ($this->children as $child) {
-            $result = $child->match($text, $parser, $scope);
+            $result = $child->match($text, $parser);
             if (!$result) {
                 $parser->pos = $startPos;
                 return null;

@@ -42,7 +42,7 @@ class Fail extends Terminal
     /**
      * @inheritdoc
      */
-    public function match($text, Parser $parser, Scope $scope)
+    public function match($text, Parser $parser)
     {
         $parser->registerFailure($this, $parser->pos);
     }

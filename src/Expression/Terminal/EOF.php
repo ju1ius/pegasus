@@ -31,7 +31,7 @@ class EOF extends Terminal
         return false;
     }
 
-    public function match($text, Parser $parser, Scope $scope)
+    public function match($text, Parser $parser)
     {
         $start = $parser->pos;
         if (!isset($text[$start])) {

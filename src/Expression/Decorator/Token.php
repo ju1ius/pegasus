@@ -15,13 +15,13 @@ class Token extends Decorator
     /**
      * @inheritDoc
      */
-    public function match($text, Parser $parser, Scope $scope)
+    public function match($text, Parser $parser)
     {
         $capturing = $parser->isCapturing;
         $parser->isCapturing = false;
 
         $startPos = $parser->pos;
-        $result = $this->children[0]->match($text, $parser, $scope);
+        $result = $this->children[0]->match($text, $parser);
 
         $parser->isCapturing = $capturing;
         if ($result) {

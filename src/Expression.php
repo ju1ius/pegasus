@@ -70,12 +70,10 @@ abstract class Expression
      *
      * @param string $text   The full text of the match subject.
      * @param Parser $parser The parser used for this expression.
-     * @param Scope  $scope  The scope of bindings for the current sequence.
      *
-     * @return Node|null
-     * @internal param int $pos The position at which this expression must start matching.
+     * @return Node|true|null
      */
-    abstract public function match($text, Parser $parser, Scope $scope);
+    abstract public function match($text, Parser $parser);
 
     /**
      * Returns a string representation of this expression, suitable for the right-hand-side of a rule.

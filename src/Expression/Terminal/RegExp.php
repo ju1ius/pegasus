@@ -75,7 +75,7 @@ final class RegExp extends Terminal
         return sprintf('/%s/%s', $this->pattern, implode('', $this->flags));
     }
 
-    public function match($text, Parser $parser, Scope $scope)
+    public function match($text, Parser $parser)
     {
         $start = $parser->pos;
         if (preg_match($this->compiledPattern, $text, $matches, 0, $start)) {

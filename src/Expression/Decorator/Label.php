@@ -42,11 +42,11 @@ final class Label extends Decorator
         return sprintf('%s:%s', $this->label, $this->stringChildren()[0]);
     }
 
-    public function match($text, Parser $parser, Scope $scope)
+    public function match($text, Parser $parser)
     {
         $start = $parser->pos;
-        if ($result = $this->children[0]->match($text, $parser, $scope)) {
-            $scope[$this->label] = substr($text, $start, $parser->pos);
+        if ($result = $this->children[0]->match($text, $parser)) {
+            $parser->bindings[$this->label] = substr($text, $start, $parser->pos - $start);
 
             return $result;
         }

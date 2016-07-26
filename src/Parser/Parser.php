@@ -40,6 +40,13 @@ abstract class Parser
     public $pos = 0;
 
     /**
+     * Stores named bindings produced by `Label` expressions.
+     *
+     * @var array
+     */
+    public $bindings;
+
+    /**
      * Flag that can be set by expressions to signal whether their children
      * should return parse nodes or just true on success.
      *
@@ -116,27 +123,23 @@ abstract class Parser
      * @internal
      *
      * @param string $rule  The rule name to apply
-     * @param Scope  $scope The current scope
      * @param bool   $super Whether we should explicitly apply a parent rule
      *
-     * @return Node|true|null
+     * @return Node|null|true
      */
-    abstract public function apply($rule, Scope $scope, $super = false);
-
+    abstract public function apply($rule, $super = false);
 
     /**
      * Evaluates an expression & updates current position on success.
      *
      * @param Expression $expr
      *
-     * @param Scope      $scope
-     *
-     * @return Node|true|null
+     * @return Node|null|true
      */
-    final public function evaluate(Expression $expr, Scope $scope)
+    final public function evaluate(Expression $expr)
     {
         $this->applicationStack->push($expr);
-        $result = $expr->match($this->source, $this, $scope);
+        $result = $expr->match($this->source, $this);
         $this->applicationStack->pop();
 
         return $result;

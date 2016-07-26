@@ -62,9 +62,14 @@ final class Reference extends Expression
     /**
      * @inheritDoc
      */
-    public function match($text, Parser $parser, Scope $scope)
+    public function match($text, Parser $parser)
     {
-        $result = $parser->apply($this->identifier, Scope::void());
+        $bindings = $parser->bindings;
+        $parser->bindings = [];
+
+        $result = $parser->apply($this->identifier);
+
+        $parser->bindings = $bindings;
 
         return $result;
     }

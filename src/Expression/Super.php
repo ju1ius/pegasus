@@ -54,9 +54,16 @@ final class Super extends Expression
     /**
      * @inheritDoc
      */
-    public function match($text, Parser $parser, Scope $scope)
+    public function match($text, Parser $parser)
     {
-        return $parser->apply($this->identifier, $scope, true);
+        $bindings = $parser->bindings;
+        $parser->bindings = [];
+
+        $result = $parser->apply($this->identifier, true);
+
+        $parser->bindings = $bindings;
+
+        return $result;
     }
 
     /**

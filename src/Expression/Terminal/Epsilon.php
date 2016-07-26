@@ -32,7 +32,7 @@ class Epsilon extends Terminal
         return false;
     }
 
-    public function match($text, Parser $parser, Scope $scope)
+    public function match($text, Parser $parser)
     {
         return true;
     }

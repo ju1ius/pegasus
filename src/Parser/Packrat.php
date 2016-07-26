@@ -57,7 +57,7 @@ class Packrat extends RecursiveDescent
     /**
      * @inheritdoc
      */
-    public function apply($rule, Scope $scope, $super = false)
+    public function apply($rule, $super = false)
     {
         $expr = $super ? $this->grammar->super($rule) : $this->grammar[$rule];
 
@@ -75,7 +75,7 @@ class Packrat extends RecursiveDescent
         $memo = new MemoEntry(null, $pos);
         $this->memo[$this->isCapturing][$pos][$expr->id] = $memo;
         // evaluate expression
-        $result = $this->evaluate($expr, $scope);
+        $result = $this->evaluate($expr);
         // update the result in the memo table
         $memo->result = $result;
         $memo->end = $this->pos;

@@ -37,13 +37,13 @@ class Assert extends Decorator
         return true;
     }
 
-    public function match($text, Parser $parser, Scope $scope)
+    public function match($text, Parser $parser)
     {
         $capturing = $parser->isCapturing;
         $parser->isCapturing = false;
 
         $start = $parser->pos;
-        $result = $this->children[0]->match($text, $parser, $scope);
+        $result = $this->children[0]->match($text, $parser);
         $parser->pos = $start;
 
         $parser->isCapturing = $capturing;

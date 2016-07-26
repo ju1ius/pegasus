@@ -17,12 +17,12 @@ use ju1ius\Pegasus\Parser\Scope;
  */
 class UndefinedBinding extends \RuntimeException
 {
-    public function __construct($name, Scope $scope)
+    public function __construct($name, array $scope)
     {
         $message = sprintf(
             'Named binding `%s` was not found in the current scope `%s`',
             $name,
-            $scope
+            var_export($scope, true)
         );
         parent::__construct($message);
     }

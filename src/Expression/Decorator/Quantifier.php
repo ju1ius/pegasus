@@ -130,14 +130,14 @@ class Quantifier extends Decorator
         return $this->stringChildren()[0] . $q;
     }
 
-    public function match($text, Parser $parser, Scope $scope)
+    public function match($text, Parser $parser)
     {
         $expr = $this->children[0];
         $startPos = $parser->pos;
         $capturing = $parser->isCapturing;
         $matchCount = 0;
         $results = $capturing ? [] : null;
-        while ($result = $expr->match($text, $parser, $scope)) {
+        while ($result = $expr->match($text, $parser)) {
             if ($capturing) {
                 $results[] = $result;
             }
