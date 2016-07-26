@@ -25,6 +25,10 @@ class Terminal extends Node
      */
     public function __construct($name, $start, $end, $value = null, array $attributes = [])
     {
-        parent::__construct($name, $start, $end, $value, [], $attributes);
+        $this->name = $name;
+        $this->start = $start;
+        $this->end = $end;
+        $this->value = $value;
+        $this->attributes = $attributes;
     }
 }

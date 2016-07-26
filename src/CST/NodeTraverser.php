@@ -10,6 +10,7 @@
 
 namespace ju1ius\Pegasus\CST;
 
+use ju1ius\Pegasus\CST\Node\Composite;
 use ju1ius\Pegasus\CST\Node\Invalid;
 
 /**
@@ -83,13 +84,15 @@ class NodeTraverser implements NodeTraverserInterface
             }
         }
 
-        $childCount = count($node->children);
-        foreach ($node->children as $i => $child) {
-            if (!$child instanceof Node) {
-                $child = new Invalid($child);
-            }
-            if (null !== $result = $this->traverseNode($child, $i, $i === $childCount - 1)) {
-                $node->children[$i] = $result;
+        if ($node instanceof Composite) {
+            $childCount = count($node->children);
+            foreach ($node->children as $i => $child) {
+                if (!$child instanceof Node) {
+                    $child = new Invalid($child);
+                }
+                if (null !== $result = $this->traverseNode($child, $i, $i === $childCount - 1)) {
+                    $node->children[$i] = $result;
+                }
             }
         }
 

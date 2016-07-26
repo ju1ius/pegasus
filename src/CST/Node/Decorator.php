@@ -22,10 +22,12 @@ class Decorator extends Composite
      * @param int       $start
      * @param int       $end
      * @param Node|null $child
-     * @param array     $attributes
      */
-    public function __construct($name, $start, $end, Node $child = null, array $attributes = [])
+    public function __construct($name, $start, $end, Node $child = null)
     {
-        parent::__construct($name, $start, $end, $child ? [$child] : [], $attributes);
+        $this->name = $name;
+        $this->start = $start;
+        $this->end = $end;
+        $this->children = $child ? [$child] : [];
     }
 }

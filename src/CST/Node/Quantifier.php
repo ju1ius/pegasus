@@ -10,8 +10,6 @@
 
 namespace ju1ius\Pegasus\CST\Node;
 
-use ju1ius\Pegasus\CST\Node;
-
 /**
  * @author ju1ius <ju1ius@laposte.net>
  */
@@ -24,7 +22,10 @@ class Quantifier extends Composite
      */
     public function __construct($name, $start, $end, $children, $optional = false)
     {
-        parent::__construct($name, $start, $end, $children);
+        $this->name = $name;
+        $this->start = $start;
+        $this->end = $end;
+        $this->children = $children;
         $this->isOptional = $optional;
     }
 }

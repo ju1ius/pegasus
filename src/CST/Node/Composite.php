@@ -22,10 +22,12 @@ class Composite extends Node
      * @param int    $start
      * @param int    $end
      * @param array  $children
-     * @param array  $attributes
      */
-    public function __construct($name, $start, $end, array $children, array $attributes = [])
+    public function __construct($name, $start, $end, array $children)
     {
-        parent::__construct($name, $start, $end, null, $children, $attributes);
+        $this->name = $name;
+        $this->start = $start;
+        $this->end = $end;
+        $this->children = $children;
     }
 }

@@ -101,7 +101,7 @@ class Transform
      */
     protected function leaveNonTerminal(Node $node, array $children)
     {
-        if ($node->isQuantifier) {
+        if ($node instanceof Node\Quantifier) {
             if ($node->isOptional) {
                 return $children ? $children[0] : null;
             }
@@ -111,11 +111,8 @@ class Transform
         if ($node instanceof Node\Decorator) {
             return $children[0];
         }
-        if (count($children) === 1) {
-            return $children[0];
-        }
 
-        return $children;
+        return count($children) === 1 ? $children[0] : $children;
     }
 
     /**

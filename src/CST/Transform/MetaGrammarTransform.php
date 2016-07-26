@@ -228,7 +228,7 @@ class MetaGrammarTransform extends Transform
 
     private function leave_quantifier(Node $node, $regexp)
     {
-        $groups = $regexp['groups'];
+        $groups = $regexp->attributes['groups'];
         if (!empty($groups['symbol'])) {
             $class = self::$QUANTIFIER_CLASSES[$groups['symbol']];
 
@@ -257,7 +257,7 @@ class MetaGrammarTransform extends Transform
 
     private function leave_literal(Node $node, $regexp)
     {
-        list(, $quoteChar, $literal) = $regexp['groups'];
+        list(, $quoteChar, $literal) = $regexp->attributes['groups'];
 
         return new Literal($literal, '', $quoteChar);
     }
@@ -269,7 +269,7 @@ class MetaGrammarTransform extends Transform
 
     private function leave_regexp(Node $node, $regexp)
     {
-        list(, $pattern, $flags) = $regexp['groups'];
+        list(, $pattern, $flags) = $regexp->attributes['groups'];
         // str_split returns [0 => ''] for the empty string !
         $flags = $flags ? str_split($flags) : [];
 

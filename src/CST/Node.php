@@ -11,13 +11,16 @@
 namespace ju1ius\Pegasus\CST;
 
 /**
- * A parse tree node.
+ * Base class for Concrete-Syntax-Tree nodes.
+ *
+ * During parsing, A LOT of nodes are created, so they should be kept small and logic-less.
+ * In particular no method call should happen inside the constructor, including calls to the parent constructor.
  *
  * Fields are public for performance, but should generally be treated as immutable once constructed.
  *
  * @TODO remove `ArrayAccess` implementation if it proves to be a bottleneck.
  */
-class Node implements \Countable, \IteratorAggregate, \ArrayAccess
+class Node
 {
     /**
      * The name of this node.
@@ -61,13 +64,6 @@ class Node implements \Countable, \IteratorAggregate, \ArrayAccess
     public $attributes;
 
     /**
-     * Whether this node should appear in the final parse tree.
-     *
-     * @var bool
-     */
-    public $isTransient = false;
-
-    /**
      * Whether this node is a terminal node.
      *
      * @var bool
@@ -89,14 +85,14 @@ class Node implements \Countable, \IteratorAggregate, \ArrayAccess
     public $isOptional = false;
 
     /**
-     * @param string $name  The name of this node.
-     * @param int    $start The position in the text where that name started matching
-     * @param int    $end   The position after start where the name first didn't match.
-     *                      It represents the offset after the match so it's typically equal to
-     *                      $start + strlen($value).
-     * @param null   $value The value matched by this node (only for terminals).
-     * @param array  $children
-     * @param array  $attributes
+     * @param string $name       The name of this node.
+     * @param int    $start      The position in the text where that name started matching
+     * @param int    $end        The position after start where the name first didn't match.
+     *                           It represents the offset after the match so it's typically equal to
+     *                           $start + strlen($value).
+     * @param null   $value      The value matched by this node (only for terminals).
+     * @param array  $children   The child nodes (for composite nodes)
+     * @param array  $attributes Optional attributes map.
      */
     public function __construct($name, $start, $end, $value = null, array $children = [], array $attributes = [])
     {
@@ -120,69 +116,5 @@ class Node implements \Countable, \IteratorAggregate, \ArrayAccess
         $length = $this->end - $this->start;
 
         return $length ? substr($input, $this->start, $length) : '';
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function offsetExists($offset)
-    {
-        if (is_int($offset)) {
-            return isset($this->children[$offset]);
-        }
-
-        return isset($this->attributes[$offset]);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function offsetGet($offset)
-    {
-        if (is_int($offset)) {
-            return $this->children[$offset];
-        }
-
-        return isset($this->attributes[$offset]) ? $this->attributes[$offset] : null;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function offsetSet($offset, $value)
-    {
-        if (is_int($offset)) {
-            return $this->children[$offset] = $value;
-        }
-
-        return $this->attributes[$offset] = $value;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function offsetUnset($offset)
-    {
-        if (is_int($offset)) {
-            unset($this->children[$offset]);
-        }
-
-        unset($this->attributes[$offset]);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getIterator()
-    {
-        return new \ArrayIterator($this->children);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function count()
-    {
-        return count($this->children);
     }
 }
