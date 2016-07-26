@@ -10,8 +10,6 @@
 
 namespace ju1ius\Pegasus\Compiler;
 
-use ju1ius\Pegasus\Compiler\Compiler;
-
 /**
  * Class Extension
  *

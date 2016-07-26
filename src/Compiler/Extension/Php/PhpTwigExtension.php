@@ -12,11 +12,8 @@ namespace ju1ius\Pegasus\Compiler\Extension\Php;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Utils\Str;
-use Twig_Extension;
-use Twig_SimpleFilter;
-use Twig_SimpleFunction;
 
-class PhpTwigExtension extends Twig_Extension
+class PhpTwigExtension extends \Twig_Extension
 {
     /**
      * @inheritdoc
@@ -32,11 +29,11 @@ class PhpTwigExtension extends Twig_Extension
     public function getFunctions()
     {
         return [
-            new Twig_SimpleFunction('repr', [$this, 'repr']),
-            new Twig_SimpleFunction('repr_regexp', [$this, 'reprRegexp']),
-            new Twig_SimpleFunction('result_varname', [$this, 'getResultVariableName']),
-            new Twig_SimpleFunction('position_varname', [$this, 'getPositionVariableName']),
-            new Twig_SimpleFunction('expr_comment', [$this, 'getExpressionComment']),
+            new \Twig_SimpleFunction('repr', [$this, 'repr']),
+            new \Twig_SimpleFunction('repr_regexp', [$this, 'reprRegexp']),
+            new \Twig_SimpleFunction('result_varname', [$this, 'getResultVariableName']),
+            new \Twig_SimpleFunction('position_varname', [$this, 'getPositionVariableName']),
+            new \Twig_SimpleFunction('expr_comment', [$this, 'getExpressionComment']),
         ];
     }
 
@@ -46,7 +43,7 @@ class PhpTwigExtension extends Twig_Extension
     public function getFilters()
     {
         return [
-            new Twig_SimpleFilter('escape_comment', [$this, 'escapeBlockComment']),
+            new \Twig_SimpleFilter('escape_comment', [$this, 'escapeBlockComment']),
         ];
     }
 

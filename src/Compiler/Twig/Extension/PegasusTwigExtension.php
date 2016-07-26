@@ -12,23 +12,15 @@ namespace ju1ius\Pegasus\Compiler\Twig\Extension;
 
 use ju1ius\Pegasus\Compiler\CompilationContext;
 use ju1ius\Pegasus\Compiler\Compiler;
-use ju1ius\Pegasus\Compiler\Twig\Context;
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Compiler\Twig\DataCollector;
-use ju1ius\Pegasus\Compiler\Twig\TokenParser\CollectorTokenParser;
 use ju1ius\Pegasus\Expression\Decorator\Quantifier;
 use ju1ius\Pegasus\Expression\Terminal\Match;
 use ju1ius\Pegasus\Utils\Str;
-use Twig_Environment;
-use Twig_Error_Loader;
-use Twig_Extension;
-use Twig_SimpleFilter;
-use Twig_SimpleFunction;
 
-class PegasusTwigExtension extends Twig_Extension
+class PegasusTwigExtension extends \Twig_Extension
 {
     /**
-     * @var Twig_Environment
+     * @var \Twig_Environment
      */
     private $environment;
 
@@ -37,21 +29,15 @@ class PegasusTwigExtension extends Twig_Extension
      */
     private $compiler;
 
-    /**
-     * @var DataCollector
-     */
-    private $collector;
-
     public function __construct(Compiler $compiler)
     {
         $this->compiler = $compiler;
     }
 
-    public function initRuntime(Twig_Environment $env)
+    public function initRuntime(\Twig_Environment $env)
     {
         parent::initRuntime($env);
         $this->environment = $env;
-        $this->collector = new DataCollector();
     }
 
     public function getName()
@@ -61,39 +47,34 @@ class PegasusTwigExtension extends Twig_Extension
 
     public function getGlobals()
     {
-        $globals = [
-            'data_collector' => $this->collector
-        ];
+        $globals = [];
         try {
             // if a template named macros exists,
             // make it available globally
             $macros = $this->environment->loadTemplate('macros.twig');
             $globals['macros'] = $macros;
-        } catch (Twig_Error_Loader $e) {}
+        } catch (\Twig_Error_Loader $e) {}
 
         return $globals;
     }
 
     public function getTokenParsers()
     {
-        return [
-            new CollectorTokenParser(),
-        ];
+        return [];
     }
 
     public function getFunctions()
     {
         return [
-            new Twig_SimpleFunction('render_expr', [$this, 'renderExpression']),
-            new Twig_SimpleFunction('render_rule', [$this, 'renderRule']),
-            new Twig_SimpleFunction('retrieve', [$this->collector, 'retrieve']),
+            new \Twig_SimpleFunction('render_expr', [$this, 'renderExpression']),
+            new \Twig_SimpleFunction('render_rule', [$this, 'renderRule']),
         ];
     }
 
     public function getFilters()
     {
         return [
-            new Twig_SimpleFilter('indent', [$this, 'indent']),
+            new \Twig_SimpleFilter('indent', [$this, 'indent']),
         ];
     }
 
