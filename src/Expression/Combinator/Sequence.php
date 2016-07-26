@@ -12,6 +12,7 @@ namespace ju1ius\Pegasus\Expression\Combinator;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Combinator;
+use ju1ius\Pegasus\Expression\Decorator\NodeAction;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Parser\Parser;
@@ -82,7 +83,7 @@ class Sequence extends Combinator
     protected function stringChildren()
     {
         return array_map(function (Expression $child) {
-            if ($child instanceof OneOf || $child instanceof NamedSequence) {
+            if ($child instanceof OneOf || $child instanceof NodeAction) {
                 return sprintf('(%s)', $child);
             }
 

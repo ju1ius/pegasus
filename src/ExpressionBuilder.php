@@ -10,31 +10,30 @@
 
 namespace ju1ius\Pegasus;
 
-use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Decorator\Assert;
-use ju1ius\Pegasus\Expression\Terminal\BackReference;
+use ju1ius\Pegasus\Expression\Combinator\OneOf;
+use ju1ius\Pegasus\Expression\Combinator\Sequence;
 use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\Decorator;
-use ju1ius\Pegasus\Expression\Terminal\EOF;
-use ju1ius\Pegasus\Expression\Terminal\Epsilon;
-use ju1ius\Pegasus\Expression\Terminal\Fail;
+use ju1ius\Pegasus\Expression\Decorator\Assert;
 use ju1ius\Pegasus\Expression\Decorator\Label;
-use ju1ius\Pegasus\Expression\Terminal\Literal;
-use ju1ius\Pegasus\Expression\Terminal\Match;
-use ju1ius\Pegasus\Expression\Terminal\Word;
-use ju1ius\Pegasus\Expression\Combinator\NamedSequence;
+use ju1ius\Pegasus\Expression\Decorator\NodeAction;
 use ju1ius\Pegasus\Expression\Decorator\Not;
-use ju1ius\Pegasus\Expression\Combinator\OneOf;
 use ju1ius\Pegasus\Expression\Decorator\OneOrMore;
 use ju1ius\Pegasus\Expression\Decorator\Optional;
 use ju1ius\Pegasus\Expression\Decorator\Quantifier;
-use ju1ius\Pegasus\Expression\Reference;
-use ju1ius\Pegasus\Expression\Terminal\RegExp;
-use ju1ius\Pegasus\Expression\Combinator\Sequence;
 use ju1ius\Pegasus\Expression\Decorator\Skip;
-use ju1ius\Pegasus\Expression\Super;
 use ju1ius\Pegasus\Expression\Decorator\Token;
 use ju1ius\Pegasus\Expression\Decorator\ZeroOrMore;
+use ju1ius\Pegasus\Expression\Reference;
+use ju1ius\Pegasus\Expression\Super;
+use ju1ius\Pegasus\Expression\Terminal\BackReference;
+use ju1ius\Pegasus\Expression\Terminal\EOF;
+use ju1ius\Pegasus\Expression\Terminal\Epsilon;
+use ju1ius\Pegasus\Expression\Terminal\Fail;
+use ju1ius\Pegasus\Expression\Terminal\Literal;
+use ju1ius\Pegasus\Expression\Terminal\Match;
+use ju1ius\Pegasus\Expression\Terminal\RegExp;
+use ju1ius\Pegasus\Expression\Terminal\Word;
 
 /**
  * @author ju1ius <ju1ius@laposte.net>
@@ -314,29 +313,6 @@ class ExpressionBuilder
     }
 
     /**
-     * @param $name
-     *
-     * @return $this
-     */
-    public function namedSequence($name)
-    {
-        return $this->add(new NamedSequence([], $name));
-    }
-
-    /**
-     * Alias of `namedSequence`
-     *
-     * @param $name
-     *
-     * @return $this
-     * @codeCoverageIgnore
-     */
-    public function named($name)
-    {
-        return $this->namedSequence($name);
-    }
-
-    /**
      * @return $this
      */
     public function oneOf()
@@ -504,5 +480,15 @@ class ExpressionBuilder
     public function label($label)
     {
         return $this->add(new Label(null, $label));
+    }
+
+    /**
+     * @param $name
+     *
+     * @return $this
+     */
+    public function named($name)
+    {
+        return $this->add(new NodeAction(null, $name));
     }
 }

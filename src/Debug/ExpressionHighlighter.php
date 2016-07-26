@@ -20,7 +20,7 @@ use ju1ius\Pegasus\Expression\Decorator\Label;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\Expression\Terminal\Match;
 use ju1ius\Pegasus\Expression\Terminal\Word;
-use ju1ius\Pegasus\Expression\Combinator\NamedSequence;
+use ju1ius\Pegasus\Expression\Decorator\NodeAction;
 use ju1ius\Pegasus\Expression\Decorator\Not;
 use ju1ius\Pegasus\Expression\Combinator\OneOf;
 use ju1ius\Pegasus\Expression\Decorator\Quantifier;
@@ -174,6 +174,9 @@ class ExpressionHighlighter extends ExpressionVisitor
             if ($this->needsParenthesesAroundDecorator($expr)) {
                 $this->output->write('<d>)</d>');
             }
+            if ($expr instanceof NodeAction) {
+                $this->output->write(sprintf(' <d><=</d> <id>%s</id>', $expr->getLabel()));
+            }
             if ($expr instanceof Quantifier) {
                 if ($expr->isOneOrMore()) {
                     $symbol = '+';
@@ -194,9 +197,6 @@ class ExpressionHighlighter extends ExpressionVisitor
             }
         } elseif ($expr instanceof Combinator) {
             $this->combinatorStack->pop();
-            if ($expr instanceof NamedSequence) {
-                $this->output->write(sprintf(' <d><=</d> <id>%s</id>', $expr->getLabel()));
-            }
             if ($this->needsParenthesesAroundCombinator($expr)) {
                 $this->output->write('<d>)</d>');
             }
@@ -218,7 +218,7 @@ class ExpressionHighlighter extends ExpressionVisitor
         }
         $top = $this->combinatorStack->top();
 
-        return $top instanceof Sequence || $top instanceof NamedSequence;
+        return $top instanceof Sequence;
     }
 
     /**
@@ -228,6 +228,9 @@ class ExpressionHighlighter extends ExpressionVisitor
      */
     private function needsParenthesesAroundDecorator(Decorator $expr)
     {
+        if ($expr instanceof NodeAction) {
+            return $expr[0] instanceof OneOf || $expr[0] instanceof NodeAction;
+        }
         return $expr[0] instanceof Composite;
     }
 }

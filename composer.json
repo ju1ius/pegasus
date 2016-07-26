@@ -30,7 +30,8 @@
         "phpunit/phpunit": "^5.0",
         "symfony/var-dumper": "^3.1",
         "symfony/stopwatch": "^3.1",
-        "symfony/debug": "^3.1"
+        "symfony/debug": "^3.1",
+        "blackfire/php-sdk": "^1.5"
     },
     "version" : "0.1",
     "bin": ["bin/pegasus"]

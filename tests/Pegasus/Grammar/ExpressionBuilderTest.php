@@ -11,6 +11,7 @@
 namespace ju1ius\Pegasus\Tests\Grammar;
 
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Expression\Combinator\Sequence;
 use ju1ius\Pegasus\Expression\Decorator\Assert;
 use ju1ius\Pegasus\Expression\Terminal\BackReference;
 use ju1ius\Pegasus\Expression\Composite;
@@ -21,7 +22,7 @@ use ju1ius\Pegasus\Expression\Terminal\Fail;
 use ju1ius\Pegasus\Expression\Decorator\Label;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\Expression\Terminal\Match;
-use ju1ius\Pegasus\Expression\Combinator\NamedSequence;
+use ju1ius\Pegasus\Expression\Decorator\NodeAction;
 use ju1ius\Pegasus\Expression\Decorator\Not;
 use ju1ius\Pegasus\Expression\Combinator\OneOf;
 use ju1ius\Pegasus\Expression\Decorator\Quantifier;
@@ -193,9 +194,9 @@ class ExpressionBuilderTest extends PegasusTestCase
                     ->ref('bar')
                     ->getExpression(),
             ],
-            'Named Sequence' => [
-                new NamedSequence([new Literal('foo'), new Literal('bar')], 'FooBar'),
-                Builder::create()->named('FooBar')
+            'NodeAction' => [
+                new NodeAction(new Sequence([new Literal('foo'), new Literal('bar')]), 'FooBar'),
+                Builder::create()->named('FooBar')->sequence()
                     ->literal('foo')
                     ->literal('bar')
                     ->getExpression(),

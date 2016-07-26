@@ -12,7 +12,7 @@
 namespace ju1ius\Pegasus\Grammar\Optimization\Flattening;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Combinator\NamedSequence;
+use ju1ius\Pegasus\Expression\Decorator\NodeAction;
 use ju1ius\Pegasus\Expression\Combinator\Sequence;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
@@ -25,10 +25,7 @@ final class FlattenCapturingSequence extends FlatteningOptimization
 {
     public function willPostProcessExpression(Expression $expr, OptimizationContext $context)
     {
-        return parent::willPostProcessExpression($expr, $context) && (
-            $expr instanceof Sequence
-            || $expr instanceof NamedSequence
-        );
+        return parent::willPostProcessExpression($expr, $context) && $expr instanceof Sequence;
     }
 
     public function isEligibleChild(Expression $child)

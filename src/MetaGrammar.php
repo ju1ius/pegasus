@@ -50,17 +50,6 @@ final class MetaGrammar
     {
         if (null === self::$instance) {
             $grammar = self::getGrammar();
-            // FIXME: ATM this is completely overkill to parse the syntax
-            // since it matches exactly the expression tree.
-            // we should find a way to simplify the expression tree in order
-            // to speedup the syntax parsing process.
-            /*
-            $parser = new Parser($grammar);
-            $tree = $parser->parseAll(self::SYNTAX);
-            self::$instance = (new MetaGrammarTraverser)->traverse($tree);
-            //echo self::$instance, "\n";
-            self::$instance->finalize();
-            */
             self::$instance = Optimizer::optimize($grammar, Optimizer::LEVEL_2);
         }
 
@@ -120,25 +109,25 @@ final class MetaGrammar
             ->rule('ci_directive')->sequence()
                 ->skip()->literal('%case_insensitive')
                 ->ref('_')
-            ->rule('lexical_directive')->sequence()
-                ->skip()->literal('%lexical')
-                ->ref('_')
-            ->rule('inline_directive')->sequence()
-                ->skip()->literal('%inline')
-                ->ref('_')
+            ->rule('rule_directive')->oneOf()
+                ->named('InlineDirective')->sequence()
+                    ->skip()->literal('%inline')
+                    ->ref('_')
+                ->end()
+                ->named('LexicalDirective')->sequence()
+                    ->skip()->literal('%lexical')
+                    ->ref('_')
+                ->end()
         ;
         //
         // rules
         // ------------------------------------------------------------------------------------------------------
         $builder
-            ->rule('rules')->oneOrMore()
+            ->rule('rules')->zeroOrMore()
                 ->ref('rule')
             ->rule('rule')->sequence()
-                ->zeroOrMore()->oneOf()
-                    ->ref('inline_directive')
-                    ->ref('lexical_directive')
-                ->end()
-                ->named('RuleName')
+                ->zeroOrMore()->ref('rule_directive')
+                ->named('RuleName')->sequence()
                     ->ref('identifier')
                     ->skip()->literal('=')->ref('_')
                 ->end()
@@ -186,7 +175,7 @@ final class MetaGrammar
                 ->ref('_')
             ->rule('word_literal')->sequence()
                 ->skip()->literal('`')
-                ->match('[^`]+')
+                ->match('(?:\\\\.|[^`])+')
                 ->skip()->literal('`')
                 ->ref('_')
             ->rule('regexp')->sequence()
@@ -207,34 +196,34 @@ final class MetaGrammar
         // ------------------------------------------------------------------------------------------------------
         $builder
             ->rule('unattributed')->oneOf()
-                ->named('OneOf')
+                ->named('OneOf')->sequence()
                     ->ref('unattributed')
                     ->skip()->literal('|')->ref('_')
                     ->ref('terms')
                 ->end()
                 ->ref('terms')
             ->rule('expression')->oneOf()
-                ->named('OneOf')
+                ->named('OneOf')->sequence()
                     ->ref('expression')
                     ->skip()->literal('|')->ref('_')
                     ->ref('attributed')
                 ->end()
                 ->ref('attributed')
             ->rule('attributed')->oneOf()
-                ->named('NamedSequence')
+                ->named('NodeAction')->sequence()
                     ->optional()->ref('attributed')
                     ->skip()->literal('<=')->ref('_')
                     ->ref('identifier')
                 ->end()
                 ->ref('attributed_terms')
             ->rule('attributed_terms')->oneOf()
-                ->named('Sequence')
+                ->named('Sequence')->sequence()
                     ->ref('attributed')
                     ->ref('term')
                 ->end()
                 ->ref('terms')
             ->rule('terms')->oneOf()
-                ->named('Sequence')
+                ->named('Sequence')->sequence()
                     ->ref('terms')
                     ->ref('term')
                 ->end()

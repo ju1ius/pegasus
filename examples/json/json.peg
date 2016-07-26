@@ -1,4 +1,4 @@
-%name JSON
+%name JSONParser
 
 json        = _ (object | array) EOF
 object      = ~'{' _ members? ~'}' _
@@ -15,7 +15,7 @@ value       = object
             | 'false' _   <= false
             | 'null' _    <= null
 
-string      = /"(?:\\.|[^"])*"/ _
+string      = ~'"' /(?:\\.|[^"])*/ ~'"' _
 number      = @(int frac? expo?) _
 
 %inline int         = /-?(?:[1-9]\d*|0(?!\d))/

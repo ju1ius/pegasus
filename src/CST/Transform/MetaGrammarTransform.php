@@ -13,7 +13,7 @@ namespace ju1ius\Pegasus\CST\Transform;
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\CST\Transform;
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Combinator\NamedSequence;
+use ju1ius\Pegasus\Expression\Decorator\NodeAction;
 use ju1ius\Pegasus\Expression\Combinator\OneOf;
 use ju1ius\Pegasus\Expression\Combinator\Sequence;
 use ju1ius\Pegasus\Expression\Composite;
@@ -141,7 +141,7 @@ class MetaGrammarTransform extends Transform
         return 'lexical';
     }
 
-    private function leave_inline_directive(Node $node, ...$children)
+    private function leave_InlineDirective(Node $node, ...$children)
     {
         $this->inlining = true;
 
@@ -182,14 +182,8 @@ class MetaGrammarTransform extends Transform
     // Composite Expressions
     // --------------------------------------------------------------------------------------------------------------
 
-    private function leave_OneOf(Node $node, Expression $alt1, $others)
+    private function leave_OneOf(Node $node,  ...$alternatives)
     {
-        if (is_array($others)) {
-            $alternatives = array_merge([$alt1], $others);
-        } else {
-            $alternatives = [$alt1, $others];
-        }
-
         return new OneOf($alternatives);
     }
 
@@ -198,11 +192,9 @@ class MetaGrammarTransform extends Transform
         return new Sequence($children);
     }
 
-    private function leave_NamedSequence(Node $node, Expression $expr, $name)
+    private function leave_NodeAction(Node $node, Expression $expr, $name)
     {
-        $children = $expr instanceof Composite ? iterator_to_array($expr) : [$expr];
-
-        return new NamedSequence($children, $name);
+        return new NodeAction($expr, $name);
     }
 
     //

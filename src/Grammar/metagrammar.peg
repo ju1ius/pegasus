@@ -18,11 +18,8 @@ extends_directive   = ~'%extends' _ identifier
 ws_directive        = ~'%whitespace' _ ~'=' _ unattributed
 ci_directive        = ~'%case_insensitive' _
 
-rule_directive      = lexical_directive
-                    | inline_directive
-
-lexical_directive   = ~'%lexical' _
-inline_directive    = ~'%inline' _
+rule_directive      = ~`%lexical` _     <= LexicalDirective
+                    | ~`%inline` _      <= InlineDirective
 
 ########### Rules ##########
 
@@ -59,7 +56,7 @@ unattributed    = unattributed ~'|' _ terms                    <= OneOf
 expression      = expression ~'|' _ attributed                 <= OneOf
                 | attributed
 
-attributed      = attributed? ~'<=' _ identifier               <= NamedSequence
+attributed      = attributed? ~'<=' _ identifier               <= NodeAction
                 | attributed_terms
 
 attributed_terms    = attributed term                          <= Sequence

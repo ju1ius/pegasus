@@ -81,8 +81,12 @@ final class GrammarDumper extends GrammarVisitor
      */
     public function enterExpression(Expression $expr, $index = null, $isLast = false)
     {
-        $indent = implode('', $this->indentStack);
-        $indent .= $isLast ? '└ ' : '├ ';
+        $hasParent = $index !== null;
+        $indent = $hasParent ? '  ' : '<d>└ </d>';
+        if ($hasParent) {
+            $indent .= implode('', $this->indentStack);
+            $indent .= $isLast ? '└ ' : '├ ';
+        }
 
         $this->output->write(sprintf(
             '<d>%s</d><class>%s</class> ',
@@ -92,7 +96,7 @@ final class GrammarDumper extends GrammarVisitor
         ExpressionHighlighter::highlight($expr, $this->output);
         $this->output->writeln('');
 
-        if ($expr instanceof Composite && $index !== null) {
+        if ($expr instanceof Composite && $hasParent) {
             $this->indentStack[] = $isLast ? '  ' : '│ ';
         }
     }

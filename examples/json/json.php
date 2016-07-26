@@ -16,9 +16,9 @@ use ju1ius\Pegasus\CST\Transform;
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 
-class JSONTraverser extends Transform
+class JSONTransform extends Transform
 {
-    protected function leave_object($node, $elements)
+    protected function leave_object($node, ...$elements)
     {
         return $elements ?: [];
     }
@@ -33,9 +33,9 @@ class JSONTraverser extends Transform
         return $assoc;
     }
 
-    protected function leave_array($node, $elements)
+    protected function leave_array($node, ...$elements)
     {
-        return $elements ?: [];
+        return $elements;
     }
 
     protected function leave_elements($node, $first, $others)
@@ -54,7 +54,7 @@ class JSONTraverser extends Transform
 
     protected function leave_string($node, $value)
     {
-        return trim($value, '"');
+        return $value;
     }
 
     protected function leave_null($node, $value)
@@ -74,21 +74,29 @@ class JSONTraverser extends Transform
 }
 \Symfony\Component\Debug\Debug::enable();
 $stopwatch = new \Symfony\Component\Stopwatch\Stopwatch();
+$probe = \BlackfireProbe::getMainInstance();
 
-$syntax = file_get_contents(__DIR__ . '/json.peg');
-
-$stopwatch->openSection();
-$stopwatch->start('parse_syntax');
-$grammar = Grammar::fromSyntax($syntax, null, 2);
-$stopwatch->stop('parse_syntax');
-
-$parser = new Packrat($grammar);
+// ----- Runtime parser
+//$syntax = file_get_contents(__DIR__ . '/json.peg');
+//
+//$stopwatch->openSection();
+//$stopwatch->start('parse_syntax');
+//$grammar = Grammar::fromSyntax($syntax, null, 2);
+//$stopwatch->stop('parse_syntax');
+//
+////$parser = new Packrat($grammar);
 //$parser = new \ju1ius\Pegasus\Parser\RecursiveDescent($grammar);
-//require_once __DIR__.'/JSON.php';
-//$parser = new JSON();
-//$test_input = <<<'JSON'
+// ----- Runtime parser
+
+// ----- Generated parser
+$stopwatch->openSection();
+require_once __DIR__.'/../../hack/codegen/JSONParser.php';
+$parser = new \JSONParser();
+// ----- Generated parser
+
+//$input = <<<'JSON'
 //{
-//    "foo": "bar",
+//    "foo": {"bar": 42},
 //    "baz": [1, 2, 3],
 //    "qux" : true
 //}
@@ -102,10 +110,12 @@ $stopwatch->stop('load_data');
 // Pegasus parse
 $stopwatch->start('parse_json');
 //mb_regex_encoding('ASCII');
+$probe->enable();
 $tree = $parser->parseAll($input);
+$probe->disable();
 $stopwatch->stop('parse_json');
 $stopwatch->start('visit');
-$object = (new JSONTraverser())->transform($tree);
+$object = (new JSONTransform())->transform($tree);
 $stopwatch->stop('visit');
 
 $stopwatch->stopSection('script');

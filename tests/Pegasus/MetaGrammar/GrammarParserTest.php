@@ -10,7 +10,7 @@
 
 namespace ju1ius\Pegasus\Tests\MetaGrammar;
 
-use ju1ius\Pegasus\Expression\Combinator\NamedSequence;
+use ju1ius\Pegasus\Expression\Decorator\NodeAction;
 use ju1ius\Pegasus\Expression\Combinator\OneOf;
 use ju1ius\Pegasus\Expression\Combinator\Sequence;
 use ju1ius\Pegasus\Expression\Decorator\Assert;
@@ -175,19 +175,21 @@ class GrammarParserTest extends PegasusTestCase
                     new Match('z'),
                 ])])
             ],
-            'NamedSequence of matches' => [
+            'NodeAction of matches' => [
                 'x = /x/ /y/ /z/ <= XYZ',
-                Grammar::fromArray(['x' => new NamedSequence([
-                    new Match('x'),
-                    new Match('y'),
-                    new Match('z'),
-                ], 'XYZ')])
+                Grammar::fromArray([
+                    'x' => new NodeAction(new Sequence([
+                        new Match('x'),
+                        new Match('y'),
+                        new Match('z'),
+                    ]), 'XYZ')
+                ])
             ],
             'Choice with named sequence' => [
                 'x = /x/ | /y/ <= Y | /z/',
                 Grammar::fromArray(['x' => new OneOf([
                     new Match('x'),
-                    new NamedSequence([new Match('y')], 'Y'),
+                    new NodeAction(new Match('y'), 'Y'),
                     new Match('z'),
                 ])])
             ],
