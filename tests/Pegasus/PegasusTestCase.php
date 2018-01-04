@@ -7,12 +7,14 @@ use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\Terminal\GroupMatch;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\CST\Node;
+use PHPUnit\Framework\TestCase;
+
 
 /**
  * Class PegasusTestCase
  * @author ju1ius
  */
-class PegasusTestCase extends \PHPUnit_Framework_TestCase
+class PegasusTestCase extends TestCase
 {
 	/**
 	 * Compares two nodes.

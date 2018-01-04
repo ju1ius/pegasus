@@ -12,11 +12,13 @@ namespace ju1ius\Pegasus\Tests\Utils;
 
 use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\Utils\Str;
+use PHPUnit\Framework\TestCase;
+
 
 /**
  * @author ju1ius <ju1ius@laposte.net>
  */
-class StrTest extends \PHPUnit_Framework_TestCase
+class StrTest extends TestCase
 {
     /**
      * @dataProvider getTestClassNameProvider

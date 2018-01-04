@@ -17,11 +17,13 @@ use ju1ius\Pegasus\CST\Node\Quantifier;
 use ju1ius\Pegasus\CST\Node\Terminal;
 use ju1ius\Pegasus\CST\Exception\TransformException;
 use ju1ius\Pegasus\CST\Transform;
+use PHPUnit\Framework\TestCase;
+
 
 /**
  * @author ju1ius <ju1ius@laposte.net>
  */
-class TransformTest extends \PHPUnit_Framework_TestCase
+class TransformTest extends TestCase
 {
     public function testDefaultBeforeAndAfterTraverse()
     {

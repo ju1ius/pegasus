@@ -11,11 +11,13 @@
 namespace ju1ius\Pegasus\Tests\Utils;
 
 use ju1ius\Pegasus\Utils\SourceExcerpt;
+use PHPUnit\Framework\TestCase;
+
 
 /**
  * @author ju1ius <ju1ius@laposte.net>
  */
-class SourceExcerptTest extends \PHPUnit_Framework_TestCase
+class SourceExcerptTest extends TestCase
 {
     public function testExcerptWithShortLines()
     {

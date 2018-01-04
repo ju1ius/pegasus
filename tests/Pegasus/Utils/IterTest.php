@@ -11,11 +11,13 @@
 namespace ju1ius\Pegasus\Tests\Utils;
 
 use ju1ius\Pegasus\Utils\Iter;
+use PHPUnit\Framework\TestCase;
+
 
 /**
  * @author ju1ius <ju1ius@laposte.net>
  */
-class IterTest extends \PHPUnit_Framework_TestCase
+class IterTest extends TestCase
 {
     public function testMap()
     {
