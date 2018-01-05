@@ -322,6 +322,30 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
     }
 
     /**
+     * Imports rules from another grammar, with an optional prefix.
+     * Imported rules are accessible as `$grammar['prefix:ruleName']`.
+     * If no prefix is given, the imported grammar name is used.
+     *
+     * @todo figure out how to handle inheritance chain when the imported grammar extends another one.
+     *
+     * @param Grammar $other
+     * @param null|string $as
+     * @return $this
+     * @throws Grammar\Exception\SelfReferencingRule
+     */
+    public function use(Grammar $other, ?string $as = null): self
+    {
+        $other = $other->copy(true);
+        $alias = $as ?: $other->getName();
+
+        foreach ($other as $name => $rule) {
+            $this->offsetSet("{$alias}:$name", $rule);
+        }
+
+        return $this;
+    }
+
+    /**
      * Returns a deep copy of this grammar, with rules returned by the given function.
      *
      * @param callable $f `$f(Expression $expr, string $ruleName, Grammar $grammar)`
