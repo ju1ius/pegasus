@@ -34,6 +34,7 @@ use ju1ius\Pegasus\Expression\Terminal\Epsilon;
 use ju1ius\Pegasus\Expression\Terminal\Fail;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\Expression\Terminal\Match;
+use ju1ius\Pegasus\Expression\Terminal\PCREPattern;
 use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Expression\Terminal\Word;
 use ju1ius\Pegasus\Grammar;
@@ -269,7 +270,7 @@ class MetaGrammarTransform extends Transform
         return new Word($word);
     }
 
-    private function leave_regexp(Node $node, $regexp)
+    private function leave_regexp(Node $node, Node $regexp): PCREPattern
     {
         list(, $pattern, $flags) = $regexp->attributes['groups'];
         // str_split returns [0 => ''] for the empty string !
