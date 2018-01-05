@@ -39,14 +39,14 @@ class Assert extends Decorator
 
     public function match(string $text, Parser $parser)
     {
-        $capturing = $parser->isCapturing;
-        $parser->isCapturing = false;
-
         $start = $parser->pos;
+        $capturing = $parser->isCapturing;
+
+        $parser->isCapturing = false;
         $result = $this->children[0]->match($text, $parser);
-        $parser->pos = $start;
 
         $parser->isCapturing = $capturing;
+        $parser->pos = $start;
 
         return !!$result;
     }

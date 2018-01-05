@@ -40,8 +40,14 @@ class Not extends Decorator
     public function match(string $text, Parser $parser)
     {
         $start = $parser->pos;
+        $capturing = $parser->isCapturing;
+
+        $parser->isCapturing = false;
         $result = $this->children[0]->match($text, $parser);
+
         $parser->pos = $start;
+        $parser->isCapturing = $capturing;
+
         if (!$result) {
             return true;
         }
