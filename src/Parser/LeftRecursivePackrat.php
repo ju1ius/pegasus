@@ -151,14 +151,10 @@ class LeftRecursivePackrat extends Packrat
     protected function recall(Expression $expr): ?MemoEntry
     {
         $pos = $this->pos;
-        $memo = isset($this->memo[$this->isCapturing][$pos][$expr->id])
-            ? $this->memo[$this->isCapturing][$pos][$expr->id]
-            : null;
+        $memo = $this->memo[$this->isCapturing][$pos][$expr->id] ?? null;
+        $head = $this->heads[$pos] ?? null;
         // If not growing a seed parse, just return what is stored in the memo table.
-        if (!isset($this->heads[$pos])) {
-            return $memo;
-        }
-        $head = $this->heads[$pos];
+        if (!$head) return $memo;
         // Do not evaluate any rule that is not involved in this left recursion.
         if (!$memo && !$head->involves($expr)) {
             return new MemoEntry(null, $pos);
