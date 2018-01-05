@@ -41,7 +41,7 @@ class SuperTest extends ExpressionTestCase
             ->rule('foo')->literal('foo')
             ->rule('bar')->literal('bar')
             ->getGrammar();
-        $grammar->setParent($parent);
+        $grammar->extends($parent);
         $this->assertNodeEquals($expected, $this->parse($grammar, ...$args));
     }
 

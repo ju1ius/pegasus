@@ -152,7 +152,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      *
      * @return $this
      */
-    public function setParent(Grammar $parent)
+    public function extends(Grammar $parent): self
     {
         $this->parent = $parent;
 

@@ -81,7 +81,7 @@ class GrammarTest extends PegasusTestCase
     {
         $child = new Grammar();
         $parent = new Grammar();
-        $child->setParent($parent);
+        $child->extends($parent);
         $this->assertSame($parent, $child->getParent());
     }
 
@@ -91,7 +91,7 @@ class GrammarTest extends PegasusTestCase
         $parent = new Grammar();
         $expr = $this->getMockForAbstractClass(Expression::class);
         $parent['foo'] = $expr;
-        $child->setParent($parent);
+        $child->extends($parent);
 
         $this->assertTrue(isset($child['foo']));
         $this->assertSame($expr, $child['foo']);
@@ -107,7 +107,7 @@ class GrammarTest extends PegasusTestCase
         $childFoo = $this->getMockForAbstractClass(Expression::class);
         $child['foo'] = $childFoo;
 
-        $child->setParent($parent);
+        $child->extends($parent);
 
         $this->assertSame($childFoo, $child['foo']);
         $this->assertSame($parentFoo, $parent['foo']);
@@ -123,7 +123,7 @@ class GrammarTest extends PegasusTestCase
         $childFoo = $this->getMockForAbstractClass(Expression::class);
         $child['foo'] = $childFoo;
 
-        $child->setParent($parent);
+        $child->extends($parent);
 
         $this->assertSame($parentFoo, $child->super('foo'));
     }
