@@ -107,7 +107,6 @@ abstract class Parser
      * @param string $startRule
      *
      * @return Node|true|null
-     *
      */
     abstract public function parse(string $text, int $pos = 0, ?string $startRule = null);
 

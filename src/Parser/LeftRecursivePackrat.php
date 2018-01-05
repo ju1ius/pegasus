@@ -57,9 +57,10 @@ class LeftRecursivePackrat extends Packrat
             // Create a new LeftRecursion and push it onto the rule invocation stack.
             $lr = new LeftRecursion($expr);
             $this->lrStack->push($lr);
-            // Memoize $lr, then evaluate $expr.
+            // Memoize $lr
             $memo = new MemoEntry($lr, $pos);
             $this->memo[$this->isCapturing][$pos][$expr->id] = $memo;
+            // evaluate expression
             $result = $this->evaluate($expr);
             // Pop $lr off the invocation stack
             $this->lrStack->pop();
