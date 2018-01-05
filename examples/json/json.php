@@ -77,21 +77,21 @@ $stopwatch = new \Symfony\Component\Stopwatch\Stopwatch();
 $probe = \BlackfireProbe::getMainInstance();
 
 // ----- Runtime parser
-//$syntax = file_get_contents(__DIR__ . '/json.peg');
-//
-//$stopwatch->openSection();
-//$stopwatch->start('parse_syntax');
-//$grammar = Grammar::fromSyntax($syntax, null, 2);
-//$stopwatch->stop('parse_syntax');
-//
-////$parser = new Packrat($grammar);
-//$parser = new \ju1ius\Pegasus\Parser\RecursiveDescent($grammar);
+$syntax = file_get_contents(__DIR__ . '/json.peg');
+
+$stopwatch->openSection();
+$stopwatch->start('parse_syntax');
+$grammar = Grammar::fromSyntax($syntax, null, 2);
+$stopwatch->stop('parse_syntax');
+
+//$parser = new Packrat($grammar);
+$parser = new \ju1ius\Pegasus\Parser\RecursiveDescent($grammar);
 // ----- Runtime parser
 
 // ----- Generated parser
-$stopwatch->openSection();
-require_once __DIR__.'/../../hack/codegen/JSONParser.php';
-$parser = new \JSONParser();
+//$stopwatch->openSection();
+//require_once __DIR__.'/../../hack/codegen/JSONParser.php';
+//$parser = new \JSONParser();
 // ----- Generated parser
 
 //$input = <<<'JSON'
@@ -104,7 +104,8 @@ $parser = new \JSONParser();
 //
 //$input = empty($argv[1]) ? $test_input : $argv[1];
 $stopwatch->start('load_data');
-$input = file_get_contents('/home/ju1ius/www/embo/vhosts/www/embo/composer.lock');
+$input = file_get_contents('/home/ju1ius/w3/embo/vhosts/lembobineuse.biz/composer.lock');
+//dump($input);
 $stopwatch->stop('load_data');
 
 // Pegasus parse
