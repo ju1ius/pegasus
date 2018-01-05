@@ -1,11 +1,10 @@
 import MemoEntry from './memo'
+import {ParseError, IncompleteParseError} from './exceptions'
 
 export default class Packrat {
 
   constructor () {
-    /**
-     * @type {Map<String, MemoEntry>}
-     */
+    /** @type {Map<String, MemoEntry>} */
     this.memos = new Map()
     /** @var string */
     this.startRule = null
@@ -19,12 +18,10 @@ export default class Packrat {
   parseAll (text, startRule = this.startRule) {
     const result = this.parse(text, 0, startRule)
     if (this.pos < this.text.length) {
-      throw new IncompleteParseError(
-        this.text,
-        this.pos,
-        this.error
-      )
+      throw new IncompleteParseError(this.text, this.pos, this.error)
     }
+
+    return result
   }
 
   parse (text, pos, startRule = this.startRule) {
@@ -47,7 +44,6 @@ export default class Packrat {
     let memo = this.getMemo(ruleName, this.pos)
     if (memo) {
       this.pos = memo.end
-
       return memo.result
     }
     memo = new MemoEntry(null, this.pos)

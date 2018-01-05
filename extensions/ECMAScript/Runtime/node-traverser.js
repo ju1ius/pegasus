@@ -14,8 +14,7 @@ export default class NodeTraverser {
     return result
   }
 
-  beforeTraverse (node) {
-  }
+  beforeTraverse (node) {}
 
   afterTraverse (node) {
     return node
@@ -40,7 +39,7 @@ export default class NodeTraverser {
     }
 
     return this.leaveNode(node, children)
-  };
+  }
 
   leaveNode (node, children) {
     if (node.isTerminal) {

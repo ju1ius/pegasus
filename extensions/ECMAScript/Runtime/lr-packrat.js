@@ -94,9 +94,7 @@ export default class LeftRecursivePackrat extends Packrat {
     }
     for (let i = 0, l = lrStack.length, item; i < l; i++) {
       item = lrStack[i]
-      if (item.head === lr.head) {
-        return true
-      }
+      if (item.head === lr.head) return
       lr.head.involved.set(item.rule, item.rule)
     }
   }
@@ -110,13 +108,9 @@ export default class LeftRecursivePackrat extends Packrat {
    */
   leftRecursionAnswer (ruleName, pos, memo) {
     const {head, seed} = memo.result
-    if (head.rule !== ruleName) {
-      return seed
-    }
+    if (head.rule !== ruleName) return seed
     memo.result = seed
-    if (!memo.result) {
-      return null
-    }
+    if (!memo.result) return null
 
     return this.growSeedParse(ruleName, pos, memo, head)
   }
