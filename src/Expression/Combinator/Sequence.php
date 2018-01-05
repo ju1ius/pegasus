@@ -30,9 +30,12 @@ class Sequence extends Combinator
      */
     public function getCaptureCount(): int
     {
-        return array_reduce($this->children, function (int $n, Expression $child): int {
-            return $child->isCapturing() ? $n + 1 : $n;
-        }, 0);
+        $n = 0;
+        foreach ($this->children as $child) {
+            if ($child->isCapturing()) $n++;
+        }
+
+        return $n;
     }
 
     public function match(string $text, Parser $parser)
@@ -67,10 +70,9 @@ class Sequence extends Combinator
                     // this expression is not a grammar rule, so we can safely
                     return $child;
                 } elseif (!$child->name) {
-                    // this expression is a grammar rule but the matching child is not,
-                    // masquerade the node and return it
+                    // this expression is a grammar rule but the matching child is not.
+                    // Masquerade the child as ourselves and return it.
                     $child->name = $this->name;
-
                     return $child;
                 }
 

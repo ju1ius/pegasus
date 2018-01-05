@@ -64,9 +64,11 @@ abstract class Expression
     }
 
     /**
-     * Returns the parse tree matching this expression at the given position,
-     * (not necessarily extending all the way to the end of $text),
-     * or null if the match failed.
+     * Tries to match this expression against the given text.
+     * Returns either:
+     *   - a `Node` instance if the match succeeded and the expression is capturing
+     *   - `true` if the match succeeded and the expression is not capturing
+     *   - `null` if the match failed
      *
      * @param string $text The full text of the match subject.
      * @param Parser $parser The parser used for this expression.

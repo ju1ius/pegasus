@@ -37,9 +37,7 @@ final class MetaGrammar
      * You can't instanciate MetaGrammar.
      * You just call MetaGrammar::create() and it returns an unique instance of Grammar.
      */
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 
     /**
      * Factory method for MetaGrammar.
