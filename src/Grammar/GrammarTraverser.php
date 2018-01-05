@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -31,7 +31,7 @@ class GrammarTraverser implements GrammarTraverserInterface
     /**
      * @param bool $cloneExpressions Whether expressions must be cloned before traversal.
      */
-    public function __construct($cloneExpressions = true)
+    public function __construct(bool $cloneExpressions = true)
     {
         $this->cloneExpressions = $cloneExpressions;
         $this->visitors = new \SplObjectStorage();
@@ -95,7 +95,7 @@ class GrammarTraverser implements GrammarTraverserInterface
         return $grammar;
     }
 
-    protected function traverseRule(Grammar $grammar, Expression $expr)
+    protected function traverseRule(Grammar $grammar, Expression $expr): Expression
     {
         foreach ($this->visitors as $visitor) {
             if (null !== $result = $visitor->enterRule($grammar, $expr)) {
@@ -116,7 +116,7 @@ class GrammarTraverser implements GrammarTraverserInterface
         return $expr;
     }
 
-    protected function traverseExpression(Grammar $grammar, Expression $expr, $index = null, $isLast = false)
+    protected function traverseExpression(Grammar $grammar, Expression $expr, $index = null, bool $isLast = false)
     {
         if ($this->cloneExpressions) {
             $expr = clone $expr;

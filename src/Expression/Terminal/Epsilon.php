@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -22,17 +22,17 @@ use ju1ius\Pegasus\Parser\Scope;
  */
 class Epsilon extends Terminal
 {
-    public function __toString()
+    public function __toString(): string
     {
         return 'ε';
     }
 
-    public function isCapturing()
+    public function isCapturing(): bool
     {
         return false;
     }
 
-    public function match($text, Parser $parser)
+    public function match(string $text, Parser $parser)
     {
         return true;
     }

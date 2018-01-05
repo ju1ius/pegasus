@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -16,14 +16,7 @@ class Terminal extends Node
 {
     public $isTerminal = true;
 
-    /**
-     * @param string $name
-     * @param int    $start
-     * @param int    $end
-     * @param null   $value
-     * @param array  $attributes
-     */
-    public function __construct($name, $start, $end, $value = null, array $attributes = [])
+    public function __construct(string $name, int $start, int $end, $value = null, array $attributes = [])
     {
         $this->name = $name;
         $this->start = $start;

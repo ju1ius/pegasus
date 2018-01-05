@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -27,7 +27,7 @@ class TransformException extends \RuntimeException
      * @param string     $msg
      * @param \Exception $previous Optional exception to wrap with debug info.
      */
-    public function __construct(Node $node, Node $rootNode, $msg = '', \Exception $previous = null)
+    public function __construct(Node $node, Node $rootNode, string $msg = '', \Exception $previous = null)
     {
         $msg = sprintf(
             "%s\n\nConcrete Syntax Tree:\n%s",
@@ -37,13 +37,7 @@ class TransformException extends \RuntimeException
         parent::__construct($msg, 0, $previous);
     }
 
-    /**
-     * @param Node $node
-     * @param Node $rootNode
-     *
-     * @return string
-     */
-    private function printParseTree(Node $node, Node $rootNode)
+    private function printParseTree(Node $node, Node $rootNode): string
     {
         $output = Debug::createBufferedOutput();
         CSTDumper::dump($rootNode, $output, $node);

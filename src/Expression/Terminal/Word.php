@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -23,17 +23,14 @@ class Word extends Match
     /**
      * @inheritDoc
      */
-    public function __construct($word, $name = '')
+    public function __construct(string $word, string $name = '')
     {
         $this->word = $word;
         $pattern = sprintf('\b%s\b', preg_quote($word, '/'));
         parent::__construct($pattern, [], $name);
     }
 
-    /**
-     * @return string
-     */
-    public function getWord()
+    public function getWord(): string
     {
         return $this->word;
     }
@@ -41,7 +38,7 @@ class Word extends Match
     /**
      * @inheritDoc
      */
-    public function __toString()
+    public function __toString(): string
     {
         return sprintf('`%s`', $this->word);
     }

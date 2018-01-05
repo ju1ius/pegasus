@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -36,14 +36,15 @@ class OptimizationPass
     /**
      * @param bool $cloneExpressions Whether expressions must be cloned before traversal.
      */
-    public function __construct($cloneExpressions = false)
+    public function __construct(bool $cloneExpressions = false)
     {
         $this->cloneExpressions = $cloneExpressions;
         $this->optimizations = new \SplObjectStorage();
     }
 
     /**
-     * @inheritDoc
+     * @param Optimization[] $optimizations
+     * @return $this
      */
     public function add(Optimization ...$optimizations)
     {
@@ -55,7 +56,8 @@ class OptimizationPass
     }
 
     /**
-     * @inheritDoc
+     * @param Optimization[] $optimizations
+     * @return $this
      */
     public function remove(Optimization ...$optimizations)
     {
@@ -72,7 +74,7 @@ class OptimizationPass
      *
      * @return Grammar
      */
-    public function process(Grammar $grammar, OptimizationContext $context = null)
+    public function process(Grammar $grammar, OptimizationContext $context = null): Grammar
     {
         $context = $context ?: OptimizationContext::of($grammar);
 
@@ -148,7 +150,7 @@ class OptimizationPass
      *
      * @return Expression
      */
-    protected function processExpression(Grammar $grammar, Expression $expr, OptimizationContext $context)
+    protected function processExpression(Grammar $grammar, Expression $expr, OptimizationContext $context): Expression
     {
         if ($this->cloneExpressions) {
             $expr = clone $expr;
@@ -190,7 +192,7 @@ class OptimizationPass
      *
      * @return OptimizationContext
      */
-    private function getChildContext(Expression $expr, OptimizationContext $context)
+    private function getChildContext(Expression $expr, OptimizationContext $context): OptimizationContext
     {
         switch (get_class($expr)) {
             case Assert::class:

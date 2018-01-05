@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -43,7 +43,7 @@ final class OptimizationContext
      * @param Grammar $grammar
      * @param int     $type
      */
-    private function __construct(Grammar $grammar, $type = self::TYPE_CAPTURING)
+    private function __construct(Grammar $grammar, int $type = self::TYPE_CAPTURING)
     {
         $this->grammar = $grammar;
         $this->type = $type;
@@ -56,7 +56,7 @@ final class OptimizationContext
      *
      * @return OptimizationContext
      */
-    public static function of(Grammar $grammar, $type = self::TYPE_CAPTURING)
+    public static function of(Grammar $grammar, int $type = self::TYPE_CAPTURING): self
     {
         return new self($grammar, $type);
     }
@@ -66,7 +66,7 @@ final class OptimizationContext
      *
      * @return OptimizationContext
      */
-    public function matching()
+    public function matching(): self
     {
         return self::of($this->grammar, self::TYPE_MATCHING);
     }
@@ -76,31 +76,22 @@ final class OptimizationContext
      *
      * @return OptimizationContext
      */
-    public function capturing()
+    public function capturing(): self
     {
         return self::of($this->grammar, self::TYPE_CAPTURING);
     }
 
-    /**
-     * @return bool
-     */
-    public function isCapturing()
+    public function isCapturing(): bool
     {
         return $this->type === self::TYPE_CAPTURING;
     }
 
-    /**
-     * @return bool
-     */
-    public function isMatching()
+    public function isMatching(): bool
     {
         return $this->type === self::TYPE_MATCHING;
     }
 
-    /**
-     * @return Analysis
-     */
-    public function getAnalysis()
+    public function getAnalysis(): Analysis
     {
         return $this->analysis;
     }
@@ -109,9 +100,8 @@ final class OptimizationContext
      * @param string $ruleName
      *
      * @return Expression
-     * @throws Grammar\Exception\RuleNotFound If rule was not found in the grammar
      */
-    public function getRule($ruleName)
+    public function getRule(string $ruleName): Expression
     {
         return $this->grammar[$ruleName];
     }
@@ -120,24 +110,23 @@ final class OptimizationContext
      * @return string
      * @throws \ju1ius\Pegasus\Grammar\Exception\MissingStartRule
      */
-    public function getStartRule()
+    public function getStartRule(): string
     {
         return $this->grammar->getStartRule();
     }
 
-    public function getReferencedRules()
+    /**
+     * @return string[]
+     * @throws Exception\MissingStartRule
+     */
+    public function getReferencedRules(): array
     {
         $startRule = $this->getStartRule();
 
         return array_merge([$startRule], $this->analysis->getReferencesFrom($startRule));
     }
 
-    /**
-     * @param string $ruleName
-     *
-     * @return bool
-     */
-    public function isInlineableRule($ruleName)
+    public function isInlineableRule(string $ruleName): bool
     {
         return $this->grammar->isInlined($ruleName)
             && $this->analysis->isRegular($ruleName);

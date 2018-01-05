@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -52,7 +52,7 @@ abstract class Parser
     /**
      * @inheritdoc
      */
-    final public function parseAll($text, $startRule = null)
+    final public function parseAll(string $text, ?string $startRule = null)
     {
         $result = $this->parse($text, 0, $startRule);
         if ($this->pos < strlen($text)) {
@@ -67,9 +67,12 @@ abstract class Parser
     }
 
     /**
-     * @inheritdoc
+     * @param string $text
+     * @param int $position
+     * @param null|string $startRule
+     * @return Node|null|true
      */
-    public function parse($text, $position = 0, $startRule = null)
+    public function parse(string $text, int $position = 0, ?string $startRule = null)
     {
         if (!$this->matchers) {
             $this->matchers = $this->buildMatchers();
@@ -98,7 +101,7 @@ abstract class Parser
      *
      * @return Node|true|null
      */
-    abstract protected function apply($rule);
+    abstract protected function apply(string $rule);
 
     /**
      * Evaluates an expression.
@@ -107,7 +110,7 @@ abstract class Parser
      *
      * @return Node|true|null
      */
-    final protected function evaluate($ruleName)
+    final protected function evaluate(string $ruleName)
     {
         return $this->matchers[$ruleName]();
     }
@@ -115,9 +118,9 @@ abstract class Parser
     /**
      * @param string $rule
      * @param string $expr
-     * @param int $pos
+     * @param string $pos
      */
-    protected function registerFailure($rule, $expr, $pos)
+    protected function registerFailure(string $rule, $expr, string $pos)
     {
         if ($pos > $this->error->position) {
             $this->error->rule = $rule;
@@ -129,7 +132,7 @@ abstract class Parser
     /**
      * @return \Closure[]
      */
-    private function buildMatchers()
+    private function buildMatchers(): array
     {
         $matchers = [];
         $refClass = new \ReflectionClass($this);

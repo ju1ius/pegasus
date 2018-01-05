@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -10,6 +10,7 @@
 
 namespace ju1ius\Pegasus\Expression\Decorator;
 
+use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Decorator;
 use ju1ius\Pegasus\Parser\Parser;
 use ju1ius\Pegasus\Parser\Scope;
@@ -21,28 +22,28 @@ use ju1ius\Pegasus\Parser\Scope;
  */
 final class Label extends Decorator
 {
+    /**
+     * @var string
+     */
     private $label;
 
-    public function __construct($child, $label)
+    public function __construct(Expression $child = null, string $label)
     {
         parent::__construct($child);
         $this->label = $label;
     }
 
-    /**
-     * @return string
-     */
-    public function getLabel()
+    public function getLabel(): string
     {
         return $this->label;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return sprintf('%s:%s', $this->label, $this->stringChildren()[0]);
     }
 
-    public function match($text, Parser $parser)
+    public function match(string $text, Parser $parser)
     {
         $start = $parser->pos;
         if ($result = $this->children[0]->match($text, $parser)) {

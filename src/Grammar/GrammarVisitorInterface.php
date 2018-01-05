@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -26,7 +26,7 @@ interface GrammarVisitorInterface
      *
      * @return mixed
      */
-    public function beforeTraverse(Grammar $grammar);
+    public function beforeTraverse(Grammar $grammar): ?Grammar;
 
     /**
      * Called once after traversal.
@@ -39,7 +39,7 @@ interface GrammarVisitorInterface
      *
      * @return mixed
      */
-    public function afterTraverse(Grammar $grammar);
+    public function afterTraverse(Grammar $grammar): ?Grammar;
 
     /**
      * Called when entering a grammar rule.
@@ -57,6 +57,8 @@ interface GrammarVisitorInterface
 
     /**
      * Called when leaving a grammar rule.
+     *
+     * @todo the following semantics are not implemented by the abstract grammar traverser class !
      *
      * Return value semantics:
      *  * null:      $expr stays as-is
@@ -78,13 +80,13 @@ interface GrammarVisitorInterface
      *  * null:      $expr stays as-is
      *  * otherwise: $expr is set to the return value
      *
-     * @param Expression $expr   The visited expression.
-     * @param int|null   $index  The index of the visited expression in it's parent.
-     * @param bool       $isLast Whether the visited expression is the last child of it's parent
+     * @param Expression $expr The visited expression.
+     * @param int|null $index The index of the visited expression in it's parent.
+     * @param bool $isLast Whether the visited expression is the last child of it's parent
      *
      * @return mixed
      */
-    public function enterExpression(Expression $expr, $index = null, $isLast = false);
+    public function enterExpression(Expression $expr, ?int $index = null, bool $isLast = false);
 
     /**
      * Called when leaving an expression.
@@ -95,11 +97,11 @@ interface GrammarVisitorInterface
      *  * array:     The return value is merged into the parent array (at the position of the $node)
      *  * otherwise: $expr is set to the return value
      *
-     * @param Expression $expr   The visited expression.
-     * @param int|null   $index  The index of the visited expression in it's parent.
-     * @param bool       $isLast Whether the visited expression is the last child of it's parent
+     * @param Expression $expr The visited expression.
+     * @param int|null $index The index of the visited expression in it's parent.
+     * @param bool $isLast Whether the visited expression is the last child of it's parent
      *
      * @return mixed
      */
-    public function leaveExpression(Expression $expr, $index = null, $isLast = false);
+    public function leaveExpression(Expression $expr, ?int $index = null, bool $isLast = false);
 }

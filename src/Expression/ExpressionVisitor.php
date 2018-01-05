@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -30,7 +30,7 @@ abstract class ExpressionVisitor implements ExpressionVisitorInterface
     /**
      * @inheritDoc
      */
-    public function enterExpression(Expression $expr, $index = null, $isLast = false)
+    public function enterExpression(Expression $expr, ?int $index = null, bool $isLast = false)
     {
         return null;
     }
@@ -38,7 +38,7 @@ abstract class ExpressionVisitor implements ExpressionVisitorInterface
     /**
      * @inheritDoc
      */
-    public function leaveExpression(Expression $expr, $index = null, $isLast = false)
+    public function leaveExpression(Expression $expr, ?int $index = null, bool $isLast = false)
     {
         return null;
     }

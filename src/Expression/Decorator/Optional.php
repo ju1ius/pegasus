@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -21,7 +21,7 @@ use ju1ius\Pegasus\Expression;
  */
 class Optional extends Quantifier
 {
-    public function __construct(Expression $child = null, $name = '')
+    public function __construct(?Expression $child = null, ?string $name = '')
     {
         parent::__construct($child, 0, 1, $name);
     }
@@ -29,7 +29,7 @@ class Optional extends Quantifier
     /**
      * @inheritDoc
      */
-    public function isZeroOrMore()
+    public function isZeroOrMore(): bool
     {
         return false;
     }
@@ -37,7 +37,7 @@ class Optional extends Quantifier
     /**
      * @inheritDoc
      */
-    public function isOneOrMore()
+    public function isOneOrMore(): bool
     {
         return false;
     }
@@ -45,7 +45,7 @@ class Optional extends Quantifier
     /**
      * @inheritDoc
      */
-    public function isOptional()
+    public function isOptional(): bool
     {
         return true;
     }

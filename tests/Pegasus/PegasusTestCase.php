@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ju1ius\Pegasus\Tests;
 
@@ -21,8 +21,6 @@ class PegasusTestCase extends TestCase
      *
      * @param Node $expected
      * @param Node $actual
-	 *
-	 * @return bool
 	 */
 	public function assertNodeEquals(Node $expected, Node $actual)
 	{

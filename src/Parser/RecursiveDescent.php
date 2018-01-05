@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -20,12 +20,12 @@ class RecursiveDescent extends Parser
     /**
      * @inheritdoc
      */
-    public function parse($source, $pos = 0, $startRule = null)
+    public function parse(string $text, int $pos = 0, ?string $startRule = null)
     {
-        $this->source = $source;
+        $this->source = $text;
         $this->pos = $pos;
         $this->bindings = [];
-        $this->error = new ParseError($source);
+        $this->error = new ParseError($text);
         $this->isCapturing = true;
         $this->applicationStack = new \SplStack();
         $rule = $startRule ?: $this->grammar->getStartRule();
@@ -45,7 +45,7 @@ class RecursiveDescent extends Parser
     /**
      * @inheritdoc
      */
-    public function apply($rule, $super = false)
+    public function apply(string $rule, bool $super = false)
     {
         $expr = $super ? $this->grammar->super($rule) : $this->grammar[$rule];
 

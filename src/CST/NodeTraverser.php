@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -55,7 +55,7 @@ class NodeTraverser implements NodeTraverserInterface
     /**
      * @inheritDoc
      */
-    public function traverse($node)
+    public function traverse(Node $node)
     {
         foreach ($this->visitors as $visitor) {
             if (null !== $result = $visitor->beforeTraverse($node)) {
@@ -76,7 +76,7 @@ class NodeTraverser implements NodeTraverserInterface
         return $node;
     }
 
-    protected function traverseNode(Node $node, $index = null, $isLast = false)
+    protected function traverseNode(Node $node, ?int $index = null, bool $isLast = false)
     {
         foreach ($this->visitors as $visitor) {
             if (null !== $result = $visitor->enterNode($node, $index, $isLast)) {

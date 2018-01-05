@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -80,15 +80,12 @@ abstract class Parser
      * Parse the entire text, using given start rule or the grammar's one,
      * requiring the entire input to match the grammar.
      *
-     * @param string      $source
+     * @param string $source
      * @param string|null $startRule
      *
      * @return Node|true|null
-     *
-     * @throws IncompleteParseError If parsing was successful but did not consume all the input.
-     * @throws ParseError If the input doesn't match the grammar.
      */
-    final public function parseAll($source, $startRule = null)
+    final public function parseAll(string $source, ?string $startRule = null)
     {
         $result = $this->parse($source, 0, $startRule);
         if ($this->pos < strlen($source)) {
@@ -106,14 +103,13 @@ abstract class Parser
      * but does not require the entire input to match the grammar.
      *
      * @param string $text
-     * @param int    $pos
+     * @param int $pos
      * @param string $startRule
      *
      * @return Node|true|null
      *
-     * @throws ParseError If the input doesn't match the grammar.
      */
-    abstract public function parse($text, $pos = 0, $startRule = null);
+    abstract public function parse(string $text, int $pos = 0, ?string $startRule = null);
 
     /**
      * Applies a grammar rule.
@@ -122,12 +118,12 @@ abstract class Parser
      *
      * @internal
      *
-     * @param string $rule  The rule name to apply
-     * @param bool   $super Whether we should explicitly apply a parent rule
+     * @param string $rule The rule name to apply
+     * @param bool $super Whether we should explicitly apply a parent rule
      *
      * @return Node|null|true
      */
-    abstract public function apply($rule, $super = false);
+    abstract public function apply(string $rule, bool $super = false);
 
     /**
      * Evaluates an expression & updates current position on success.
@@ -151,7 +147,7 @@ abstract class Parser
      * @param Expression $expr
      * @param int $pos
      */
-    final public function registerFailure(Expression $expr, $pos)
+    final public function registerFailure(Expression $expr, int $pos)
     {
         // We only care about the rightmost failure
         if ($pos > $this->error->position) {

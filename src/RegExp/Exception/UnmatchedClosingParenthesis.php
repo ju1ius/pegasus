@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -20,7 +20,7 @@ class UnmatchedClosingParenthesis extends \LogicException
      * @param string $pattern
      * @param int    $offset
      */
-    public function __construct($pattern, $offset)
+    public function __construct(string $pattern, int $offset)
     {
         parent::__construct(sprintf(
             'Unmatched closing parenthesis at offset %d in pattern `%s`',

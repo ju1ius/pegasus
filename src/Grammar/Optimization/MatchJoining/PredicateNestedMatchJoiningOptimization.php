@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -20,7 +20,11 @@ use ju1ius\Pegasus\Utils\Iter;
  */
 abstract class PredicateNestedMatchJoiningOptimization extends PredicateMatchJoiningOptimization
 {
-    protected function reduce(Expression ...$pair)
+    /**
+     * @param Expression[] ...$pair
+     * @return Skip
+     */
+    protected function reduce(Expression ...$pair): Expression
     {
         $expr = Iter::find(function (Expression $expr) {
             return $expr instanceof Skip;
@@ -35,7 +39,7 @@ abstract class PredicateNestedMatchJoiningOptimization extends PredicateMatchJoi
      *
      * @return string
      */
-    protected function preparePattern(Expression $child)
+    protected function preparePattern(Expression $child): string
     {
         if ($child instanceof Skip) {
             $child = $child[0];
@@ -44,10 +48,10 @@ abstract class PredicateNestedMatchJoiningOptimization extends PredicateMatchJoi
         return $this->prepareBarePattern($child);
     }
 
-    protected function isEligibleMatch(Expression $expr)
+    protected function isEligibleMatch(Expression $expr): bool
     {
         return $expr instanceof Skip && $expr[0] instanceof Match;
     }
 
-    abstract protected function prepareBarePattern(Expression $child);
+    abstract protected function prepareBarePattern(Expression $child): string;
 }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -67,10 +67,7 @@ class ExpressionBuilder
         return new self();
     }
 
-    /**
-     * @return Expression
-     */
-    public function getExpression()
+    public function getExpression(): Expression
     {
         $this->endAll();
 
@@ -161,7 +158,7 @@ class ExpressionBuilder
      *
      * @return $this
      */
-    public function literal($literal)
+    public function literal(string $literal)
     {
         return $this->add(new Literal($literal));
     }
@@ -171,7 +168,7 @@ class ExpressionBuilder
      *
      * @return $this
      */
-    public function word($word)
+    public function word(string $word)
     {
         return $this->add(new Word($word));
     }
@@ -182,7 +179,7 @@ class ExpressionBuilder
      *
      * @return $this
      */
-    public function match($pattern, array $flags = [])
+    public function match(string $pattern, array $flags = [])
     {
         return $this->add(new Match($pattern, $flags));
     }
@@ -193,7 +190,7 @@ class ExpressionBuilder
      *
      * @return $this
      */
-    public function regexp($pattern, array $flags = [])
+    public function regexp(string $pattern, array $flags = [])
     {
         return $this->add(new RegExp($pattern, $flags));
     }
@@ -238,7 +235,7 @@ class ExpressionBuilder
      *
      * @return $this
      */
-    public function reference($name)
+    public function reference(string $name)
     {
         return $this->add(new Reference($name));
     }
@@ -251,7 +248,7 @@ class ExpressionBuilder
      * @return $this
      * @codeCoverageIgnore
      */
-    public function ref($name)
+    public function ref(string $name)
     {
         return $this->reference($name);
     }
@@ -261,7 +258,7 @@ class ExpressionBuilder
      *
      * @return $this
      */
-    public function super($identifier)
+    public function super(string $identifier)
     {
         return $this->add(new Super($identifier));
     }
@@ -271,7 +268,7 @@ class ExpressionBuilder
      *
      * @return $this
      */
-    public function backReference($ref)
+    public function backReference(string $ref)
     {
         return $this->add(new BackReference($ref));
     }
@@ -284,7 +281,7 @@ class ExpressionBuilder
      * @return $this
      * @codeCoverageIgnore
      */
-    public function backref($ref)
+    public function backref(string $ref)
     {
         return $this->backReference($ref);
     }
@@ -336,14 +333,15 @@ class ExpressionBuilder
     // --------------------------------------------------------------------------------------------------------------
 
     /**
-     * Adds a Quantifier matching between $min and $max terms ({min,max})
+     * Adds a Quantifier matching between $min and $max terms ({min,max}).
+     * Passing null to $max makes the quantifier unbounded.
      *
      * @param int $min
-     * @param int $max
+     * @param int|null $max
      *
      * @return $this
      */
-    public function between($min = 0, $max = INF)
+    public function between(int $min = 0, ?int $max = null)
     {
         return $this->add(new Quantifier(null, $min, $max));
     }
@@ -352,11 +350,11 @@ class ExpressionBuilder
      * Alias of `between`.
      *
      * @param int $min
-     * @param int $max
+     * @param int|null $max
      *
      * @return $this
      */
-    public function q($min = 0, $max = INF)
+    public function q(int $min = 0, ?int $max = null)
     {
         return $this->between($min, $max);
     }
@@ -368,7 +366,7 @@ class ExpressionBuilder
      *
      * @return $this
      */
-    public function exactly($n)
+    public function exactly(int $n)
     {
         return $this->add(new Quantifier(null, $n, $n));
     }
@@ -380,9 +378,9 @@ class ExpressionBuilder
      *
      * @return $this
      */
-    public function atLeast($n)
+    public function atLeast(int $n)
     {
-        return $this->add(new Quantifier(null, $n, INF));
+        return $this->add(new Quantifier(null, $n));
     }
 
     /**
@@ -392,7 +390,7 @@ class ExpressionBuilder
      *
      * @return $this
      */
-    public function atMost($n)
+    public function atMost(int $n)
     {
         return $this->add(new Quantifier(null, 0, $n));
     }
@@ -477,7 +475,7 @@ class ExpressionBuilder
      *
      * @return $this
      */
-    public function label($label)
+    public function label(string $label)
     {
         return $this->add(new Label(null, $label));
     }
@@ -487,7 +485,7 @@ class ExpressionBuilder
      *
      * @return $this
      */
-    public function named($name)
+    public function named(string $name)
     {
         return $this->add(new NodeAction(null, $name));
     }

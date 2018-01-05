@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -40,5 +40,5 @@ interface NodeTraverserInterface
      *
      * @return mixed The result of the traversal.
      */
-    public function traverse($node);
+    public function traverse(Node $node);
 }

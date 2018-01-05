@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -21,19 +21,19 @@ abstract class Decorator extends Composite
 {
     /**
      * @param Expression $child
-     * @param string     $name
+     * @param string $name
      */
-    public function __construct(Expression $child = null, $name = '')
+    public function __construct(Expression $child = null, string $name = '')
     {
         parent::__construct($child ? [$child] : [], $name);
     }
 
-    public function isCapturing()
+    public function isCapturing(): bool
     {
         return $this->children[0]->isCapturing();
     }
 
-    public function isCapturingDecidable()
+    public function isCapturingDecidable(): bool
     {
         return $this->children[0]->isCapturingDecidable();
     }

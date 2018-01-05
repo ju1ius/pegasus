@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -17,7 +17,7 @@ use ju1ius\Pegasus\Parser\Scope;
  */
 class UndefinedBinding extends \RuntimeException
 {
-    public function __construct($name, array $scope)
+    public function __construct(string $name, array $scope)
     {
         $message = sprintf(
             'Named binding `%s` was not found in the current scope `%s`',

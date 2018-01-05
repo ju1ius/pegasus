@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -32,16 +32,13 @@ final class NodeAction extends Decorator
     /**
      * @inheritDoc
      */
-    public function __construct(Expression $child = null, $label)
+    public function __construct(Expression $child = null, string $label)
     {
         $this->label = $label;
         parent::__construct($child, '');
     }
 
-    /**
-     * @return string
-     */
-    public function getLabel()
+    public function getLabel(): string
     {
         return $this->label;
     }
@@ -49,7 +46,7 @@ final class NodeAction extends Decorator
     /**
      * @inheritDoc
      */
-    public function match($text, Parser $parser)
+    public function match(string $text, Parser $parser)
     {
         $start = $parser->pos;
         if ($result = $this->children[0]->match($text, $parser)) {
@@ -73,7 +70,7 @@ final class NodeAction extends Decorator
     /**
      * @inheritDoc
      */
-    public function __toString()
+    public function __toString(): string
     {
         $child = $this->children[0];
         if ($child instanceof OneOf || $child instanceof self) {

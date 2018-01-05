@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -27,7 +27,7 @@ class RemoveMeaninglessDecorator extends Optimization
     /**
      * @inheritDoc
      */
-    public function willPostProcessExpression(Expression $expr, OptimizationContext $context)
+    public function willPostProcessExpression(Expression $expr, OptimizationContext $context): bool
     {
         return $context->isMatching() && (
             $expr instanceof Token
@@ -38,7 +38,7 @@ class RemoveMeaninglessDecorator extends Optimization
     /**
      * @inheritDoc
      */
-    public function postProcessExpression(Expression $expr, OptimizationContext $context)
+    public function postProcessExpression(Expression $expr, OptimizationContext $context): ?Expression
     {
         return $expr[0];
     }

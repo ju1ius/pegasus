@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ju1ius\Pegasus\Expression\Decorator;
 
@@ -15,7 +15,7 @@ class Token extends Decorator
     /**
      * @inheritDoc
      */
-    public function match($text, Parser $parser)
+    public function match(string $text, Parser $parser)
     {
         $capturing = $parser->isCapturing;
         $parser->isCapturing = false;
@@ -36,7 +36,7 @@ class Token extends Decorator
         }
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return sprintf('@%s', $this->stringChildren()[0]);
     }

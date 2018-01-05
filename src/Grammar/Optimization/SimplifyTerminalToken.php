@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -24,10 +24,7 @@ use ju1ius\Pegasus\Grammar\OptimizationContext;
  */
 class SimplifyTerminalToken extends Optimization
 {
-    /**
-     * @inheritDoc
-     */
-    public function postProcessExpression(Expression $expr, OptimizationContext $context)
+    public function postProcessExpression(Expression $expr, OptimizationContext $context): ?Expression
     {
         return $expr[0];
     }
@@ -35,7 +32,7 @@ class SimplifyTerminalToken extends Optimization
     /**
      * @inheritDoc
      */
-    public function willPostProcessExpression(Expression $expr, OptimizationContext $context)
+    public function willPostProcessExpression(Expression $expr, OptimizationContext $context): bool
     {
         return $expr instanceof Token && (
             $expr[0] instanceof Terminal

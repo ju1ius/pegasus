@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -47,7 +47,7 @@ final class Optimizer
      */
     const LEVEL_2 = 2;
 
-    private static $LEVELS = [
+    private const LEVELS = [
         self::LEVEL_1,
         self::LEVEL_2,
     ];
@@ -72,7 +72,7 @@ final class Optimizer
      */
     public static function getLevels()
     {
-        return self::$LEVELS;
+        return self::LEVELS;
     }
 
     /**

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -17,13 +17,7 @@ use ju1ius\Pegasus\CST\Node;
  */
 class Composite extends Node
 {
-    /**
-     * @param string $name
-     * @param int    $start
-     * @param int    $end
-     * @param array  $children
-     */
-    public function __construct($name, $start, $end, array $children)
+    public function __construct(string $name, int $start, int $end, array $children)
     {
         $this->name = $name;
         $this->start = $start;

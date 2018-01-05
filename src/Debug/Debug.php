@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -24,8 +24,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class Debug
 {
     /**
-     * @param mixed           $value
+     * @param mixed $value
      * @param OutputInterface $output
+     * @throws Grammar\Exception\SelfReferencingRule
      */
     public static function dump($value, OutputInterface $output = null)
     {
@@ -47,8 +48,9 @@ final class Debug
     }
 
     /**
-     * @param Grammar|Expression   $value
+     * @param Grammar|Expression $value
      * @param OutputInterface|null $output
+     * @throws Grammar\Exception\SelfReferencingRule
      */
     public static function highlight($value, OutputInterface $output = null)
     {
@@ -71,10 +73,7 @@ final class Debug
         }
     }
 
-    /**
-     * @return ConsoleOutput
-     */
-    public static function createConsoleOutput()
+    public static function createConsoleOutput(): ConsoleOutput
     {
         $output = new ConsoleOutput();
         $output->setFormatter(new OutputFormatter(true));
@@ -83,10 +82,7 @@ final class Debug
         return $output;
     }
 
-    /**
-     * @return BufferedOutput
-     */
-    public static function createBufferedOutput()
+    public static function createBufferedOutput(): BufferedOutput
     {
         $output = new BufferedOutput();
         $output->setFormatter(new OutputFormatter(true));

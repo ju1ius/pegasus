@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -20,7 +20,7 @@ final class Str
      *
      * @return string
      */
-    public static function className($value)
+    public static function className($value): string
     {
         if (is_object($value)) {
             $value = get_class($value);
@@ -47,13 +47,13 @@ final class Str
      * @return string
      */
     public static function truncate(
-        $str,
-        $maxWidth = 80,
-        $targetCol = 0,
-        $leftMark = '… ',
-        $rightMark = ' …',
-        $encoding = 'UTF-8'
-    ) {
+        string $str,
+        int $maxWidth = 80,
+        int $targetCol = 0,
+        string $leftMark = '… ',
+        string $rightMark = ' …',
+        string $encoding = 'UTF-8'
+    ): string {
         $lineLength = mb_strlen($str, $encoding);
         if ($lineLength <= $maxWidth) {
             return $str;

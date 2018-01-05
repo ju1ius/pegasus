@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -15,18 +15,12 @@ namespace ju1ius\Pegasus\Expression\Terminal;
  */
 class HexDigit extends Match
 {
-    /**
-     * @inheritDoc
-     */
-    public function __construct($name = '')
+    public function __construct(string $name = '')
     {
         parent::__construct('[\da-fA-F]', [], $name);
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function __toString()
+    public function __toString(): string
     {
         return 'XDIGIT';
     }

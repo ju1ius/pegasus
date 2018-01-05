@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -56,7 +56,7 @@ abstract class Expression
      *
      * @param string $name Optional name for this expression.
      */
-    public function __construct($name = '')
+    public function __construct(?string $name = '')
     {
         $this->name = $name;
         //$this->id = spl_object_hash($this);
@@ -68,34 +68,30 @@ abstract class Expression
      * (not necessarily extending all the way to the end of $text),
      * or null if the match failed.
      *
-     * @param string $text   The full text of the match subject.
+     * @param string $text The full text of the match subject.
      * @param Parser $parser The parser used for this expression.
      *
      * @return Node|true|null
      */
-    abstract public function match($text, Parser $parser);
+    abstract public function match(string $text, Parser $parser);
 
     /**
      * Returns a string representation of this expression, suitable for the right-hand-side of a rule.
      *
      * @return string
      */
-    abstract public function __toString();
+    abstract public function __toString(): string;
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
     /**
      * @param string $name
-     *
      * @return $this
      */
-    public function setName($name)
+    public function setName(string $name)
     {
         $this->name = $name;
 
@@ -109,7 +105,7 @@ abstract class Expression
      *
      * @return \Generator
      */
-    public function iterate($depthFirst = false)
+    public function iterate(?bool $depthFirst = false): \Generator
     {
         yield $this;
     }
@@ -120,7 +116,7 @@ abstract class Expression
      *
      * @return bool
      */
-    public function isCapturing()
+    public function isCapturing(): bool
     {
         return true;
     }
@@ -130,7 +126,7 @@ abstract class Expression
      *
      * @return bool
      */
-    public function isCapturingDecidable()
+    public function isCapturingDecidable(): bool
     {
         return true;
     }
@@ -140,7 +136,7 @@ abstract class Expression
      *
      * @return bool
      */
-    public function hasVariableCaptureCount()
+    public function hasVariableCaptureCount(): bool
     {
         return false;
     }

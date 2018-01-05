@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -28,7 +28,7 @@ trait PredicateMatchSequenceJoinerTrait
     /**
      * @inheritDoc
      */
-    public function willPostProcessExpression(Expression $expr, OptimizationContext $context)
+    public function willPostProcessExpression(Expression $expr, OptimizationContext $context): bool
     {
         return $expr instanceof Sequence && $this->someEligiblePairs($expr);
     }
@@ -38,20 +38,22 @@ trait PredicateMatchSequenceJoinerTrait
      *
      * @return bool
      */
-    abstract protected function someEligiblePairs($children);
+    abstract protected function someEligiblePairs($children): bool;
 
     /**
-     * @inheritDoc
+     * @param string[] $patterns
+     * @return string
      */
-    protected function joinPatterns(array $patterns)
+    protected function joinPatterns(array $patterns): string
     {
         return implode('', $patterns);
     }
 
     /**
-     * @inheritDoc
+     * @param Expression $child
+     * @return null|string
      */
-    protected function prepareBarePattern(Expression $child)
+    protected function prepareBarePattern(Expression $child): string
     {
         if ($child instanceof Match) {
             return sprintf('(?>%s)', $child->getPattern());

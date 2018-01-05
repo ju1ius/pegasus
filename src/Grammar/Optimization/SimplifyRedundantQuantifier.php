@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -27,7 +27,7 @@ class SimplifyRedundantQuantifier extends Optimization
     /**
      * @inheritDoc
      */
-    public function willPostProcessExpression(Expression $expr, OptimizationContext $context)
+    public function willPostProcessExpression(Expression $expr, OptimizationContext $context): bool
     {
         return $context->isMatching()
             && $this->isSimpleQuantifier($expr)
@@ -37,7 +37,7 @@ class SimplifyRedundantQuantifier extends Optimization
     /**
      * @inheritDoc
      */
-    public function postProcessExpression(Expression $expr, OptimizationContext $context)
+    public function postProcessExpression(Expression $expr, OptimizationContext $context): ?Expression
     {
         /** @var Quantifier $expr */
         /** @var Quantifier $child */
@@ -55,7 +55,7 @@ class SimplifyRedundantQuantifier extends Optimization
         return new ZeroOrMore($child[0], $expr->getName());
     }
 
-    private function isSimpleQuantifier(Expression $expr)
+    private function isSimpleQuantifier(Expression $expr): bool
     {
         return $expr instanceof Quantifier
             && ($expr->isZeroOrMore()

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -27,7 +27,7 @@ class RemoveUnusedRules extends Optimization
     /**
      * @inheritDoc
      */
-    public function afterTraverse(Grammar $grammar, OptimizationContext $context)
+    public function afterTraverse(Grammar $grammar, OptimizationContext $context): ?Grammar
     {
         $references = array_flip($context->getReferencedRules());
 

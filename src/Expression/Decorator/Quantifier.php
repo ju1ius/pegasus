@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -39,13 +39,13 @@ class Quantifier extends Decorator
      * @param int             $max
      * @param string          $name
      */
-    public function __construct(Expression $child = null, $min, $max, $name = '')
+    public function __construct(?Expression $child = null, int $min, ?int $max = null, string $name = '')
     {
-        $this->lowerBound = abs((int)$min);
-        if ($max < $min) {
+        $this->lowerBound = abs($min);
+        $this->upperBound = $max === null ? INF : $max;
+        if ($this->upperBound < $this->lowerBound) {
             throw new \InvalidArgumentException('upper bound must be >= lower bound');
         }
-        $this->upperBound = $max === INF ? $max : (int)$max;
 
         parent::__construct($child, $name);
     }
@@ -53,13 +53,13 @@ class Quantifier extends Decorator
     /**
      * @return int
      */
-    public function getLowerBound()
+    public function getLowerBound(): int
     {
         return $this->lowerBound;
     }
 
     /**
-     * @return int
+     * @return number
      */
     public function getUpperBound()
     {
@@ -71,7 +71,7 @@ class Quantifier extends Decorator
      *
      * @return bool
      */
-    public function isUnbounded()
+    public function isUnbounded(): bool
     {
         return $this->upperBound === INF;
     }
@@ -79,7 +79,7 @@ class Quantifier extends Decorator
     /**
      * @return bool
      */
-    public function isExact()
+    public function isExact(): bool
     {
         return $this->lowerBound === $this->upperBound;
     }
@@ -87,7 +87,7 @@ class Quantifier extends Decorator
     /**
      * @return bool
      */
-    public function isZeroOrMore()
+    public function isZeroOrMore(): bool
     {
         return $this->lowerBound === 0 && $this->upperBound === INF;
     }
@@ -95,7 +95,7 @@ class Quantifier extends Decorator
     /**
      * @return bool
      */
-    public function isOneOrMore()
+    public function isOneOrMore(): bool
     {
         return $this->lowerBound === 1 && $this->upperBound === INF;
     }
@@ -103,17 +103,17 @@ class Quantifier extends Decorator
     /**
      * @return bool
      */
-    public function isOptional()
+    public function isOptional(): bool
     {
         return $this->lowerBound === 0 && $this->upperBound === 1;
     }
 
-    public function hasVariableCaptureCount()
+    public function hasVariableCaptureCount(): bool
     {
         return true;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         if ($this->isZeroOrMore()) {
             $q = '*';
@@ -130,7 +130,7 @@ class Quantifier extends Decorator
         return $this->stringChildren()[0] . $q;
     }
 
-    public function match($text, Parser $parser)
+    public function match(string $text, Parser $parser)
     {
         $expr = $this->children[0];
         $startPos = $parser->pos;

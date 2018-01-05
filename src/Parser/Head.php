@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -59,7 +59,7 @@ class Head
      *
      * @return bool
      */
-    public function involves(Expression $rule)
+    public function involves(Expression $rule): bool
     {
         return $this->rule->id === $rule->id
             || isset($this->involved[$rule->id]);

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -32,12 +32,12 @@ class LeftRecursivePackrat extends Packrat
      */
     protected $lrStack;
 
-    public function parse($source, $pos = 0, $startRule = null)
+    public function parse(string $text, int $pos = 0, ?string $startRule = null)
     {
         $this->heads = [];
         $this->lrStack = new \SplStack();
 
-        $result = parent::parse($source, $pos, $startRule);
+        $result = parent::parse($text, $pos, $startRule);
 
         // free memory
         $this->heads = $this->lrStack = null;
@@ -48,10 +48,9 @@ class LeftRecursivePackrat extends Packrat
     /**
      * @inheritdoc
      */
-    public function apply($rule, $super = false)
+    public function apply(string $rule, bool $super = false)
     {
         $expr = $super ? $this->grammar->super($rule) : $this->grammar[$rule];
-
         $pos = $this->pos;
 
         if (!$memo = $this->recall($expr)) {
@@ -108,7 +107,7 @@ class LeftRecursivePackrat extends Packrat
      *
      * @return Node|LeftRecursion|null
      */
-    protected function leftRecursionAnswer(Expression $expr, $pos, MemoEntry $memo)
+    protected function leftRecursionAnswer(Expression $expr, int $pos, MemoEntry $memo)
     {
         $head = $memo->result->head;
         if ($head->rule->id !== $expr->id) {
@@ -130,7 +129,7 @@ class LeftRecursivePackrat extends Packrat
      *
      * @return Node|LeftRecursion|null
      */
-    protected function growSeedParse(Expression $expr, $pos, MemoEntry $memo, Head $head)
+    protected function growSeedParse(Expression $expr, int $pos, MemoEntry $memo, Head $head)
     {
         $this->heads[$pos] = $head;
         while (true) {
@@ -149,16 +148,9 @@ class LeftRecursivePackrat extends Packrat
         return $memo->result;
     }
 
-    /**
-     * @param Expression $expr
-     *
-     * @return MemoEntry
-     */
-    protected function recall(Expression $expr)
+    protected function recall(Expression $expr): ?MemoEntry
     {
         $pos = $this->pos;
-        // inline this to save a method call: $memo = $this->memo($expr, $pos);
-        /** @var MemoEntry $memo */
         $memo = isset($this->memo[$this->isCapturing][$pos][$expr->id])
             ? $this->memo[$this->isCapturing][$pos][$expr->id]
             : null;
@@ -175,6 +167,7 @@ class LeftRecursivePackrat extends Packrat
         if (isset($head->eval[$expr->id])) {
             unset($head->eval[$expr->id]);
             $result = $this->evaluate($expr);
+            /** @var MemoEntry $memo */
             $memo->result = $result;
             $memo->end = $this->pos;
         }

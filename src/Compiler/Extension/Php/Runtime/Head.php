@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -45,7 +45,7 @@ final class Head
      *
      * @param string $ruleName
      */
-    public function __construct($ruleName)
+    public function __construct(string $ruleName)
     {
         $this->rule = $ruleName;
         $this->involved = [];
@@ -59,7 +59,7 @@ final class Head
      *
      * @return bool
      */
-    public function involves($ruleName)
+    public function involves(string $ruleName): bool
     {
         return $this->rule === $ruleName || isset($this->involved[$ruleName]);
     }

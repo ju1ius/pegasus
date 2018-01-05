@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -40,7 +40,7 @@ final class SourceExcerpt
      * @param int    $numLines Number of lines to show.
      * @param int    $maxCols Max width of the displayed lines
      */
-    public function __construct($source, $numLines = 2, $maxCols = 80)
+    public function __construct(string $source, int $numLines = 2, int $maxCols = 80)
     {
         $this->source = $source;
         $this->extractLength = $numLines;
@@ -52,7 +52,7 @@ final class SourceExcerpt
      *
      * @return string
      */
-    public function getExcerpt($pos)
+    public function getExcerpt(int $pos): string
     {
         $length = strlen($this->source);
         $lineInfo = $this->findLine($pos, $length);
@@ -86,7 +86,10 @@ final class SourceExcerpt
         return $text;
     }
 
-    private function getLines()
+    /**
+     * @return string[]
+     */
+    private function getLines(): array
     {
         if (!$this->sourceLines) {
             $this->sourceLines = preg_split('/\R/', $this->source, -1, PREG_SPLIT_OFFSET_CAPTURE);
@@ -95,7 +98,11 @@ final class SourceExcerpt
         return $this->sourceLines;
     }
 
-    private function getLinesSlice($lineno)
+    /**
+     * @param int $lineno
+     * @return string[]
+     */
+    private function getLinesSlice(int $lineno): array
     {
         $lines = $this->getLines();
         $numLines = count($lines);
@@ -111,9 +118,10 @@ final class SourceExcerpt
      * @param int $pos
      * @param int $length
      *
-     * @return array
+     * @return array|null
+     * @todo throw SourceLineNotFound
      */
-    private function findLine($pos, $length)
+    private function findLine(int $pos, int $length): ?array
     {
         $lines = $this->getLines();
         $numLines = count($lines);
@@ -123,7 +131,7 @@ final class SourceExcerpt
         $result = null;
 
         while (true) {
-            list($line, $bol) = $lines[$i];
+            [$line, $bol] = $lines[$i];
             $eol = ($i === $numLines - 1) ? $length : $lines[$i + 1][1];
             if ($pos >= $bol && $pos < $eol) {
                 $result = [

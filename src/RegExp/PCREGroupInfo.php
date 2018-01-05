@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -72,7 +72,7 @@ REGEXP;
      *
      * @return int
      */
-    public static function captureCount($pattern)
+    public static function captureCount(string $pattern): int
     {
         $info = new self();
         $info->parse($pattern);
@@ -87,7 +87,7 @@ REGEXP;
      *
      * @return int
      */
-    public static function groupCount($pattern)
+    public static function groupCount(string $pattern): int
     {
         $info = new self();
         $info->parse($pattern);
@@ -114,7 +114,7 @@ REGEXP;
      *
      * @return array
      */
-    public function parse($pattern)
+    public function parse(string $pattern): array
     {
         $this->pos = 0;
         $length = strlen($pattern);
@@ -150,7 +150,7 @@ REGEXP;
         return array_values($this->groups);
     }
 
-    private function handleGroupStart($pattern)
+    private function handleGroupStart(string $pattern): void
     {
         if (preg_match(self::GROUP_START_RX, $pattern, $matches, 0, $this->pos)) {
             $groupInfo = $this->extractGroupInfo($matches);
@@ -178,7 +178,7 @@ REGEXP;
         }
     }
 
-    private function handleGroupEnd($pattern)
+    private function handleGroupEnd(string $pattern): void
     {
         $i = $this->groupStack->pop();
         $group = $this->groups[$i];
@@ -190,7 +190,7 @@ REGEXP;
         $this->groups[$i] = $group;
     }
 
-    private function extractGroupInfo(array $matches)
+    private function extractGroupInfo(array $matches): array
     {
         // keep only non-empty named captures
         $filtered = array_filter($matches, function ($v, $k) {

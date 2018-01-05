@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -32,7 +32,7 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
      * @param Expression[] $children
      * @param string       $name
      */
-    public function __construct(array $children = [], $name = '')
+    public function __construct(array $children = [], string $name = '')
     {
         parent::__construct($name);
         $this->push(...$children);
@@ -41,7 +41,7 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
     /**
      * @inheritdoc
      */
-    public function isCapturing()
+    public function isCapturing(): bool
     {
         return $this->some(function (Expression $child) {
             return $child->isCapturing();
@@ -51,7 +51,7 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
     /**
      * @inheritdoc
      */
-    public function isCapturingDecidable()
+    public function isCapturingDecidable(): bool
     {
         return $this->every(function (Expression $child) {
             return $child->isCapturingDecidable();
@@ -79,7 +79,7 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
     /**
      * @inheritDoc
      */
-    public function iterate($depthFirst = false)
+    public function iterate(?bool $depthFirst = false): \Generator
     {
         if (!$depthFirst) yield $this;
         foreach ($this->children as $child) {
@@ -125,7 +125,7 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
      *
      * @return bool
      */
-    public function every(callable $predicate)
+    public function every(callable $predicate): bool
     {
         foreach ($this->children as $i => $child) {
             if (!$predicate($child, $i, $this)) {
@@ -141,7 +141,7 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
      *
      * @return bool
      */
-    public function some(callable $predicate)
+    public function some(callable $predicate): bool
     {
         foreach ($this->children as $i => $child) {
             if ($predicate($child, $i, $this)) {
@@ -201,7 +201,7 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
             ));
         }
 
-        return $this->children[(int)$offset] = $value;
+        $this->children[(int)$offset] = $value;
     }
 
     /**

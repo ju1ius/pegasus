@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -15,10 +15,7 @@ namespace ju1ius\Pegasus\Grammar\Exception;
  */
 class UnknownOptimizationLevel extends \LogicException
 {
-    /**
-     * @inheritDoc
-     */
-    public function __construct($level, array $availableLevels = [])
+    public function __construct(int $level, array $availableLevels = [])
     {
         $msg = sprintf(
             'Unknown optimization level: `%s`. Available levels: %s',

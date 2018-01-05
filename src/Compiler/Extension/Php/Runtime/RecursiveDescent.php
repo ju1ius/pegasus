@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -12,11 +12,8 @@ namespace ju1ius\Pegasus\Compiler\Extension\Php\Runtime;
 
 class RecursiveDescent extends Parser
 {
-    /**
-     * @inheritdoc
-     */
-    protected function apply($ruleName, $super = false)
+    protected function apply(string $rule)
     {
-        return $this->matchers[$ruleName]();
+        return $this->matchers[$rule]();
     }
 }

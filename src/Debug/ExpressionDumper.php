@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -62,7 +62,7 @@ final class ExpressionDumper extends ExpressionVisitor
     /**
      * @inheritdoc
      */
-    public function enterExpression(Expression $expr, $index = null, $isLast = false)
+    public function enterExpression(Expression $expr, ?int $index = null, bool $isLast = false)
     {
         $indent = '';
         $hasParent = $index !== null;
@@ -87,7 +87,7 @@ final class ExpressionDumper extends ExpressionVisitor
     /**
      * @inheritdoc
      */
-    public function leaveExpression(Expression $expr, $index = null, $isLast = false)
+    public function leaveExpression(Expression $expr, ?int $index = null, bool $isLast = false)
     {
         if ($expr instanceof Composite) {
             array_pop($this->indentStack);

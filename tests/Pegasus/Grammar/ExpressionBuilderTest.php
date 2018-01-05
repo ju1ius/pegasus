@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -231,7 +231,7 @@ class ExpressionBuilderTest extends PegasusTestCase
             // Decorators
             'Top-level decorator' => [
                 Builder::create()->q(1)->literal('foo')->getExpression(),
-                new Quantifier(new Literal('foo'), 1, INF),
+                new Quantifier(new Literal('foo'), 1),
             ],
             'Nested decorators' => [
                 Builder::create()->not()->exactly(1)->literal('foo')->getExpression(),
@@ -244,7 +244,7 @@ class ExpressionBuilderTest extends PegasusTestCase
                     ->q(2, 42)->literal('baz')
                     ->getExpression(),
                 new Seq([
-                    new Quantifier(new Literal('foo'), 1, INF),
+                    new Quantifier(new Literal('foo'), 1),
                     new Quantifier(new Literal('bar'), 1, 1),
                     new Quantifier(new Literal('baz'), 2, 42),
                 ]),

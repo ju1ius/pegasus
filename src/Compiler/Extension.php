@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -17,18 +17,9 @@ namespace ju1ius\Pegasus\Compiler;
  */
 abstract class Extension
 {
-    /**
-     * @return string
-     */
-    abstract public function getName();
+    abstract public function getName(): string;
 
-    /**
-     * @return string
-     */
-    abstract public function getLanguage();
+    abstract public function getLanguage(): string;
 
-    /**
-     * @return Compiler
-     */
-    abstract public function getCompiler();
+    abstract public function getCompiler(): CompilerInterface;
 }

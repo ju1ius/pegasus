@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -47,10 +47,9 @@ class GrammarBuilder extends ExpressionBuilder
 
     /**
      * @param string $name
-     *
      * @return GrammarBuilder
      */
-    public static function create($name = '')
+    public static function create(string $name = '')
     {
         $grammar = new Grammar();
         if ($name) {
@@ -60,11 +59,6 @@ class GrammarBuilder extends ExpressionBuilder
         return new self($grammar);
     }
 
-    /**
-     * @param Grammar $grammar
-     *
-     * @return GrammarBuilder
-     */
     public static function of(Grammar $grammar)
     {
         return new self($grammar);
@@ -89,7 +83,7 @@ class GrammarBuilder extends ExpressionBuilder
     /**
      * @return Grammar
      */
-    public function getGrammar()
+    public function getGrammar(): Grammar
     {
         $this->endRule();
 
@@ -101,7 +95,7 @@ class GrammarBuilder extends ExpressionBuilder
      *
      * @return $this
      */
-    public function rule($name)
+    public function rule(string $name)
     {
         $this->endRule();
         $this->currentRule = $name;
@@ -114,7 +108,7 @@ class GrammarBuilder extends ExpressionBuilder
      *
      * @return $this
      */
-    public function super($identifier = '')
+    public function super(string $identifier = '')
     {
         $identifier = $identifier ?: $this->currentRule;
 

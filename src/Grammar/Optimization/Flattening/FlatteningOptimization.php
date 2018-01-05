@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ju1ius\Pegasus\Grammar\Optimization\Flattening;
 
@@ -13,7 +13,7 @@ use ju1ius\Pegasus\Grammar\OptimizationContext;
  */
 abstract class FlatteningOptimization extends Optimization
 {
-    public function willPostProcessExpression(Expression $expr, OptimizationContext $context)
+    public function willPostProcessExpression(Expression $expr, OptimizationContext $context): bool
     {
         return $expr instanceof Composite && $expr->some(function (Expression $child) {
             return $this->isEligibleChild($child);
@@ -23,7 +23,7 @@ abstract class FlatteningOptimization extends Optimization
     /**
      * @inheritdoc
      */
-    public function postProcessExpression(Expression $expr, OptimizationContext $context)
+    public function postProcessExpression(Expression $expr, OptimizationContext $context): ?Expression
     {
         /** @var Composite $expr */
         $children = [];

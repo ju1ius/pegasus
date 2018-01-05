@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -94,8 +94,14 @@ class Node
      * @param array  $children   The child nodes (for composite nodes)
      * @param array  $attributes Optional attributes map.
      */
-    public function __construct($name, $start, $end, $value = null, array $children = [], array $attributes = [])
-    {
+    public function __construct(
+        string $name,
+        int $start,
+        int $end,
+        $value = null,
+        array $children = [],
+        array $attributes = []
+    ) {
         $this->name = $name;
         $this->value = $value;
         $this->start = $start;
@@ -111,7 +117,7 @@ class Node
      *
      * @return string
      */
-    public function getText($input)
+    public function getText(string $input): string
     {
         $length = $this->end - $this->start;
 

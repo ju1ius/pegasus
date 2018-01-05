@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -19,15 +19,15 @@ use ju1ius\Pegasus\Expression\Decorator\Quantifier;
  */
 class OneOrMore extends Quantifier
 {
-    public function __construct(Expression $child = null, $name = '')
+    public function __construct(?Expression $child = null, $name = '')
     {
-        parent::__construct($child, 1, INF, $name);
+        parent::__construct($child, 1, null, $name);
     }
 
     /**
      * @inheritDoc
      */
-    public function isZeroOrMore()
+    public function isZeroOrMore(): bool
     {
         return false;
     }
@@ -35,7 +35,7 @@ class OneOrMore extends Quantifier
     /**
      * @inheritDoc
      */
-    public function isOneOrMore()
+    public function isOneOrMore(): bool
     {
         return true;
     }
@@ -43,7 +43,7 @@ class OneOrMore extends Quantifier
     /**
      * @inheritDoc
      */
-    public function isOptional()
+    public function isOptional(): bool
     {
         return false;
     }

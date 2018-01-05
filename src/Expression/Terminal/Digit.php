@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -18,7 +18,7 @@ class Digit extends Match
     /**
      * @inheritDoc
      */
-    public function __construct($name = '')
+    public function __construct(string $name = '')
     {
         parent::__construct('\d', [], $name);
     }
@@ -26,7 +26,7 @@ class Digit extends Match
     /**
      * @inheritDoc
      */
-    public function __toString()
+    public function __toString(): string
     {
         return 'DIGIT';
     }

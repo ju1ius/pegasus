@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -12,6 +12,7 @@ namespace ju1ius\Pegasus\Compiler\Twig\Extension;
 
 use ju1ius\Pegasus\Compiler\CompilationContext;
 use ju1ius\Pegasus\Compiler\Compiler;
+use ju1ius\Pegasus\Compiler\CompilerInterface;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Decorator\Quantifier;
 use ju1ius\Pegasus\Expression\Terminal\Match;
@@ -25,11 +26,11 @@ class PegasusTwigExtension extends \Twig_Extension
     private $environment;
 
     /**
-     * @var Compiler
+     * @var CompilerInterface
      */
     private $compiler;
 
-    public function __construct(Compiler $compiler)
+    public function __construct(CompilerInterface $compiler)
     {
         $this->compiler = $compiler;
     }
@@ -78,7 +79,7 @@ class PegasusTwigExtension extends \Twig_Extension
         ];
     }
 
-    public function indent($text, $level = 1, $size = 4, callable $predicate = null)
+    public function indent(string $text, int $level = 1, int $size = 4, ?callable $predicate = null): string
     {
         $prefix = str_repeat(' ', $size * $level);
         $predicate = $predicate ?: 'trim';
@@ -97,7 +98,7 @@ class PegasusTwigExtension extends \Twig_Extension
         return $out;
     }
 
-    public function renderRule($name, Expression $expr, CompilationContext $context)
+    public function renderRule(string $name, Expression $expr, CompilationContext $context): string
     {
         $tpl = $this->environment->loadTemplate('rule.twig');
 
@@ -107,7 +108,7 @@ class PegasusTwigExtension extends \Twig_Extension
         ]);
     }
 
-    public function renderExpression(Expression $expr, CompilationContext $context, array $args = [])
+    public function renderExpression(Expression $expr, CompilationContext $context, array $args = []): string
     {
         $args = array_merge($args, [
             'expr' => $expr,
@@ -120,7 +121,7 @@ class PegasusTwigExtension extends \Twig_Extension
         return $tpl->render($args);
     }
 
-    public function getTemplateForExpression(Expression $expr)
+    public function getTemplateForExpression(Expression $expr): string
     {
         if ($expr instanceof Quantifier) {
             return 'expression/Quantifier.twig';

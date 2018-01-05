@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -23,14 +23,14 @@ abstract class PredicateBareMatchJoiningOptimization extends PredicateMatchJoini
      *
      * @return string
      */
-    abstract protected function prepareBarePattern(Expression $child);
+    abstract protected function prepareBarePattern(Expression $child): string;
 
     /**
      * @param Expression $child
      *
      * @return string
      */
-    protected function preparePattern(Expression $child)
+    protected function preparePattern(Expression $child): string
     {
         return $this->prepareBarePattern($child);
     }
@@ -40,7 +40,7 @@ abstract class PredicateBareMatchJoiningOptimization extends PredicateMatchJoini
      *
      * @return bool
      */
-    protected function isEligibleMatch(Expression $expr)
+    protected function isEligibleMatch(Expression $expr): bool
     {
         return $expr instanceof Match;
     }

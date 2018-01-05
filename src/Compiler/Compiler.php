@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -12,9 +12,8 @@ namespace ju1ius\Pegasus\Compiler;
 
 use ju1ius\Pegasus\Compiler\Twig\Extension\PegasusTwigExtension;
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Grammar\Analysis;
 
-abstract class Compiler
+abstract class Compiler implements CompilerInterface
 {
     /**
      * @var \Twig_Environment
@@ -27,43 +26,23 @@ abstract class Compiler
     }
 
     /**
-     * Returns an array of paths to twig template directories.
-     *
-     * @return string[]
-     */
-    abstract public function getTemplateDirectories();
-
-    /**
-     * Returns the packrat parser's FQCN.
-     *
-     * @return string
-     */
-    abstract public function getParserClass();
-
-    /**
-     * Returns the left-recursive packrat parser's FQCN.
-     *
-     * @return string
-     */
-    abstract public function getExtendedParserClass();
-
-    /**
-     * @return string
-     */
-    abstract public function getNodeVisitorClass();
-
-    /**
-     * @param $outputDirectory
+     * @param string $outputDirectory
      * @param array $args
      *
      * @return string
      */
-    abstract protected function renderParser($outputDirectory, array $args = []);
+    abstract protected function renderParser(string $outputDirectory, array $args = []): string;
 
     /**
-     * @return \Twig_Environment
+     * Override this to add optimizations
+     *
+     * @param Grammar $grammar
+     *
+     * @return Grammar
      */
-    public function getTwigEnvironment()
+    abstract protected function optimizeGrammar(Grammar $grammar): Grammar;
+
+    public function getTwigEnvironment(): \Twig_Environment
     {
         return $this->twig;
     }
@@ -71,7 +50,7 @@ abstract class Compiler
     /**
      * @return \Twig_Extension[]
      */
-    public function getTwigExtensions()
+    public function getTwigExtensions(): array
     {
         return [];
     }
@@ -79,9 +58,9 @@ abstract class Compiler
     /**
      * @param string $path
      * @param string $outputDirectory
-     * @param array  $args
+     * @param array $args
      */
-    public function compileFile($path, $outputDirectory = '', array $args = [])
+    public function compileFile(string $path, string $outputDirectory = '', array $args = []): void
     {
         if (!$outputDirectory) {
             $outputDirectory = dirname($path);
@@ -96,9 +75,9 @@ abstract class Compiler
     /**
      * @param string $syntax
      * @param string $outputDirectory
-     * @param array  $args
+     * @param array $args
      */
-    public function compileSyntax($syntax, $outputDirectory, array $args = [])
+    public function compileSyntax(string $syntax, string $outputDirectory, array $args = []): void
     {
         $grammar = Grammar::fromSyntax($syntax);
         $name = $grammar->getName();
@@ -119,10 +98,10 @@ abstract class Compiler
 
     /**
      * @param Grammar $grammar
-     * @param string  $outputDirectory
-     * @param array   $args
+     * @param string $outputDirectory
+     * @param array $args
      */
-    public function compileGrammar(Grammar $grammar, $outputDirectory, array $args = [])
+    public function compileGrammar(Grammar $grammar, string $outputDirectory, array $args = []): void
     {
         $args['base_class'] = $this->getParserClass();
         $grammar = $this->optimizeGrammar($grammar);
@@ -141,14 +120,14 @@ abstract class Compiler
         $this->renderParser($outputDirectory, $args);
     }
 
-    protected function renderTemplate($tpl, $args = [])
+    protected function renderTemplate(string $tpl, array $args = []): string
     {
         $tpl = $this->twig->loadTemplate($tpl);
 
         return $tpl->render($args);
     }
 
-    protected function setupTwigEnvironment()
+    protected function setupTwigEnvironment(): void
     {
         $loader = new \Twig_Loader_Filesystem($this->getTemplateDirectories());
         $this->twig = new \Twig_Environment($loader, [
@@ -165,13 +144,4 @@ abstract class Compiler
             $this->twig->addExtension($ext);
         }
     }
-
-    /**
-     * Override this to add optimizations
-     *
-     * @param Grammar $grammar
-     *
-     * @return Grammar
-     */
-    abstract protected function optimizeGrammar(Grammar $grammar);
 }

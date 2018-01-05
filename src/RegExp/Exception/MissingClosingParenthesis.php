@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -17,7 +17,7 @@ namespace ju1ius\Pegasus\RegExp\Exception;
  */
 final class MissingClosingParenthesis extends \LogicException
 {
-    public function __construct($pattern)
+    public function __construct(string $pattern)
     {
         parent::__construct(sprintf(
             'The following pattern is missing a closing parenthesis: `%s`',

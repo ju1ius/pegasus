@@ -1,10 +1,12 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ju1ius\Pegasus\Compiler;
 
 class ExtensionRegistry
 {
-
+    /**
+     * @var Extension[]
+     */
     protected $extensions = [];
 
     /**
@@ -23,7 +25,7 @@ class ExtensionRegistry
      *
      * @return $this
      */
-    public function addDirectory($dir)
+    public function addDirectory(string $dir)
     {
         $this->discoverExtensions($dir);
 
@@ -43,20 +45,12 @@ class ExtensionRegistry
         return $this;
     }
 
-    /**
-     * @param string $name
-     *
-     * @return Extension|null
-     */
-    public function getExtension($name)
+    public function getExtension(string $name): ?Extension
     {
-        return isset($this->extensions[$name]) ? $this->extensions[$name] : null;
+        return $this->extensions[$name] ?? null;
     }
 
-    /**
-     * @param string $extensionsDir
-     */
-    protected function discoverExtensions($extensionsDir)
+    protected function discoverExtensions(string $extensionsDir): void
     {
         foreach (new \FilesystemIterator($extensionsDir) as $path => $finfo) {
             if ($finfo->isDir() && file_exists($path . '/bootstrap.php')) {

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -52,7 +52,7 @@ class ParseError extends \RuntimeException
      */
     protected $sourceExcerpt;
 
-    public function __construct($text, $pos = 0, $expr = null, $rule = '')
+    public function __construct(string $text, int $pos = 0, $expr = null, string $rule = '')
     {
         $this->text = $text;
         $this->position = $pos;
@@ -63,7 +63,7 @@ class ParseError extends \RuntimeException
         parent::__construct();
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return sprintf(
             "ParseError: in rule `%s`, expression `%s`,\n%s",

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -39,10 +39,10 @@ final class CSTDumper extends NodeVisitor
     /**
      * CSTDumper constructor.
      *
-     * @param OutputInterface               $output
-     * @param \ju1ius\Pegasus\CST\Node|null $errorNode
+     * @param OutputInterface   $output
+     * @param Node|null         $errorNode
      */
-    public function __construct(OutputInterface $output, Node $errorNode = null)
+    public function __construct(OutputInterface $output, ?Node $errorNode = null)
     {
         $this->output = $output;
         $this->errorNode = $errorNode;
@@ -53,7 +53,7 @@ final class CSTDumper extends NodeVisitor
      * @param OutputInterface $output
      * @param Node|null       $errorNode
      */
-    public static function dump(Node $node, OutputInterface $output, Node $errorNode = null)
+    public static function dump(Node $node, OutputInterface $output, ?Node $errorNode = null)
     {
         (new NodeTraverser())
             ->addVisitor(new self($output, $errorNode))
@@ -71,7 +71,7 @@ final class CSTDumper extends NodeVisitor
     /**
      * @inheritDoc
      */
-    public function enterNode(Node $node, $index = null, $isLast = false)
+    public function enterNode(Node $node, ?int $index = null, bool $isLast = false)
     {
         $hasParent = $index !== null;
         if ($hasParent) {
@@ -115,7 +115,7 @@ final class CSTDumper extends NodeVisitor
     /**
      * @inheritDoc
      */
-    public function leaveNode(Node $node, $index = null, $isLast = false)
+    public function leaveNode(Node $node, ?int $index = null, bool $isLast = false)
     {
         if ($node->children) {
             array_pop($this->indentStack);

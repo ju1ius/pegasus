@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -16,7 +16,7 @@ use ju1ius\Pegasus\Grammar\Analysis;
 /**
  * @author ju1ius <ju1ius@laposte.net>
  */
-class CompilationContext
+final class CompilationContext
 {
     const TYPE_MATCHING = 1;
     const TYPE_CAPTURING = 2;
@@ -45,30 +45,19 @@ class CompilationContext
      * @param Grammar $grammar
      * @param int     $type
      */
-    private function __construct(Grammar $grammar, $type = self::TYPE_CAPTURING)
+    private function __construct(Grammar $grammar, int $type = self::TYPE_CAPTURING)
     {
         $this->grammar = $grammar;
         $this->type = $type;
         $this->analysis = new Analysis($grammar);
     }
 
-    /**
-     * @param Grammar $grammar
-     * @param int     $type
-     *
-     * @return CompilationContext
-     */
-    public static function of(Grammar $grammar, $type = self::TYPE_CAPTURING)
+    public static function of(Grammar $grammar): self
     {
-        return new self($grammar, $type);
+        return new self($grammar);
     }
 
-    /**
-     * @param string $ruleName
-     *
-     * @return CompilationContext
-     */
-    public function ofRule($ruleName)
+    public function ofRule(string $ruleName): self
     {
         $ctx = clone $this;
         $ctx->type = self::TYPE_CAPTURING;
@@ -82,7 +71,7 @@ class CompilationContext
      *
      * @return CompilationContext
      */
-    public function matching()
+    public function matching(): self
     {
         if ($this->isMatching()) {
             return $this;
@@ -99,7 +88,7 @@ class CompilationContext
      *
      * @return CompilationContext
      */
-    public function capturing()
+    public function capturing(): self
     {
         if ($this->isCapturing()) {
             return $this;
@@ -111,52 +100,32 @@ class CompilationContext
         return $ctx;
     }
 
-    /**
-     * @return Grammar
-     */
-    public function getGrammar()
+    public function getGrammar(): Grammar
     {
         return $this->grammar;
     }
 
-    /**
-     * @return Analysis
-     */
-    public function getAnalysis()
+    public function getAnalysis(): Analysis
     {
         return $this->analysis;
     }
 
-    /**
-     * @return string
-     */
-    public function getRule()
+    public function getRule(): string
     {
         return $this->ruleName;
     }
 
-    /**
-     * @return bool
-     */
-    public function isCapturing()
+    public function isCapturing(): bool
     {
         return $this->type === self::TYPE_CAPTURING;
     }
 
-    /**
-     * @return bool
-     */
-    public function isMatching()
+    public function isMatching(): bool
     {
         return $this->type === self::TYPE_MATCHING;
     }
 
-    /**
-     * @param string $ruleName
-     *
-     * @return bool
-     */
-    public function needsBindings($ruleName)
+    public function needsBindings(string $ruleName): bool
     {
         return $this->analysis->canModifyBindings($ruleName);
     }

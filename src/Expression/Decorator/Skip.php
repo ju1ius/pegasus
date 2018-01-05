@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -22,22 +22,22 @@ use ju1ius\Pegasus\Parser\Scope;
  */
 class Skip extends Decorator
 {
-    public function __toString()
+    public function __toString(): string
     {
         return sprintf('~%s', $this->stringChildren()[0]);
     }
 
-    public function isCapturing()
+    public function isCapturing(): bool
     {
         return false;
     }
 
-    public function isCapturingDecidable()
+    public function isCapturingDecidable(): bool
     {
         return true;
     }
 
-    public function match($text, Parser $parser)
+    public function match(string $text, Parser $parser)
     {
         $capturing = $parser->isCapturing;
         $parser->isCapturing = false;

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -25,14 +25,17 @@ use ju1ius\Pegasus\Parser\Scope;
  */
 class Sequence extends Combinator
 {
-    public function getCaptureCount()
+    /**
+     * @return int
+     */
+    public function getCaptureCount(): int
     {
-        return array_reduce($this->children, function ($n, Expression $child) {
+        return array_reduce($this->children, function (int $n, Expression $child): int {
             return $child->isCapturing() ? $n + 1 : $n;
         }, 0);
     }
 
-    public function match($text, Parser $parser)
+    public function match(string $text, Parser $parser)
     {
         $startPos = $parser->pos;
         $capturing = $parser->isCapturing;
@@ -91,7 +94,7 @@ class Sequence extends Combinator
         }, $this->children);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return implode(' ', $this->stringChildren());
     }

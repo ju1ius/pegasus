@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ju1ius\Pegasus\Expression\Terminal;
 
@@ -20,22 +20,13 @@ final class BackReference extends Terminal
      */
     private $identifier;
 
-    /**
-     * BackReference constructor.
-     *
-     * @param string $identifier
-     * @param string $name
-     */
-    public function __construct($identifier, $name = '')
+    public function __construct(string $identifier, string $name = '')
     {
         $this->identifier = $identifier;
         parent::__construct($name);
     }
 
-    /**
-     * @return string
-     */
-    public function getIdentifier()
+    public function getIdentifier(): string
     {
         return $this->identifier;
     }
@@ -45,7 +36,7 @@ final class BackReference extends Terminal
      *
      * @todo What if the binding is equal to the empty string ?
      */
-    public function match($text, Parser $parser)
+    public function match(string $text, Parser $parser)
     {
         if (!isset($parser->bindings[$this->identifier])) {
             throw new UndefinedBinding($this->identifier, $parser->bindings);
@@ -66,7 +57,7 @@ final class BackReference extends Terminal
         $parser->registerFailure($this, $start);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return sprintf('$%s', $this->identifier);
     }

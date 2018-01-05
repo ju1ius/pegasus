@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -51,6 +51,9 @@ class ExpressionHighlighter extends ExpressionVisitor
      */
     private $combinatorStack;
 
+    /**
+     * @var string
+     */
     private $ruleName = '';
 
     /**
@@ -63,13 +66,7 @@ class ExpressionHighlighter extends ExpressionVisitor
         $this->output = $output;
     }
 
-    /**
-     * @param Expression      $expr
-     * @param OutputInterface $output
-     *
-     * @return string
-     */
-    public static function highlight(Expression $expr, OutputInterface $output)
+    public static function highlight(Expression $expr, OutputInterface $output): void
     {
         (new ExpressionTraverser())
             ->addVisitor($highlighter = new self($output))
@@ -88,7 +85,7 @@ class ExpressionHighlighter extends ExpressionVisitor
     /**
      * @inheritdoc
      */
-    public function enterExpression(Expression $expr, $index = null, $isLast = false)
+    public function enterExpression(Expression $expr, ?int $index = null, bool $isLast = false)
     {
         if ($index && !$this->combinatorStack->isEmpty()) {
             $top = $this->combinatorStack->top();
@@ -168,7 +165,7 @@ class ExpressionHighlighter extends ExpressionVisitor
     /**
      * @inheritdoc
      */
-    public function leaveExpression(Expression $expr, $index = null, $isLast = false)
+    public function leaveExpression(Expression $expr, ?int $index = null, bool $isLast = false)
     {
         if ($expr instanceof Decorator) {
             if ($this->needsParenthesesAroundDecorator($expr)) {
@@ -203,12 +200,7 @@ class ExpressionHighlighter extends ExpressionVisitor
         }
     }
 
-    /**
-     * @param Combinator $expr
-     *
-     * @return bool
-     */
-    private function needsParenthesesAroundCombinator(Combinator $expr)
+    private function needsParenthesesAroundCombinator(Combinator $expr): bool
     {
         if ($expr instanceof OneOf) {
             return !$this->combinatorStack->isEmpty();
@@ -221,12 +213,7 @@ class ExpressionHighlighter extends ExpressionVisitor
         return $top instanceof Sequence;
     }
 
-    /**
-     * @param Decorator $expr
-     *
-     * @return bool
-     */
-    private function needsParenthesesAroundDecorator(Decorator $expr)
+    private function needsParenthesesAroundDecorator(Decorator $expr): bool
     {
         if ($expr instanceof NodeAction) {
             return $expr[0] instanceof OneOf || $expr[0] instanceof NodeAction;

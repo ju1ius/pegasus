@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -33,7 +33,7 @@ class LeftRecursivePackrat extends Packrat
     /**
      * @inheritdoc
      */
-    public function parse($text, $position = 0, $startRule = null)
+    public function parse(string $text, int $position = 0, ?string $startRule = null)
     {
         $this->heads = [];
         $this->lrStack = new \SplStack();
@@ -49,19 +49,19 @@ class LeftRecursivePackrat extends Packrat
     /**
      * @inheritdoc
      */
-    protected function apply($ruleName)
+    protected function apply(string $rule)
     {
-        $memo = $this->recall($ruleName);
+        $memo = $this->recall($rule);
 
         if (!$memo) {
             $pos = $this->pos;
             // Create a new LeftRecursion and push it onto the rule invocation stack.
-            $lr = new LeftRecursion($ruleName);
+            $lr = new LeftRecursion($rule);
             $this->lrStack->push($lr);
             // Memoize $lr, then evaluate $name.
             $memo = new MemoEntry($lr, $pos);
-            $this->memo[$this->isCapturing][$pos][$ruleName] = $memo;
-            $result = $this->evaluate($ruleName);
+            $this->memo[$this->isCapturing][$pos][$rule] = $memo;
+            $result = $this->evaluate($rule);
             // Pop $lr off the invocation stack
             $this->lrStack->pop();
             $memo->end = $this->pos;
@@ -72,12 +72,12 @@ class LeftRecursivePackrat extends Packrat
             }
             $lr->seed = $result;
 
-            return $this->leftRecursionAnswer($ruleName, $pos, $memo);
+            return $this->leftRecursionAnswer($rule, $pos, $memo);
         }
 
         $this->pos = $memo->end;
         if ($memo->result instanceof LeftRecursion) {
-            $this->setupLeftRecursion($ruleName, $memo->result);
+            $this->setupLeftRecursion($rule, $memo->result);
 
             return $memo->result->seed;
         }
@@ -89,7 +89,7 @@ class LeftRecursivePackrat extends Packrat
      * @param string        $ruleName
      * @param LeftRecursion $lr
      */
-    private function setupLeftRecursion($ruleName, LeftRecursion $lr)
+    private function setupLeftRecursion(string $ruleName, LeftRecursion $lr)
     {
         if (!$lr->head) {
             $lr->head = new Head($ruleName);
@@ -109,7 +109,7 @@ class LeftRecursivePackrat extends Packrat
      *
      * @return Node|LeftRecursion|null
      */
-    private function leftRecursionAnswer($ruleName, $position, MemoEntry $memo)
+    private function leftRecursionAnswer(string $ruleName, int $position, MemoEntry $memo)
     {
         $head = $memo->result->head;
         if ($head->rule !== $ruleName) {
@@ -131,7 +131,7 @@ class LeftRecursivePackrat extends Packrat
      *
      * @return Node|LeftRecursion|null
      */
-    private function growSeedParse($ruleName, $position, MemoEntry $memo, Head $head)
+    private function growSeedParse(string $ruleName, int $position, MemoEntry $memo, Head $head)
     {
         $this->heads[$position] = $head;
         while (true) {
@@ -150,24 +150,15 @@ class LeftRecursivePackrat extends Packrat
         return $memo->result;
     }
 
-    /**
-     * @param string $ruleName
-     *
-     * @return MemoEntry|null
-     */
-    private function recall($ruleName)
+    private function recall(string $ruleName): ?MemoEntry
     {
         $pos = $this->pos;
         // inline this to save a method call: $memo = $this->memo($name, $pos);
         /** @var MemoEntry $memo */
-        $memo = isset($this->memo[$this->isCapturing][$pos][$ruleName])
-            ? $this->memo[$this->isCapturing][$pos][$ruleName]
-            : null;
+        $memo = $this->memo[$this->isCapturing][$pos][$ruleName] ?? null;
+        $head = $this->heads[$pos] ?? null;
         // If not growing a seed parse, just return what is stored in the memo table.
-        if (!isset($this->heads[$pos])) {
-            return $memo;
-        }
-        $head = $this->heads[$pos];
+        if (!$head) return $memo;
         // Do not evaluate any rule that is not involved in this left recursion.
         if (!$memo && !$head->involves($ruleName)) {
             return new MemoEntry(null, $pos);

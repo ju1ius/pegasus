@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -53,7 +53,7 @@ final class GrammarDumper extends GrammarVisitor
      *
      * @throws Grammar\Exception\SelfReferencingRule
      */
-    public static function dump(Grammar $grammar, OutputInterface $output)
+    public static function dump(Grammar $grammar, OutputInterface $output): void
     {
         (new GrammarTraverser(false, false))
             ->addVisitor(new self($output))
@@ -79,7 +79,7 @@ final class GrammarDumper extends GrammarVisitor
     /**
      * @inheritdoc
      */
-    public function enterExpression(Expression $expr, $index = null, $isLast = false)
+    public function enterExpression(Expression $expr, ?int $index = null, bool $isLast = false)
     {
         $hasParent = $index !== null;
         $indent = $hasParent ? '  ' : '<d>└ </d>';
@@ -104,7 +104,7 @@ final class GrammarDumper extends GrammarVisitor
     /**
      * @inheritdoc
      */
-    public function leaveExpression(Expression $expr, $index = null, $isLast = false)
+    public function leaveExpression(Expression $expr, ?int $index = null, bool $isLast = false)
     {
         if ($expr instanceof Composite) {
             array_pop($this->indentStack);

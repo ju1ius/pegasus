@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -23,17 +23,27 @@ use ju1ius\Pegasus\Grammar;
 abstract class Optimization
 {
     /**
-     * @inheritDoc
+     * Called once before grammar traversal.
+     * Returning null leaves the grammar unchanged.
+     *
+     * @param Grammar $grammar
+     * @param OptimizationContext $context
+     * @return Grammar|null
      */
-    public function beforeTraverse(Grammar $grammar, OptimizationContext $context)
+    public function beforeTraverse(Grammar $grammar, OptimizationContext $context): ?Grammar
     {
         return null;
     }
 
     /**
-     * @inheritDoc
+     * Called once after grammar traversal.
+     * Returning null leaves the grammar unchanged.
+     *
+     * @param Grammar $grammar
+     * @param OptimizationContext $context
+     * @return Grammar|null
      */
-    public function afterTraverse(Grammar $grammar, OptimizationContext $context)
+    public function afterTraverse(Grammar $grammar, OptimizationContext $context): ?Grammar
     {
         return null;
     }
@@ -41,18 +51,23 @@ abstract class Optimization
     /**
      * Returns whether the `preProcessRule` method should be called by the optimizer.
      *
-     * @param Grammar             $grammar
-     * @param Expression          $expr
+     * @param Grammar $grammar
+     * @param Expression $expr
      * @param OptimizationContext $context
      *
      * @return bool
      */
-    public function willPreProcessRule(Grammar $grammar, Expression $expr, OptimizationContext $context)
+    public function willPreProcessRule(Grammar $grammar, Expression $expr, OptimizationContext $context): bool
     {
         return false;
     }
 
     /**
+     * Called before visiting each rule.
+     * Returning null leaves the grammar unchanged.
+     * Returning false removes the rule from the grammar.
+     * Returning an Expression will replace the rule.
+     *
      * @param Grammar             $grammar
      * @param Expression          $expr
      * @param OptimizationContext $context
@@ -67,18 +82,23 @@ abstract class Optimization
     /**
      * Returns whether the `postProcessRule` method should be called by the optimizer.
      *
-     * @param Grammar             $grammar
-     * @param Expression          $expr
+     * @param Grammar $grammar
+     * @param Expression $expr
      * @param OptimizationContext $context
      *
      * @return bool
      */
-    public function willPostProcessRule(Grammar $grammar, Expression $expr, OptimizationContext $context)
+    public function willPostProcessRule(Grammar $grammar, Expression $expr, OptimizationContext $context): bool
     {
         return false;
     }
 
     /**
+     * Called after visiting each rule.
+     * Returning null leaves the grammar unchanged.
+     * Returning false removes the rule from the grammar.
+     * Returning an Expression will replace the rule.
+     *
      * @param Grammar             $grammar
      * @param Expression          $expr
      * @param OptimizationContext $context
@@ -93,12 +113,12 @@ abstract class Optimization
     /**
      * Returns whether the `preProcessExpression` method should be called by the optimizer.
      *
-     * @param Expression          $expr
+     * @param Expression $expr
      * @param OptimizationContext $context
      *
      * @return bool
      */
-    public function willPreProcessExpression(Expression $expr, OptimizationContext $context)
+    public function willPreProcessExpression(Expression $expr, OptimizationContext $context): bool
     {
         return false;
     }
@@ -110,7 +130,7 @@ abstract class Optimization
      *
      * @return Expression|null
      */
-    public function preProcessExpression(Expression $expr, OptimizationContext $context)
+    public function preProcessExpression(Expression $expr, OptimizationContext $context): ?Expression
     {
         return null;
     }
@@ -118,12 +138,12 @@ abstract class Optimization
     /**
      * Returns whether the `postProcessExpression` of this optimization should be called by the optimizer.
      *
-     * @param Expression          $expr
+     * @param Expression $expr
      * @param OptimizationContext $context
      *
      * @return bool
      */
-    public function willPostProcessExpression(Expression $expr, OptimizationContext $context)
+    public function willPostProcessExpression(Expression $expr, OptimizationContext $context): bool
     {
         return false;
     }
@@ -135,7 +155,7 @@ abstract class Optimization
      *
      * @return Expression|null
      */
-    public function postProcessExpression(Expression $expr, OptimizationContext $context)
+    public function postProcessExpression(Expression $expr, OptimizationContext $context): ?Expression
     {
         return null;
     }

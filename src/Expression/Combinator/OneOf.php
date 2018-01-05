@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -25,7 +25,7 @@ use ju1ius\Pegasus\Parser\Scope;
  */
 class OneOf extends Combinator
 {
-    public function isCapturingDecidable()
+    public function isCapturingDecidable(): bool
     {
         $capturingChildren = 0;
         foreach ($this->children as $child) {
@@ -40,7 +40,7 @@ class OneOf extends Combinator
         return !$capturingChildren || $capturingChildren === count($this->children);
     }
 
-    public function match($text, Parser $parser)
+    public function match(string $text, Parser $parser)
     {
         $start = $parser->pos;
         $capturing = $parser->isCapturing;
@@ -70,7 +70,7 @@ class OneOf extends Combinator
     /**
      * @inheritDoc
      */
-    public function __toString()
+    public function __toString(): string
     {
         return implode(' | ', $this->stringChildren());
     }

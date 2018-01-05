@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -23,18 +23,12 @@ use ju1ius\Pegasus\Parser\Scope;
  */
 class Fail extends Terminal
 {
-    /**
-     * @inheritdoc
-     */
-    public function __toString()
+    public function __toString(): string
     {
         return '#FAIL';
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function isCapturing()
+    public function isCapturing(): bool
     {
         return false;
     }
@@ -42,7 +36,7 @@ class Fail extends Terminal
     /**
      * @inheritdoc
      */
-    public function match($text, Parser $parser)
+    public function match(string $text, Parser $parser)
     {
         $parser->registerFailure($this, $parser->pos);
     }

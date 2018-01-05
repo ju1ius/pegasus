@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -38,22 +38,19 @@ class GrammarHighlighter extends GrammarVisitor
     }
 
     /**
-     * @param Grammar         $grammar
+     * @param Grammar $grammar
      * @param OutputInterface $output
      *
-     * @return string
+     * @throws Grammar\Exception\SelfReferencingRule
      */
-    public static function highlight(Grammar $grammar, OutputInterface $output)
+    public static function highlight(Grammar $grammar, OutputInterface $output): void
     {
         (new GrammarTraverser(false))
             ->addVisitor($highlighter = new self($output))
             ->traverse($grammar);
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function beforeTraverse(Grammar $grammar)
+    public function beforeTraverse(Grammar $grammar): ?Grammar
     {
         if ($name = $grammar->getName()) {
             $this->output->writeln(sprintf(
@@ -68,9 +65,6 @@ class GrammarHighlighter extends GrammarVisitor
         $this->output->writeln('');
     }
 
-    /**
-     * @inheritDoc
-     */
     public function enterRule(Grammar $grammar, Expression $expr)
     {
         if ($grammar->isInlined($expr->getName())) {
@@ -83,9 +77,6 @@ class GrammarHighlighter extends GrammarVisitor
         $this->highlighter->beforeTraverse($expr);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function leaveRule(Grammar $grammar, Expression $expr)
     {
         $this->highlighter->afterTraverse($expr);
@@ -95,7 +86,7 @@ class GrammarHighlighter extends GrammarVisitor
     /**
      * @inheritDoc
      */
-    public function enterExpression(Expression $expr, $index = null, $isLast = false)
+    public function enterExpression(Expression $expr, ?int $index = null, bool $isLast = false)
     {
         $this->highlighter->enterExpression($expr, $index, $isLast);
     }
@@ -103,7 +94,7 @@ class GrammarHighlighter extends GrammarVisitor
     /**
      * @inheritDoc
      */
-    public function leaveExpression(Expression $expr, $index = null, $isLast = false)
+    public function leaveExpression(Expression $expr, ?int $index = null, bool $isLast = false)
     {
         $this->highlighter->leaveExpression($expr, $index, $isLast);
     }

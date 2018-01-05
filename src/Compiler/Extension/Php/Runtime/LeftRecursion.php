@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -46,7 +46,7 @@ final class LeftRecursion
      * @param Node   $seed
      * @param Head   $head
      */
-    public function __construct($ruleName, Node $seed = null, Head $head = null)
+    public function __construct(string $ruleName, ?Node $seed = null, ?Head $head = null)
     {
         $this->rule = $ruleName;
         $this->seed = $seed;

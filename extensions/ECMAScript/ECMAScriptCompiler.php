@@ -22,7 +22,7 @@ class ECMAScriptCompiler extends Compiler
     /**
      * @inheritDoc
      */
-    public function getTwigExtensions()
+    public function getTwigExtensions(): array
     {
         return [];
     }
@@ -30,7 +30,7 @@ class ECMAScriptCompiler extends Compiler
     /**
      * @inheritDoc
      */
-    public function getTemplateDirectories()
+    public function getTemplateDirectories(): array
     {
         return [
             __DIR__ . '/templates',
@@ -40,7 +40,7 @@ class ECMAScriptCompiler extends Compiler
     /**
      * @inheritDoc
      */
-    public function getParserClass()
+    public function getParserClass(): string
     {
         return 'PackratParser';
     }
@@ -48,7 +48,7 @@ class ECMAScriptCompiler extends Compiler
     /**
      * @inheritDoc
      */
-    public function getExtendedParserClass()
+    public function getExtendedParserClass(): string
     {
         return 'LeftRecursivePackratParser';
     }
@@ -56,7 +56,7 @@ class ECMAScriptCompiler extends Compiler
     /**
      * @inheritDoc
      */
-    public function getNodeVisitorClass()
+    public function getNodeVisitorClass(): string
     {
         return 'NodeTraverser';
     }
@@ -64,7 +64,7 @@ class ECMAScriptCompiler extends Compiler
     /**
      * @inheritDoc
      */
-    protected function renderParser($outputDirectory, array $args = [])
+    protected function renderParser(string $outputDirectory, array $args = []): string
     {
         $output = $this->renderTemplate('parser.twig', $args);
         if ($outputDirectory === 'php://stdout') {
@@ -78,7 +78,7 @@ class ECMAScriptCompiler extends Compiler
     /**
      * @inheritDoc
      */
-    protected function optimizeGrammar(Grammar $grammar)
+    protected function optimizeGrammar(Grammar $grammar): Grammar
     {
         return Optimizer::optimize($grammar, Optimizer::LEVEL_2);
     }

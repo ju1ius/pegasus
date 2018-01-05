@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -30,7 +30,7 @@ class Packrat extends Parser
     /**
      * @inheritdoc
      */
-    public function parse($text, $position = 0, $startRule = null)
+    public function parse(string $text, int $position = 0, ?string $startRule = null)
     {
         $this->memo = [];
         $result = parent::parse($text, $position, $startRule);
@@ -44,13 +44,13 @@ class Packrat extends Parser
     /**
      * @inheritdoc
      */
-    protected function apply($ruleName)
+    protected function apply(string $rule)
     {
         $pos = $this->pos;
         $capturing = (int)$this->isCapturing;
+        $memo = $this->memo[$capturing][$pos][$rule] ?? null;
 
-        if (isset($this->memo[$capturing][$pos][$ruleName])) {
-            $memo = $this->memo[$capturing][$pos][$ruleName];
+        if ($memo) {
             $this->pos = $memo->end;
 
             return $memo->result;
@@ -59,30 +59,13 @@ class Packrat extends Parser
         // Store a result of FAIL in the memo table before it evaluates the body of a rule.
         // This has the effect of making all left-recursive applications (both direct and indirect) fail.
         $memo = new MemoEntry(null, $pos);
-        $this->memo[$capturing][$pos][$ruleName] = $memo;
+        $this->memo[$capturing][$pos][$rule] = $memo;
         // evaluate expression
-        $result = $this->matchers[$ruleName]();
+        $result = $this->matchers[$rule]();
         // update the result in the memo table
         $memo->result = $result;
         $memo->end = $this->pos;
 
         return $result;
-    }
-
-    /**
-     * Fetches the memo entry corresponding to the given expression at the given position.
-     *
-     * @param string $ruleName
-     * @param int    $position
-     *
-     * @return MemoEntry|null
-     */
-    final protected function memo($ruleName, $position)
-    {
-        $capturing = (int)$this->isCapturing;
-
-        return isset($this->memo[$capturing][$ruleName][$position])
-            ? $this->memo[$capturing][$ruleName][$position]
-            : null;
     }
 }

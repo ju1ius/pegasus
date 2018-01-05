@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -26,12 +26,12 @@ class EOF extends Terminal
         parent::__construct('EOF');
     }
 
-    public function isCapturing()
+    public function isCapturing(): bool
     {
         return false;
     }
 
-    public function match($text, Parser $parser)
+    public function match(string $text, Parser $parser)
     {
         $start = $parser->pos;
         if (!isset($text[$start])) {
@@ -40,7 +40,7 @@ class EOF extends Terminal
         $parser->registerFailure($this, $start);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return 'EOF';
     }

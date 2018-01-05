@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -28,7 +28,7 @@ trait PredicateMatchChoiceJoinerTrait
     /**
      * @inheritDoc
      */
-    public function willPostProcessExpression(Expression $expr, OptimizationContext $context)
+    public function willPostProcessExpression(Expression $expr, OptimizationContext $context): bool
     {
         return $expr instanceof OneOf && $this->someEligiblePairs($expr);
     }
@@ -38,19 +38,19 @@ trait PredicateMatchChoiceJoinerTrait
      *
      * @return bool
      */
-    abstract protected function someEligiblePairs($children);
+    abstract protected function someEligiblePairs($children): bool;
 
     /**
      * @param string[] $patterns
      *
      * @return string
      */
-    protected function joinPatterns(array $patterns)
+    protected function joinPatterns(array $patterns): string
     {
         return implode('|', $patterns);
     }
 
-    protected function prepareBarePattern(Expression $child)
+    protected function prepareBarePattern(Expression $child): string
     {
         if ($child instanceof Match) {
             return $child->getPattern();

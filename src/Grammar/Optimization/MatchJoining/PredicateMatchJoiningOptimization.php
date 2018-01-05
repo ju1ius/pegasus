@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -32,7 +32,7 @@ abstract class PredicateMatchJoiningOptimization extends Optimization
     /**
      * @inheritdoc
      */
-    public function postProcessExpression(Expression $expr, OptimizationContext $context)
+    public function postProcessExpression(Expression $expr, OptimizationContext $context): ?Expression
     {
         $children = [];
         foreach ($expr as $child) {
@@ -53,7 +53,7 @@ abstract class PredicateMatchJoiningOptimization extends Optimization
      *
      * @return Match
      */
-    protected function reduce(Expression ...$pair)
+    protected function reduce(Expression ...$pair): Expression
     {
         $patterns = array_map(function ($child) {
             return $this->preparePattern($child);
@@ -68,21 +68,21 @@ abstract class PredicateMatchJoiningOptimization extends Optimization
      *
      * @return string
      */
-    abstract protected function preparePattern(Expression $child);
+    abstract protected function preparePattern(Expression $child): string;
 
     /**
      * @param string[] $patterns
      *
      * @return string
      */
-    abstract protected function joinPatterns(array $patterns);
+    abstract protected function joinPatterns(array $patterns): string;
 
     /**
      * @param Expression $expr
      *
      * @return bool
      */
-    protected function isEligibleMatch(Expression $expr)
+    protected function isEligibleMatch(Expression $expr): bool
     {
         return $expr instanceof Match;
     }
@@ -92,7 +92,7 @@ abstract class PredicateMatchJoiningOptimization extends Optimization
      *
      * @return bool
      */
-    protected function isEligiblePredicate(Expression $expr)
+    protected function isEligiblePredicate(Expression $expr): bool
     {
         if ($expr instanceof EOF) {
             return true;
@@ -110,7 +110,7 @@ abstract class PredicateMatchJoiningOptimization extends Optimization
      *
      * @return bool
      */
-    protected function isEligiblePair(Expression $first, Expression $last)
+    protected function isEligiblePair(Expression $first, Expression $last): bool
     {
         return ($this->isEligibleMatch($first) && $this->isEligiblePredicate($last))
             || ($this->isEligiblePredicate($first) && $this->isEligibleMatch($last));
@@ -121,7 +121,7 @@ abstract class PredicateMatchJoiningOptimization extends Optimization
      *
      * @return bool
      */
-    protected function someEligiblePairs($children)
+    protected function someEligiblePairs($children): bool
     {
         foreach (Iter::consecutive(2, $children) as list($first, $last)) {
             if ($this->isEligiblePair($first, $last)) {

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -34,13 +34,13 @@ interface ExpressionVisitorInterface
      *  * null:      $node stays as-is
      *  * otherwise: $node is set to the return value
      *
-     * @param Expression $expr  The visited expression
-     * @param int|null   $index The index of the visited expression in it's parent (null inside a top-level expression).
-     * @param bool       $isLast Whether the visited expression is the last child of it's parent
+     * @param Expression $expr The visited expression
+     * @param int|null $index The index of the visited expression in it's parent (null inside a top-level expression).
+     * @param bool $isLast Whether the visited expression is the last child of it's parent
      *
      * @return mixed
      */
-    public function enterExpression(Expression $expr, $index = null, $isLast = false);
+    public function enterExpression(Expression $expr, ?int $index = null, bool $isLast = false);
 
     /**
      * Called when leaving a node.
@@ -51,13 +51,13 @@ interface ExpressionVisitorInterface
      *  * array:     The return value is merged into the parent array (at the position of the $node)
      *  * otherwise: $node is set to the return value
      *
-     * @param Expression $expr  The visited expression
-     * @param int|null   $index The index of the visited expression in it's parent (null inside a top-level expression).
-     * @param bool       $isLast Whether the visited expression is the last child of it's parent
+     * @param Expression $expr The visited expression
+     * @param int|null $index The index of the visited expression in it's parent (null inside a top-level expression).
+     * @param bool $isLast Whether the visited expression is the last child of it's parent
      *
      * @return mixed
      */
-    public function leaveExpression(Expression $expr, $index = null, $isLast = false);
+    public function leaveExpression(Expression $expr, ?int $index = null, bool $isLast = false);
 
     /**
      * Called once after traversal.

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -91,7 +91,9 @@ class MetaGrammarTransform extends Transform
     }
 
     /**
+     * @param $node
      * @return Grammar
+     * @throws Grammar\Exception\RuleNotFound
      */
     protected function afterTraverse($node)
     {
@@ -109,17 +111,17 @@ class MetaGrammarTransform extends Transform
     // Directives
     // --------------------------------------------------------------------------------------------------------------
 
-    private function leave_name_directive(Node $node, $name)
+    private function leave_name_directive(Node $node, string $name)
     {
         $this->grammar->setName($name);
     }
 
-    private function leave_start_directive(Node $node, $name)
+    private function leave_start_directive(Node $node, string $name)
     {
         $this->startRule = $name;
     }
 
-    private function leave_extends_directive(Node $node, $name)
+    private function leave_extends_directive(Node $node, string $name)
     {
         $this->parentGrammar = $name;
     }
@@ -134,14 +136,14 @@ class MetaGrammarTransform extends Transform
         return ['whitespace' => $expr];
     }
 
-    private function leave_lexical_directive(Node $node, ...$children)
+    private function leave_lexical_directive(Node $node, ...$children): string
     {
         $this->lexical = true;
 
         return 'lexical';
     }
 
-    private function leave_InlineDirective(Node $node, ...$children)
+    private function leave_InlineDirective(Node $node, ...$children): string
     {
         $this->inlining = true;
 
@@ -152,7 +154,7 @@ class MetaGrammarTransform extends Transform
     // Rules
     // --------------------------------------------------------------------------------------------------------------
 
-    private function leave_rule(Node $node, $directives, $name, Expression $expr)
+    private function leave_rule(Node $node, $directives, string $name, Expression $expr)
     {
         foreach ($directives as $directive) {
             switch ($directive) {
@@ -171,7 +173,7 @@ class MetaGrammarTransform extends Transform
         $this->inlining = false;
     }
 
-    private function leave_RuleName(Node $node, $identifier)
+    private function leave_RuleName(Node $node, string $identifier): string
     {
         $this->currentRule = $identifier;
 
@@ -182,17 +184,17 @@ class MetaGrammarTransform extends Transform
     // Composite Expressions
     // --------------------------------------------------------------------------------------------------------------
 
-    private function leave_OneOf(Node $node,  ...$alternatives)
+    private function leave_OneOf(Node $node,  ...$alternatives): OneOf
     {
         return new OneOf($alternatives);
     }
 
-    private function leave_Sequence(Node $node, Expression ...$children)
+    private function leave_Sequence(Node $node, Expression ...$children): Sequence
     {
         return new Sequence($children);
     }
 
-    private function leave_NodeAction(Node $node, Expression $expr, $name)
+    private function leave_NodeAction(Node $node, Expression $expr, $name): NodeAction
     {
         return new NodeAction($expr, $name);
     }
@@ -201,32 +203,32 @@ class MetaGrammarTransform extends Transform
     // Decorator Expressions
     // --------------------------------------------------------------------------------------------------------------
 
-    private function leave_labeled(Node $node, $label, Expression $labelable)
+    private function leave_labeled(Node $node, $label, Expression $labelable): Label
     {
         return new Label($labelable, $label);
     }
 
-    private function leave_assert(Node $node, Expression $prefixable)
+    private function leave_assert(Node $node, Expression $prefixable): Assert
     {
         return new Assert($prefixable);
     }
 
-    private function leave_not(Node $node, Expression $prefixable)
+    private function leave_not(Node $node, Expression $prefixable): Not
     {
         return new Not($prefixable);
     }
 
-    private function leave_skip(Node $node, Expression $prefixable)
+    private function leave_skip(Node $node, Expression $prefixable): Skip
     {
         return new Skip($prefixable);
     }
 
-    private function leave_token(Node $node, Expression $prefixable)
+    private function leave_token(Node $node, Expression $prefixable): Token
     {
         return new Token($prefixable);
     }
 
-    private function leave_quantifier(Node $node, $regexp)
+    private function leave_quantifier(Node $node, $regexp): Quantifier
     {
         $groups = $regexp->attributes['groups'];
         if (!empty($groups['symbol'])) {
@@ -238,13 +240,13 @@ class MetaGrammarTransform extends Transform
         if (empty($groups['not_exact'])) {
             $max = $min;
         } else {
-            $max = empty($groups['max']) ? INF : (int)$groups['max'];
+            $max = empty($groups['max']) ? null : (int)$groups['max'];
         }
 
         return new Quantifier(null, $min, $max);
     }
 
-    private function leave_suffixed(Node $node, $suffixable, Quantifier $suffix)
+    private function leave_suffixed(Node $node, $suffixable, Quantifier $suffix): Quantifier
     {
         $suffix[0] = $suffixable;
 
@@ -255,14 +257,14 @@ class MetaGrammarTransform extends Transform
     // Terminal Expressions
     // --------------------------------------------------------------------------------------------------------------
 
-    private function leave_literal(Node $node, $regexp)
+    private function leave_literal(Node $node, Node $regexp): Literal
     {
         list(, $quoteChar, $literal) = $regexp->attributes['groups'];
 
         return new Literal($literal, '', $quoteChar);
     }
 
-    private function leave_word_literal(Node $node, $word)
+    private function leave_word_literal(Node $node, string $word): Word
     {
         return new Word($word);
     }
@@ -280,32 +282,32 @@ class MetaGrammarTransform extends Transform
         return new Match($pattern, $flags);
     }
 
-    private function leave_reference(Node $node, $identifier)
+    private function leave_reference(Node $node, string $identifier): Reference
     {
         return new Reference($identifier);
     }
 
-    private function leave_back_reference(Node $node, $identifier)
+    private function leave_back_reference(Node $node, string $identifier): BackReference
     {
         return new BackReference($identifier);
     }
 
-    private function leave_super_call(Node $node, $identifier = null)
+    private function leave_super_call(Node $node, ?string $identifier = null): Super
     {
         return new Super($identifier ?: $this->currentRule);
     }
 
-    private function leave_eof(Node $node, ...$children)
+    private function leave_eof(Node $node, ...$children): EOF
     {
         return new EOF();
     }
 
-    private function leave_epsilon(Node $node, ...$children)
+    private function leave_epsilon(Node $node, ...$children): Epsilon
     {
         return new Epsilon();
     }
 
-    private function leave_fail(Node $node, ...$children)
+    private function leave_fail(Node $node, ...$children): Fail
     {
         return new Fail();
     }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -28,7 +28,7 @@ class CombineQuantifiedMatch extends Optimization
     /**
      * @inheritDoc
      */
-    public function willPostProcessExpression(Expression $expr, OptimizationContext $context)
+    public function willPostProcessExpression(Expression $expr, OptimizationContext $context): bool
     {
         return $context->isMatching()
             && $expr instanceof Quantifier
@@ -38,7 +38,7 @@ class CombineQuantifiedMatch extends Optimization
     /**
      * @inheritDoc
      */
-    public function postProcessExpression(Expression $expr, OptimizationContext $context)
+    public function postProcessExpression(Expression $expr, OptimizationContext $context): ?Expression
     {
         /** @var Quantifier $expr */
         /** @var Match $match */
@@ -50,12 +50,7 @@ class CombineQuantifiedMatch extends Optimization
         );
     }
 
-    /**
-     * @param Quantifier $expr
-     *
-     * @return string
-     */
-    private function getQuantifier(Quantifier $expr)
+    private function getQuantifier(Quantifier $expr): string
     {
         if ($expr->isZeroOrMore()) {
             return '*';

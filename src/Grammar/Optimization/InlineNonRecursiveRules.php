@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -29,7 +29,7 @@ class InlineNonRecursiveRules extends Optimization
     /**
      * @inheritDoc
      */
-    public function willPreProcessExpression(Expression $expr, OptimizationContext $context)
+    public function willPreProcessExpression(Expression $expr, OptimizationContext $context): bool
     {
         return $expr instanceof Reference && $context->isInlineableRule($expr->getIdentifier());
     }
@@ -37,7 +37,7 @@ class InlineNonRecursiveRules extends Optimization
     /**
      * @inheritDoc
      */
-    public function preProcessExpression(Expression $expr, OptimizationContext $context)
+    public function preProcessExpression(Expression $expr, OptimizationContext $context): ?Expression
     {
         /** @var Reference $expr */
         $referenced = $context->getRule($expr->getIdentifier());

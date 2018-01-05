@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -35,6 +35,7 @@ use ju1ius\Pegasus\Expression\Terminal\Word;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimizer;
 use ju1ius\Pegasus\MetaGrammar;
+use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
 use ju1ius\Pegasus\Tests\PegasusTestCase;
 use ju1ius\Pegasus\CST\Transform\MetaGrammarTransform;
@@ -48,8 +49,11 @@ class GrammarParserTest extends PegasusTestCase
     {
         $meta = $optimizedMeta ? MetaGrammar::create() : MetaGrammar::getGrammar();
         $parser = new LeftRecursivePackrat($meta);
-        $tree = $parser->parseAll($syntax);
-
+        try {
+            $tree = $parser->parseAll($syntax);
+        } catch (ParseError $err) {
+            $this->fail($err);
+        }
         $grammar = (new MetaGrammarTransform())->transform($tree);
         if ($optimizationLevel) {
             return Optimizer::optimize($grammar, $optimizationLevel);
@@ -258,7 +262,7 @@ class GrammarParserTest extends PegasusTestCase
             ],
             'At least 2 match' => [
                 'x = /x/{2,}',
-                Grammar::fromArray(['x' => new Quantifier(new Match('x'), 2, INF)])
+                Grammar::fromArray(['x' => new Quantifier(new Match('x'), 2)])
             ],
             'Between 2 and 4 match' => [
                 'x = /x/{2,4}',

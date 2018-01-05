@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -22,12 +22,12 @@ use ju1ius\Pegasus\CST\Node\Terminal;
 class Transform
 {
     /**
-     * @var array
+     * @var \Closure[]
      */
     private $enterVisitors;
 
     /**
-     * @var array
+     * @var \Closure[]
      */
     private $leaveVisitors;
 
@@ -161,8 +161,6 @@ class Transform
 
     /**
      * Returns a map from rule names to visitation methods
-     *
-     * @return array
      */
     private function buildVisitors()
     {

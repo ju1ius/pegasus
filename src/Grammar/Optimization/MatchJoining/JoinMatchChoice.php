@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -26,7 +26,7 @@ final class JoinMatchChoice extends MatchJoiningOptimization
     /**
      * @inheritDoc
      */
-    public function willPostProcessExpression(Expression $expr, OptimizationContext $context)
+    public function willPostProcessExpression(Expression $expr, OptimizationContext $context): bool
     {
         return $expr instanceof OneOf
             && Iter::someConsecutive(function ($child) {

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -10,22 +10,23 @@
 
 namespace ju1ius\Pegasus\Compiler\Extension\Php;
 
+use ju1ius\Pegasus\Compiler\CompilerInterface;
 use ju1ius\Pegasus\Compiler\Extension;
 
 
 class PhpExtension extends Extension
 {
-    public function getName()
+    public function getName(): string
     {
         return 'php';
     }
 
-    public function getLanguage()
+    public function getLanguage(): string
     {
         return 'php';
     }
 
-    public function getCompiler()
+    public function getCompiler(): CompilerInterface
     {
         return new PhpCompiler();
     }

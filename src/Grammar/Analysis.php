@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -41,7 +41,7 @@ class Analysis
      *
      * @return bool
      */
-    public function canModifyBindings($ruleName)
+    public function canModifyBindings(string $ruleName): bool
     {
         foreach ($this->grammar[$ruleName]->iterate() as $expr) {
             if ($expr instanceof Label) {
@@ -59,7 +59,7 @@ class Analysis
      *
      * @return bool
      */
-    public function isRegular($ruleName)
+    public function isRegular(string $ruleName): bool
     {
         return !$this->isRecursive($ruleName);
     }
@@ -74,7 +74,7 @@ class Analysis
      *
      * @todo Check that the super call is actually recursive when called like super::another_rule
      */
-    public function isRecursive($ruleName)
+    public function isRecursive(string $ruleName): bool
     {
         return $this->containsSuperCall($ruleName) || $this->isReferencedFrom($ruleName, $ruleName);
     }
@@ -86,7 +86,7 @@ class Analysis
      *
      * @return bool
      */
-    public function isLeftRecursive($ruleName)
+    public function isLeftRecursive(string $ruleName): bool
     {
         return $this->isLeftReferencedFrom($ruleName, $ruleName);
     }
@@ -97,8 +97,9 @@ class Analysis
      * @param string $ruleName The rule name to analyze.
      *
      * @return bool
+     * @throws Exception\MissingStartRule
      */
-    public function isReferenced($ruleName)
+    public function isReferenced(string $ruleName): bool
     {
         $startRule = $this->grammar->getStartRule();
 
@@ -113,7 +114,7 @@ class Analysis
      *
      * @return bool
      */
-    public function isReferencedFrom($referencer, $referencee)
+    public function isReferencedFrom(string $referencer, string $referencee): bool
     {
         foreach ($this->iterateReferences($referencer) as $name => $expr) {
             if ($name === $referencee) {
@@ -132,7 +133,7 @@ class Analysis
      *
      * @return bool
      */
-    public function isLeftReferencedFrom($referencer, $referencee)
+    public function isLeftReferencedFrom(string $referencer, string $referencee): bool
     {
         foreach ($this->iterateLeftReferences($referencer) as $name => $expr) {
             if ($name === $referencee) {
@@ -148,9 +149,9 @@ class Analysis
      *
      * @param string $ruleName The rule name to search in.
      *
-     * @return array An array of reference names.
+     * @return string[] An array of reference names.
      */
-    public function getReferencesFrom($ruleName)
+    public function getReferencesFrom(string $ruleName): array
     {
         $refs = iterator_to_array($this->iterateReferences($ruleName));
 
@@ -162,9 +163,9 @@ class Analysis
      *
      * @param string $ruleName The rule name to search in.
      *
-     * @return array An array of reference names.
+     * @return string[] An array of reference names.
      */
-    public function getLeftReferencesFrom($ruleName)
+    public function getLeftReferencesFrom(string $ruleName): array
     {
         $refs = iterator_to_array($this->iterateLeftReferences($ruleName));
 
@@ -178,7 +179,7 @@ class Analysis
      *
      * @return bool
      */
-    protected function containsSuperCall($ruleName)
+    protected function containsSuperCall(string $ruleName): bool
     {
         foreach ($this->grammar[$ruleName]->iterate() as $expr) {
             if ($expr instanceof Super) {
@@ -197,7 +198,7 @@ class Analysis
      *
      * @return \Generator
      */
-    protected function iterateReferences($ruleName, array $visited = [])
+    protected function iterateReferences(string $ruleName, array $visited = []): \Generator
     {
         $expr = $this->grammar[$ruleName];
         if (isset($visited[$expr->id])) {
@@ -221,7 +222,7 @@ class Analysis
      *
      * @return \Generator
      */
-    protected function iterateLeftReferences($ruleName, array $visited = [])
+    protected function iterateLeftReferences(string $ruleName, array $visited = []): \Generator
     {
         $expr = $this->grammar[$ruleName];
         if (isset($visited[$expr->id])) {
@@ -246,7 +247,7 @@ class Analysis
      *
      * @todo handle Super calls
      */
-    protected function iterateDirectReferences(Expression $expr)
+    protected function iterateDirectReferences(Expression $expr): \Generator
     {
         if ($expr instanceof Reference) {
             yield $expr->getIdentifier() => $expr;
@@ -269,7 +270,7 @@ class Analysis
      *
      * @todo handle Super calls
      */
-    protected function iterateDirectLeftReferences(Expression $expr)
+    protected function iterateDirectLeftReferences(Expression $expr): \Generator
     {
         if ($expr instanceof Reference) {
             yield $expr->getIdentifier() => $expr;

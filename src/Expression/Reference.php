@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -29,40 +29,28 @@ final class Reference extends Expression
      */
     private $identifier;
 
-    public function __construct($identifier, $name = '')
+    public function __construct(string $identifier, string $name = '')
     {
         parent::__construct($name);
         $this->identifier = $identifier;
     }
 
-    /**
-     * @return string
-     */
-    public function getIdentifier()
+    public function getIdentifier(): string
     {
         return $this->identifier;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->identifier;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function isCapturingDecidable()
+    public function isCapturingDecidable(): bool
     {
         return false;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function match($text, Parser $parser)
+    public function match(string $text, Parser $parser)
     {
         $bindings = $parser->bindings;
         $parser->bindings = [];

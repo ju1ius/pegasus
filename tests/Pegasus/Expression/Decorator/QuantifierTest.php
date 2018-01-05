@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ju1ius\Pegasus\Tests\Expression\Decorator;
 
@@ -58,7 +58,7 @@ class QuantifierTest extends ExpressionTestCase
             ],
             // range of occurences, min > 0, max is infinite
             'one or more "x" with "xxx"' => [
-                GrammarBuilder::create()->rule('+')->q(1, INF)->literal('x')->getGrammar(),
+                GrammarBuilder::create()->rule('+')->atLeast(1)->literal('x')->getGrammar(),
                 ['xxx'],
                 new Node\Quantifier('+', 0, 3, [
                     new Terminal('', 0, 1, 'x'),
@@ -73,12 +73,12 @@ class QuantifierTest extends ExpressionTestCase
                 new Node\Quantifier('?', 0, 0, [], true)
             ],
             '0 or more "x" with "foo"' => [
-                GrammarBuilder::create()->rule('*')->q(0, INF)->literal('x')->getGrammar(),
+                GrammarBuilder::create()->rule('*')->atLeast(0)->literal('x')->getGrammar(),
                 ['foo'],
                 new Node\Quantifier('*', 0, 0, [])
             ],
             '0 or more "x" with "xoo"' => [
-                GrammarBuilder::create()->rule('*')->q(0, INF)->literal('x')->getGrammar(),
+                GrammarBuilder::create()->rule('*')->atLeast(0)->literal('x')->getGrammar(),
                 ['xoo'],
                 new Node\Quantifier('*', 0, 1, [new Terminal('', 0, 1, 'x')])
             ],
@@ -101,7 +101,7 @@ class QuantifierTest extends ExpressionTestCase
                 ['foo']
             ],
             '2 or more "x" with "x_x"' => [
-                GrammarBuilder::create()->rule('two')->q(2, INF)->literal('x')->getGrammar(),
+                GrammarBuilder::create()->rule('two')->atLeast(2)->literal('x')->getGrammar(),
                 ['x_x']
             ]
         ];

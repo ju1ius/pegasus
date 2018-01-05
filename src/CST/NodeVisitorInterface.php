@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -27,24 +27,24 @@ interface NodeVisitorInterface
     /**
      * Called when entering a node.
      *
-     * @param Node     $node
+     * @param Node $node
      * @param int|null $index
-     * @param bool     $isLast
+     * @param bool $isLast
      *
      * @return Node
      */
-    public function enterNode(Node $node, $index = null, $isLast = false);
+    public function enterNode(Node $node, ?int $index = null, bool $isLast = false);
 
     /**
      * Called when leaving a node.
      *
-     * @param Node     $node
+     * @param Node $node
      * @param int|null $index
-     * @param bool     $isLast
+     * @param bool $isLast
      *
      * @return Node
      */
-    public function leaveNode(Node $node, $index = null, $isLast = false);
+    public function leaveNode(Node $node, ?int $index = null, bool $isLast = false);
 
     /**
      * Called once after traversal.

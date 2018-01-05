@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -30,7 +30,7 @@ abstract class MatchJoiningOptimization extends Optimization
     /**
      * @inheritDoc
      */
-    public function willPostProcessExpression(Expression $expr, OptimizationContext $context)
+    public function willPostProcessExpression(Expression $expr, OptimizationContext $context): bool
     {
         return Iter::someConsecutive(function ($child) {
             return $this->isEligibleChild($child);
@@ -40,7 +40,7 @@ abstract class MatchJoiningOptimization extends Optimization
     /**
      * @inheritDoc
      */
-    public function postProcessExpression(Expression $expr, OptimizationContext $context)
+    public function postProcessExpression(Expression $expr, OptimizationContext $context): ?Expression
     {
         $newChildren = [];
         $matches = [];

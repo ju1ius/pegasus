@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -27,7 +27,7 @@ final class MemoEntry
      */
     public $end;
 
-    public function __construct($result, $endPosition)
+    public function __construct($result, int $endPosition)
     {
         $this->result = $result;
         $this->end = $endPosition;

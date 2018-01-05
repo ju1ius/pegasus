@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -22,7 +22,7 @@ class PhpCompiler extends Compiler
     /**
      * @inheritdoc
      */
-    public function getTemplateDirectories()
+    public function getTemplateDirectories(): array
     {
         return [
             __DIR__ . '/templates',
@@ -32,7 +32,7 @@ class PhpCompiler extends Compiler
     /**
      * @inheritdoc
      */
-    public function getTwigExtensions()
+    public function getTwigExtensions(): array
     {
         return [
             new PhpTwigExtension(),
@@ -42,7 +42,7 @@ class PhpCompiler extends Compiler
     /**
      * @inheritdoc
      */
-    public function getParserClass()
+    public function getParserClass(): string
     {
         return Packrat::class;
     }
@@ -50,7 +50,7 @@ class PhpCompiler extends Compiler
     /**
      * @inheritdoc
      */
-    public function getExtendedParserClass()
+    public function getExtendedParserClass(): string
     {
         return LeftRecursivePackrat::class;
     }
@@ -58,7 +58,7 @@ class PhpCompiler extends Compiler
     /**
      * @inheritdoc
      */
-    public function getNodeVisitorClass()
+    public function getNodeVisitorClass(): string
     {
         return Transform::class;
     }
@@ -66,7 +66,7 @@ class PhpCompiler extends Compiler
     /**
      * @inheritdoc
      */
-    protected function renderParser($outputDirectory, array $args = [])
+    protected function renderParser(string $outputDirectory, array $args = []): string
     {
         $output = $this->renderTemplate('parser.twig', $args);
         if ($outputDirectory === 'php://stdout') {
@@ -80,7 +80,7 @@ class PhpCompiler extends Compiler
     /**
      * @inheritDoc
      */
-    protected function optimizeGrammar(Grammar $grammar)
+    protected function optimizeGrammar(Grammar $grammar): Grammar
     {
         return Optimizer::optimize($grammar, Optimizer::LEVEL_2);
     }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -17,9 +17,6 @@ use ju1ius\Pegasus\CST\Node;
  */
 class Invalid extends Node
 {
-    /**
-     * @inheritDoc
-     */
     public function __construct($value)
     {
         parent::__construct('', 0, 0, $value);

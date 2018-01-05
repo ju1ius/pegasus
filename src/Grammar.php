@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -68,14 +68,14 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
     /**
      * Factory method that constructs a Grammar object from an associative array of rules.
      *
-     * @param Expression[] $rules     An array of ['rule_name' => $expression].
-     * @param Expression   $startRule The top level expression of this grammar.
-     * @param int          $optimizationLevel
+     * @param Expression[] $rules An array of ['rule_name' => $expression].
+     * @param string $startRule The top level expression of this grammar.
+     * @param int $optimizationLevel
      *
      * @return Grammar
      * @throws RuleNotFound
      */
-    public static function fromArray(array $rules, $startRule = null, $optimizationLevel = 0)
+    public static function fromArray(array $rules, ?string $startRule = null, int $optimizationLevel = 0)
     {
         $grammar = new static();
         foreach ($rules as $name => $rule) {
@@ -100,8 +100,11 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      * @return Grammar
      * @throws Parser\Exception\IncompleteParseError
      */
-    public static function fromSyntax($syntax, $startRule = null, $optimizationLevel = Optimizer::LEVEL_1)
-    {
+    public static function fromSyntax(
+        string $syntax,
+        ?string $startRule = null,
+        int $optimizationLevel = Optimizer::LEVEL_1
+    ) {
         $metaGrammar = MetaGrammar::create();
         $tree = (new LeftRecursivePackrat($metaGrammar))->parseAll($syntax);
         $grammar = (new MetaGrammarTransform)->transform($tree);
@@ -124,8 +127,11 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      * @return Grammar
      * @throws AnonymousTopLevelExpression If no named start rule could be determined.
      */
-    public static function fromExpression(Expression $expr, $startRule = null, $optimizationLevel = 0)
-    {
+    public static function fromExpression(
+        Expression $expr,
+        ?string $startRule = null,
+        int $optimizationLevel = 0
+    ) {
         if (!$startRule) {
             if (!$expr->getName()) {
                 throw new AnonymousTopLevelExpression($expr);
@@ -156,7 +162,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
     /**
      * @return Grammar
      */
-    public function getParent()
+    public function getParent(): ?Grammar
     {
         return $this->parent;
     }
@@ -166,7 +172,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      *
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -178,7 +184,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      *
      * @return $this
      */
-    public function setName($name)
+    public function setName(string $name): self
     {
         $this->name = $name;
 
@@ -190,7 +196,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      *
      * @return Expression[]
      */
-    public function getRules()
+    public function getRules(): array
     {
         return $this->rules;
     }
@@ -203,7 +209,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      * @return $this
      * @throws RuleNotFound If the rule wasn't found in the grammar.
      */
-    public function setStartRule($name)
+    public function setStartRule(string $name): self
     {
         if (isset($this->rules[$name])) {
             $this->startRule = $name;
@@ -219,7 +225,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      * @return string
      * @throws MissingStartRule If no start rule was found.
      */
-    public function getStartRule()
+    public function getStartRule(): string
     {
         if (!$this->startRule) {
             throw new MissingStartRule();
@@ -234,7 +240,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      * @return Expression
      * @throws MissingStartRule If no start rule was found.
      */
-    public function getStartExpression()
+    public function getStartExpression(): Expression
     {
         return $this->rules[$this->getStartRule()];
     }
@@ -246,7 +252,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      *
      * @return $this
      */
-    public function inline(...$ruleNames)
+    public function inline(string ...$ruleNames): self
     {
         foreach ($ruleNames as $ruleName) {
             $this->inlineRules[$ruleName] = true;
@@ -262,7 +268,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      *
      * @return bool
      */
-    public function isInlined($ruleName)
+    public function isInlined(string $ruleName): bool
     {
         return isset($this->inlineRules[$ruleName]);
     }
@@ -280,8 +286,9 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      * @param bool $deep Whether to return a deep clone.
      *
      * @return Grammar
+     * @throws Grammar\Exception\SelfReferencingRule
      */
-    public function copy($deep = false)
+    public function copy(bool $deep = false): Grammar
     {
         $clone = clone $this;
         if ($deep) {
@@ -300,8 +307,9 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      * @param Grammar $other The grammar to merge into this one.
      *
      * @return Grammar
+     * @throws Grammar\Exception\SelfReferencingRule
      */
-    public function merge(Grammar $other)
+    public function merge(Grammar $other): Grammar
     {
         $new = $this->copy(true);
         $other = $other->copy(true);
@@ -319,8 +327,9 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      * @param callable $f `$f(Expression $expr, string $ruleName, Grammar $grammar)`
      *
      * @return Grammar
+     * @throws Grammar\Exception\SelfReferencingRule
      */
-    public function map(callable $f)
+    public function map(callable $f): Grammar
     {
         $new = $this->copy(true);
         foreach ($new->rules as $name => $expr) {
@@ -336,8 +345,9 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      * @param callable $predicate `$predicate(Expression $expr, string $ruleName, Grammar $grammar)`
      *
      * @return Grammar
+     * @throws Grammar\Exception\SelfReferencingRule
      */
-    public function filter(callable $predicate)
+    public function filter(callable $predicate): Grammar
     {
         $new = $this->copy();
         foreach ($new->rules as $name => $expr) {
@@ -356,7 +366,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      * @return string
      * @codeCoverageIgnore
      */
-    public function __toString()
+    public function __toString(): string
     {
         $out = '';
         if ($name = $this->getName()) {
@@ -381,8 +391,9 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      * @param string $ruleName
      *
      * @return Expression
+     * @throws RuleNotFound
      */
-    public function super($ruleName)
+    public function super(string $ruleName): Expression
     {
         return $this->parent->offsetGet($ruleName);
     }

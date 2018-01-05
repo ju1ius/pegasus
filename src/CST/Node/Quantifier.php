@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -17,10 +17,7 @@ class Quantifier extends Composite
 {
     public $isQuantifier = true;
 
-    /**
-     * @inheritDoc
-     */
-    public function __construct($name, $start, $end, $children, $optional = false)
+    public function __construct(string $name, int $start, int $end, array $children, bool $optional = false)
     {
         $this->name = $name;
         $this->start = $start;

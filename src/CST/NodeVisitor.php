@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -34,7 +34,7 @@ abstract class NodeVisitor implements NodeVisitorInterface
     /**
      * @inheritDoc
      */
-    public function enterNode(Node $node, $index = null, $isLast = false)
+    public function enterNode(Node $node, ?int $index = null, bool $isLast = false)
     {
         return null;
     }
@@ -42,7 +42,7 @@ abstract class NodeVisitor implements NodeVisitorInterface
     /**
      * @inheritDoc
      */
-    public function leaveNode(Node $node, $index = null, $isLast = false)
+    public function leaveNode(Node $node, ?int $index = null, bool $isLast = false)
     {
         return null;
     }

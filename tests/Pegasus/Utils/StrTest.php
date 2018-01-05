@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -72,7 +72,7 @@ class StrTest extends TestCase
     {
         return [
             'No truncation' => [
-                ['foobar bazqux', INF],
+                ['foobar bazqux', 1000],
                 'foobar bazqux',
             ],
             'Simple truncation' => [

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -38,7 +38,7 @@ final class Literal extends Terminal
      */
     private $length = 0;
 
-    public function __construct($literal, $name = '', $quoteCharacter = '"')
+    public function __construct(string $literal, string $name = '', string $quoteCharacter = '"')
     {
         parent::__construct($name);
         $this->literal = $literal;
@@ -47,31 +47,22 @@ final class Literal extends Terminal
         $this->length = strlen($this->literal);
     }
 
-    /**
-     * @return string
-     */
-    public function getLiteral()
+    public function getLiteral(): string
     {
         return $this->literal;
     }
 
-    /**
-     * @return string
-     */
-    public function getQuoteCharacter()
+    public function getQuoteCharacter(): string
     {
         return $this->quoteCharacter;
     }
 
-    /**
-     * @return int
-     */
-    public function getLength()
+    public function getLength(): int
     {
         return $this->length;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return sprintf(
             '%1$s%2$s%1$s',
@@ -80,7 +71,7 @@ final class Literal extends Terminal
         );
     }
 
-    public function match($text, Parser $parser)
+    public function match(string $text, Parser $parser)
     {
         $start = $parser->pos;
         if (substr($text, $start, $this->length) === $this->literal) {

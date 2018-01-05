@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -31,10 +31,10 @@ class Packrat extends RecursiveDescent
     /**
      * @inheritdoc
      */
-    public function parse($source, $pos = 0, $startRule = null)
+    public function parse(string $text, int $pos = 0, ?string $startRule = null)
     {
         $this->memo = [];
-        $result = parent::parse($source, $pos, $startRule);
+        $result = parent::parse($text, $pos, $startRule);
         // free memory
         $this->memo = null;
 
@@ -57,10 +57,9 @@ class Packrat extends RecursiveDescent
     /**
      * @inheritdoc
      */
-    public function apply($rule, $super = false)
+    public function apply(string $rule, bool $super = false)
     {
         $expr = $super ? $this->grammar->super($rule) : $this->grammar[$rule];
-
         $pos = $this->pos;
 
         if (isset($this->memo[$this->isCapturing][$pos][$expr->id])) {
@@ -81,20 +80,5 @@ class Packrat extends RecursiveDescent
         $memo->end = $this->pos;
 
         return $result;
-    }
-
-    /**
-     * Fetches the memo entry corresponding to the given expression at the given position.
-     *
-     * @param Expression $expr
-     * @param int        $startPosition
-     *
-     * @return MemoEntry|null
-     */
-    protected function memo(Expression $expr, $startPosition)
-    {
-        return isset($this->memo[$this->isCapturing][$expr->id][$startPosition])
-            ? $this->memo[$this->isCapturing][$expr->id][$startPosition]
-            : null;
     }
 }

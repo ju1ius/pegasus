@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Pegasus
  *
@@ -23,7 +23,7 @@ final class OutputStyles
     /**
      * @return OutputFormatterStyle[]
      */
-    public static function getOutputStyles()
+    public static function getOutputStyles(): array
     {
         if (self::$outputStyles === null) {
             self::$outputStyles = [
@@ -55,12 +55,7 @@ final class OutputStyles
         return self::$outputStyles;
     }
 
-    /**
-     * @param OutputInterface $output
-     *
-     * @return OutputInterface
-     */
-    public static function setOutputStyles(OutputInterface $output)
+    public static function setOutputStyles(OutputInterface $output): OutputInterface
     {
         $fmt = $output->getFormatter();
         foreach (self::getOutputStyles() as $name => $style) {

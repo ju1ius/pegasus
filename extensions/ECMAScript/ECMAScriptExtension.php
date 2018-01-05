@@ -20,7 +20,7 @@ class ECMAScriptExtension extends Extension
     /**
      * @inheritDoc
      */
-    public function getName()
+    public function getName(): string
     {
         return 'ecmascript';
     }
@@ -28,7 +28,7 @@ class ECMAScriptExtension extends Extension
     /**
      * @inheritDoc
      */
-    public function getLanguage()
+    public function getLanguage(): string
     {
         return 'ecmascript';
     }
@@ -36,7 +36,7 @@ class ECMAScriptExtension extends Extension
     /**
      * @inheritDoc
      */
-    public function getCompiler()
+    public function getCompiler(): Compiler
     {
         return new ECMAScriptCompiler();
     }
