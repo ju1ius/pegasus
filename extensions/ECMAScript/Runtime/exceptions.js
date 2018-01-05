@@ -6,6 +6,9 @@ export class ParseError extends Error {
     this.position = position
     this.expr = expr
     this.rule = rule
+    // Make `instanceof` work when this code is transpiled to ES5
+    this.constructor = ParseError
+    this.__proto__   = ParseError.prototype
   }
 }
 
