@@ -28,17 +28,16 @@ class Packrat extends RecursiveDescent
      */
     protected $memo = [];
 
-    /**
-     * @inheritdoc
-     */
-    public function parse(string $text, int $pos = 0, ?string $startRule = null)
+    protected function beforeParse(): void
     {
         $this->memo = [];
-        $result = parent::parse($text, $pos, $startRule);
-        // free memory
-        $this->memo = null;
+        gc_disable();
+    }
 
-        return $result;
+    protected function afterParse($result): void
+    {
+        gc_enable();
+        $this->memo = null;
     }
 
     // --------------------------------------------------------------------------------------------------------------

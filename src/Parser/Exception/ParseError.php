@@ -67,7 +67,7 @@ class ParseError extends \RuntimeException
     {
         return sprintf(
             "ParseError: in rule `%s`, expression `%s`,\n%s",
-            $this->rule,
+            $this->rule ?: $this->expr->getName(),
             (string)$this->expr,
             $this->sourceExcerpt->getExcerpt($this->position)
         );

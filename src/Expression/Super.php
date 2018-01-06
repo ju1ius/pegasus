@@ -10,8 +10,7 @@
 
 namespace ju1ius\Pegasus\Expression;
 
-use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\CST\Node;
+
 use ju1ius\Pegasus\Parser\Parser;
 use ju1ius\Pegasus\Parser\Scope;
 
@@ -20,7 +19,7 @@ use ju1ius\Pegasus\Parser\Scope;
  *
  * @author ju1ius <ju1ius@laposte.net>
  */
-final class Super extends Expression
+final class Super extends Application
 {
     /**
      * The name of the rule this expression refers to.
@@ -38,11 +37,6 @@ final class Super extends Expression
     public function getIdentifier(): string
     {
         return $this->identifier;
-    }
-
-    public function isCapturingDecidable(): bool
-    {
-        return false;
     }
 
     public function match(string $text, Parser $parser)

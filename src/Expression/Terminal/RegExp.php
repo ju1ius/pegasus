@@ -34,7 +34,5 @@ final class RegExp extends PCREPattern
                 ? new Node\Terminal($this->name, $start, $end, $match, ['groups' => $matches])
                 : true;
         }
-
-        $parser->registerFailure($this, $start);
     }
 }

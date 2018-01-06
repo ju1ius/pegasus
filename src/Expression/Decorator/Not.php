@@ -51,7 +51,5 @@ class Not extends Decorator
         if (!$result) {
             return true;
         }
-
-        $parser->registerFailure($this, $start);
     }
 }

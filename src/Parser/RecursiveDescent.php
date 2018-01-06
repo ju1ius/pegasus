@@ -10,38 +10,9 @@
 
 namespace ju1ius\Pegasus\Parser;
 
-use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\CST\Node;
-use ju1ius\Pegasus\Parser\Exception\ParseError;
 
 class RecursiveDescent extends Parser
 {
-    /**
-     * @inheritdoc
-     */
-    public function parse(string $text, int $pos = 0, ?string $startRule = null)
-    {
-        $this->source = $text;
-        $this->pos = $pos;
-        $this->bindings = [];
-        $this->error = new ParseError($text);
-        $this->isCapturing = true;
-        $this->applicationStack = new \SplStack();
-        $rule = $startRule ?: $this->grammar->getStartRule();
-
-        gc_disable();
-        $result = $this->apply($rule);
-        gc_enable();
-
-        if (!$result) {
-            throw $this->error;
-        }
-        $this->applicationStack = null;
-
-        return $result;
-    }
-
     /**
      * @inheritdoc
      */

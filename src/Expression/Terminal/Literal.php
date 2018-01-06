@@ -80,7 +80,5 @@ final class Literal extends Terminal
                 ? new Node\Terminal($this->name, $start, $end, $this->literal)
                 : true;
         }
-
-        $parser->registerFailure($this, $start);
     }
 }

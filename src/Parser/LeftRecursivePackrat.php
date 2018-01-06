@@ -12,7 +12,6 @@ namespace ju1ius\Pegasus\Parser;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\CST\Node;
-use ju1ius\Pegasus\Grammar;
 
 /**
  * A packrat parser implementing Wrath, Douglass & Millstein's algorithm
@@ -32,17 +31,22 @@ class LeftRecursivePackrat extends Packrat
      */
     protected $lrStack;
 
-    public function parse(string $text, int $pos = 0, ?string $startRule = null)
+    /**
+     * @var bool
+     */
+    protected $isGrowingSeedParse = false;
+
+    protected function beforeParse(): void
     {
+        parent::beforeParse();
         $this->heads = [];
         $this->lrStack = new \SplStack();
+    }
 
-        $result = parent::parse($text, $pos, $startRule);
-
-        // free memory
+    protected function afterParse($result): void
+    {
+        parent::afterParse($result);
         $this->heads = $this->lrStack = null;
-
-        return $result;
     }
 
     /**
@@ -75,6 +79,7 @@ class LeftRecursivePackrat extends Packrat
             return $this->leftRecursionAnswer($expr, $pos, $memo);
         }
         $this->pos = $memo->end;
+
         if ($memo->result instanceof LeftRecursion) {
             $this->setupLeftRecursion($expr, $memo->result);
 
@@ -132,6 +137,7 @@ class LeftRecursivePackrat extends Packrat
      */
     protected function growSeedParse(Expression $expr, int $pos, MemoEntry $memo, Head $head)
     {
+        $this->isGrowingSeedParse = true;
         $this->heads[$pos] = $head;
         while (true) {
             $this->pos = $pos;
@@ -145,6 +151,7 @@ class LeftRecursivePackrat extends Packrat
         }
         unset($this->heads[$pos]);
         $this->pos = $memo->end;
+        $this->isGrowingSeedParse = false;
 
         return $memo->result;
     }

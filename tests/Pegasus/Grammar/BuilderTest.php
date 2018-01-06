@@ -17,7 +17,7 @@ class BuilderTest extends PegasusTestCase
 {
     public function testCreate()
     {
-        $grammar = \ju1ius\Pegasus\GrammarBuilder::create('foo')->getGrammar();
+        $grammar = GrammarBuilder::create('foo')->getGrammar();
         $this->assertInstanceOf(Grammar::class, $grammar);
         $this->assertSame('foo', $grammar->getName());
     }
@@ -25,24 +25,24 @@ class BuilderTest extends PegasusTestCase
     public function testOf()
     {
         $grammar = new Grammar();
-        $this->assertSame($grammar, \ju1ius\Pegasus\GrammarBuilder::of($grammar)->getGrammar());
+        $this->assertSame($grammar, GrammarBuilder::of($grammar)->getGrammar());
     }
 
     public function testSuperWithIdentifier()
     {
-        $grammar = \ju1ius\Pegasus\GrammarBuilder::create()->rule('test')->super('foo')->getGrammar();
+        $grammar = GrammarBuilder::create()->rule('test')->super('foo')->getGrammar();
         $this->assertExpressionEquals(new Super('foo', 'test'), $grammar['test']);
     }
 
     public function testSuperWithoutIdentifier()
     {
-        $grammar = \ju1ius\Pegasus\GrammarBuilder::create()->rule('test')->super()->getGrammar();
+        $grammar = GrammarBuilder::create()->rule('test')->super()->getGrammar();
         $this->assertExpressionEquals(new Super('test', 'test'), $grammar['test']);
     }
 
     public function testItCanAddSeveralRules()
     {
-        $result = \ju1ius\Pegasus\GrammarBuilder::create()
+        $result = GrammarBuilder::create()
             ->rule('foo')->literal('foo')
             ->rule('bar')->literal('bar')
             ->getGrammar();
@@ -69,7 +69,7 @@ class BuilderTest extends PegasusTestCase
     {
         return [
             'Sequence with nested decorators' => [
-                \ju1ius\Pegasus\GrammarBuilder::create()->rule('test')->sequence()
+                GrammarBuilder::create()->rule('test')->sequence()
                     ->skip()->label('a')->oneOrMore()->literal('foo')
                     ->literal('bar')
                     ->getGrammar(),

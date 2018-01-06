@@ -38,6 +38,6 @@ class Fail extends Terminal
      */
     public function match(string $text, Parser $parser)
     {
-        $parser->registerFailure($this, $parser->pos);
+        return null;
     }
 }

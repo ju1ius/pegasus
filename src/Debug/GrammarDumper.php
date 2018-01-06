@@ -55,7 +55,7 @@ final class GrammarDumper extends GrammarVisitor
      */
     public static function dump(Grammar $grammar, OutputInterface $output): void
     {
-        (new GrammarTraverser(false, false))
+        (new GrammarTraverser(false))
             ->addVisitor(new self($output))
             ->traverse($grammar);
     }

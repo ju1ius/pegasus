@@ -28,6 +28,7 @@ abstract class Expression
      *
      * We use an incrementing integer over spl_object_hash(),
      * because ATM it is significantly faster.
+     * @todo use spl_object_id in php >= 7.2
      *
      * @readonly
      * @internal
@@ -59,7 +60,7 @@ abstract class Expression
     public function __construct(?string $name = '')
     {
         $this->name = $name;
-        //$this->id = spl_object_hash($this);
+        //$this->id = spl_object_id($this);
         $this->id = ++self::$UID;
     }
 

@@ -30,7 +30,5 @@ class Match extends PCREPattern
                 ? new Node\Terminal($this->name, $start, $end, $match)
                 : true;
         }
-
-        $parser->registerFailure($this, $start);
     }
 }

@@ -123,4 +123,18 @@ class Node
 
         return $length ? substr($input, $this->start, $length) : '';
     }
+
+    public function __toString(): string
+    {
+        $class = get_class($this);
+        return sprintf(
+            'Node\%s#%s(%s) @[%d,%d] «%s»',
+            substr($class, strrpos($class, '\\') + 1),
+            spl_object_id($this),
+            $this->name,
+            $this->start,
+            $this->end,
+            (string)$this->value
+        );
+    }
 }

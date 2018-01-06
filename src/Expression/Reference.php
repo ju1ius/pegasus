@@ -10,17 +10,14 @@
 
 namespace ju1ius\Pegasus\Expression;
 
-use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Parser\Parser;
-use ju1ius\Pegasus\Parser\Scope;
 
 /**
  * A reference to a grammar rule.
  *
  * @author ju1ius <ju1ius@laposte.net>
  */
-final class Reference extends Expression
+final class Reference extends Application
 {
     /**
      * The name of the rule this expression refers to.
@@ -43,11 +40,6 @@ final class Reference extends Expression
     public function __toString(): string
     {
         return $this->identifier;
-    }
-
-    public function isCapturingDecidable(): bool
-    {
-        return false;
     }
 
     public function match(string $text, Parser $parser)

@@ -53,8 +53,6 @@ final class BackReference extends Terminal
                 new Node\Terminal($this->name, $start, $end, $pattern)
                 : true;
         }
-
-        $parser->registerFailure($this, $start);
     }
 
     public function __toString(): string

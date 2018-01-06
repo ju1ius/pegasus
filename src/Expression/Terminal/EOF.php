@@ -37,7 +37,6 @@ class EOF extends Terminal
         if (!isset($text[$start])) {
             return true;
         }
-        $parser->registerFailure($this, $start);
     }
 
     public function __toString(): string

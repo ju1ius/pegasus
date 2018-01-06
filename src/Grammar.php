@@ -18,6 +18,8 @@ use ju1ius\Pegasus\Grammar\Exception\RuleNotFound;
 use ju1ius\Pegasus\Grammar\GrammarTraverser;
 use ju1ius\Pegasus\Grammar\Optimizer;
 use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
+use ju1ius\Pegasus\Trace\GrammarTracer;
+
 
 /**
  * A collection of expressions that describe a language.
@@ -420,6 +422,20 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
     public function super(string $ruleName): Expression
     {
         return $this->parent->offsetGet($ruleName);
+    }
+
+    /**
+     * Returns a debug-enabled copy of this grammar.
+     *
+     * @return Grammar
+     * @throws Grammar\Exception\SelfReferencingRule
+     */
+    public function getTrace(): Grammar
+    {
+        $clone = clone $this;
+        return (new GrammarTraverser(false))
+            ->addVisitor(new GrammarTracer())
+            ->traverse($clone);
     }
 
     //

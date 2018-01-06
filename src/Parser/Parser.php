@@ -15,6 +15,8 @@ use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Parser\Exception\IncompleteParseError;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
+use ju1ius\Pegasus\Trace\Trace;
+
 
 abstract class Parser
 {
@@ -65,6 +67,11 @@ abstract class Parser
     public $error;
 
     /**
+     * @var Trace
+     */
+    protected $trace;
+
+    /**
      * The stack of currently applied grammar rules.
      *
      * @var \SplStack.<Expression>
@@ -84,6 +91,7 @@ abstract class Parser
      * @param string|null $startRule
      *
      * @return Node|true|null
+     * @throws Grammar\Exception\MissingStartRule
      */
     final public function parseAll(string $source, ?string $startRule = null)
     {
@@ -106,9 +114,37 @@ abstract class Parser
      * @param int $pos
      * @param string $startRule
      *
-     * @return Node|true|null
+     * @return Node|null|true
+     * @throws Grammar\Exception\MissingStartRule
      */
-    abstract public function parse(string $text, int $pos = 0, ?string $startRule = null);
+    final public function parse(string $text, int $pos = 0, ?string $startRule = null)
+    {
+        $this->source = $text;
+        $this->pos = $pos;
+        $startRule = $startRule ?: $this->grammar->getStartRule();
+        $this->bindings = [];
+        $this->isCapturing = true;
+        $this->trace = new Trace();
+        $this->error = new ParseError($text, $pos);
+
+        $this->beforeParse();
+
+        //gc_disable();
+        $result = $this->apply($startRule);
+        //gc_enable();
+
+        if (!$result) {
+            throw $this->error;
+        }
+
+        $this->afterParse($result);
+
+        return $result;
+    }
+
+    protected function beforeParse(): void {}
+
+    protected function afterParse($result): void {}
 
     /**
      * Applies a grammar rule.
@@ -125,7 +161,7 @@ abstract class Parser
     abstract public function apply(string $rule, bool $super = false);
 
     /**
-     * Evaluates an expression & updates current position on success.
+     * Evaluates an expression.
      *
      * @param Expression $expr
      *
@@ -133,26 +169,44 @@ abstract class Parser
      */
     final public function evaluate(Expression $expr)
     {
-        $this->applicationStack->push($expr);
         $result = $expr->match($this->source, $this);
-        $this->applicationStack->pop();
+        // We only care about the rightmost failure
+        if (!$result && $this->pos > $this->error->position) {
+            $this->error->position = $this->pos;
+            $this->error->expr = $expr;
+        }
 
         return $result;
     }
 
     /**
-     * Registers that the given expression failed to match at the given position.
+     * Called by Trace expressions before their child rule is evaluated
      *
      * @param Expression $expr
-     * @param int $pos
+     * @return mixed
      */
-    final public function registerFailure(Expression $expr, int $pos)
+    public function enterTrace(Expression $expr)
     {
-        // We only care about the rightmost failure
-        if ($pos > $this->error->position) {
-            $this->error->position = $pos;
-            $this->error->expr = $expr;
-            $this->error->rule = $this->applicationStack->top();
-        }
+        $entry = $this->trace->push($expr);
+        $entry->start = $this->pos;
+    }
+
+    /**
+     * Called by Trace expressions after their child rule is evaluated
+     *
+     * @param Expression $expr The expression being traced
+     * @param Node|true|null $result The result of evaluating the traced expression
+     * @return mixed
+     */
+    public function leaveTrace(Expression $expr, $result)
+    {
+        $entry = $this->trace->pop();
+        $entry->end = $this->pos;
+        $entry->result = $result;
+    }
+
+    public function getTrace()
+    {
+        return $this->trace;
     }
 }
