@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-
 namespace ju1ius\Pegasus\Trace;
-
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Parser\Exception\IncompleteParseError;
@@ -10,11 +8,6 @@ use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Source\SourceInfo;
 
 
-/**
- * TODO: Maybe make this class handle all error reporting ?
- * Like, add a $this->error member...
- * Or the other way around...
- */
 final class Trace implements \IteratorAggregate
 {
     /**
