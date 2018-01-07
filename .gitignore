@@ -2,7 +2,7 @@
 /composer.lock
 
 /vendor/
+/tests/coverage/
 cache/
 /tmp
 /hack/
-tests/coverage/
