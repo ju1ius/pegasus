@@ -97,10 +97,7 @@ abstract class Parser
     {
         $result = $this->parse($source, 0, $startRule);
         if ($this->pos < strlen($source)) {
-            throw new IncompleteParseError(
-                $source,
-                $this->pos
-            );
+            throw $this->trace->createIncompleteParseError($this->pos);
         }
 
         return $result;
@@ -124,8 +121,7 @@ abstract class Parser
         $startRule = $startRule ?: $this->grammar->getStartRule();
         $this->bindings = [];
         $this->isCapturing = true;
-        $this->trace = new Trace();
-        $this->error = new ParseError($text, $pos);
+        $this->trace = new Trace($text);
 
         $this->beforeParse();
 
@@ -134,7 +130,7 @@ abstract class Parser
         //gc_enable();
 
         if (!$result) {
-            throw $this->error;
+            throw $this->trace->createParseError();
         }
 
         $this->afterParse($result);
@@ -170,10 +166,8 @@ abstract class Parser
     final public function evaluate(Expression $expr)
     {
         $result = $expr->match($this->source, $this);
-        // We only care about the rightmost failure
-        if (!$result && $this->pos > $this->error->position) {
-            $this->error->position = $this->pos;
-            $this->error->expr = $expr;
+        if (!$result) {
+            $this->trace->recordFailure($expr, $this->pos);
         }
 
         return $result;
@@ -200,6 +194,9 @@ abstract class Parser
      */
     public function leaveTrace(Expression $expr, $result)
     {
+        if (!$result) {
+            $this->trace->recordFailure($expr, $this->pos);
+        }
         $entry = $this->trace->pop();
         $entry->end = $this->pos;
         $entry->result = $result;
