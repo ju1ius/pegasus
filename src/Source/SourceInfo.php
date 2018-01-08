@@ -68,6 +68,12 @@ final class SourceInfo
         return $this->lines;
     }
 
+    public function getLine(int $lineno): string
+    {
+        $lines = $this->getLines();
+        return $lines[$lineno][3];
+    }
+
     public function slice(int $start = 0, ?int $length = null): array
     {
         $lines = $this->getLines();
@@ -108,43 +114,66 @@ final class SourceInfo
 
     /**
      * @param int $pos Byte offset of the source position to highlight
-     * @param int $numLines
-     * @param int $maxCols
+     * @param int $before Number of preceding context lines to show
+     * @param int $after Number of following context lines to show
+     * @param int $width
      * @return string
      */
-    public function getExcerpt(int $pos, int $numLines = 2, int $maxCols = 80): string
+    public function getExcerpt(int $pos, int $before = 1, int $after = 0, int $width = 80): string
     {
         [$line, $column] = $this->positionFromOffset($pos);
-        $startLine = $line - $numLines + 1;
-        $length = $line - $startLine + 1;
-        $lines = $this->slice($startLine, $length);
+        $targetLine = $this->getLine($line);
+        $firstLineNo = $line;
+        $linesBefore = [];
+        $linesAfter = [];
+        $gutterWidth = strlen((string)$this->numLines);
+        $gutterSeparator = '│ ';
+        $lineFormat = "%{$gutterWidth}d{$gutterSeparator}%s";
+        $maxLineLength = $width - $gutterWidth - mb_strlen($gutterSeparator, 'utf-8');
 
-        $firstLineNo = key($lines) + 1;
-        $targetLine = array_pop($lines);
+        if ($before > 0 && $line - $before >= 0) {
+            $linesBefore = $this->slice($line - $before, $before);
+            $firstLineNo = key($linesBefore);
+        }
+        if ($after > 0) {
+            $linesAfter = $this->slice($line + 1, $after);
+        }
+
+        $output = [
+            sprintf("Line %d, column %d:", $line + 1, $column + 1),
+        ];
+        if ($firstLineNo > 1) {
+            $pad = str_repeat(' ', $gutterWidth - 1);
+            $output[] = "{$pad}…│ …";
+        }
 
         // handle lines before
-        foreach ($lines as $lineno => $line) {
-            $lines[$lineno] = sprintf(
-                '%4d│ %s',
+        foreach ($linesBefore as $lineno => $value) {
+            $output[] = sprintf(
+                $lineFormat,
                 $lineno + 1,
-                Str::truncate($line[0], $maxCols - 6)
+                Str::truncate($value, $maxLineLength)
             );
         }
         // handle target line
-        $lines[] = sprintf(
-            '%4d│ %s',
+        $output[] = sprintf(
+            $lineFormat,
             $line + 1,
-            Str::truncate($targetLine[0], $maxCols - 6, $column)
+            Str::truncate($targetLine, $maxLineLength, $column)
         );
-
-        $text = sprintf("Line %d, column %d:\n", $line + 1, $column + 1);
-        if ($firstLineNo > 1) {
-            $text .= "   …│  …\n";
+        // handle position indicator
+        $pad = str_repeat('─', $gutterWidth);
+        $output[] = sprintf("{$pad}┴╌%s┘", str_repeat('╌', $column));
+        // handle lines after
+        foreach ($linesAfter as $lineno => $value) {
+            $output[] = sprintf(
+                $lineFormat,
+                $lineno + 1,
+                Str::truncate($value, $maxLineLength)
+            );
         }
-        $text .= implode("\n", $lines);
-        $text .= sprintf("\n────┴╌%s┘", str_repeat('╌', $column));
 
-        return $text;
+        return implode("\n", $output);
     }
 
     /**

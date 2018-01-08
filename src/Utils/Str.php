@@ -54,8 +54,8 @@ final class Str
         string $rightMark = ' …',
         string $encoding = 'UTF-8'
     ): string {
-        $lineLength = mb_strlen($str, $encoding);
-        if ($lineLength <= $maxWidth) {
+        $width = mb_strlen($str, $encoding);
+        if ($width <= $maxWidth) {
             return $str;
         }
         if ($targetCol <= $maxWidth - mb_strlen($rightMark, $encoding)) {

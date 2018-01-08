@@ -7,6 +7,7 @@
         <testsuite name="Utils">
             <directory>tests/Pegasus/Utils</directory>
             <directory>tests/Pegasus/RegExp</directory>
+            <directory>tests/Pegasus/Source</directory>
         </testsuite>
         <testsuite name="Grammar">
             <file>tests/Pegasus/GrammarTest.php</file>

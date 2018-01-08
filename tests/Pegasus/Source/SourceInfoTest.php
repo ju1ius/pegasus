@@ -77,18 +77,18 @@ class SourceInfoTest extends TestCase
         $result = $info->getExcerpt(strpos($source, '1'));
         $expected = <<<'EOS'
 Line 1, column 1:
-   1│ 123
-────┴╌┘
+1│ 123
+─┴╌┘
 EOS;
         $this->assertSame($expected, $result);
 
         $result = $info->getExcerpt(strpos($source, 'C'));
         $expected = <<<'EOS'
 Line 4, column 3:
-   …│  …
-   3│ 789
-   4│ ABC
-────┴╌╌╌┘
+…│ …
+3│ 789
+4│ ABC
+─┴╌╌╌┘
 EOS;
         $this->assertSame($expected, $result);
     }
@@ -97,22 +97,22 @@ EOS;
     {
         $source = "123456789\nABCDEF123";
         $info = new SourceInfo($source);
-        $maxCols = 8 + 6;
-        $result = $info->getExcerpt(strpos($source, 'E'), 2, $maxCols);
+        $maxCols = 11;
+        $result = $info->getExcerpt(strpos($source, 'E'), 1, 0, $maxCols);
         $expected = <<<'EOS'
 Line 2, column 5:
-   1│ 123456 …
-   2│ ABCDEF …
-────┴╌╌╌╌╌┘
+1│ 123456 …
+2│ ABCDEF …
+─┴╌╌╌╌╌┘
 EOS;
         $this->assertSame($expected, $result);
 
-        $result = $info->getExcerpt(strlen($source) - 1, 2, $maxCols);
+        $result = $info->getExcerpt(strlen($source) - 1, 1, 0, $maxCols);
         $expected = <<<'EOS'
 Line 2, column 9:
-   1│ 123456 …
-   2│ … CDEF123
-────┴╌╌╌╌╌╌╌╌╌┘
+1│ 123456 …
+2│ … CDEF123
+─┴╌╌╌╌╌╌╌╌╌┘
 EOS;
         $this->assertSame($expected, $result);
     }
