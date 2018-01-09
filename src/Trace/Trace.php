@@ -43,29 +43,18 @@ final class Trace implements \IteratorAggregate
 
     public function recordFailure(Expression $expr, int $position): void
     {
-        if ($position >= $this->rightMostFailurePosition) {
+        if ($position > $this->rightMostFailurePosition) {
             $this->rightMostFailurePosition = $position;
             $this->rightMostFailure = $expr;
         }
     }
 
-    public function getRightMostFailure(): array
-    {
-        return [
-            $this->rightMostFailurePosition,
-            $this->rightMostFailure,
-        ];
-    }
-
     public function createParseError(): ParseError
     {
-        $pos = $this->rightMostFailurePosition;
-        $expr = $this->rightMostFailure;
         $message = sprintf(
-            "In rule `%s`, expression `%s`:\n%s\n",
-            $expr->getName(),
-            $expr,
-            $this->source->getExcerpt($pos)
+            "%s\n%s",
+            $this->getExpectedTerminalsMessage(),
+            $this->source->getExcerpt($this->rightMostFailurePosition)
         );
 
         return new ParseError($message);
@@ -73,16 +62,10 @@ final class Trace implements \IteratorAggregate
 
     public function createIncompleteParseError(int $position): IncompleteParseError
     {
-        $pos = $this->rightMostFailurePosition;
-        $expr = $this->rightMostFailure;
         $message = sprintf(
-            implode("\n", [
-                "Parsing succeeded without consuming all the input.",
-                "In rule `%s`, expression `%s`:"
-            ]),
-            $expr->getName(),
-            $expr,
-            $this->source->getExcerpt($pos)
+            "%s\n%s",
+            $this->getExpectedTerminalsMessage(),
+            $this->source->getExcerpt($this->rightMostFailurePosition)
         );
 
         return new IncompleteParseError($message);
@@ -93,9 +76,12 @@ final class Trace implements \IteratorAggregate
         $entry = new TraceEntry($expr, $this->stack->count());
 
         if ($this->stack->isEmpty()) {
+            $entry->index = count($this->entries);
             $this->entries[] = $entry;
         } else {
             $top = $this->stack->top();
+            $entry->index = count($top->children);
+            $entry->parent = $top;
             $top->children[] = $entry;
         }
 
@@ -118,5 +104,35 @@ final class Trace implements \IteratorAggregate
             yield $entry;
             yield from $entry;
         }
+    }
+
+    /**
+     * @return TraceEntry[]
+     */
+    public function getErrorCandidates(): array
+    {
+        $candidates = [];
+        /** @var TraceEntry $entry */
+        foreach ($this->getIterator() as $entry) {
+            if ($entry->isErrorCandidate($this->rightMostFailurePosition)) {
+                $candidates[] = $entry;
+            }
+        }
+
+        return $candidates;
+    }
+
+    private function getExpectedTerminalsMessage()
+    {
+        $candidates = $this->getErrorCandidates();
+        $expected = [];
+        foreach ($candidates as $candidate) {
+            $expected[] = $candidate->expression;
+        }
+
+        return sprintf(
+            'Expected one of: %s',
+            implode(', ', $expected)
+        );
     }
 }

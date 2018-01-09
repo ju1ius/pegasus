@@ -125,9 +125,9 @@ abstract class Parser
 
         $this->beforeParse();
 
-        //gc_disable();
+        gc_disable();
         $result = $this->apply($startRule);
-        //gc_enable();
+        gc_enable();
 
         if (!$result) {
             throw $this->trace->createParseError();
@@ -166,9 +166,6 @@ abstract class Parser
     final public function evaluate(Expression $expr)
     {
         $result = $expr->match($this->source, $this);
-        if (!$result) {
-            $this->trace->recordFailure($expr, $this->pos);
-        }
 
         return $result;
     }
