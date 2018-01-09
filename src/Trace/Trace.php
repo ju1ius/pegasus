@@ -23,7 +23,7 @@ final class Trace implements \IteratorAggregate
     /**
      * @var TraceEntry[]
      */
-    private $entries;
+    private $entries = [];
 
     /**
      * @var int
