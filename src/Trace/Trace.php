@@ -62,7 +62,7 @@ final class Trace implements \IteratorAggregate
         $pos = $this->rightMostFailurePosition;
         $expr = $this->rightMostFailure;
         $message = sprintf(
-            "ParseError: in rule `%s`, expression `%s`,\n%s",
+            "In rule `%s`, expression `%s`:\n%s\n",
             $expr->getName(),
             $expr,
             $this->source->getExcerpt($pos)
@@ -73,9 +73,16 @@ final class Trace implements \IteratorAggregate
 
     public function createIncompleteParseError(int $position): IncompleteParseError
     {
+        $pos = $this->rightMostFailurePosition;
+        $expr = $this->rightMostFailure;
         $message = sprintf(
-            "IncompleteParseError: Parsing succeeded without consuming all the input.\n%s",
-            $this->source->getExcerpt($position)
+            implode("\n", [
+                "Parsing succeeded without consuming all the input.",
+                "In rule `%s`, expression `%s`:"
+            ]),
+            $expr->getName(),
+            $expr,
+            $this->source->getExcerpt($pos)
         );
 
         return new IncompleteParseError($message);
