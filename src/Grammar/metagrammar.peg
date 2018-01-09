@@ -9,12 +9,14 @@ header              = header_directive*
 header_directive    = name_directive
                     | start_directive
                     | extends_directive
+                    | import_directive
                     | ws_directive
                     | ci_directive
 
 name_directive      = ~'%name' _ identifier
 start_directive     = ~'%start' _ identifier
 extends_directive   = ~'%extends' _ identifier
+import_directive    = ~'%import' _ identifier _ ~'from' _ literal
 ws_directive        = ~'%whitespace' _ ~'=' _ unattributed
 ci_directive        = ~'%case_insensitive' _
 
@@ -40,6 +42,7 @@ labeled         = /[a-zA-Z_]\w*/ ~':' labelable
 reference       = identifier !'='
 back_reference  = ~'$' identifier
 super_call      = ~`super` (~'::' identifier)?
+module_call    = identifier ~'::' identifier
 
 literal         = / (["']) ( (?:\\.|(?!\1).)* ) \1 / _
 word_literal    = ~'`' /[^`]+/ ~'`' _
@@ -99,6 +102,7 @@ atom            = eof
                 | regexp
                 | back_reference
                 | super_call
+                | module_call
                 | reference
 
 identifier      = /[a-zA-Z_]\w*/ _

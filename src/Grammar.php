@@ -43,6 +43,13 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
     protected $parent;
 
     /**
+     * Imported grammars
+     *
+     * @var array
+     */
+    protected $imports = [];
+
+    /**
      * The start rule of this grammar.
      *
      * @var string
@@ -97,10 +104,11 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      *
      * @param string $syntax
      * @param string $startRule Optional start rule name for the grammar.
-     * @param int    $optimizationLevel Optional optimization level.
+     * @param int $optimizationLevel Optional optimization level.
      *
      * @return Grammar
      * @throws Parser\Exception\IncompleteParseError
+     * @throws MissingStartRule
      */
     public static function fromSyntax(
         string $syntax,
@@ -167,6 +175,47 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
     public function getParent(): ?Grammar
     {
         return $this->parent;
+    }
+
+    /**
+     * Explicitly fetch a rule from the parent grammar.
+     *
+     * @param string $ruleName
+     *
+     * @return Expression
+     * @throws RuleNotFound
+     */
+    public function super(string $ruleName): Expression
+    {
+        return $this->parent->offsetGet($ruleName);
+    }
+
+    /**
+     * Imports rules from another grammar, with an optional prefix.
+     * Imported rules are accessible as `$grammar['prefix:ruleName']`.
+     * If no prefix is given, the imported grammar name is used.
+     *
+     * @param Grammar $other
+     * @param null|string $as
+     * @return $this
+     */
+    public function import(Grammar $other, ?string $as = null): self
+    {
+        $alias = $as ?: $other->getName();
+        if (!$alias) {
+            // TODO: throw ImportError ?
+        }
+        $this->imports[$alias] = $other;
+
+        return $this;
+    }
+
+    public function use(string $alias, string $ruleName)
+    {
+        if (!isset($this->imports[$alias])) {
+            // TODO: throw ImportError ?
+        }
+        return $this->imports[$alias]->offsetGet($ruleName);
     }
 
     /**
@@ -280,6 +329,20 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
     // --------------------------------------------------------------------------------------------------------------
 
     /**
+     * Returns a debug-enabled copy of this grammar.
+     *
+     * @return Grammar
+     * @throws Grammar\Exception\SelfReferencingRule
+     */
+    public function tracing(): Grammar
+    {
+        $clone = clone $this;
+        return (new GrammarTraverser(false))
+            ->addVisitor(new GrammarTracer())
+            ->traverse($clone);
+    }
+
+    /**
      * Returns a clone of this Grammar.
      *
      * If deep is false, returns a shallow clone.
@@ -321,30 +384,6 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
         }
 
         return $new;
-    }
-
-    /**
-     * Imports rules from another grammar, with an optional prefix.
-     * Imported rules are accessible as `$grammar['prefix:ruleName']`.
-     * If no prefix is given, the imported grammar name is used.
-     *
-     * @todo figure out how to handle inheritance chain when the imported grammar extends another one.
-     *
-     * @param Grammar $other
-     * @param null|string $as
-     * @return $this
-     * @throws Grammar\Exception\SelfReferencingRule
-     */
-    public function use(Grammar $other, ?string $as = null): self
-    {
-        $other = $other->copy(true);
-        $alias = $as ?: $other->getName();
-
-        foreach ($other as $name => $rule) {
-            $this->offsetSet("{$alias}:$name", $rule);
-        }
-
-        return $this;
     }
 
     /**
@@ -409,33 +448,6 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
         }
 
         return $out;
-    }
-
-    /**
-     * Explicitly fetch a rule from the parent grammar.
-     *
-     * @param string $ruleName
-     *
-     * @return Expression
-     * @throws RuleNotFound
-     */
-    public function super(string $ruleName): Expression
-    {
-        return $this->parent->offsetGet($ruleName);
-    }
-
-    /**
-     * Returns a debug-enabled copy of this grammar.
-     *
-     * @return Grammar
-     * @throws Grammar\Exception\SelfReferencingRule
-     */
-    public function getTrace(): Grammar
-    {
-        $clone = clone $this;
-        return (new GrammarTraverser(false))
-            ->addVisitor(new GrammarTracer())
-            ->traverse($clone);
     }
 
     //
