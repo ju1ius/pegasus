@@ -14,7 +14,7 @@ use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Decorator;
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Parser\Parser;
-use ju1ius\Pegasus\Parser\Scope;
+
 
 /**
  * An expression wrapper like the {n, n+i} quantifier in regular expressions.

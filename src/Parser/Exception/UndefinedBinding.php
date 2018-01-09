@@ -10,7 +10,7 @@
 
 namespace ju1ius\Pegasus\Parser\Exception;
 
-use ju1ius\Pegasus\Parser\Scope;
+
 
 /**
  * @author ju1ius <ju1ius@laposte.net>

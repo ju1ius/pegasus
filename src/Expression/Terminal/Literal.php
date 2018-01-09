@@ -14,7 +14,7 @@ use ju1ius\Pegasus\Expression\Terminal;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Parser\Parser;
-use ju1ius\Pegasus\Parser\Scope;
+
 
 /**
  * A string literal

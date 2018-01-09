@@ -14,7 +14,7 @@ namespace ju1ius\Pegasus\Expression\Terminal;
 use ju1ius\Pegasus\Expression\Terminal;
 use ju1ius\Pegasus\Parser\Parser;
 use ju1ius\Pegasus\CST\Node;
-use ju1ius\Pegasus\Parser\Scope;
+
 
 /**
  * Matches if there's nothing left to consume (end of input).

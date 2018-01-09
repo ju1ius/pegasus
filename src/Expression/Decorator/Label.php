@@ -13,7 +13,7 @@ namespace ju1ius\Pegasus\Expression\Decorator;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Decorator;
 use ju1ius\Pegasus\Parser\Parser;
-use ju1ius\Pegasus\Parser\Scope;
+
 
 /**
  * Wraps an expression in order to give it an unique label.

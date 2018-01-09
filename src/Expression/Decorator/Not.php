@@ -12,7 +12,7 @@ namespace ju1ius\Pegasus\Expression\Decorator;
 
 use ju1ius\Pegasus\Expression\Decorator;
 use ju1ius\Pegasus\Parser\Parser;
-use ju1ius\Pegasus\Parser\Scope;
+
 
 /**
  * Decorates an expression, succeeds if it fails, fails if it succeeds,

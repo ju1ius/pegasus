@@ -8,7 +8,7 @@ use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Parser\Exception\UndefinedBinding;
 use ju1ius\Pegasus\Parser\Parser;
-use ju1ius\Pegasus\Parser\Scope;
+
 
 /**
  * @author ju1ius

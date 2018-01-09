@@ -12,7 +12,7 @@ namespace ju1ius\Pegasus\Expression;
 
 
 use ju1ius\Pegasus\Parser\Parser;
-use ju1ius\Pegasus\Parser\Scope;
+
 
 /**
  * Applies a rule inherited from a super-grammar.

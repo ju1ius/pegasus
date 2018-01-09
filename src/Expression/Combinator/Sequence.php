@@ -13,10 +13,8 @@ namespace ju1ius\Pegasus\Expression\Combinator;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Combinator;
 use ju1ius\Pegasus\Expression\Decorator\NodeAction;
-use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Parser\Parser;
-use ju1ius\Pegasus\Parser\Scope;
 
 /**
  * A series of expressions that must match contiguous, ordered pieces of the text.

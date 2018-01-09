@@ -111,7 +111,8 @@ class GrammarBuilder extends ExpressionBuilder
     public function super(string $identifier = '')
     {
         $identifier = $identifier ?: $this->currentRule;
+        parent::super($identifier);
 
-        return parent::super($identifier);
+        return $this;
     }
 }

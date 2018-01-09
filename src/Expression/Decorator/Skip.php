@@ -13,7 +13,7 @@ namespace ju1ius\Pegasus\Expression\Decorator;
 use ju1ius\Pegasus\Expression\Decorator;
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Parser\Parser;
-use ju1ius\Pegasus\Parser\Scope;
+
 
 /**
  * Expression that skips over what his sub-expression matches.

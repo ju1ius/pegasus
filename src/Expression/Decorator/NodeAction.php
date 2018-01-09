@@ -15,7 +15,7 @@ use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Combinator\OneOf;
 use ju1ius\Pegasus\Expression\Decorator;
 use ju1ius\Pegasus\Parser\Parser;
-use ju1ius\Pegasus\Parser\Scope;
+
 
 /**
  * A sequence that must have a name, used to create "inline" rules.

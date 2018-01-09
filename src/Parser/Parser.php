@@ -174,9 +174,8 @@ abstract class Parser
      * Called by Trace expressions before their child rule is evaluated
      *
      * @param Expression $expr
-     * @return mixed
      */
-    public function enterTrace(Expression $expr)
+    public function enterTrace(Expression $expr): void
     {
         $entry = $this->trace->push($expr);
         $entry->start = $this->pos;
@@ -187,9 +186,8 @@ abstract class Parser
      *
      * @param Expression $expr The expression being traced
      * @param Node|true|null $result The result of evaluating the traced expression
-     * @return mixed
      */
-    public function leaveTrace(Expression $expr, $result)
+    public function leaveTrace(Expression $expr, $result): void
     {
         if (!$result) {
             $this->trace->recordFailure($expr, $this->pos);
