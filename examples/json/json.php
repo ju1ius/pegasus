@@ -83,6 +83,7 @@ $stopwatch->openSection();
 $stopwatch->start('parse_syntax');
 $grammar = Grammar::fromSyntax($syntax, null, 2);
 $stopwatch->stop('parse_syntax');
+//\ju1ius\Pegasus\Debug\Debug::dump($grammar);
 
 //$parser = new Packrat($grammar);
 $parser = new \ju1ius\Pegasus\Parser\RecursiveDescent($grammar);

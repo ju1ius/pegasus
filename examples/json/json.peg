@@ -18,8 +18,8 @@ value       = object
 string      = ~'"' /(?:\\.|[^"])*/ ~'"' _
 number      = @(int frac? expo?) _
 
-%inline int         = /-?(?:[1-9]\d*|0(?!\d))/
-%inline frac        = /\.\d+/
-%inline expo        = /[eE][+-]?\d+/
+int         = /-?(?:[1-9]\d*|0(?!\d))/
+frac        = /\.\d+/
+expo        = /[eE][+-]?\d+/
 
-%inline _           = ~/\s*/
+%inline _   = ~/\s*/
