@@ -1,4 +1,4 @@
-%name JSONParser
+%name JSON
 
 json        = _ (object | array) EOF
 object      = ~'{' _ members? ~'}' _
