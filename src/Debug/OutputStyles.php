@@ -49,6 +49,10 @@ final class OutputStyles
                 'id' => new OutputFormatterStyle('cyan'),
                 // class
                 'class' => new OutputFormatterStyle('red', null, ['bold']),
+                // Failure
+                'failure' => new OutputFormatterStyle('red', null, ['bold']),
+                // Success
+                'success' => new OutputFormatterStyle('green', null, ['bold']),
             ];
         }
 

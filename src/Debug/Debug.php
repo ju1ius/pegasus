@@ -13,10 +13,13 @@ namespace ju1ius\Pegasus\Debug;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\CST\Node;
+use ju1ius\Pegasus\Trace\Trace;
 use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\VarDumper\VarDumper;
+
 
 /**
  * @author ju1ius <ju1ius@laposte.net>
@@ -42,8 +45,10 @@ final class Debug
             ExpressionDumper::dump($value, $output);
         } elseif ($value instanceof Node) {
             CSTDumper::dump($value, $output);
+        } elseif ($value instanceof Trace) {
+            TraceDumper::dump($value, $output);
         } else {
-            dump($value);
+            VarDumper::dump($value);
         }
     }
 

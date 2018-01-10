@@ -41,6 +41,11 @@ final class Trace implements \IteratorAggregate
         $this->stack = new \SplStack();
     }
 
+    public function getSource(): SourceInfo
+    {
+        return $this->source;
+    }
+
     public function recordFailure(Expression $expr, int $position): void
     {
         if ($position > $this->rightMostFailurePosition) {
@@ -122,6 +127,11 @@ final class Trace implements \IteratorAggregate
         return $candidates;
     }
 
+    public function isErrorCandidate(TraceEntry $entry): bool
+    {
+        return $entry->isErrorCandidate($this->rightMostFailurePosition);
+    }
+
     private function getExpectedTerminalsMessage()
     {
         $candidates = $this->getErrorCandidates();
@@ -131,7 +141,8 @@ final class Trace implements \IteratorAggregate
         }
 
         return sprintf(
-            'Expected one of: %s',
+            'Expected %s%s',
+            count($expected) > 1 ? 'one of:' : '',
             implode(', ', $expected)
         );
     }

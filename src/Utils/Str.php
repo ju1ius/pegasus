@@ -17,21 +17,19 @@ final class Str
 {
     /**
      * @param object|string $value
+     * @param int $namespaces
      *
      * @return string
      */
-    public static function className($value): string
+    public static function className($value, int $namespaces = 0): string
     {
         if (is_object($value)) {
             $value = get_class($value);
         }
-        $p = strrpos($value, '\\');
+        $components = explode('\\', $value);
+        $components = array_slice($components, -($namespaces + 1));
 
-        if ($p === false) {
-            return $value;
-        }
-
-        return substr($value, $p + 1);
+        return implode('\\', $components);
     }
 
     /**
