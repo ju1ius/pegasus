@@ -18,9 +18,10 @@ final class Cut extends Decorator
 {
     public function match(string $text, Parser $parser)
     {
+        $pos = $parser->pos;
         $result = $this->children[0]->match($text, $parser);
         if ($result) {
-            $parser->cut();
+            $parser->cut($pos);
         }
 
         return $result;

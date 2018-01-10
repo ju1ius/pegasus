@@ -205,10 +205,9 @@ abstract class Parser
         return $this->trace;
     }
 
-    public function cut()
+    public function cut(int $position)
     {
         $this->cutStack->pop();
         $this->cutStack->push(true);
-        // TODO: clear memo table
     }
 }

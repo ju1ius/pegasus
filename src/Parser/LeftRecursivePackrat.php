@@ -178,4 +178,20 @@ class LeftRecursivePackrat extends Packrat
 
         return $memo;
     }
+
+    public function cut(int $position)
+    {
+        $this->cutStack->pop();
+        $this->cutStack->push(true);
+        // we're growing a seed parse, don't clear anything !
+        if ($this->isGrowingSeedParse) return;
+        // clear memo entries for previous positions
+        foreach ($this->memo as $capturing => $positions) {
+            foreach ($positions as $pos => $id) {
+                if ($pos < $position) {
+                    unset($this->memo[$capturing][$pos]);
+                }
+            }
+        }
+    }
 }

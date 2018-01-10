@@ -30,7 +30,10 @@ class Packrat extends RecursiveDescent
 
     protected function beforeParse(): void
     {
-        $this->memo = [];
+        $this->memo = [
+            false => [],
+            true => [],
+        ];
         gc_disable();
     }
 
@@ -78,5 +81,18 @@ class Packrat extends RecursiveDescent
         $memo->end = $this->pos;
 
         return $result;
+    }
+
+    public function cut(int $position)
+    {
+        parent::cut($position);
+        // clear memo entries for previous positions
+        foreach ($this->memo as $capturing => $positions) {
+            foreach ($positions as $pos => $id) {
+                if ($pos < $this->pos) {
+                    unset($this->memo[$capturing][$pos]);
+                }
+            }
+        }
     }
 }
