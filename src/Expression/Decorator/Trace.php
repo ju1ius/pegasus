@@ -8,7 +8,7 @@ use ju1ius\Pegasus\Expression\Decorator;
 use ju1ius\Pegasus\Parser\Parser;
 
 
-class Trace extends Decorator
+final class Trace extends Decorator
 {
     public function match(string $text, Parser $parser)
     {

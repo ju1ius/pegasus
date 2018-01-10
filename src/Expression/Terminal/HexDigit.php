@@ -13,7 +13,7 @@ namespace ju1ius\Pegasus\Expression\Terminal;
 /**
  * @author ju1ius <ju1ius@laposte.net>
  */
-class HexDigit extends Match
+final class HexDigit extends Match
 {
     public function __construct(string $name = '')
     {

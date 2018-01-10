@@ -19,7 +19,7 @@ use ju1ius\Pegasus\Expression;
  * it goes ahead and consumes what it consumes.
  * Otherwise, it consumes nothing.
  */
-class Optional extends Quantifier
+final class Optional extends Quantifier
 {
     public function __construct(?Expression $child = null, ?string $name = '')
     {

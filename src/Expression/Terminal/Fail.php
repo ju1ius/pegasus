@@ -21,7 +21,7 @@ use ju1ius\Pegasus\Parser\Parser;
  *
  * This can be used to signal malformed input.
  */
-class Fail extends Terminal
+final class Fail extends Terminal
 {
     public function __toString(): string
     {

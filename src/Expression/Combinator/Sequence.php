@@ -21,7 +21,7 @@ use ju1ius\Pegasus\Parser\Parser;
  *
  * In other words, it's a concatenation operator: each piece has to match, one after another.
  */
-class Sequence extends Combinator
+final class Sequence extends Combinator
 {
     /**
      * @return int

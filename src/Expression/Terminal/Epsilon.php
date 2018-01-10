@@ -20,7 +20,7 @@ use ju1ius\Pegasus\Parser\Parser;
  *
  * Always matches without consuming any input.
  */
-class Epsilon extends Terminal
+final class Epsilon extends Terminal
 {
     public function __toString(): string
     {

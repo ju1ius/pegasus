@@ -20,7 +20,7 @@ use ju1ius\Pegasus\Parser\Parser;
  *
  * @author ju1ius <ju1ius@laposte.net>
  */
-class Assert extends Decorator
+final class Assert extends Decorator
 {
     public function __toString(): string
     {

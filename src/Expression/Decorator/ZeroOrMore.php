@@ -16,7 +16,7 @@ use ju1ius\Pegasus\Expression;
  * An expression wrapper like the * quantifier in regexes.
  *
  */
-class ZeroOrMore extends Quantifier
+final class ZeroOrMore extends Quantifier
 {
     public function __construct(?Expression $child = null, string $name = '')
     {

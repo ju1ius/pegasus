@@ -20,7 +20,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * @author ju1ius <ju1ius@laposte.net>
  */
-class GrammarHighlighter extends GrammarVisitor
+final class GrammarHighlighter extends GrammarVisitor
 {
     /**
      * @var OutputInterface

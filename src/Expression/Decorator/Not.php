@@ -20,7 +20,7 @@ use ju1ius\Pegasus\Parser\Parser;
  *
  * @author ju1ius <ju1ius@laposte.net>
  */
-class Not extends Decorator
+final class Not extends Decorator
 {
     public function __toString(): string
     {

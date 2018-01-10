@@ -13,7 +13,7 @@ namespace ju1ius\Pegasus\Expression\Terminal;
 /**
  * @author ju1ius <ju1ius@laposte.net>
  */
-class Any extends Match
+final class Any extends Match
 {
     /**
      * @inheritDoc

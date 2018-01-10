@@ -19,7 +19,7 @@ use ju1ius\Pegasus\CST\Node;
 /**
  * Matches if there's nothing left to consume (end of input).
  */
-class EOF extends Terminal
+final class EOF extends Terminal
 {
     public function __construct()
     {

@@ -19,7 +19,7 @@ use ju1ius\Pegasus\CST\Node;
  * The `head` field, for a left-recursive invocation, holds information pertinent to the left recursion
  * (`head` is set to NULL for non-left-recursive invocations).
  */
-class LeftRecursion
+final class LeftRecursion
 {
     /**
      * The expression we're currently matching.

@@ -10,7 +10,7 @@ use ju1ius\Pegasus\Expression\Decorator\Not;
 use ju1ius\Pegasus\Expression\Terminal;
 
 
-class TraceEntry implements \IteratorAggregate
+final class TraceEntry implements \IteratorAggregate
 {
     /**
      * @var TraceEntry

@@ -41,7 +41,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * @author ju1ius <ju1ius@laposte.net>
  */
-class ExpressionHighlighter extends ExpressionVisitor
+final class ExpressionHighlighter extends ExpressionVisitor
 {
     /**
      * @var string

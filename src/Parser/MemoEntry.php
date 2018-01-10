@@ -12,7 +12,7 @@ namespace ju1ius\Pegasus\Parser;
 
 use ju1ius\Pegasus\CST\Node;
 
-class MemoEntry
+final class MemoEntry
 {
     /**
      * @var LeftRecursion|Node|null

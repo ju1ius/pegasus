@@ -20,7 +20,7 @@ use ju1ius\Pegasus\Parser\Parser;
  *
  * It can dramatically reduce the size of the parse tree.
  */
-class Skip extends Decorator
+final class Skip extends Decorator
 {
     public function __toString(): string
     {

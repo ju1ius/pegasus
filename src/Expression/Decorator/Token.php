@@ -10,7 +10,7 @@ use ju1ius\Pegasus\Parser\Parser;
 /**
  * @author ju1ius
  */
-class Token extends Decorator
+final class Token extends Decorator
 {
     /**
      * @inheritDoc

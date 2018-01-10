@@ -22,7 +22,7 @@ use ju1ius\Pegasus\Expression;
  * - `eval`, which holds the subset of the involved rules
  *   that may still be evaluated during the current growth cycle.
  */
-class Head
+final class Head
 {
     /**
      * The head rule of the left recursion.

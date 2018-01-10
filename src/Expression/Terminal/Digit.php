@@ -13,7 +13,7 @@ namespace ju1ius\Pegasus\Expression\Terminal;
 /**
  * @author ju1ius <ju1ius@laposte.net>
  */
-class Digit extends Match
+final class Digit extends Match
 {
     /**
      * @inheritDoc

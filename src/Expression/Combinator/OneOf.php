@@ -21,7 +21,7 @@ use ju1ius\Pegasus\Parser\Parser;
  * Expressions are tested in order from first to last.
  * The first to succeed wins.
  */
-class OneOf extends Combinator
+final class OneOf extends Combinator
 {
     public function isCapturingDecidable(): bool
     {
