@@ -11,30 +11,32 @@
 namespace ju1ius\Pegasus\Debug;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Decorator\Assert;
 use ju1ius\Pegasus\Expression\Combinator;
+use ju1ius\Pegasus\Expression\Combinator\OneOf;
+use ju1ius\Pegasus\Expression\Combinator\Sequence;
 use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\Decorator;
-use ju1ius\Pegasus\Expression\Terminal\GroupMatch;
+use ju1ius\Pegasus\Expression\Decorator\Assert;
+use ju1ius\Pegasus\Expression\Decorator\Cut;
 use ju1ius\Pegasus\Expression\Decorator\Label;
-use ju1ius\Pegasus\Expression\Terminal\Literal;
-use ju1ius\Pegasus\Expression\Terminal\Match;
-use ju1ius\Pegasus\Expression\Terminal\Word;
 use ju1ius\Pegasus\Expression\Decorator\NodeAction;
 use ju1ius\Pegasus\Expression\Decorator\Not;
-use ju1ius\Pegasus\Expression\Combinator\OneOf;
 use ju1ius\Pegasus\Expression\Decorator\Quantifier;
-use ju1ius\Pegasus\Expression\Reference;
-use ju1ius\Pegasus\Expression\Terminal\RegExp;
-use ju1ius\Pegasus\Expression\Combinator\Sequence;
 use ju1ius\Pegasus\Expression\Decorator\Skip;
-use ju1ius\Pegasus\Expression\Super;
-use ju1ius\Pegasus\Expression\Terminal;
 use ju1ius\Pegasus\Expression\Decorator\Token;
-use ju1ius\Pegasus\Grammar;
+use ju1ius\Pegasus\Expression\Decorator\Trace;
 use ju1ius\Pegasus\Expression\ExpressionTraverser;
 use ju1ius\Pegasus\Expression\ExpressionVisitor;
+use ju1ius\Pegasus\Expression\Reference;
+use ju1ius\Pegasus\Expression\Super;
+use ju1ius\Pegasus\Expression\Terminal;
+use ju1ius\Pegasus\Expression\Terminal\GroupMatch;
+use ju1ius\Pegasus\Expression\Terminal\Literal;
+use ju1ius\Pegasus\Expression\Terminal\Match;
+use ju1ius\Pegasus\Expression\Terminal\RegExp;
+use ju1ius\Pegasus\Expression\Terminal\Word;
 use Symfony\Component\Console\Output\OutputInterface;
+
 
 /**
  * @author ju1ius <ju1ius@laposte.net>
@@ -79,7 +81,11 @@ class ExpressionHighlighter extends ExpressionVisitor
     public function beforeTraverse(Expression $expr)
     {
         $this->combinatorStack = new \SplStack();
+        if ($expr instanceof Trace) $expr = $expr[0];
+
         $this->ruleName = $expr->getName();
+
+        return $expr;
     }
 
     /**
@@ -95,6 +101,9 @@ class ExpressionHighlighter extends ExpressionVisitor
                 $this->output->write(' ');
             }
         }
+
+        if ($expr instanceof Trace) return;
+
         if ($expr instanceof Reference) {
             $this->output->write(sprintf('<ref>%s</ref>', $expr->getIdentifier()));
         } elseif ($expr instanceof Super) {
@@ -150,6 +159,9 @@ class ExpressionHighlighter extends ExpressionVisitor
                 case Token::class:
                     $this->output->write('<sym>@</sym>');
                     break;
+                case Cut::class:
+                    $this->output->write('<sym>^</sym>');
+                    break;
             }
             if ($this->needsParenthesesAroundDecorator($expr)) {
                 $this->output->write('<d>(</d>');
@@ -167,6 +179,8 @@ class ExpressionHighlighter extends ExpressionVisitor
      */
     public function leaveExpression(Expression $expr, ?int $index = null, bool $isLast = false)
     {
+        if ($expr instanceof Trace) return;
+
         if ($expr instanceof Decorator) {
             if ($this->needsParenthesesAroundDecorator($expr)) {
                 $this->output->write('<d>)</d>');

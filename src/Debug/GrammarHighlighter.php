@@ -11,6 +11,7 @@
 namespace ju1ius\Pegasus\Debug;
 
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Expression\Decorator\Trace;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\GrammarTraverser;
 use ju1ius\Pegasus\Grammar\GrammarVisitor;
@@ -29,12 +30,12 @@ class GrammarHighlighter extends GrammarVisitor
     /**
      * @var ExpressionHighlighter
      */
-    private $highlighter;
+    private $expressionHighlighter;
 
     public function __construct(OutputInterface $output)
     {
         $this->output = $output;
-        $this->highlighter = new ExpressionHighlighter($output);
+        $this->expressionHighlighter = new ExpressionHighlighter($output);
     }
 
     /**
@@ -63,10 +64,14 @@ class GrammarHighlighter extends GrammarVisitor
             $grammar->getStartRule()
         ));
         $this->output->writeln('');
+
+        return null;
     }
 
     public function enterRule(Grammar $grammar, Expression $expr)
     {
+        if ($expr instanceof Trace) $expr = $expr[0];
+
         if ($grammar->isInlined($expr->getName())) {
             $this->output->write(sprintf('<directive>%%inline</directive> '));
         }
@@ -74,12 +79,12 @@ class GrammarHighlighter extends GrammarVisitor
             '<rule>%s</rule> <d>=</d> ',
             $expr->getName()
         ));
-        $this->highlighter->beforeTraverse($expr);
+        $this->expressionHighlighter->beforeTraverse($expr);
     }
 
     public function leaveRule(Grammar $grammar, Expression $expr)
     {
-        $this->highlighter->afterTraverse($expr);
+        $this->expressionHighlighter->afterTraverse($expr);
         $this->output->writeln(['', '']);
     }
 
@@ -88,7 +93,7 @@ class GrammarHighlighter extends GrammarVisitor
      */
     public function enterExpression(Expression $expr, ?int $index = null, bool $isLast = false)
     {
-        $this->highlighter->enterExpression($expr, $index, $isLast);
+        $this->expressionHighlighter->enterExpression($expr, $index, $isLast);
     }
 
     /**
@@ -96,6 +101,6 @@ class GrammarHighlighter extends GrammarVisitor
      */
     public function leaveExpression(Expression $expr, ?int $index = null, bool $isLast = false)
     {
-        $this->highlighter->leaveExpression($expr, $index, $isLast);
+        $this->expressionHighlighter->leaveExpression($expr, $index, $isLast);
     }
 }

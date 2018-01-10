@@ -11,6 +11,7 @@
 namespace ju1ius\Pegasus\Debug;
 
 use ju1ius\Pegasus\Expression\Composite;
+use ju1ius\Pegasus\Expression\Decorator\Trace;
 use ju1ius\Pegasus\Expression\ExpressionTraverser;
 use ju1ius\Pegasus\Grammar\GrammarTraverser;
 use ju1ius\Pegasus\Utils\Str;
