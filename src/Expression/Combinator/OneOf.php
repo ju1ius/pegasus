@@ -48,6 +48,7 @@ final class OneOf extends Combinator
         foreach ($this->children as $child) {
             $result = $child->match($text, $parser);
             if ($parser->cutStack->top()) {
+                //TODO: should we backtrack in case of failure ?
                 break;
             }
             if (!$result) {
