@@ -49,6 +49,11 @@ abstract class Parser
     public $bindings;
 
     /**
+     * @var \SplStack
+     */
+    public $cutStack;
+
+    /**
      * Flag that can be set by expressions to signal whether their children
      * should return parse nodes or just true on success.
      *
@@ -60,11 +65,6 @@ abstract class Parser
      * @var bool
      */
     public $isTracing = false;
-
-    /**
-     * @var ParseError
-     */
-    public $error;
 
     /**
      * @var Trace
@@ -122,6 +122,9 @@ abstract class Parser
         $this->bindings = [];
         $this->isCapturing = true;
         $this->trace = new Trace($text);
+
+        $this->cutStack = new \SplStack();
+        $this->cutStack->push(false);
 
         $this->beforeParse();
 
@@ -200,5 +203,12 @@ abstract class Parser
     public function getTrace()
     {
         return $this->trace;
+    }
+
+    public function cut()
+    {
+        $this->cutStack->pop();
+        $this->cutStack->push(true);
+        // TODO: clear memo table
     }
 }

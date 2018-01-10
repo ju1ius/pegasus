@@ -159,8 +159,7 @@ class ExpressionHighlighter extends ExpressionVisitor
                 case Token::class:
                     $this->output->write('<sym>@</sym>');
                     break;
-                case Cut::class:
-                    $this->output->write('<sym>^</sym>');
+                default:
                     break;
             }
             if ($this->needsParenthesesAroundDecorator($expr)) {
@@ -187,8 +186,9 @@ class ExpressionHighlighter extends ExpressionVisitor
             }
             if ($expr instanceof NodeAction) {
                 $this->output->write(sprintf(' <d><=</d> <id>%s</id>', $expr->getLabel()));
-            }
-            if ($expr instanceof Quantifier) {
+            } else if ($expr instanceof Cut) {
+                $this->output->write('<sym>^</sym>');
+            } else if ($expr instanceof Quantifier) {
                 if ($expr->isOneOrMore()) {
                     $symbol = '+';
                 } elseif ($expr->isZeroOrMore()) {

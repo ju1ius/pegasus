@@ -42,27 +42,42 @@ class OneOf extends Combinator
     {
         $start = $parser->pos;
         $capturing = $parser->isCapturing;
+        $result = null;
+        $parser->cutStack->push(false);
+
         foreach ($this->children as $child) {
-            if ($result = $child->match($text, $parser)) {
-                if (!$capturing || $result === true) {
-                    return true;
-                }
-                // [CST decimation] Try to skip one tree level if:
-                if (!$this->name) {
-                    // this expression is not a grammar rule, so we can safely
-                    return $result;
-                } elseif (!$result->name) {
-                    // this expression is a grammar rule but the matching child is not,
-                    // masquerade the node and return it
-                    $result->name = $this->name;
-
-                    return $result;
-                }
-
-                return new Node\Decorator($this->name, $start, $parser->pos, $result);
+            $result = $child->match($text, $parser);
+            if ($parser->cutStack->top()) {
+                break;
             }
-            $parser->pos = $start;
+            if (!$result) {
+                $parser->pos = $start;
+                continue;
+            }
+            break;
         }
+        $parser->cutStack->pop();
+
+        if (!$result) {
+            return null;
+        }
+
+        if (!$capturing || $result === true) {
+            return true;
+        }
+        // [CST decimation] Try to skip one tree level if:
+        if (!$this->name) {
+            // this expression is not a grammar rule, so we can safely
+            return $result;
+        } elseif (!$result->name) {
+            // this expression is a grammar rule but the matching child is not,
+            // masquerade the node and return it
+            $result->name = $this->name;
+
+            return $result;
+        }
+
+        return new Node\Decorator($this->name, $start, $parser->pos, $result);
     }
 
     /**

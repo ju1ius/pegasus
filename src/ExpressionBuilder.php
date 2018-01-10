@@ -15,6 +15,7 @@ use ju1ius\Pegasus\Expression\Combinator\Sequence;
 use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\Decorator;
 use ju1ius\Pegasus\Expression\Decorator\Assert;
+use ju1ius\Pegasus\Expression\Decorator\Cut;
 use ju1ius\Pegasus\Expression\Decorator\Label;
 use ju1ius\Pegasus\Expression\Decorator\NodeAction;
 use ju1ius\Pegasus\Expression\Decorator\Not;
@@ -488,5 +489,14 @@ class ExpressionBuilder
     public function named(string $name)
     {
         return $this->add(new NodeAction(null, $name));
+    }
+
+    //
+    // Special Expressions
+    // --------------------------------------------------------------------------------------------------------------
+
+    public function cut()
+    {
+        return $this->add(new Cut());
     }
 }
