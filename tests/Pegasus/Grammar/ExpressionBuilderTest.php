@@ -134,6 +134,30 @@ class ExpressionBuilderTest extends PegasusTestCase
         $this->assertSame($deco2[0], $term1);
     }
 
+    public function testNestingDecoratorsAndComposites()
+    {
+        $topSeq = $this->getMockForAbstractClass(Composite::class);
+        $innerSeq = $this->getMockForAbstractClass(Composite::class);
+        $deco = $this->getMockForAbstractClass(Decorator::class);
+        $term1 = $this->getMockForAbstractClass(Terminal::class);
+        $term2 = $this->getMockForAbstractClass(Terminal::class);
+
+        $result = Builder::create()->add($topSeq)
+            ->add($deco)
+                ->add($innerSeq)
+                    ->add($term1)
+                ->end()
+            ->add($term2)
+            ->getExpression();
+        $this->assertCount(2, $topSeq);
+        $this->assertSame($topSeq[0], $deco);
+        $this->assertSame($topSeq[1], $term2);
+        $this->assertCount(1, $deco);
+        $this->assertSame($deco[0], $innerSeq);
+        $this->assertCount(1, $innerSeq);
+        $this->assertSame($innerSeq[0], $term1);
+    }
+
     public function testItCanBuildExpressions()
     {
         foreach ($this->getItCanBuildExpressionsProvider() as $msg => list($input, $expected)) {
