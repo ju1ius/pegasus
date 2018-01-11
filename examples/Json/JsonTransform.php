@@ -37,7 +37,6 @@ class JsonTransform extends Transform
     protected function leave_number($node, $number)
     {
         // let PHP figure it out !
-        dump($number);
         return 0 + $number;
     }
 

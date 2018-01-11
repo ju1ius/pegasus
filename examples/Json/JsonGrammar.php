@@ -82,7 +82,7 @@ $grammar = $b->getGrammar();
 $grammar->inline('_');
 
 $grammar = Optimizer::optimize($grammar, Optimizer::LEVEL_2);
-Debug::dump($grammar);
+//Debug::dump($grammar);
 
 
 return $grammar;

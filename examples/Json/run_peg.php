@@ -11,9 +11,7 @@
 namespace ju1ius\Pegasus\Examples\Json;
 
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
-use ju1ius\Pegasus\Parser\Packrat;
-use ju1ius\Pegasus\Parser\RecursiveDescent;
+use ju1ius\Pegasus\Parser;
 use Symfony\Component\Stopwatch\Stopwatch;
 
 
@@ -33,9 +31,10 @@ $stopwatch->start('parse_syntax');
 $grammar = Grammar::fromSyntax($syntax, null, 2);
 $stopwatch->stop('parse_syntax');
 //\ju1ius\Pegasus\Debug\Debug::dump($grammar);
+//$grammar = $grammar->tracing();
 
-//$parser = new Packrat($grammar);
-$parser = new RecursiveDescent($grammar);
+$parser = new Parser\RecursiveDescent($grammar);
+//$parser = new Parser\Packrat($grammar);
 // ----- Runtime parser
 
 // ----- Generated parser

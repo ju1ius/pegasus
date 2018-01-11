@@ -19,11 +19,11 @@ $stopwatch->stop('load_grammar');
 // ----- Load data
 $stopwatch->start('load_data');
 $input = file_get_contents('/home/ju1ius/w3/embo/vhosts/lembobineuse.biz/composer.lock');
-//dump($input);
 $stopwatch->stop('load_data');
 
 // ----- Pegasus parse
 $parser = new Parser\RecursiveDescent($grammar);
+//$parser = new Parser\Packrat($grammar);
 
 $stopwatch->start('parse_json');
 $probe->enable();
