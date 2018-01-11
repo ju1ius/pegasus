@@ -10,8 +10,9 @@
 
 namespace ju1ius\Pegasus\Parser;
 
-use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\CST\Node;
+use ju1ius\Pegasus\Parser\Memoization\MemoTable;
+use ju1ius\Pegasus\Parser\Memoization\SlidingMemoTable;
+
 
 /**
  * A packrat parser implementing Wrath, Douglass & Millstein's algorithm
@@ -24,15 +25,16 @@ use ju1ius\Pegasus\CST\Node;
 class Packrat extends RecursiveDescent
 {
     /**
-     * @var array
+     * @var MemoTable[]
      */
     protected $memo = [];
 
     protected function beforeParse(): void
     {
+        // TODO: MemoizationStrategy
         $this->memo = [
-            false => [],
-            true => [],
+            false => new SlidingMemoTable($this->grammar),
+            true => new SlidingMemoTable($this->grammar),
         ];
         gc_disable();
     }
@@ -63,7 +65,7 @@ class Packrat extends RecursiveDescent
     {
         $expr = $super ? $this->grammar->super($rule) : $this->grammar[$rule];
         $pos = $this->pos;
-        $memo = $this->memo[$this->isCapturing][$pos][$expr->id] ?? null;
+        $memo = $this->memo[$this->isCapturing]->get($pos, $expr);
 
         if ($memo) {
             $this->pos = $memo->end;
@@ -72,8 +74,7 @@ class Packrat extends RecursiveDescent
 
         // Store a result of FAIL in the memo table before it evaluates the body of a rule.
         // This has the effect of making all left-recursive applications (both direct and indirect) fail.
-        $memo = new MemoEntry(null, $pos);
-        $this->memo[$this->isCapturing][$pos][$expr->id] = $memo;
+        $memo = $this->memo[$this->isCapturing]->set($pos, $expr, null);
         // evaluate expression
         $result = $this->evaluate($expr);
         // update the result in the memo table
@@ -87,12 +88,8 @@ class Packrat extends RecursiveDescent
     {
         parent::cut($position);
         // clear memo entries for previous positions
-        foreach ($this->memo as $capturing => $positions) {
-            foreach ($positions as $pos => $id) {
-                if ($pos < $this->pos) {
-                    unset($this->memo[$capturing][$pos]);
-                }
-            }
+        foreach ($this->memo as $capturing => $table) {
+            $table->clear($position);
         }
     }
 }

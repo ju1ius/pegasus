@@ -219,6 +219,14 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
     }
 
     /**
+     * @return Grammar[]
+     */
+    public function getImports(): array
+    {
+        return $this->imports;
+    }
+
+    /**
      * Get the grammar's name.
      *
      * @return string

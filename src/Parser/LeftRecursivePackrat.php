@@ -12,6 +12,8 @@ namespace ju1ius\Pegasus\Parser;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\CST\Node;
+use ju1ius\Pegasus\Parser\Memoization\MemoEntry;
+
 
 /**
  * A packrat parser implementing Wrath, Douglass & Millstein's algorithm
@@ -62,8 +64,7 @@ class LeftRecursivePackrat extends Packrat
             $lr = new LeftRecursion($expr);
             $this->lrStack->push($lr);
             // Memoize $lr
-            $memo = new MemoEntry($lr, $pos);
-            $this->memo[$this->isCapturing][$pos][$expr->id] = $memo;
+            $memo = $this->memo[$this->isCapturing]->set($pos, $expr, $lr);
             // evaluate expression
             $result = $this->evaluate($expr);
             // Pop $lr off the invocation stack
@@ -159,13 +160,13 @@ class LeftRecursivePackrat extends Packrat
     protected function recall(Expression $expr): ?MemoEntry
     {
         $pos = $this->pos;
-        $memo = $this->memo[$this->isCapturing][$pos][$expr->id] ?? null;
+        $memo = $this->memo[$this->isCapturing]->get($pos, $expr);
         $head = $this->heads[$pos] ?? null;
         // If not growing a seed parse, just return what is stored in the memo table.
         if (!$head) return $memo;
         // Do not evaluate any rule that is not involved in this left recursion.
         if (!$memo && !$head->involves($expr)) {
-            return new MemoEntry(null, $pos);
+            return new MemoEntry($pos, null);
         }
         // Allow involved rules to be evaluated, but only once, during a seed-growing iteration.
         if (isset($head->eval[$expr->id])) {
@@ -186,12 +187,8 @@ class LeftRecursivePackrat extends Packrat
         // we're growing a seed parse, don't clear anything !
         if ($this->isGrowingSeedParse) return;
         // clear memo entries for previous positions
-        foreach ($this->memo as $capturing => $positions) {
-            foreach ($positions as $pos => $id) {
-                if ($pos < $position) {
-                    unset($this->memo[$capturing][$pos]);
-                }
-            }
+        foreach ($this->memo as $capturing => $table) {
+            $table->clear($position);
         }
     }
 }

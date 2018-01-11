@@ -57,7 +57,7 @@ final class Trace implements \IteratorAggregate
     public function createParseError(): ParseError
     {
         $message = sprintf(
-            "%s\n%s",
+            "%s\n%s\n",
             $this->getExpectedTerminalsMessage(),
             $this->source->getExcerpt($this->rightMostFailurePosition)
         );
@@ -68,7 +68,7 @@ final class Trace implements \IteratorAggregate
     public function createIncompleteParseError(int $position): IncompleteParseError
     {
         $message = sprintf(
-            "%s\n%s",
+            "%s\n%s\n",
             $this->getExpectedTerminalsMessage(),
             $this->source->getExcerpt($this->rightMostFailurePosition)
         );

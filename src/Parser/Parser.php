@@ -132,11 +132,11 @@ abstract class Parser
         $result = $this->apply($startRule);
         gc_enable();
 
+        $this->afterParse($result);
+
         if (!$result) {
             throw $this->trace->createParseError();
         }
-
-        $this->afterParse($result);
 
         return $result;
     }

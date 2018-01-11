@@ -8,9 +8,11 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Parser;
+namespace ju1ius\Pegasus\Parser\Memoization;
 
 use ju1ius\Pegasus\CST\Node;
+use ju1ius\Pegasus\Parser\LeftRecursion;
+
 
 final class MemoEntry
 {
@@ -24,9 +26,14 @@ final class MemoEntry
      */
     public $end;
 
-    public function __construct($result, $endPosition)
+    /**
+     * @var int
+     */
+    public $key = NAN;
+
+    public function __construct(int $position, $result)
     {
         $this->result = $result;
-        $this->end = $endPosition;
+        $this->end = $position;
     }
 }
