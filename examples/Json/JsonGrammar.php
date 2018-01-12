@@ -16,36 +16,36 @@ $b->rule('json')->seq()
     ->eof()
 ;
 $b->rule('object')->seq()
-    ->cut()->skip()->seq()
+    ->cut()->ignore()->seq()
         ->literal('{')
         ->ref('_')
     ->end()
     ->optional()->ref('members')
-    ->skip()->literal('}')->ref('_')
+    ->ignore()->literal('}')->ref('_')
 ;
 $b->rule('members')->seq()
     ->ref('pair')
     ->zeroOrMore()->seq()
-        ->skip()->literal(',')->ref('_')
+        ->ignore()->literal(',')->ref('_')
         ->ref('pair')
 ;
 $b->rule('pair')->seq()
     ->ref('string')
-    ->skip()->literal(':')->ref('_')
+    ->ignore()->literal(':')->ref('_')
     ->ref('value')
 ;
 $b->rule('array')->seq()
-    ->cut()->skip()->seq()
+    ->cut()->ignore()->seq()
         ->literal('[')
         ->ref('_')
     ->end()
     ->optional()->ref('elements')
-    ->skip()->literal(']')->ref('_')
+    ->ignore()->literal(']')->ref('_')
 ;
 $b->rule('elements')->seq()
     ->ref('value')
     ->zeroOrMore()->seq()
-        ->skip()->literal(',')->ref('_')
+        ->ignore()->literal(',')->ref('_')
         ->ref('value')
 ;
 $b->rule('value')->oneOf()
@@ -59,9 +59,9 @@ $b->rule('value')->oneOf()
 ;
 
 $b->rule('string')->seq()
-    ->skip()->literal('"')
+    ->ignore()->literal('"')
     ->match('(?:\\.|[^"])*')
-    ->skip()->literal('"')
+    ->ignore()->literal('"')
     ->ref('_');
 $b->rule('number')->seq()
     ->token()
@@ -76,7 +76,7 @@ $b->rule('number')->seq()
 $b->rule('int')->match('-?(?:[1-9]\d*|0(?!\d))');
 $b->rule('frac')->match('\.\d+');
 $b->rule('expo')->match('[eE][+-]?\d+');
-$b->rule('_')->skip()->match('\s*');
+$b->rule('_')->ignore()->match('\s*');
 
 $grammar = $b->getGrammar();
 $grammar->inline('_');

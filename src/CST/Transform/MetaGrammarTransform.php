@@ -23,7 +23,7 @@ use ju1ius\Pegasus\Expression\Decorator\Not;
 use ju1ius\Pegasus\Expression\Decorator\OneOrMore;
 use ju1ius\Pegasus\Expression\Decorator\Optional;
 use ju1ius\Pegasus\Expression\Decorator\Quantifier;
-use ju1ius\Pegasus\Expression\Decorator\Skip;
+use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Expression\Decorator\Token;
 use ju1ius\Pegasus\Expression\Decorator\ZeroOrMore;
 use ju1ius\Pegasus\Expression\Reference;
@@ -219,9 +219,9 @@ class MetaGrammarTransform extends Transform
         return new Not($prefixable);
     }
 
-    private function leave_skip(Node $node, Expression $prefixable): Skip
+    private function leave_ignore(Node $node, Expression $prefixable): Ignore
     {
-        return new Skip($prefixable);
+        return new Ignore($prefixable);
     }
 
     private function leave_token(Node $node, Expression $prefixable): Token

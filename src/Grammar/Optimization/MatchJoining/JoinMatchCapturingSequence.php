@@ -16,7 +16,7 @@ use ju1ius\Pegasus\Expression\Terminal\GroupMatch;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\Expression\Terminal\Match;
 use ju1ius\Pegasus\Expression\Combinator\Sequence;
-use ju1ius\Pegasus\Expression\Decorator\Skip;
+use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
@@ -49,7 +49,7 @@ final class JoinMatchCapturingSequence extends MatchJoiningOptimization
     {
         return parent::isEligibleChild($child)
             || ($child instanceof GroupMatch && $child->getCaptureCount() === 1)
-            || ($child instanceof Skip && parent::isEligibleChild($child[0]));
+            || ($child instanceof Ignore && parent::isEligibleChild($child[0]));
     }
 
     /**
@@ -78,7 +78,7 @@ final class JoinMatchCapturingSequence extends MatchJoiningOptimization
                 }
                 return sprintf('(?>%s)', $expr->getPattern());
             }
-            if ($expr instanceof Skip) {
+            if ($expr instanceof Ignore) {
                 if ($expr[0] instanceof Literal) {
                     return sprintf('(?>%s)', preg_quote($expr[0]->getLiteral(), '/'));
                 }
@@ -111,7 +111,7 @@ final class JoinMatchCapturingSequence extends MatchJoiningOptimization
     {
         $match = new Match($matchInfo['pattern']);
         if (!$matchInfo['group_count']) {
-            return new Skip($match);
+            return new Ignore($match);
         }
 
         return new GroupMatch($match, $matchInfo['group_count']);

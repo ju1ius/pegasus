@@ -45,14 +45,14 @@ class AnalysisTest extends PegasusTestCase
             'Top-level label' => [
                 GrammarBuilder::create()->rule('test')->sequence()
                     ->label('foo')->literal('foo')
-                    ->skip()->match('\s*')
+                    ->ignore()->match('\s*')
                     ->backReference('foo')
                     ->getGrammar(),
                 true
             ],
             'Skipped label' => [
                 GrammarBuilder::create()->rule('test')->sequence()
-                    ->skip()->label('foo')->literal('foo')
+                    ->ignore()->label('foo')->literal('foo')
                     ->backReference('foo')
                     ->getGrammar(),
                 true

@@ -14,7 +14,7 @@ use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Terminal\Match;
 use ju1ius\Pegasus\Expression\Reference;
 use ju1ius\Pegasus\Expression\Combinator\Sequence;
-use ju1ius\Pegasus\Expression\Decorator\Skip;
+use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinPredicateNestedMatch;
@@ -50,39 +50,39 @@ class JoinPredicateNestedMatchTest extends OptimizationTestCase
             'Sequence with a Skipped Match before an Assert of a Match' => [
                 GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
-                    ->skip()->match('b')
+                    ->ignore()->match('b')
                     ->assert()->match('c')
                     ->ref('d')
                     ->getGrammar(),
                 new Sequence([
                     new Reference('a'),
-                    new Skip(new Match('(?>b)(?=c)')),
+                    new Ignore(new Match('(?>b)(?=c)')),
                     new Reference('d'),
                 ], 'test')
             ],
             'Sequence with a Skipped Match before a Not of a Match' => [
                 GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
-                    ->skip()->match('b')
+                    ->ignore()->match('b')
                     ->not()->match('c')
                     ->ref('d')
                     ->getGrammar(),
                 new Sequence([
                     new Reference('a'),
-                    new Skip(new Match('(?>b)(?!c)')),
+                    new Ignore(new Match('(?>b)(?!c)')),
                     new Reference('d'),
                 ], 'test')
             ],
             'Sequence with a Skipped Match before EOF' => [
                 GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
-                    ->skip()->match('b')
+                    ->ignore()->match('b')
                     ->eof()
                     ->ref('d')
                     ->getGrammar(),
                 new Sequence([
                     new Reference('a'),
-                    new Skip(new Match('(?>b)\z')),
+                    new Ignore(new Match('(?>b)\z')),
                     new Reference('d'),
                 ], 'test')
             ],
@@ -90,12 +90,12 @@ class JoinPredicateNestedMatchTest extends OptimizationTestCase
                 GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
                     ->assert()->match('b')
-                    ->skip()->match('c')
+                    ->ignore()->match('c')
                     ->ref('d')
                     ->getGrammar(),
                 new Sequence([
                     new Reference('a'),
-                    new Skip(new Match('(?=b)(?>c)')),
+                    new Ignore(new Match('(?=b)(?>c)')),
                     new Reference('d'),
                 ], 'test')
             ],
@@ -103,12 +103,12 @@ class JoinPredicateNestedMatchTest extends OptimizationTestCase
                 GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
                     ->not()->match('b')
-                    ->skip()->match('c')
+                    ->ignore()->match('c')
                     ->ref('d')
                     ->getGrammar(),
                 new Sequence([
                     new Reference('a'),
-                    new Skip(new Match('(?!b)(?>c)')),
+                    new Ignore(new Match('(?!b)(?>c)')),
                     new Reference('d'),
                 ], 'test')
             ],
@@ -140,7 +140,7 @@ class JoinPredicateNestedMatchTest extends OptimizationTestCase
             'Sequence with a Skipped Match before an Assert of a Match' => [
                 GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
-                    ->skip()->match('b')
+                    ->ignore()->match('b')
                     ->assert()->match('c')
                     ->ref('d')
                     ->getGrammar(),
@@ -149,7 +149,7 @@ class JoinPredicateNestedMatchTest extends OptimizationTestCase
             'Sequence with a Skipped Match before a Not of a Match' => [
                 GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
-                    ->skip()->match('b')
+                    ->ignore()->match('b')
                     ->not()->match('c')
                     ->ref('d')
                     ->getGrammar(),
@@ -158,7 +158,7 @@ class JoinPredicateNestedMatchTest extends OptimizationTestCase
             'Sequence with a Skipped Match before EOF' => [
                 GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
-                    ->skip()->match('b')
+                    ->ignore()->match('b')
                     ->eof()
                     ->ref('d')
                     ->getGrammar(),
@@ -167,7 +167,7 @@ class JoinPredicateNestedMatchTest extends OptimizationTestCase
             'Sequence with a Skipped Match before an Assert of something else' => [
                 GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
-                    ->skip()->match('b')
+                    ->ignore()->match('b')
                     ->assert()->ref('c')
                     ->getGrammar(),
                 false
@@ -175,7 +175,7 @@ class JoinPredicateNestedMatchTest extends OptimizationTestCase
             'Sequence with a Skipped Match before a Not of something else' => [
                 GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
-                    ->skip()->match('b')
+                    ->ignore()->match('b')
                     ->not()->ref('c')
                     ->getGrammar(),
                 false
@@ -184,7 +184,7 @@ class JoinPredicateNestedMatchTest extends OptimizationTestCase
                 GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
                     ->assert()->match('b')
-                    ->skip()->match('c')
+                    ->ignore()->match('c')
                     ->ref('d')
                     ->getGrammar(),
                 true
@@ -193,7 +193,7 @@ class JoinPredicateNestedMatchTest extends OptimizationTestCase
                 GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
                     ->not()->match('b')
-                    ->skip()->match('c')
+                    ->ignore()->match('c')
                     ->ref('d')
                     ->getGrammar(),
                 true
@@ -202,7 +202,7 @@ class JoinPredicateNestedMatchTest extends OptimizationTestCase
                 GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
                     ->assert()->ref('b')
-                    ->skip()->match('c')
+                    ->ignore()->match('c')
                     ->getGrammar(),
                 false
             ],
@@ -210,16 +210,16 @@ class JoinPredicateNestedMatchTest extends OptimizationTestCase
                 GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
                     ->not()->ref('b')
-                    ->skip()->match('c')
+                    ->ignore()->match('c')
                     ->getGrammar(),
                 false
             ],
             'Sequence with non-adjacent predicate & match' => [
                 GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
-                    ->skip()->match('b')
+                    ->ignore()->match('b')
                     ->ref('c')
-                    ->skip()->match('d')
+                    ->ignore()->match('d')
                     ->getGrammar(),
                 false
             ],

@@ -11,7 +11,7 @@
 namespace ju1ius\Pegasus\Grammar\Optimization;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Decorator\Skip;
+use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Expression\Decorator\Token;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization;
@@ -31,7 +31,7 @@ class RemoveMeaninglessDecorator extends Optimization
     {
         return $context->isMatching() && (
             $expr instanceof Token
-            || $expr instanceof Skip
+            || $expr instanceof Ignore
         );
     }
 

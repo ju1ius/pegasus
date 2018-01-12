@@ -30,7 +30,7 @@ use ju1ius\Pegasus\Expression\Reference;
 use ju1ius\Pegasus\Expression\Reference as Ref;
 use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Expression\Combinator\Sequence as Seq;
-use ju1ius\Pegasus\Expression\Decorator\Skip;
+use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Expression\Terminal;
 use ju1ius\Pegasus\Expression\Decorator\Token;
 use ju1ius\Pegasus\ExpressionBuilder as Builder;
@@ -278,8 +278,8 @@ class ExpressionBuilderTest extends PegasusTestCase
                 new Label(new Literal('foo'), 'a'),
             ],
             'Skip' => [
-                Builder::create()->skip()->literal('foo')->getExpression(),
-                new Skip(new Literal('foo')),
+                Builder::create()->ignore()->literal('foo')->getExpression(),
+                new Ignore(new Literal('foo')),
             ],
             'Token' => [
                 Builder::create()->token()->literal('foo')->getExpression(),

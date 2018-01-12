@@ -19,7 +19,7 @@ use ju1ius\Pegasus\Expression\Decorator\Not;
 use ju1ius\Pegasus\Expression\Decorator\OneOrMore;
 use ju1ius\Pegasus\Expression\Decorator\Optional;
 use ju1ius\Pegasus\Expression\Decorator\Quantifier;
-use ju1ius\Pegasus\Expression\Decorator\Skip;
+use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Expression\Decorator\Token;
 use ju1ius\Pegasus\Expression\Decorator\ZeroOrMore;
 use ju1ius\Pegasus\Expression\Reference;
@@ -234,7 +234,7 @@ class GrammarParserTest extends PegasusTestCase
             ],
             'Skip of a match' => [
                 'x = ~/x/',
-                Grammar::fromArray(['x' => new Skip(new Match('x'))])
+                Grammar::fromArray(['x' => new Ignore(new Match('x'))])
             ],
             'Token of a match' => [
                 'x = @/x/',

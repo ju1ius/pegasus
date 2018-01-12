@@ -48,7 +48,7 @@ class TokenTest extends ExpressionTestCase
             ],
             "Even if the child is non-capturing" => [
                 GrammarBuilder::create()->rule('test')->token()
-                    ->skip()->match('\w+')
+                    ->ignore()->match('\w+')
                     ->getGrammar(),
                 ['foo_bar'],
                 new Terminal('test', 0, 7, 'foo_bar')

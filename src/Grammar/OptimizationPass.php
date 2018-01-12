@@ -14,7 +14,7 @@ use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Decorator\Assert;
 use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\Decorator\Not;
-use ju1ius\Pegasus\Expression\Decorator\Skip;
+use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Expression\Decorator\Token;
 use ju1ius\Pegasus\Grammar;
 
@@ -198,7 +198,7 @@ class OptimizationPass
             case Assert::class:
             case Not::class:
             case Token::class:
-            case Skip::class:
+            case Ignore::class:
                 return $context->matching();
             default:
                 return $context;

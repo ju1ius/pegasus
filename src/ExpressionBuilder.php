@@ -22,7 +22,7 @@ use ju1ius\Pegasus\Expression\Decorator\Not;
 use ju1ius\Pegasus\Expression\Decorator\OneOrMore;
 use ju1ius\Pegasus\Expression\Decorator\Optional;
 use ju1ius\Pegasus\Expression\Decorator\Quantifier;
-use ju1ius\Pegasus\Expression\Decorator\Skip;
+use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Expression\Decorator\Token;
 use ju1ius\Pegasus\Expression\Decorator\ZeroOrMore;
 use ju1ius\Pegasus\Expression\Reference;
@@ -458,9 +458,9 @@ class ExpressionBuilder
     /**
      * @return $this
      */
-    public function skip()
+    public function ignore()
     {
-        return $this->add(new Skip());
+        return $this->add(new Ignore());
     }
 
     /**

@@ -47,7 +47,7 @@ class SequenceTest extends ExpressionTestCase
             'With non-capturing expressions' => [
                 GrammarBuilder::create()->rule('seq')->seq()
                     ->literal('foo')
-                    ->skip()->literal('bar')
+                    ->ignore()->literal('bar')
                     ->literal('baz')
                     ->getGrammar(),
                 ['foobarbaz'],
@@ -59,7 +59,7 @@ class SequenceTest extends ExpressionTestCase
             'With only one capturing expression, lifts the result if it is not a grammar rule.' => [
                 GrammarBuilder::create()->rule('seq')->seq()
                     ->literal('foo')
-                    ->skip()->literal('bar')
+                    ->ignore()->literal('bar')
                     ->getGrammar(),
                 ['foobar'],
                 new Terminal('seq', 0, 3, 'foo')
@@ -68,7 +68,7 @@ class SequenceTest extends ExpressionTestCase
                 GrammarBuilder::create()
                     ->rule('seq')->seq()
                         ->ref('foo')
-                        ->skip()->literal('bar')
+                        ->ignore()->literal('bar')
                     ->rule('foo')->literal('foo')
                     ->getGrammar(),
                 ['foobar'],
@@ -76,8 +76,8 @@ class SequenceTest extends ExpressionTestCase
             ],
             'With no capturing expression, returns true' => [
                 GrammarBuilder::create()->rule('seq')->seq()
-                    ->skip()->literal('foo')
-                    ->skip()->literal('bar')
+                    ->ignore()->literal('foo')
+                    ->ignore()->literal('bar')
                     ->getGrammar(),
                 ['foobar'],
                 true
@@ -88,7 +88,7 @@ class SequenceTest extends ExpressionTestCase
                         ->literal('a')
                         ->ref('b')
                         ->literal('c')
-                    ->rule('b')->skip()->literal('b')
+                    ->rule('b')->ignore()->literal('b')
                     ->getGrammar(),
                 ['abc'],
                 new Composite('seq', 0, 3, [

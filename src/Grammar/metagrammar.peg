@@ -32,7 +32,7 @@ rule            = rule_directive* (identifier ~'=' _ <= RuleName) expression
 
 quantifier      = /(?> ([*+?]) | (?: \{ (\d+) (?:,(\d*))? \} ) )/ _
 token           = ~'@' prefixable
-skip            = ~'~' prefixable
+ignore          = ~'~' prefixable
 assert          = ~'&' prefixable
 not             = ~'!' prefixable
 labeled         = /[a-zA-Z_]\w*/ ~':' labelable
@@ -76,7 +76,7 @@ labelable       = prefixed
                 | prefixable
 
 prefixed        = token
-                | skip
+                | ignore
                 | assert
                 | not
 

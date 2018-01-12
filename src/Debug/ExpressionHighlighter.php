@@ -22,7 +22,7 @@ use ju1ius\Pegasus\Expression\Decorator\Label;
 use ju1ius\Pegasus\Expression\Decorator\NodeAction;
 use ju1ius\Pegasus\Expression\Decorator\Not;
 use ju1ius\Pegasus\Expression\Decorator\Quantifier;
-use ju1ius\Pegasus\Expression\Decorator\Skip;
+use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Expression\Decorator\Token;
 use ju1ius\Pegasus\Expression\Decorator\Trace;
 use ju1ius\Pegasus\Expression\ExpressionTraverser;
@@ -150,7 +150,7 @@ final class ExpressionHighlighter extends ExpressionVisitor
                 case Not::class:
                     $this->output->write('<sym>!</sym>');
                     break;
-                case Skip::class:
+                case Ignore::class:
                     $this->output->write('<sym>~</sym>');
                     break;
                 case Label::class:

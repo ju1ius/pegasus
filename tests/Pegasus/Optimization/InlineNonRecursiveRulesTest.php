@@ -16,7 +16,7 @@ use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\Expression\Terminal\Match;
 use ju1ius\Pegasus\Expression\Combinator\OneOf;
 use ju1ius\Pegasus\Expression\Combinator\Sequence;
-use ju1ius\Pegasus\Expression\Decorator\Skip;
+use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Expression\Decorator\ZeroOrMore;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarBuilder;
@@ -128,7 +128,7 @@ class InlineNonRecursiveRulesTest extends OptimizationTestCase
                         ->ref('junk')
                         ->literal('foo')
                         ->ref('junk')
-                    ->rule('junk')->skip()->zeroOrMore()->oneOf()
+                    ->rule('junk')->ignore()->zeroOrMore()->oneOf()
                         ->ref('whitespace')
                         ->ref('comment')
                     ->rule('whitespace')->match('\s+')
@@ -137,12 +137,12 @@ class InlineNonRecursiveRulesTest extends OptimizationTestCase
                     ->inline('comment', 'whitespace', 'junk'),
                 'test',
                 new Sequence([
-                    new Skip(new ZeroOrMore(new OneOf([
+                    new Ignore(new ZeroOrMore(new OneOf([
                         new Match('\s+'),
                         new Match('\#[^\n]*'),
                     ]))),
                     new Literal('foo'),
-                    new Skip(new ZeroOrMore(new OneOf([
+                    new Ignore(new ZeroOrMore(new OneOf([
                         new Match('\s+'),
                         new Match('\#[^\n]*'),
                     ])))

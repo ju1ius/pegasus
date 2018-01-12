@@ -12,7 +12,7 @@ namespace ju1ius\Pegasus\Grammar\Optimization\MatchJoining;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Terminal\Match;
-use ju1ius\Pegasus\Expression\Decorator\Skip;
+use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Utils\Iter;
 
 /**
@@ -22,15 +22,15 @@ abstract class PredicateNestedMatchJoiningOptimization extends PredicateMatchJoi
 {
     /**
      * @param Expression[] ...$pair
-     * @return Skip
+     * @return Ignore
      */
     protected function reduce(Expression ...$pair): Expression
     {
         $expr = Iter::find(function (Expression $expr) {
-            return $expr instanceof Skip;
+            return $expr instanceof Ignore;
         }, $pair);
 
-        /** @var Skip $expr */
+        /** @var Ignore $expr */
         return $expr->withChildren(parent::reduce(...$pair));
     }
 
@@ -41,7 +41,7 @@ abstract class PredicateNestedMatchJoiningOptimization extends PredicateMatchJoi
      */
     protected function preparePattern(Expression $child): string
     {
-        if ($child instanceof Skip) {
+        if ($child instanceof Ignore) {
             $child = $child[0];
         }
 
@@ -50,7 +50,7 @@ abstract class PredicateNestedMatchJoiningOptimization extends PredicateMatchJoi
 
     protected function isEligibleMatch(Expression $expr): bool
     {
-        return $expr instanceof Skip && $expr[0] instanceof Match;
+        return $expr instanceof Ignore && $expr[0] instanceof Match;
     }
 
     abstract protected function prepareBarePattern(Expression $child): string;

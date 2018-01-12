@@ -29,8 +29,8 @@ class OneOfTest extends ExpressionTestCase
         return [
             'Returns true with no capturing children' => [
                 GrammarBuilder::create()->rule('test')->oneOf()
-                    ->skip()->literal('foo')
-                    ->skip()->literal('bar')
+                    ->ignore()->literal('foo')
+                    ->ignore()->literal('bar')
                     ->getGrammar(),
                 ['bar'],
                 true

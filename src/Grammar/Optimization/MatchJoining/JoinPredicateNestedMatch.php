@@ -11,7 +11,7 @@
 namespace ju1ius\Pegasus\Grammar\Optimization\MatchJoining;
 
 /**
- * A predicate and an adjacent skipped match in a Sequence can be joined into a single skipped match.
+ * A predicate and an adjacent ignored match in a Sequence can be joined into a single ignored match.
  *
  * @author ju1ius <ju1ius@laposte.net>
  */

@@ -15,7 +15,7 @@ use ju1ius\Pegasus\Expression\Terminal\GroupMatch;
 use ju1ius\Pegasus\Expression\Terminal\Match;
 use ju1ius\Pegasus\Expression\Reference;
 use ju1ius\Pegasus\Expression\Combinator\Sequence;
-use ju1ius\Pegasus\Expression\Decorator\Skip;
+use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinMatchCapturingSequence;
@@ -44,32 +44,32 @@ class JoinMatchCapturingSequenceTest extends OptimizationTestCase
         return [
             'A ssequence of only skipping matches' => [
                 GrammarBuilder::create()->rule('test')->sequence()
-                    ->skip()->match('a')
-                    ->skip()->literal('b')
-                    ->skip()->match('c')
+                    ->ignore()->match('a')
+                    ->ignore()->literal('b')
+                    ->ignore()->match('c')
                 ->getGrammar(),
-                new Skip(new Match('(?>a)(?>b)(?>c)'), 'test')
+                new Ignore(new Match('(?>a)(?>b)(?>c)'), 'test')
             ],
             'A sequence of skipping matches before something else' => [
                 GrammarBuilder::create()->rule('test')->sequence()
-                    ->skip()->match('a')
-                    ->skip()->literal('b')
+                    ->ignore()->match('a')
+                    ->ignore()->literal('b')
                     ->ref('c')
                     ->getGrammar(),
                 new Sequence([
-                    new Skip(new Match('(?>a)(?>b)')),
+                    new Ignore(new Match('(?>a)(?>b)')),
                     new Reference('c'),
                 ], 'test')
             ],
             'A sequence of skipping matches after something else' => [
                 GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
-                    ->skip()->literal('b')
-                    ->skip()->match('c')
+                    ->ignore()->literal('b')
+                    ->ignore()->match('c')
                     ->getGrammar(),
                 new Sequence([
                     new Reference('a'),
-                    new Skip(new Match('(?>b)(?>c)')),
+                    new Ignore(new Match('(?>b)(?>c)')),
                 ], 'test')
             ],
             'A sequence of only matches' => [
@@ -124,7 +124,7 @@ class JoinMatchCapturingSequenceTest extends OptimizationTestCase
                 GrammarBuilder::create()->rule('test')->sequence()
                     ->match('a')
                     ->literal('b')
-                    ->skip()->ref('c')
+                    ->ignore()->ref('c')
                     ->getGrammar(),
                 true
             ],
@@ -138,7 +138,7 @@ class JoinMatchCapturingSequenceTest extends OptimizationTestCase
             ],
             'Sequence of matches after something non-capturing' => [
                 GrammarBuilder::create()->rule('test')->sequence()
-                    ->skip()->ref('a')
+                    ->ignore()->ref('a')
                     ->match('b')
                     ->literal('c')
                     ->getGrammar(),
@@ -154,8 +154,8 @@ class JoinMatchCapturingSequenceTest extends OptimizationTestCase
             ],
             'Sequence of skipping matches before something else' => [
                 GrammarBuilder::create()->rule('test')->sequence()
-                    ->skip()->match('a')
-                    ->skip()->match('b')
+                    ->ignore()->match('a')
+                    ->ignore()->match('b')
                     ->ref('c')
                     ->getGrammar(),
                 true
@@ -163,8 +163,8 @@ class JoinMatchCapturingSequenceTest extends OptimizationTestCase
             'Sequence of skipping matches after something else' => [
                 GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
-                    ->skip()->match('b')
-                    ->skip()->match('c')
+                    ->ignore()->match('b')
+                    ->ignore()->match('c')
                     ->getGrammar(),
                 true
             ],
@@ -173,7 +173,7 @@ class JoinMatchCapturingSequenceTest extends OptimizationTestCase
                     'test' => new Sequence([
                         new GroupMatch(new Match('a'), 1),
                         new GroupMatch(new Match('b'), 1),
-                        new Skip(new Reference('c')),
+                        new Ignore(new Reference('c')),
                     ], 'test')
                 ]),
                 true
@@ -191,7 +191,7 @@ class JoinMatchCapturingSequenceTest extends OptimizationTestCase
             'Sequence of single-group group matches after sthg non-capturing' => [
                 Grammar::fromArray([
                     'test' => new Sequence([
-                        new Skip(new Reference('a')),
+                        new Ignore(new Reference('a')),
                         new GroupMatch(new Match('b'), 1),
                         new GroupMatch(new Match('c'), 1),
                     ], 'test')
@@ -231,24 +231,24 @@ class JoinMatchCapturingSequenceTest extends OptimizationTestCase
             'Sequence with only one match' => [
                 GrammarBuilder::create()->rule('test')->sequence()
                     ->ref('a')
-                    ->skip()->match('b')
+                    ->ignore()->match('b')
                     ->ref('c')
                     ->getGrammar(),
                 false
             ],
             'Sequence of non-consecutive matches' => [
                 GrammarBuilder::create()->rule('test')->sequence()
-                    ->skip()->match('a')
+                    ->ignore()->match('a')
                     ->ref('b')
-                    ->skip()->match('c')
+                    ->ignore()->match('c')
                     ->getGrammar(),
                 false
             ],
             'A non-sequence' => [
                 GrammarBuilder::create()->rule('test')->oneOf()
-                    ->skip()->match('a')
-                    ->skip()->match('b')
-                    ->skip()->match('c')
+                    ->ignore()->match('a')
+                    ->ignore()->match('b')
+                    ->ignore()->match('c')
                     ->getGrammar(),
                 false
             ],

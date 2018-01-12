@@ -19,7 +19,7 @@ use ju1ius\Pegasus\Tests\ExpressionTestCase;
 /**
  * @author ju1ius <ju1ius@laposte.net>
  */
-class SkipTest extends ExpressionTestCase
+class IgnoreTest extends ExpressionTestCase
 {
     /**
      * @dataProvider getMatchProvider
@@ -42,22 +42,22 @@ class SkipTest extends ExpressionTestCase
     {
         return [
             'returns true' => [
-                GrammarBuilder::create()->rule('nope')->skip()->literal('nope')->getGrammar(),
+                GrammarBuilder::create()->rule('nope')->ignore()->literal('nope')->getGrammar(),
                 ['nope'],
                 true
             ],
             'skip parenthesis around (foo)' => [
                 GrammarBuilder::create()->rule('start')->seq()
-                    ->skip()->literal('(')
+                    ->ignore()->literal('(')
                     ->literal('foo')
-                    ->skip()->literal(')')
+                    ->ignore()->literal(')')
                     ->getGrammar(),
                 ['(foo)'],
                 new Terminal('start', 1, 4, 'foo')
             ],
             'skip choice result at sequence start' => [
                 GrammarBuilder::create()->rule('start')->seq()
-                    ->skip()->oneOf()
+                    ->ignore()->oneOf()
                         ->literal('€')
                         ->literal('$')
                         ->literal('£')
