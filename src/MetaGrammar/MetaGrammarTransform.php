@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\CST\Transform;
+namespace ju1ius\Pegasus\MetaGrammar;
 
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\CST\Transform;
@@ -42,7 +42,7 @@ use ju1ius\Pegasus\RegExp\PCREGroupInfo;
 
 class MetaGrammarTransform extends Transform
 {
-    static private $QUANTIFIER_CLASSES = [
+    private const QUANTIFIER_CLASSES = [
         '?' => Optional::class,
         '*' => ZeroOrMore::class,
         '+' => OneOrMore::class,
@@ -247,7 +247,7 @@ class MetaGrammarTransform extends Transform
     {
         $groups = $regexp->attributes['groups'];
         if (!empty($groups['symbol'])) {
-            $class = self::$QUANTIFIER_CLASSES[$groups['symbol']];
+            $class = self::QUANTIFIER_CLASSES[$groups['symbol']];
 
             return new $class();
         }

@@ -38,7 +38,7 @@ use ju1ius\Pegasus\MetaGrammar;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
 use ju1ius\Pegasus\Tests\PegasusTestCase;
-use ju1ius\Pegasus\CST\Transform\MetaGrammarTransform;
+use ju1ius\Pegasus\MetaGrammar\MetaGrammarTransform;
 
 /**
  * @author ju1ius <ju1ius@laposte.net>

@@ -61,7 +61,7 @@ final class MetaGrammar
     public static function getGrammar()
     {
         if (null === self::$grammar) {
-            self::$grammar = require __DIR__.'/Grammar/metagrammar.php';
+            self::$grammar = require __DIR__ . '/MetaGrammar/metagrammar.php';
         }
 
         return self::$grammar;
