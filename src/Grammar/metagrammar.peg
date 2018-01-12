@@ -35,14 +35,14 @@ token           = ~'@' prefixable
 ignore          = ~'~' prefixable
 assert          = ~'&' prefixable
 not             = ~'!' prefixable
-labeled         = /[a-zA-Z_]\w*/ ~':' labelable
+labeled         = IDENT ~':' labelable
 
 ##### Terminal expressions #####
 
 reference       = identifier !'='
 back_reference  = ~'$' identifier
 super_call      = ~`super` (~'::' identifier)?
-module_call    = identifier ~'::' identifier
+module_call     = IDENT ~'::' identifier
 
 literal         = / (["']) ( (?:\\.|(?!\1).)* ) \1 / _
 word_literal    = ~'`' /[^`]+/ ~'`' _
@@ -105,7 +105,11 @@ atom            = eof
                 | module_call
                 | reference
 
-identifier      = /[a-zA-Z_]\w*/ _
+identifier      = IDENT _
+
+##### Tokens #####
+
+%inline IDENT   = /[a-zA-Z_]\w*/
 
 ##### Whitespace & comments #####
 
