@@ -12,17 +12,22 @@ abstract class MemoTable
     /**
      * @var int
      */
-    protected $stored = 0;
+    protected $storages = 0;
 
     /**
      * @var int
      */
-    protected $used = 0;
+    protected $hits = 0;
 
     /**
      * @var int
      */
-    protected $invalidated = 0;
+    protected $misses = 0;
+
+    /**
+     * @var int
+     */
+    protected $invalidations = 0;
 
     abstract public function has(int $pos, Expression $expr): bool;
 
@@ -30,14 +35,15 @@ abstract class MemoTable
 
     abstract public function set(int $pos, Expression $expr, $result): MemoEntry;
 
-    abstract public function clear(?int $pos = null): void;
+    abstract public function cut(int $pos): void;
 
     public function stats(): array
     {
         return [
-            'stored' => $this->stored,
-            'used' => $this->used,
-            'invalidated' => $this->invalidated,
+            'stored' => $this->storages,
+            'hits' => $this->hits,
+            'misses' => $this->misses,
+            'invalidations' => $this->invalidations,
         ];
     }
 }

@@ -21,13 +21,17 @@ final class NullMemoTable extends MemoTable
 
     public function set(int $pos, Expression $expr, $result): MemoEntry
     {
-        $this->stored++;
+        $this->storages++;
 
         return new MemoEntry($pos, $result);
     }
 
-    public function clear(?int $pos = null): void
+    /**
+     * @codeCoverageIgnore
+     * @param int $pos
+     */
+    public function cut(int $pos): void
     {
-
+        // Nothing to cut...
     }
 }

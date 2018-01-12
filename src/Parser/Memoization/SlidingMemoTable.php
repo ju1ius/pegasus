@@ -52,69 +52,59 @@ final class SlidingMemoTable extends MemoTable
 
     public function has(int $pos, Expression $expr): bool
     {
-        //$key = $this->key($pos, $expr);
-        $key = (($pos << $this->shift) | $this->rules[$expr->id]) & \PHP_INT_MAX;
-        $hash = $key % $this->size;
+        //$hash = $this->hash($pos, $expr);
+        $hash = (($pos << $this->shift) | $this->rules[$expr->id]) & \PHP_INT_MAX;
+        $index = $hash % $this->size;
 
-        return isset($this->entries[$hash]) && $this->entries[$hash]->key === $key;
+        return isset($this->entries[$index]) && $this->entries[$index]->hash === $hash;
     }
 
     public function get(int $pos, Expression $expr): ?MemoEntry
     {
-        //$key = $this->key($pos, $expr);
-        $key = (($pos << $this->shift) | $this->rules[$expr->id]) & \PHP_INT_MAX;
-        $hash = $key % $this->size;
-        $memo = $this->entries[$hash] ?? null;
-        if ($memo && $memo->key === $key) {
-            $this->used++;
+        //$hash = $this->hash($pos, $expr);
+        $hash = (($pos << $this->shift) | $this->rules[$expr->id]) & \PHP_INT_MAX;
+        $index = $hash % $this->size;
+        $memo = $this->entries[$index] ?? null;
+
+        if ($memo && $memo->hash === $hash) {
+            $this->hits++;
             return $memo;
         }
+
+        $this->misses++;
 
         return null;
     }
 
     public function set(int $pos, Expression $expr, $result): MemoEntry
     {
-        //$key = $this->key($pos, $expr);
-        $key = (($pos << $this->shift) | $this->rules[$expr->id]) & \PHP_INT_MAX;
-        $hash = $key % $this->size;
-        $memo = $this->entries[$hash] ?? null;
+        //$hash = $this->hash($pos, $expr);
+        $hash = (($pos << $this->shift) | $this->rules[$expr->id]) & \PHP_INT_MAX;
+        $index = $hash % $this->size;
+        $memo = $this->entries[$index] ?? null;
 
         if ($memo) {
-            $memo->key = $key;
+            $memo->hash = $hash;
             $memo->end = $pos;
             $memo->result =  $result;
         } else {
             $memo = new MemoEntry($pos, $result);
-            $memo->key = $key;
-            $this->entries[$hash] = $memo;
+            $memo->hash = $hash;
+            $this->entries[$index] = $memo;
         }
-        $this->stored++;
+        $this->storages++;
 
         return $memo;
     }
 
-    public function clear(?int $pos = null): void
+    public function cut(int $pos): void
     {
-        if ($pos === null) {
-            $this->entries = [];
-            return;
-        }
-        foreach ($this->entries as $i => $memo) {
+        foreach ($this->entries as $index => $memo) {
             if ($memo && $memo->end < $pos) {
-                $this->invalidated++;
-                unset($this->entries[$i]);
+                $this->invalidations++;
+                unset($this->entries[$index]);
             }
         }
-    }
-
-    public function stats(): array
-    {
-        return [
-            'stored' => $this->stored,
-            'used' => $this->used,
-            'invalidated' => $this->invalidated,
-        ];
     }
 
     /**
@@ -122,7 +112,7 @@ final class SlidingMemoTable extends MemoTable
      *
      * @codeCoverageIgnore
      */
-    private function key(int $pos, Expression $expr)
+    private function hash(int $pos, Expression $expr)
     {
         return (($pos << $this->shift) | $this->rules[$expr->id]) & \PHP_INT_MAX;
     }

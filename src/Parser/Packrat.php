@@ -89,7 +89,7 @@ class Packrat extends RecursiveDescent
         parent::cut($position);
         // clear memo entries for previous positions
         foreach ($this->memo as $capturing => $table) {
-            $table->clear($position);
+            $table->cut($position);
         }
     }
 }

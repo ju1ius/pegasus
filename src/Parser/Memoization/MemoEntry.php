@@ -29,7 +29,7 @@ final class MemoEntry
     /**
      * @var int
      */
-    public $key = NAN;
+    public $hash = NAN;
 
     public function __construct(int $position, $result)
     {

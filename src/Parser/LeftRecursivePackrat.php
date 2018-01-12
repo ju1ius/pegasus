@@ -188,7 +188,7 @@ class LeftRecursivePackrat extends Packrat
         if ($this->isGrowingSeedParse) return;
         // clear memo entries for previous positions
         foreach ($this->memo as $capturing => $table) {
-            $table->clear($position);
+            $table->cut($position);
         }
     }
 }

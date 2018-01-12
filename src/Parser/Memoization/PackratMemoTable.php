@@ -20,8 +20,11 @@ final class PackratMemoTable extends MemoTable
     {
         $memo = $this->entries[$pos][$expr->id] ?? null;
         if ($memo) {
-            $this->used++;
+            $this->hits++;
+        } else {
+            $this->misses++;
         }
+
         return $memo;
     }
 
@@ -29,21 +32,17 @@ final class PackratMemoTable extends MemoTable
     {
         $memo = new MemoEntry($pos, $result);
         $this->entries[$pos][$expr->id] = $memo;
-        $this->stored++;
+        $this->storages++;
 
         return $memo;
     }
 
-    public function clear(?int $pos = null): void
+    public function cut(int $pos): void
     {
-        if ($pos === null) {
-            $this->entries = [];
-            return;
-        }
         foreach ($this->entries as $i => $ids) {
             if ($i < $pos) {
                 unset($this->entries[$i]);
-                $this->invalidated++;
+                $this->invalidations++;
             }
         }
     }
