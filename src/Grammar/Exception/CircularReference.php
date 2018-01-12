@@ -2,7 +2,7 @@
 
 namespace ju1ius\Pegasus\Grammar\Exception;
 
-use ju1ius\Pegasus\Expression\Reference;
+use ju1ius\Pegasus\Expression\Application\Reference;
 
 /**
  * @author ju1ius

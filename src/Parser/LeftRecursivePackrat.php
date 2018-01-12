@@ -54,9 +54,8 @@ class LeftRecursivePackrat extends Packrat
     /**
      * @inheritdoc
      */
-    public function apply(string $rule, bool $super = false)
+    public function apply(Expression $expr)
     {
-        $expr = $super ? $this->grammar->super($rule) : $this->grammar[$rule];
         $pos = $this->pos;
 
         if (!$memo = $this->recall($expr)) {
@@ -180,7 +179,7 @@ class LeftRecursivePackrat extends Packrat
         return $memo;
     }
 
-    public function cut(int $position)
+    public function cut(int $position): void
     {
         $this->cutStack->pop();
         $this->cutStack->push(true);

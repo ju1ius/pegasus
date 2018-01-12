@@ -30,20 +30,14 @@ final class MetaGrammar
      */
     private static $grammar = null;
 
-    /**
-     * Private constructor.
-     *
-     * You can't instanciate MetaGrammar.
-     * You just call MetaGrammar::create() and it returns an unique instance of Grammar.
-     */
     private function __construct() {}
 
     /**
-     * Factory method for MetaGrammar.
+     * Returns the unique instance of the (optimized) MetaGrammar.
      *
      * @return Grammar
      */
-    public static function create()
+    public static function create(): Grammar
     {
         if (null === self::$instance) {
             $grammar = self::getGrammar();
@@ -54,11 +48,13 @@ final class MetaGrammar
     }
 
     /**
-     * Returns the unique instance of the base grammar used to parse the MetaGrammar syntax.
+     * Returns the unique instance of the (unoptimized) MetaGrammar.
+     *
+     * Useful for debugging.
      *
      * @return Grammar
      */
-    public static function getGrammar()
+    public static function getGrammar(): Grammar
     {
         if (null === self::$grammar) {
             self::$grammar = require __DIR__ . '/MetaGrammar/metagrammar.php';

@@ -8,9 +8,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Tests\Expression;
+namespace ju1ius\Pegasus\Tests\Expression\Application;
 
-use ju1ius\Pegasus\Expression\Super;
+use ju1ius\Pegasus\Expression\Application\Super;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\CST\Node;

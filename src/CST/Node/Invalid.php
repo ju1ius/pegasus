@@ -17,8 +17,10 @@ use ju1ius\Pegasus\CST\Node;
  */
 class Invalid extends Node
 {
+    public $value;
+
     public function __construct($value)
     {
-        parent::__construct('', 0, 0, $value);
+        $this->value = $value;
     }
 }

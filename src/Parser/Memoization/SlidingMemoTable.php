@@ -128,7 +128,7 @@ final class SlidingMemoTable extends MemoTable
         if ($parent = $grammar->getParent()) {
             $n = $this->collectRules($parent, $n);
         }
-        foreach ($grammar->getImports() as $imported) {
+        foreach ($grammar->getTraits() as $imported) {
             $n = $this->collectRules($imported, $n);
         }
 

@@ -11,15 +11,16 @@
 namespace ju1ius\Pegasus\Parser;
 
 
+use ju1ius\Pegasus\Expression;
+
+
 class RecursiveDescent extends Parser
 {
     /**
      * @inheritdoc
      */
-    public function apply(string $rule, bool $super = false)
+    public function apply(Expression $expr)
     {
-        $expr = $super ? $this->grammar->super($rule) : $this->grammar[$rule];
-
         return $this->evaluate($expr);
     }
 }

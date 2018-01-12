@@ -10,6 +10,7 @@
 
 namespace ju1ius\Pegasus;
 
+use ju1ius\Pegasus\Expression\Application\Call;
 use ju1ius\Pegasus\Expression\Combinator\OneOf;
 use ju1ius\Pegasus\Expression\Combinator\Sequence;
 use ju1ius\Pegasus\Expression\Composite;
@@ -25,8 +26,8 @@ use ju1ius\Pegasus\Expression\Decorator\Quantifier;
 use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Expression\Decorator\Token;
 use ju1ius\Pegasus\Expression\Decorator\ZeroOrMore;
-use ju1ius\Pegasus\Expression\Reference;
-use ju1ius\Pegasus\Expression\Super;
+use ju1ius\Pegasus\Expression\Application\Reference;
+use ju1ius\Pegasus\Expression\Application\Super;
 use ju1ius\Pegasus\Expression\Terminal\BackReference;
 use ju1ius\Pegasus\Expression\Terminal\EOF;
 use ju1ius\Pegasus\Expression\Terminal\Epsilon;
@@ -262,6 +263,16 @@ class ExpressionBuilder
     public function super(string $identifier)
     {
         return $this->add(new Super($identifier));
+    }
+
+    /**
+     * @param string $namespace
+     * @param string $identifier
+     * @return $this
+     */
+    public function call(string $namespace, string $identifier)
+    {
+        return $this->add(new Call($namespace, $identifier));
     }
 
     /**

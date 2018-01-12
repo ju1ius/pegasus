@@ -28,12 +28,12 @@ final class Trace implements \IteratorAggregate
     /**
      * @var int
      */
-    private $rightMostFailurePosition = 0;
+    private $rightmostFailurePosition = 0;
 
     /**
      * @var Expression
      */
-    private $rightMostFailure;
+    private $rightmostFailure;
 
     public function __construct(string $text)
     {
@@ -48,9 +48,9 @@ final class Trace implements \IteratorAggregate
 
     public function recordFailure(Expression $expr, int $position): void
     {
-        if ($position > $this->rightMostFailurePosition) {
-            $this->rightMostFailurePosition = $position;
-            $this->rightMostFailure = $expr;
+        if ($position > $this->rightmostFailurePosition) {
+            $this->rightmostFailurePosition = $position;
+            $this->rightmostFailure = $expr;
         }
     }
 
@@ -59,7 +59,7 @@ final class Trace implements \IteratorAggregate
         $message = sprintf(
             "%s\n%s\n",
             $this->getExpectedTerminalsMessage(),
-            $this->source->getExcerpt($this->rightMostFailurePosition)
+            $this->source->getExcerpt($this->rightmostFailurePosition)
         );
 
         return new ParseError($message);
@@ -70,7 +70,7 @@ final class Trace implements \IteratorAggregate
         $message = sprintf(
             "%s\n%s\n",
             $this->getExpectedTerminalsMessage(),
-            $this->source->getExcerpt($this->rightMostFailurePosition)
+            $this->source->getExcerpt($this->rightmostFailurePosition)
         );
 
         return new IncompleteParseError($message);
@@ -119,7 +119,7 @@ final class Trace implements \IteratorAggregate
         $candidates = [];
         /** @var TraceEntry $entry */
         foreach ($this->getIterator() as $entry) {
-            if ($entry->isErrorCandidate($this->rightMostFailurePosition)) {
+            if ($entry->isErrorCandidate($this->rightmostFailurePosition)) {
                 $candidates[] = $entry;
             }
         }
@@ -129,10 +129,10 @@ final class Trace implements \IteratorAggregate
 
     public function isErrorCandidate(TraceEntry $entry): bool
     {
-        return $entry->isErrorCandidate($this->rightMostFailurePosition);
+        return $entry->isErrorCandidate($this->rightmostFailurePosition);
     }
 
-    private function getExpectedTerminalsMessage()
+    private function getExpectedTerminalsMessage(): string
     {
         $candidates = $this->getErrorCandidates();
         $expected = [];

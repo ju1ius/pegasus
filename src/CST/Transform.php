@@ -36,6 +36,11 @@ class Transform
      */
     private $rootNode;
 
+    /**
+     * @var Transform[]
+     */
+    private $traits;
+
     final public function transform(Node $node)
     {
         $this->rootNode = $node;
@@ -44,17 +49,18 @@ class Transform
             $this->buildVisitors();
         }
 
-        gc_disable();
-
         $this->beforeTraverse($node);
         $node = $this->visit($node);
         $result = $this->afterTraverse($node);
 
-        gc_enable();
-
         $this->rootNode = null;
 
         return $result;
+    }
+
+    public function addTrait(string $namespace, Transform $trait)
+    {
+        $this->traits[$namespace] = $trait;
     }
 
     /**
@@ -122,9 +128,14 @@ class Transform
      */
     private function visit(Node $node)
     {
-        $name = $node->name;
-
         try {
+
+            if ($node instanceof Node\ExternalReference) {
+                return $this->visitExternalReference($node);
+            }
+
+            $name = $node->name;
+
             if ($name && isset($this->enterVisitors[$name])) {
                 $this->enterVisitors[$name]($node);
             }
@@ -159,12 +170,33 @@ class Transform
         }
     }
 
+    private function visitExternalReference(Node\ExternalReference $node)
+    {
+        $namespace = $node->namespace;
+        $name = $node->name;
+        if (!isset($this->traits[$namespace])) {
+            //TODO: throw something !
+        }
+        if ($name && isset($this->enterVisitors[$name])) {
+            $this->enterVisitors[$name]($node);
+        }
+
+        $result = $this->traits[$namespace]->transform($node->child);
+
+        if ($name && isset($this->leaveVisitors[$name])) {
+            return $this->leaveVisitors[$name]($node, $result);
+        }
+
+        return $result;
+    }
+
     /**
      * Returns a map from rule names to visitation methods
      */
     private function buildVisitors()
     {
-        $this->enterVisitors = $this->leaveVisitors = [];
+        $this->enterVisitors = [];
+        $this->leaveVisitors = [];
         $refClass = new \ReflectionClass($this);
         foreach ($refClass->getMethods() as $refMethod) {
             $name = $refMethod->name;

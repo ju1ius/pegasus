@@ -9,6 +9,8 @@
  */
 
 namespace ju1ius\Pegasus\CST;
+use ju1ius\Pegasus\Utils\Str;
+
 
 /**
  * Base class for Concrete-Syntax-Tree nodes.
@@ -17,10 +19,8 @@ namespace ju1ius\Pegasus\CST;
  * In particular no method call should happen inside the constructor, including calls to the parent constructor.
  *
  * Fields are public for performance, but should generally be treated as immutable once constructed.
- *
- * @TODO remove `ArrayAccess` implementation if it proves to be a bottleneck.
  */
-class Node
+abstract class Node
 {
     /**
      * The name of this node.
@@ -47,68 +47,11 @@ class Node
     public $end;
 
     /**
-     * The value of this node.
+     * Optional attributes map.
      *
-     * @var string
-     */
-    public $value;
-
-    /**
-     * @var Node[]
-     */
-    public $children;
-
-    /**
      * @var array
      */
     public $attributes;
-
-    /**
-     * Whether this node is a terminal node.
-     *
-     * @var bool
-     */
-    public $isTerminal = false;
-
-    /**
-     * Whether this node is the result of a quantified match.
-     *
-     * @var bool
-     */
-    public $isQuantifier = false;
-
-    /**
-     * Whether this node is the result of an optional match (? quantifier).
-     *
-     * @var bool
-     */
-    public $isOptional = false;
-
-    /**
-     * @param string $name       The name of this node.
-     * @param int    $start      The position in the text where that name started matching
-     * @param int    $end        The position after start where the name first didn't match.
-     *                           It represents the offset after the match so it's typically equal to
-     *                           $start + strlen($value).
-     * @param null   $value      The value matched by this node (only for terminals).
-     * @param array  $children   The child nodes (for composite nodes)
-     * @param array  $attributes Optional attributes map.
-     */
-    public function __construct(
-        string $name,
-        int $start,
-        int $end,
-        $value = null,
-        array $children = [],
-        array $attributes = []
-    ) {
-        $this->name = $name;
-        $this->value = $value;
-        $this->start = $start;
-        $this->end = $end;
-        $this->children = $children;
-        $this->attributes = $attributes;
-    }
 
     /**
      * Returns the text this node matched
@@ -117,19 +60,18 @@ class Node
      *
      * @return string
      */
-    public function getText(string $input): string
+    final public function getText(string $input): string
     {
         $length = $this->end - $this->start;
 
         return $length ? substr($input, $this->start, $length) : '';
     }
 
-    public function __toString(): string
+    final public function __toString(): string
     {
-        $class = get_class($this);
         return sprintf(
-            'Node\%s#%s(%s) @[%d,%d] «%s»',
-            substr($class, strrpos($class, '\\') + 1),
+            '%s#%s(%s) @[%d,%d] «%s»',
+            Str::className($this, 1),
             spl_object_id($this),
             $this->name,
             $this->start,

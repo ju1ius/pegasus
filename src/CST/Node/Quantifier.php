@@ -15,10 +15,20 @@ namespace ju1ius\Pegasus\CST\Node;
  */
 class Quantifier extends Composite
 {
-    public $isQuantifier = true;
+    /**
+     * Whether this node is the result of an optional match (? quantifier).
+     *
+     * @var bool
+     */
+    public $isOptional;
 
-    public function __construct(string $name, int $start, int $end, array $children, bool $optional = false)
-    {
+    public function __construct(
+        string $name,
+        int $start,
+        int $end,
+        array $children,
+        bool $optional = false
+    ) {
         $this->name = $name;
         $this->start = $start;
         $this->end = $end;

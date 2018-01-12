@@ -14,10 +14,20 @@ use ju1ius\Pegasus\CST\Node;
 
 class Terminal extends Node
 {
-    public $isTerminal = true;
+    /**
+     * The value matched by this node (only for terminals).
+     *
+     * @var string
+     */
+    public $value;
 
-    public function __construct(string $name, int $start, int $end, $value = null, array $attributes = [])
-    {
+    public function __construct(
+        string $name,
+        int $start,
+        int $end,
+        $value = null,
+        ?array $attributes = null
+    ) {
         $this->name = $name;
         $this->start = $start;
         $this->end = $end;

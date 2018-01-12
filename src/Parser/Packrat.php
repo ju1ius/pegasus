@@ -10,6 +10,7 @@
 
 namespace ju1ius\Pegasus\Parser;
 
+use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Parser\Memoization\MemoTable;
 use ju1ius\Pegasus\Parser\Memoization\SlidingMemoTable;
 
@@ -61,9 +62,8 @@ class Packrat extends RecursiveDescent
     /**
      * @inheritdoc
      */
-    public function apply(string $rule, bool $super = false)
+    public function apply(Expression $expr)
     {
-        $expr = $super ? $this->grammar->super($rule) : $this->grammar[$rule];
         $pos = $this->pos;
         $memo = $this->memo[$this->isCapturing]->get($pos, $expr);
 
@@ -84,7 +84,7 @@ class Packrat extends RecursiveDescent
         return $result;
     }
 
-    public function cut(int $position)
+    public function cut(int $position): void
     {
         parent::cut($position);
         // clear memo entries for previous positions

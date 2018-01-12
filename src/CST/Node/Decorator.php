@@ -17,8 +17,12 @@ use ju1ius\Pegasus\CST\Node;
  */
 class Decorator extends Composite
 {
-    public function __construct(string $name, int $start, int $end, ?Node $child = null)
-    {
+    public function __construct(
+        string $name,
+        int $start,
+        int $end,
+        ?Node $child = null
+    ) {
         $this->name = $name;
         $this->start = $start;
         $this->end = $end;

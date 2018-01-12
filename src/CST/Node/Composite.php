@@ -17,8 +17,17 @@ use ju1ius\Pegasus\CST\Node;
  */
 class Composite extends Node
 {
-    public function __construct(string $name, int $start, int $end, array $children)
-    {
+    /**
+     * @var Node[]
+     */
+    public $children;
+
+    public function __construct(
+        string $name,
+        int $start,
+        int $end,
+        array $children
+    ) {
         $this->name = $name;
         $this->start = $start;
         $this->end = $end;

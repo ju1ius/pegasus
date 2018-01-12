@@ -49,8 +49,8 @@ class SlidingMemoTableTest extends TestCase
         $g3 = new Grammar();
         $g3['three'] = $this->getMockForAbstractClass(Expression::class);
 
-        $g2->import($g3, 'g3');
-        $grammar->import($g2, 'g2');
+        $g2->use($g3, 'g3');
+        $grammar->use($g2, 'g2');
 
         $memo = new SlidingMemoTable($grammar, 2);
 

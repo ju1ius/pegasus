@@ -110,8 +110,7 @@ class GrammarBuilder extends ExpressionBuilder
      */
     public function super(string $identifier = '')
     {
-        $identifier = $identifier ?: $this->currentRule;
-        parent::super($identifier);
+        parent::super($identifier ?: $this->currentRule);
 
         return $this;
     }

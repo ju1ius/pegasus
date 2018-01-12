@@ -107,7 +107,7 @@ final class CSTDumper extends NodeVisitor
                 str_repeat('╌╌', count($this->indentStack))
             ));
         }
-        if ($node->children && $hasParent) {
+        if ($node instanceof Node\Composite && $node->children && $hasParent) {
             $this->indentStack[] = $isLast ? '  ' : '│ ';
         }
     }
@@ -117,7 +117,7 @@ final class CSTDumper extends NodeVisitor
      */
     public function leaveNode(Node $node, ?int $index = null, bool $isLast = false)
     {
-        if ($node->children) {
+        if ($node instanceof Node\Composite && $node->children) {
             array_pop($this->indentStack);
         }
     }

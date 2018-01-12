@@ -23,9 +23,10 @@ abstract class Parser
     /**
      * The grammar used to parse the input string.
      *
+     * @internal
      * @var Grammar
      */
-    protected $grammar;
+    public $grammar;
 
     /**
      * The input string.
@@ -37,6 +38,7 @@ abstract class Parser
     /**
      * The current position into the input string.
      *
+     * @internal
      * @var int
      */
     public $pos = 0;
@@ -44,11 +46,13 @@ abstract class Parser
     /**
      * Stores named bindings produced by `Label` expressions.
      *
+     * @internal
      * @var array
      */
     public $bindings;
 
     /**
+     * @internal
      * @var \SplStack
      */
     public $cutStack;
@@ -57,11 +61,13 @@ abstract class Parser
      * Flag that can be set by expressions to signal whether their children
      * should return parse nodes or just true on success.
      *
+     * @internal
      * @var bool
      */
     public $isCapturing = true;
 
     /**
+     * @internal
      * @var bool
      */
     public $isTracing = false;
@@ -87,6 +93,7 @@ abstract class Parser
      * Parse the entire text, using given start rule or the grammar's one,
      * requiring the entire input to match the grammar.
      *
+     * @api
      * @param string $source
      * @param string|null $startRule
      *
@@ -107,6 +114,7 @@ abstract class Parser
      * Parse text starting from given position, using given start rule or the grammar's one,
      * but does not require the entire input to match the grammar.
      *
+     * @api
      * @param string $text
      * @param int $pos
      * @param string $startRule
@@ -129,7 +137,7 @@ abstract class Parser
         $this->beforeParse();
 
         gc_disable();
-        $result = $this->apply($startRule);
+        $result = $this->apply($this->grammar[$startRule]);
         gc_enable();
 
         $this->afterParse($result);
@@ -141,9 +149,14 @@ abstract class Parser
         return $result;
     }
 
-    protected function beforeParse(): void {}
-
-    protected function afterParse($result): void {}
+    /**
+     * @api
+     * @return Trace
+     */
+    public function getTrace(): Trace
+    {
+        return $this->trace;
+    }
 
     /**
      * Applies a grammar rule.
@@ -152,12 +165,10 @@ abstract class Parser
      *
      * @internal
      *
-     * @param string $rule The rule name to apply
-     * @param bool $super Whether we should explicitly apply a parent rule
-     *
+     * @param Expression $expr
      * @return Node|null|true
      */
-    abstract public function apply(string $rule, bool $super = false);
+    abstract public function apply(Expression $expr);
 
     /**
      * Evaluates an expression.
@@ -176,6 +187,7 @@ abstract class Parser
     /**
      * Called by Trace expressions before their child rule is evaluated
      *
+     * @internal
      * @param Expression $expr
      */
     public function enterTrace(Expression $expr): void
@@ -187,6 +199,7 @@ abstract class Parser
     /**
      * Called by Trace expressions after their child rule is evaluated
      *
+     * @internal
      * @param Expression $expr The expression being traced
      * @param Node|true|null $result The result of evaluating the traced expression
      */
@@ -200,14 +213,17 @@ abstract class Parser
         $entry->result = $result;
     }
 
-    public function getTrace()
-    {
-        return $this->trace;
-    }
-
-    public function cut(int $position)
+    /**
+     * @internal
+     * @param int $position
+     */
+    public function cut(int $position): void
     {
         $this->cutStack->pop();
         $this->cutStack->push(true);
     }
+
+    protected function beforeParse(): void {}
+
+    protected function afterParse($result): void {}
 }

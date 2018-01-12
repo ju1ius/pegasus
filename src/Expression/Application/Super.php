@@ -8,9 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Expression;
+namespace ju1ius\Pegasus\Expression\Application;
 
 
+use ju1ius\Pegasus\Expression\Application;
 use ju1ius\Pegasus\Parser\Parser;
 
 
@@ -44,7 +45,8 @@ final class Super extends Application
         $bindings = $parser->bindings;
         $parser->bindings = [];
 
-        $result = $parser->apply($this->identifier, true);
+        $expr = $parser->grammar->super($this->identifier);
+        $result = $parser->apply($expr);
 
         $parser->bindings = $bindings;
 

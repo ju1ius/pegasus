@@ -47,7 +47,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      *
      * @var array
      */
-    protected $imports = [];
+    protected $traits = [];
 
     /**
      * The start rule of this grammar.
@@ -199,31 +199,31 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      * @param null|string $as
      * @return $this
      */
-    public function import(Grammar $other, ?string $as = null): self
+    public function use(Grammar $other, ?string $as = null): self
     {
         $alias = $as ?: $other->getName();
         if (!$alias) {
             // TODO: throw ImportError ?
         }
-        $this->imports[$alias] = $other;
+        $this->traits[$alias] = $other;
 
         return $this;
     }
 
-    public function use(string $alias, string $ruleName)
+    public function getTrait(string $alias): Grammar
     {
-        if (!isset($this->imports[$alias])) {
+        if (!isset($this->traits[$alias])) {
             // TODO: throw ImportError ?
         }
-        return $this->imports[$alias]->offsetGet($ruleName);
+        return $this->traits[$alias];
     }
 
     /**
      * @return Grammar[]
      */
-    public function getImports(): array
+    public function getTraits(): array
     {
-        return $this->imports;
+        return $this->traits;
     }
 
     /**
@@ -452,6 +452,9 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
         $out .= "\n";
 
         foreach ($this->rules as $name => $expr) {
+            if (isset($this->inlineRules[$name])) {
+                $out .= '%inline ';
+            }
             $out .= sprintf("%s = %s\n", $name, $expr);
         }
 

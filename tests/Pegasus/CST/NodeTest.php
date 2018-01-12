@@ -20,8 +20,10 @@ class NodeTest extends PegasusTestCase
 {
     public function testGetText()
     {
-        $input = 'foobarbaz';
-        $node = new Node('test', 3, 6, 'bar');
-        $this->assertSame('bar', $node->getText($input));
+        $node = new class extends Node {
+            public $start = 3;
+            public $end = 6;
+        };
+        $this->assertSame('bar', $node->getText('foobarbaz'));
     }
 }
