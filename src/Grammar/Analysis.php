@@ -17,6 +17,8 @@ use ju1ius\Pegasus\Expression\Combinator\OneOf;
 use ju1ius\Pegasus\Expression\Reference;
 use ju1ius\Pegasus\Expression\Super;
 use ju1ius\Pegasus\Grammar;
+use ju1ius\Pegasus\Utils\Iter;
+
 
 /**
  * Static analysis of a Grammar.
@@ -71,12 +73,15 @@ class Analysis
      * @param string $ruleName The rule name to analyze.
      *
      * @return bool
-     *
-     * @todo Check that the super call is actually recursive when called like super::another_rule
      */
     public function isRecursive(string $ruleName): bool
     {
-        return $this->containsSuperCall($ruleName) || $this->isReferencedFrom($ruleName, $ruleName);
+        if ($this->containsSuperCall($ruleName)) {
+            // TODO: check that the super call is actually recursive when called like super::another_rule
+            return true;
+        }
+        // TODO: check imported grammars
+        return $this->isReferencedFrom($ruleName, $ruleName);
     }
 
     /**
@@ -208,9 +213,7 @@ class Analysis
 
         foreach ($this->iterateDirectReferences($expr) as $name => $expr) {
             yield $name => $expr;
-            foreach ($this->iterateReferences($name, $visited) as $k => $v) {
-                yield $k => $v;
-            }
+            yield from $this->iterateReferences($name, $visited);
         }
     }
 
@@ -232,9 +235,7 @@ class Analysis
 
         foreach ($this->iterateDirectLeftReferences($expr) as $name => $expr) {
             yield $name => $expr;
-            foreach ($this->iterateLeftReferences($name, $visited) as $k => $v) {
-                yield $k => $v;
-            }
+            yield from $this->iterateLeftReferences($name, $visited);
         }
     }
 
@@ -253,10 +254,7 @@ class Analysis
             yield $expr->getIdentifier() => $expr;
         } elseif ($expr instanceof Composite) {
             foreach ($expr as $child) {
-                // PLIZ I CAN HAZ yield from !!!
-                foreach ($this->iterateDirectReferences($child) as $name => $expr) {
-                    yield $name => $expr;
-                }
+                yield from $this->iterateDirectReferences($child);
             }
         }
     }
@@ -276,14 +274,10 @@ class Analysis
             yield $expr->getIdentifier() => $expr;
         } elseif ($expr instanceof OneOf) {
             foreach ($expr as $child) {
-                foreach ($this->iterateDirectLeftReferences($child) as $name => $expr) {
-                    yield $name => $expr;
-                }
+                yield from $this->iterateDirectLeftReferences($child);
             }
         } elseif ($expr instanceof Composite) {
-            foreach ($this->iterateDirectLeftReferences($expr[0]) as $name => $expr) {
-                yield $name => $expr;
-            }
+            yield from $this->iterateDirectLeftReferences($expr[0]);
         }
     }
 
