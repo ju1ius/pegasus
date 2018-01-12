@@ -69,6 +69,11 @@ class MetaGrammarTransform extends Transform
     private $parentGrammar;
 
     /**
+     * @var array
+     */
+    private $imports;
+
+    /**
      * @var bool
      */
     private $inlining;
@@ -86,6 +91,7 @@ class MetaGrammarTransform extends Transform
         $this->grammar = new Grammar();
         $this->currentRule = null;
         $this->parentGrammar = null;
+        $this->imports = [];
         $this->startRule = null;
         $this->inlining = false;
         $this->lexical = false;
@@ -103,6 +109,9 @@ class MetaGrammarTransform extends Transform
         }
         if ($this->parentGrammar) {
             // TODO: handle parent grammar !
+        }
+        if ($this->imports) {
+            // TODO: handle imports !
         }
 
         return $this->grammar;
@@ -125,6 +134,11 @@ class MetaGrammarTransform extends Transform
     private function leave_extends_directive(Node $node, string $name)
     {
         $this->parentGrammar = $name;
+    }
+
+    private function leave_import_directive(Node $node, string $alias, string $path)
+    {
+        $this->imports[$alias] = $path;
     }
 
     private function leave_ci_directive(Node $node, ...$children)
