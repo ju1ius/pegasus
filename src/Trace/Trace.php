@@ -57,7 +57,7 @@ final class Trace implements \IteratorAggregate
     public function createParseError(): ParseError
     {
         $message = sprintf(
-            "%s\n%s\n",
+            "%s%s\n",
             $this->getExpectedTerminalsMessage(),
             $this->source->getExcerpt($this->rightmostFailurePosition)
         );
@@ -68,7 +68,7 @@ final class Trace implements \IteratorAggregate
     public function createIncompleteParseError(int $position): IncompleteParseError
     {
         $message = sprintf(
-            "%s\n%s\n",
+            "%s%s\n",
             $this->getExpectedTerminalsMessage(),
             $this->source->getExcerpt($this->rightmostFailurePosition)
         );
@@ -140,10 +140,21 @@ final class Trace implements \IteratorAggregate
             $expected[] = $candidate->expression;
         }
 
+        $length = count($expected);
+        if (!$length) {
+            return '';
+        }
+        if ($length === 1) {
+            return sprintf("Expected %s\n", $expected[0]);
+        }
+
+        $head = array_slice($expected, 0, -1);
+        $tail = array_slice($expected, -1);
+
         return sprintf(
-            'Expected %s%s',
-            count($expected) > 1 ? 'one of:' : '',
-            implode(', ', $expected)
+            "Expected one of: %s or %s\n",
+            implode(', ', $head),
+            $tail[0]
         );
     }
 }
