@@ -1,0 +1,19 @@
+%name CssNth
+
+nth = (
+    SIGN? INTEGER? N (_ SIGN _ INTEGER)?
+    | SIGN? INTEGER
+    | ODD
+    | EVEN
+) _
+
+_ = /\s*/
+
+########## TOKENS ##########
+# TODO: case-insensitive
+
+INTEGER = /[0-9]+/
+N       = "n"
+ODD     = "odd"
+EVEN    = "even"
+SIGN    = /[+-]/

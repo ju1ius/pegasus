@@ -1,0 +1,12 @@
+%name CssCore
+
+component_value = preserved_token
+                | curly_block
+                | paren_block
+                | bracket_block
+                | function_block
+
+curly_block = "{" component_value* "}"
+paren_block = "(" component_value* ")"
+bracket_block = "[" component_value* "]"
+function_block = FUNCTION component_value* ")"

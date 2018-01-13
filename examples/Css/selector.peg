@@ -1,0 +1,81 @@
+%name CssSelectors
+%import nth from "./nth.peg"
+%import core from "./core.peg"
+
+
+complex_selector_list           = complex_selector (COMMA _ complex_selector)*
+
+scope_relative_selector_list    = scope_relative_selector (COMMA _ scope_relative_selector)*
+
+scope_relative_selector         = combinator? complex_selector
+
+complex_selector                = compound_selector (combinator compound_selector)* _
+
+# combinators can be surrounded by whitespace
+combinator  = ">" _
+            | "+" _
+            | "~" _
+            | COLUMN _
+            | "/" IDENT "/" _
+            | S
+
+compound_selector_list  = compound_selector _ (COMMA _ compound_selector)* _
+
+compound_selector       = type_selector (id | class | attrib | pseudo)*
+                        | (id | class | attrib | pseudo)+
+
+simple_selector_list    = simple_selector _ (COMMA _ simple_selector) _
+
+simple_selector         = type_selector | id | class | attrib | pseudo
+
+type_selector           = wqname_prefix? element_name
+
+element_name    = IDENT | "*"
+
+id      = HASH
+
+class   = "." IDENT
+
+attrib  = "[" _ attrib_name "]"
+        | "[" _ attrib_name attrib_match (IDENT | STRING) _ attrib_flags? "]"
+
+attrib_name     = wqname_prefix? IDENT _
+
+attrib_match    = "=" _
+                | PREFIX_MATCH _
+                | SUFFIX_MATCH _
+                | SUBSTRING_MATCH _
+                | INCLUDE_MATCH _
+                | DASH_MATCH _
+
+attrib_flags    = IDENT _
+
+# "==" starts a pseudo-element, "=" a pseudo-class
+# Exceptions= =first-line, =first-letter, =before and =after.
+# Note that pseudo-elements are restricted to one per selector and occur only in the last compound_selector.
+#
+pseudo = ":"{1,2} (IDENT | functional_pseudo)
+
+functional_pseudo = FUNCTION _ value ")"
+
+# https://www.w3.org/TR/css-namespaces-3/#css-qnames
+wqname_prefix = (IDENT | "*")? "|"
+
+_ = ~/\s*/
+
+########## TOKENS ##########
+
+STRING          = / ["'] ( (?: \\. | (?!\1). )* ) \1 /
+HASH            = "#" /[a-zA-Z0-9_-]+/
+FUNCTION        = IDENT "("
+IDENT           = /-?[a-zA-Z_][a-zA-Z0-9_-]*/
+PREFIX_MATCH    = "^="
+SUFFIX_MATCH    = "$="
+SUBSTRING_MATCH = "*$"
+INCLUDE_MATCH   = "~="
+DASH_MATCH      = "|="
+COMMA           = ","
+COLUMN          = '||'
+S               = /\s+/
+COMMENT         = / \/\* (?: .(?!\*\/) )* \*\/ /
+
