@@ -1,0 +1,25 @@
+## Parser Combinators
+
+* [ ] Grammar composition
+* [ ] Grammar inheritance
+* [ ] Error reporting
+    * [x] Tracing
+* [ ] Error recovery
+* [ ] CST decimation
+* [ ] CST transforms
+* [ ] Semantic actions
+* [ ] Lexical rules (whitespace handling)
+
+## Compiler
+
+* [ ] Import resolver
+* [ ] Update runtime / templates
+
+## Examples
+
+* [ ] CSS selectors
+* [ ] code cleanup
+
+## Experiments
+
+* [ ] investigate performance of throwing Exceptions for failures
