@@ -13,15 +13,15 @@ header_directive    = name_directive
                     | ws_directive
                     | ci_directive
 
-name_directive      = ~'%name' _ identifier
-start_directive     = ~'%start' _ identifier
-extends_directive   = ~'%extends' _ identifier
-import_directive    = ~'%import' _ identifier _ ~'from' _ literal
-ws_directive        = ~'%whitespace' _ ~'=' _ unattributed
-ci_directive        = ~'%case_insensitive' _
+name_directive      = ~'@name' _ identifier
+start_directive     = ~'@start' _ identifier
+extends_directive   = ~'@extends' _ identifier
+import_directive    = ~'@import' _ identifier _ ~'from' _ literal
+ws_directive        = ~'@whitespace' _ ~'=' _ unattributed
+ci_directive        = ~'@case_insensitive' _
 
-rule_directive      = ~`%lexical` _     <= LexicalDirective
-                    | ~`%inline` _      <= InlineDirective
+rule_directive      = ~`@lexical` _     <= LexicalDirective
+                    | ~`@inline` _      <= InlineDirective
 
 ########### Rules ##########
 
@@ -31,7 +31,7 @@ rule            = rule_directive* (identifier ~'=' _ <= RuleName) expression
 ##### Decorator expressions #####
 
 quantifier      = /(?> ([*+?]) | (?: \{ (\d+) (?:,(\d*))? \} ) )/ _
-token           = ~'@' prefixable
+token           = ~'%' prefixable
 ignore          = ~'~' prefixable
 assert          = ~'&' prefixable
 not             = ~'!' prefixable
@@ -109,10 +109,10 @@ identifier      = IDENT _
 
 ##### Tokens #####
 
-%inline IDENT   = /[a-zA-Z_]\w*/
+@inline IDENT   = /[a-zA-Z_]\w*/
 
 ##### Whitespace & comments #####
 
-%inline _               = ~(ws | comment)*
-%inline comment         = /\#[^\n]*/
-%inline ws              = /\s+/
+@inline _               = ~(ws | comment)*
+@inline comment         = /\#[^\n]*/
+@inline ws              = /\s+/

@@ -1,4 +1,4 @@
-%name JSON
+@name JSON
 
 json        = _ (object | array) EOF
 object      = ~'{' _ members? ~'}' _
@@ -16,10 +16,10 @@ value       = object
             | 'null' _    <= null
 
 string      = ~'"' /(?:\\.|[^"])*/ ~'"' _
-number      = @(int frac? expo?) _
+number      = %(int frac? expo?) _
 
 int         = /-?(?:[1-9]\d*|0(?!\d))/
 frac        = /\.\d+/
 expo        = /[eE][+-]?\d+/
 
-%inline _   = ~/\s*/
+@inline _   = ~/\s*/

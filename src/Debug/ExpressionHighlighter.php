@@ -157,7 +157,7 @@ final class ExpressionHighlighter extends ExpressionVisitor
                     $this->output->write(sprintf('<label>%s</label><d>:</d>', $expr->getLabel()));
                     break;
                 case Token::class:
-                    $this->output->write('<sym>@</sym>');
+                    $this->output->write('<sym>%</sym>');
                     break;
                 default:
                     break;

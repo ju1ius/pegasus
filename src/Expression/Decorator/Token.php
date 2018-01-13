@@ -38,6 +38,6 @@ final class Token extends Decorator
 
     public function __toString(): string
     {
-        return sprintf('@%s', $this->stringChildren()[0]);
+        return sprintf('%%%s', $this->stringChildren()[0]);
     }
 }

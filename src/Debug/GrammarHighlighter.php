@@ -55,12 +55,12 @@ final class GrammarHighlighter extends GrammarVisitor
     {
         if ($name = $grammar->getName()) {
             $this->output->writeln(sprintf(
-                '<directive>%%name</directive> <class>%s</class>',
+                '<directive>@name</directive> <class>%s</class>',
                 $name
             ));
         }
         $this->output->writeln(sprintf(
-            '<directive>%%start</directive> <rule>%s</rule>',
+            '<directive>@start</directive> <rule>%s</rule>',
             $grammar->getStartRule()
         ));
         $this->output->writeln('');
@@ -73,7 +73,7 @@ final class GrammarHighlighter extends GrammarVisitor
         if ($expr instanceof Trace) $expr = $expr[0];
 
         if ($grammar->isInlined($expr->getName())) {
-            $this->output->write(sprintf('<directive>%%inline</directive> '));
+            $this->output->write('<directive>@inline</directive> ');
         }
         $this->output->write(sprintf(
             '<rule>%s</rule> <d>=</d> ',

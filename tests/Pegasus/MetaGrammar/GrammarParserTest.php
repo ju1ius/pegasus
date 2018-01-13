@@ -237,7 +237,7 @@ class GrammarParserTest extends PegasusTestCase
                 Grammar::fromArray(['x' => new Ignore(new Match('x'))])
             ],
             'Token of a match' => [
-                'x = @/x/',
+                'x = %/x/',
                 Grammar::fromArray(['x' => new Token(new Match('x'))])
             ],
             'Labeled match' => [
@@ -311,7 +311,7 @@ class GrammarParserTest extends PegasusTestCase
 
     public function testNameDirective()
     {
-        $syntax = "%name Foo\nx = y";
+        $syntax = "@name Foo\nx = y";
         $expected = 'Foo';
 
         $grammar = $this->parseSyntax($syntax);
@@ -323,7 +323,7 @@ class GrammarParserTest extends PegasusTestCase
 
     public function testStartDirective()
     {
-        $syntax = "%start y\nx = y\ny = z";
+        $syntax = "@start y\nx = y\ny = z";
         $start = 'y';
 
         $grammar = $this->parseSyntax($syntax);
@@ -335,7 +335,7 @@ class GrammarParserTest extends PegasusTestCase
 
     public function testInlineDirective()
     {
-        $syntax = '%inline x = y';
+        $syntax = '@inline x = y';
         $start = 'y';
 
         $grammar = $this->parseSyntax($syntax);

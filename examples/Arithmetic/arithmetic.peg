@@ -1,4 +1,4 @@
-%name Arithmetic
+@name Arithmetic
 
 expr    = expr _ ~"+" _ term       <= Add
         | expr _ ~"-" _ term       <= Substract
@@ -13,7 +13,7 @@ primary = ~'(' _ expr _ ~')' _
 
 number  = expo | float | int
 
-expo    = @((float | int) 'e' int) _
+expo    = %((float | int) 'e' int) _
 
 float   = /-?[0-9]*\.[0-9]+/ _
 

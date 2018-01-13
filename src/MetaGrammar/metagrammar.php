@@ -57,42 +57,42 @@ $builder->rule('directive')->oneOf()
     ->ref('ci_directive');
 
 $builder->rule('name_directive')->sequence()
-    ->ignore()->literal('%name')
+    ->ignore()->literal('@name')
     ->ref('_')
     ->ref('identifier');
 
 $builder->rule('start_directive')->sequence()
-    ->ignore()->literal('%start')
+    ->ignore()->literal('@start')
     ->ref('_')
     ->ref('identifier');
 
 $builder->rule('extends_directive')->sequence()
-    ->ignore()->literal('%extends')
+    ->ignore()->literal('@extends')
     ->ref('_')
     ->ref('identifier');
 
 $builder->rule('import_directive')->sequence()
-    ->ignore()->literal('%import')->ref('_')
+    ->ignore()->literal('@import')->ref('_')
     ->ref('identifier')
     ->ignore()->literal('from')->ref('_')
     ->ref('literal');
 
 $builder->rule('ws_directive')->sequence()
-    ->ignore()->literal('%whitespace')->ref('_')
+    ->ignore()->literal('@whitespace')->ref('_')
     ->ignore()->literal('=')->ref('_')
     ->ref('unattributed');
 
 $builder->rule('ci_directive')->sequence()
-    ->ignore()->literal('%case_insensitive')
+    ->ignore()->literal('@case_insensitive')
     ->ref('_');
 
 $builder->rule('rule_directive')->oneOf()
     ->named('InlineDirective')->sequence()
-        ->ignore()->literal('%inline')
+        ->ignore()->literal('@inline')
         ->ref('_')
     ->end()
     ->named('LexicalDirective')->sequence()
-        ->ignore()->literal('%lexical')
+        ->ignore()->literal('@lexical')
         ->ref('_')
     ->end();
 //
@@ -115,7 +115,7 @@ $builder->rule('quantifier')->sequence()
     ->ref('_');
 
 $builder->rule('token')->sequence()
-    ->ignore()->literal('@')
+    ->ignore()->literal('%')
     ->ref('prefixable');
 
 $builder->rule('ignore')->sequence()
