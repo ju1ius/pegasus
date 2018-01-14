@@ -28,6 +28,7 @@ use ju1ius\Pegasus\Expression\Decorator\Token;
 use ju1ius\Pegasus\Expression\Decorator\ZeroOrMore;
 use ju1ius\Pegasus\Expression\Application\Reference;
 use ju1ius\Pegasus\Expression\Application\Super;
+use ju1ius\Pegasus\Expression\Exception\CapturingGroupInMatchPattern;
 use ju1ius\Pegasus\Expression\Terminal\BackReference;
 use ju1ius\Pegasus\Expression\Terminal\EOF;
 use ju1ius\Pegasus\Expression\Terminal\Epsilon;
@@ -36,6 +37,8 @@ use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\Expression\Terminal\Match;
 use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Expression\Terminal\Word;
+use ju1ius\Pegasus\RegExp\PCREGroupInfo;
+
 
 /**
  * @author ju1ius <ju1ius@laposte.net>
@@ -183,6 +186,10 @@ class ExpressionBuilder
      */
     public function match(string $pattern, array $flags = [])
     {
+        $captureCount = PCREGroupInfo::captureCount($pattern);
+        if ($captureCount > 0) {
+            throw new CapturingGroupInMatchPattern($pattern, $captureCount);
+        }
         return $this->add(new Match($pattern, $flags));
     }
 
