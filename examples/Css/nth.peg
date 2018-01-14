@@ -1,4 +1,4 @@
-@name CssNth
+@grammar CssNth
 
 nth = SIGN? INTEGER? N (_ SIGN _ INTEGER)?
     | SIGN? INTEGER

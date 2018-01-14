@@ -1,5 +1,5 @@
-%name Pegasus
-%start grammar
+@grammar Pegasus
+@start grammar
 
 grammar             = _ header rules
 

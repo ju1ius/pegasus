@@ -37,7 +37,7 @@ $REGEXP_PATTERN = <<<'EOS'
 ([imsuUX]*)?            # optional flags
 EOS;
 
-$builder = GrammarBuilder::create();
+$builder = GrammarBuilder::create('Pegasus');
 $builder->rule('grammar')->sequence()
     ->ref('_')
     ->ref('directives')
@@ -57,7 +57,7 @@ $builder->rule('directive')->oneOf()
     ->ref('ci_directive');
 
 $builder->rule('name_directive')->sequence()
-    ->ignore()->literal('@name')
+    ->ignore()->literal('@grammar')
     ->ref('_')
     ->ref('identifier');
 

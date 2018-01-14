@@ -1,4 +1,4 @@
-@name Arithmetic
+@grammar Arithmetic
 
 expr    = expr _ ~"+" _ term       <= Add
         | expr _ ~"-" _ term       <= Substract

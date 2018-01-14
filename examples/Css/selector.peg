@@ -1,4 +1,4 @@
-@name CssSelectors
+@grammar CssSelectors
 @import nth from "./nth.peg"
 @import core from "./core.peg"
 

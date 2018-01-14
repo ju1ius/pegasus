@@ -362,7 +362,7 @@ class GrammarParserTest extends PegasusTestCase
 
     public function testNameDirective()
     {
-        $syntax = "@name Foo\nx = y";
+        $syntax = "@grammar Foo\nx = y";
         $expected = 'Foo';
 
         $grammar = $this->parseSyntax($syntax);
