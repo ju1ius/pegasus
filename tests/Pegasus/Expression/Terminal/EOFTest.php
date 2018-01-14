@@ -36,7 +36,7 @@ class EOFTest extends ExpressionTestCase
         if (!$expected) {
             $this->expectException(ParseError::class);
         }
-        $result = $parser->parse($input, $pos);
+        $result = $parser->partialParse($input, $pos);
         $this->assertSame($expected, $result);
         $this->assertSame($pos, $parser->pos, 'Does not consume any input.');
     }

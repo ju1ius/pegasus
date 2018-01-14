@@ -27,7 +27,7 @@ $parser = new Parser\RecursiveDescent($grammar);
 
 $stopwatch->start('parse_json');
 $probe->enable();
-$tree = $parser->parseAll($input);
+$tree = $parser->parse($input);
 $probe->disable();
 $stopwatch->stop('parse_json');
 

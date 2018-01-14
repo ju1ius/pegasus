@@ -67,7 +67,7 @@ $grammar = Grammar::fromSyntax($SYNTAX);
 
 $parser = new LeftRecursivePackrat($grammar);
 $input = $argv[1] ?? '3 * 12 / 24 - 7.2';
-$tree = $parser->parseAll($input);
+$tree = $parser->parse($input);
 //Debug::dump($tree);
 $calculator = new Calculator();
 $result = $calculator->transform($tree);

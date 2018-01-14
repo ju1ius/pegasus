@@ -61,7 +61,7 @@ $stopwatch->stop('load_data');
 $stopwatch->start('parse_json');
 //mb_regex_encoding('ASCII');
 $probe->enable();
-$tree = $parser->parseAll($input);
+$tree = $parser->parse($input);
 $probe->disable();
 $stopwatch->stop('parse_json');
 $stopwatch->start('visit');

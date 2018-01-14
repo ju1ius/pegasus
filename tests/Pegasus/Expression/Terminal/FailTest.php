@@ -27,7 +27,7 @@ class FailTest extends ExpressionTestCase
             'test' => new Fail()
         ]));
         $this->expectException(ParseError::class);
-        $result = $parser->parse('anything', 0);
+        $result = $parser->partialParse('anything', 0);
         $this->assertSame(null, $result);
         $this->assertSame(0, $parser->pos, 'Does not consume any input.');
     }

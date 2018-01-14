@@ -33,7 +33,7 @@ class ExpressionTestCase extends PegasusTestCase
             throw new \LogicException('Expected Grammar, Expression or array.');
         }
 
-        $result = (new RecursiveDescent($grammar))->parse($text, $pos);
+        $result = (new RecursiveDescent($grammar))->partialParse($text, $pos);
 
         return $result;
     }

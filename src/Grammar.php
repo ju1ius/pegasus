@@ -119,7 +119,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
         int $optimizationLevel = Optimizer::LEVEL_1
     ) {
         $metaGrammar = MetaGrammar::create();
-        $tree = (new LeftRecursivePackrat($metaGrammar))->parseAll($syntax);
+        $tree = (new LeftRecursivePackrat($metaGrammar))->parse($syntax);
         $grammar = (new MetaGrammarTransform)->transform($tree);
         if ($startRule) {
             $grammar->setStartRule($startRule);

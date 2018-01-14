@@ -90,26 +90,10 @@ abstract class Parser
      * @param string|null $startRule
      *
      * @return Node|true|null
-     * @throws Grammar\Exception\MissingStartRule
      */
-    final public function parseAll(string $source, ?string $startRule = null)
+    final public function parse(string $source, ?string $startRule = null)
     {
-        $this->source = $source;
-        $this->pos = 0;
-        $startRule = $startRule ?: $this->grammar->getStartRule();
-        $this->beforeParse();
-
-        $result = $this->doParse($startRule);
-
-        if (!$result || $this->pos < strlen($source)) {
-            $this->trace(0, $startRule);
-            $this->afterParse($result);
-            throw $this->trace->createParseError();
-        }
-
-        $this->afterParse($result);
-
-        return $result;
+        return $this->doParse($source, 0, $startRule, false);
     }
 
     /**
@@ -122,32 +106,36 @@ abstract class Parser
      * @param string $startRule
      *
      * @return Node|null|true
-     * @throws Grammar\Exception\MissingStartRule
      */
-    final public function parse(string $text, int $pos = 0, ?string $startRule = null)
+    final public function partialParse(string $text, int $pos = 0, ?string $startRule = null)
     {
+        return $this->doParse($text, $pos, $startRule, true);
+    }
+
+    private function doParse(
+        string $text,
+        int $startPos,
+        ?string $startRule = null,
+        bool $allowPartial = false
+    ) {
         $this->source = $text;
-        $this->pos = $pos;
+        $this->pos = $startPos;
         $startRule = $startRule ?: $this->grammar->getStartRule();
 
         $this->beforeParse();
-        $result = $this->doParse($startRule);
+        gc_disable();
 
-        if (!$result) {
-            $this->trace($pos, $startRule);
+        $result = $this->apply($this->grammar[$startRule]);
+        $parsedFully = $this->pos === strlen($text);
+
+        if (!$result || (!$parsedFully && !$allowPartial)) {
+            $this->trace($startPos, $startRule);
             $this->afterParse($result);
+            gc_enable();
             throw $this->trace->createParseError();
         }
 
         $this->afterParse($result);
-
-        return $result;
-    }
-
-    private function doParse($startRule)
-    {
-        gc_disable();
-        $result = $this->apply($this->grammar[$startRule]);
         gc_enable();
 
         return $result;

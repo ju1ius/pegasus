@@ -51,7 +51,7 @@ class GrammarParserTest extends PegasusTestCase
         $meta = $optimizedMeta ? MetaGrammar::create() : MetaGrammar::getGrammar();
         $parser = new LeftRecursivePackrat($meta);
         try {
-            $tree = $parser->parseAll($syntax);
+            $tree = $parser->parse($syntax);
         } catch (ParseError $err) {
             $this->fail($err);
         }
