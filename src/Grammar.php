@@ -337,17 +337,18 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
     // --------------------------------------------------------------------------------------------------------------
 
     /**
-     * Returns a debug-enabled copy of this grammar.
+     * Enables or disables the tracing of this grammar.
      *
-     * @return Grammar
+     * @param bool $enable
+     *
+     * @return $this
      * @throws Grammar\Exception\SelfReferencingRule
      */
-    public function tracing(): Grammar
+    public function tracing(bool $enable = true): Grammar
     {
-        $clone = clone $this;
         return (new GrammarTraverser(false))
-            ->addVisitor(new GrammarTracer())
-            ->traverse($clone);
+            ->addVisitor(new GrammarTracer($enable))
+            ->traverse($this);
     }
 
     /**

@@ -137,7 +137,8 @@ final class Trace implements \IteratorAggregate
         $candidates = $this->getErrorCandidates();
         $expected = [];
         foreach ($candidates as $candidate) {
-            $expected[] = $candidate->expression;
+            $expr = $candidate->expression;
+            $expected[] = $expr->getName() ?: (string)$expr;
         }
 
         $length = count($expected);
