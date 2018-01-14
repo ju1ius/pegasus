@@ -88,8 +88,7 @@ final class Optimizer
         $optimizations = self::getOptimizations($level);
         $optimizer = new self();
         $optimizer->addPasses(
-            (new OptimizationPass(true))->add(...$optimizations),
-            (new OptimizationPass())->add(new RemoveUnusedRules())
+            (new OptimizationPass(true))->add(...$optimizations)
         );
 
         return $optimizer->process($grammar);
@@ -182,6 +181,7 @@ final class Optimizer
                         new JoinMatchCapturingSequence(),
                         // join match choice
                         new JoinMatchChoice(),
+                        new RemoveUnusedRules(),
                     ];
                     break;
             }

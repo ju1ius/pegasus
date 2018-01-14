@@ -1,14 +1,24 @@
 ## Parser Combinators
 
-* [ ] Grammar composition
-* [ ] Grammar inheritance
 * [ ] Error reporting
     * [x] Tracing
+* [ ] Grammar composition
+    * [ ] All (?) grammar transforms should apply to composed grammars:
+        * Trace
+        * Optimizations
+* [ ] Grammar inheritance
 * [ ] Error recovery
 * [ ] CST decimation
 * [ ] CST transforms
 * [ ] Semantic actions
+* [ ] Parametrized rules
 * [ ] Lexical rules (whitespace handling)
+* [ ] Profiling
+
+## Optimizer
+
+* [ ] Do not automatically remove unused rules,
+        or add syntax to preserve alternative grammar entrypoints
 
 ## Compiler
 
