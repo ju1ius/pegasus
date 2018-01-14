@@ -96,7 +96,7 @@ final class CSTDumper extends NodeVisitor
                 '<error> Node expected, got: `%s` </error>',
                 var_export($node->value, true)
             ));
-        } elseif ($node->value) {
+        } elseif ($node instanceof Node\Terminal) {
             $this->output->write(sprintf('<d>: "</d><term>%s</term><d>"</d>', $node->value));
         }
         $this->output->writeln('');
