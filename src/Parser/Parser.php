@@ -101,16 +101,10 @@ abstract class Parser
 
         $result = $this->doParse($startRule);
 
-        if (!$result) {
+        if (!$result || $this->pos < strlen($source)) {
             $this->trace(0, $startRule);
             $this->afterParse($result);
             throw $this->trace->createParseError();
-        }
-
-        if ($this->pos < strlen($source)) {
-            $this->trace(0, $startRule);
-            $this->afterParse($result);
-            throw $this->trace->createIncompleteParseError($this->pos);
         }
 
         $this->afterParse($result);

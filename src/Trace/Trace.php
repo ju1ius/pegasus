@@ -3,7 +3,6 @@
 namespace ju1ius\Pegasus\Trace;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Parser\Exception\IncompleteParseError;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Source\SourceInfo;
 
@@ -63,17 +62,6 @@ final class Trace implements \IteratorAggregate
         );
 
         return new ParseError($message);
-    }
-
-    public function createIncompleteParseError(int $position): IncompleteParseError
-    {
-        $message = sprintf(
-            "%s%s\n",
-            $this->getExpectedTerminalsMessage(),
-            $this->source->getExcerpt($this->rightmostFailurePosition)
-        );
-
-        return new IncompleteParseError($message);
     }
 
     public function push(Expression $expr): TraceEntry
