@@ -26,6 +26,7 @@
         </testsuite>
         <testsuite name="Parsers">
             <directory>tests/Pegasus/Parser</directory>
+            <directory>tests/Pegasus/Trace</directory>
         </testsuite>
         <testsuite name="Optimizations">
             <directory>tests/Pegasus/Optimization</directory>

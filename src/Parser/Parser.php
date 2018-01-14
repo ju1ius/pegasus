@@ -13,8 +13,6 @@ namespace ju1ius\Pegasus\Parser;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\CST\Node;
-use ju1ius\Pegasus\Parser\Exception\IncompleteParseError;
-use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Trace\Trace;
 
 
@@ -67,12 +65,6 @@ abstract class Parser
     public $isCapturing = true;
 
     /**
-     * @internal
-     * @var bool
-     */
-    public $isTracing = false;
-
-    /**
      * @var Trace
      */
     protected $trace;
@@ -102,10 +94,26 @@ abstract class Parser
      */
     final public function parseAll(string $source, ?string $startRule = null)
     {
-        $result = $this->parse($source, 0, $startRule);
+        $this->source = $source;
+        $this->pos = 0;
+        $startRule = $startRule ?: $this->grammar->getStartRule();
+        $this->beforeParse();
+
+        $result = $this->doParse($startRule);
+
+        if (!$result) {
+            $this->trace(0, $startRule);
+            $this->afterParse($result);
+            throw $this->trace->createParseError();
+        }
+
         if ($this->pos < strlen($source)) {
+            $this->trace(0, $startRule);
+            $this->afterParse($result);
             throw $this->trace->createIncompleteParseError($this->pos);
         }
+
+        $this->afterParse($result);
 
         return $result;
     }
@@ -127,24 +135,26 @@ abstract class Parser
         $this->source = $text;
         $this->pos = $pos;
         $startRule = $startRule ?: $this->grammar->getStartRule();
-        $this->bindings = [];
-        $this->isCapturing = true;
-        $this->trace = new Trace($text);
-
-        $this->cutStack = new \SplStack();
-        $this->cutStack->push(false);
 
         $this->beforeParse();
+        $result = $this->doParse($startRule);
 
-        gc_disable();
-        $result = $this->apply($this->grammar[$startRule]);
-        gc_enable();
+        if (!$result) {
+            $this->trace($pos, $startRule);
+            $this->afterParse($result);
+            throw $this->trace->createParseError();
+        }
 
         $this->afterParse($result);
 
-        if (!$result) {
-            throw $this->trace->createParseError();
-        }
+        return $result;
+    }
+
+    private function doParse($startRule)
+    {
+        gc_disable();
+        $result = $this->apply($this->grammar[$startRule]);
+        gc_enable();
 
         return $result;
     }
@@ -223,7 +233,40 @@ abstract class Parser
         $this->cutStack->push(true);
     }
 
-    protected function beforeParse(): void {}
+    protected function beforeParse(): void
+    {
+        $this->bindings = [];
+        $this->isCapturing = true;
+        $this->trace = new Trace($this->source);
+        $this->cutStack = new \SplStack();
+        $this->cutStack->push(false);
+    }
 
-    protected function afterParse($result): void {}
+    protected function afterParse($result): void
+    {
+        $this->bindings = [];
+        //$this->cutStack = null;
+    }
+
+    protected function trace(int $pos, ?string $startRule)
+    {
+        $startRule = $startRule ?: $this->grammar->getStartRule();
+
+        $this->grammar->tracing();
+        $this->pos = $pos;
+        $this->isCapturing = false;
+        $this->bindings = [];
+        $this->cutStack = new \SplStack();
+        $this->cutStack->push(false);
+
+        $this->beforeTrace();
+        $this->apply($this->grammar[$startRule]);
+        $this->afterTrace();
+
+        $this->grammar->tracing(false);
+    }
+
+    protected function beforeTrace(): void {}
+
+    protected function afterTrace(): void {}
 }

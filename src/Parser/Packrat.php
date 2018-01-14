@@ -33,6 +33,7 @@ class Packrat extends RecursiveDescent
 
     protected function beforeParse(): void
     {
+        parent::beforeParse();
         // TODO: MemoizationStrategy
         $this->memo = [
             //false => new SlidingMemoTable($this->grammar),
@@ -40,12 +41,11 @@ class Packrat extends RecursiveDescent
             //true => new SlidingMemoTable($this->grammar),
             true => new PackratMemoTable(),
         ];
-        gc_disable();
     }
 
     protected function afterParse($result): void
     {
-        gc_enable();
+        parent::afterParse($result);
         $this->memo = null;
     }
 
