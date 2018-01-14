@@ -11,6 +11,9 @@
 namespace ju1ius\Pegasus\Expression;
 
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Expression\Exception\ChildNotFound;
+use ju1ius\Pegasus\Expression\Exception\InvalidChildType;
+
 
 /**
  * An expression which contains several other expressions.
@@ -174,7 +177,7 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
     public function offsetGet($offset)
     {
         if (!isset($this->children[$offset])) {
-            throw new \LogicException('No such offset!');
+            throw new ChildNotFound($offset);
         }
 
         return $this->children[$offset];
@@ -188,17 +191,12 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
      */
     public function offsetSet($offset, $value)
     {
+        if (!$value instanceof Expression) {
+            throw new InvalidChildType($value);
+        }
         // handle $expr[] = $child;
         if ($offset === null) {
             $offset = count($this->children);
-        }
-        if (!$value instanceof Expression) {
-            throw new \InvalidArgumentException(sprintf(
-                'Value passed to `%s` should be instance of `%s`, `%s` given.',
-                __METHOD__,
-                Expression::class,
-                is_object($value) ? get_class($value) : gettype($value)
-            ));
         }
 
         $this->children[(int)$offset] = $value;
