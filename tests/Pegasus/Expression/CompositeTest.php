@@ -12,6 +12,8 @@ namespace ju1ius\Pegasus\Tests\Expression;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Composite;
+use ju1ius\Pegasus\Expression\Exception\ChildNotFound;
+use ju1ius\Pegasus\Expression\Exception\InvalidChildType;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 /**
@@ -45,7 +47,7 @@ class CompositeTest extends ExpressionTestCase
         ]]);
         $this->assertSame($child, $comp[0]);
 
-        $this->expectException(\LogicException::class);
+        $this->expectException(ChildNotFound::class);
         $foo = $comp[1];
     }
 
@@ -71,7 +73,7 @@ class CompositeTest extends ExpressionTestCase
         $this->assertSame($child, $comp[0]);
         $this->assertSame($child2, $comp[1]);
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidChildType::class);
         $comp[] = new \stdClass();
     }
 
