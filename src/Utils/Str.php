@@ -16,6 +16,17 @@ namespace ju1ius\Pegasus\Utils;
 final class Str
 {
     /**
+     * Returns the type of the given value as a string.
+     *
+     * @param mixed $value
+     * @return string
+     */
+    public static function getType($value): string
+    {
+        return is_object($value) ? get_class($value) : gettype($value);
+    }
+
+    /**
      * @param object|string $value
      * @param int $namespaces
      *
