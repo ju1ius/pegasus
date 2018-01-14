@@ -12,6 +12,7 @@ namespace ju1ius\Pegasus\Tests;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar;
+use ju1ius\Pegasus\Grammar\Exception\InvalidRuleType;
 use ju1ius\Pegasus\Grammar\Exception\MissingStartRule;
 use ju1ius\Pegasus\Grammar\Exception\RuleNotFound;
 
@@ -64,7 +65,7 @@ class GrammarTest extends PegasusTestCase
 
     public function testItOnlyAcceptsExpressions()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidRuleType::class);
         $g = new Grammar();
         $g['foo'] = new \stdClass();
     }

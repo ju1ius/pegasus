@@ -10,6 +10,9 @@
 
 namespace ju1ius\Pegasus;
 
+use ju1ius\Pegasus\Grammar\Exception\InvalidRuleType;
+use ju1ius\Pegasus\Grammar\Exception\MissingTraitAlias;
+use ju1ius\Pegasus\Grammar\Exception\TraitNotFound;
 use ju1ius\Pegasus\MetaGrammar\MetaGrammarTransform;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar\Exception\AnonymousTopLevelExpression;
@@ -196,24 +199,30 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      * If no prefix is given, the imported grammar name is used.
      *
      * @param Grammar $other
-     * @param null|string $as
+     * @param string|null $as
      * @return $this
+     * @throws MissingTraitAlias
      */
     public function use(Grammar $other, ?string $as = null): self
     {
         $alias = $as ?: $other->getName();
         if (!$alias) {
-            // TODO: throw ImportError ?
+            throw new MissingTraitAlias();
         }
         $this->traits[$alias] = $other;
 
         return $this;
     }
 
+    /**
+     * @param string $alias
+     * @return Grammar
+     * @throws TraitNotFound
+     */
     public function getTrait(string $alias): Grammar
     {
         if (!isset($this->traits[$alias])) {
-            // TODO: throw ImportError ?
+            throw new TraitNotFound($alias);
         }
         return $this->traits[$alias];
     }
@@ -520,11 +529,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
     public function offsetSet($name, $expr)
     {
         if (!$expr instanceof Expression) {
-            throw new \InvalidArgumentException(sprintf(
-                'Value passed to `%s` must be instance of ju1ius\Pegasus\Expression, `%s` given.',
-                __METHOD__,
-                is_object($expr) ? get_class($expr) : gettype($expr)
-            ));
+            throw new InvalidRuleType($expr);
         }
 
         $expr->setName($name);
