@@ -12,6 +12,7 @@ namespace ju1ius\Pegasus\Parser;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Parser\Memoization\MemoTable;
+use ju1ius\Pegasus\Parser\Memoization\PackratMemoTable;
 use ju1ius\Pegasus\Parser\Memoization\SlidingMemoTable;
 
 
@@ -34,8 +35,10 @@ class Packrat extends RecursiveDescent
     {
         // TODO: MemoizationStrategy
         $this->memo = [
-            false => new SlidingMemoTable($this->grammar),
-            true => new SlidingMemoTable($this->grammar),
+            //false => new SlidingMemoTable($this->grammar),
+            false => new PackratMemoTable(),
+            //true => new SlidingMemoTable($this->grammar),
+            true => new PackratMemoTable(),
         ];
         gc_disable();
     }
