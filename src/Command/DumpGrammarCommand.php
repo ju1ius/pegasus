@@ -67,7 +67,7 @@ class DumpGrammarCommand extends Command
             $output->writeln($formatter->formatBlock(['No grammar given.'], 'error'));
             return 1;
         }
-        $grammar = Grammar::fromSyntax($syntax, null, $optimizationLevel);
+        $grammar = Grammar::fromSyntax($syntax, null, (int)$optimizationLevel);
 
         if ($input->getOption('highlight')) {
             Debug::highlight($grammar, $output);
