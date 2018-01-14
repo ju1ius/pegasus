@@ -1,6 +1,6 @@
-%name CssSelectors
-%import nth from "./nth.peg"
-%import core from "./core.peg"
+@name CssSelectors
+@import nth from "./nth.peg"
+@import core from "./core.peg"
 
 
 complex_selector_list           = complex_selector (COMMA _ complex_selector)*
@@ -57,6 +57,7 @@ attrib_flags    = IDENT _
 pseudo = ":"{1,2} (IDENT | functional_pseudo)
 
 functional_pseudo = FUNCTION _ value ")"
+value = !")"
 
 # https://www.w3.org/TR/css-namespaces-3/#css-qnames
 wqname_prefix = (IDENT | "*")? "|"

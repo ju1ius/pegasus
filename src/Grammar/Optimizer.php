@@ -85,8 +85,8 @@ final class Optimizer
      */
     public static function optimize(Grammar $grammar, $level = self::LEVEL_1)
     {
-        $optimizations = self::getOptimizations($level);
         $optimizer = new self();
+        $optimizations = self::getOptimizations($level);
         $optimizer->addPasses(
             (new OptimizationPass(true))->add(...$optimizations)
         );

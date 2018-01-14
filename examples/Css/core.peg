@@ -1,4 +1,4 @@
-%name CssCore
+@name CssCore
 
 component_value = preserved_token
                 | curly_block

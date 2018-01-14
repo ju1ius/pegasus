@@ -19,11 +19,14 @@
 
 * [ ] Do not automatically remove unused rules,
         or add syntax to preserve alternative grammar entrypoints
+* [ ] Combining quantified matches doesn't always work,
+        see examples/Css/nth with -O2
 
 ## Compiler
 
 * [ ] Import resolver
 * [ ] Update runtime / templates
+* [ ] Investigate virtual machines
 
 ## Examples
 

@@ -1,19 +1,17 @@
-%name CssNth
+@name CssNth
 
-nth = (
-    SIGN? INTEGER? N (_ SIGN _ INTEGER)?
+nth = SIGN? INTEGER? N (_ SIGN _ INTEGER)?
     | SIGN? INTEGER
     | ODD
     | EVEN
-) _
-
-_ = /\s*/
 
 ########## TOKENS ##########
 # TODO: case-insensitive
 
-INTEGER = /[0-9]+/
-N       = "n"
-ODD     = "odd"
-EVEN    = "even"
-SIGN    = /[+-]/
+@inline INTEGER = /[0-9]+/
+@inline N       = "n"
+@inline ODD     = "odd"
+@inline EVEN    = "even"
+@inline SIGN    = /[+-]/
+@inline _ = ~/\s*/
+
