@@ -5,6 +5,7 @@ namespace ju1ius\Pegasus\Expression\Terminal;
 
 
 use ju1ius\Pegasus\Expression\Terminal;
+use ju1ius\Pegasus\RegExp\Formatter;
 
 
 /**
@@ -30,7 +31,7 @@ abstract class PCREPattern extends Terminal
     public function __construct(string $pattern, array $flags = [], string $name = '')
     {
         parent::__construct($name);
-        $this->pattern = $pattern;
+        $this->pattern = Formatter::removeComments($pattern);
         $this->flags = array_unique(array_filter($flags));
 
         $this->compiledPattern = $this->compilePattern();
