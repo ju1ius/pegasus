@@ -79,11 +79,13 @@ final class Optimizer
      * Optimizes a grammar using the built-in optimization sets.
      *
      * @param Grammar $grammar
-     * @param int     $level
+     * @param int $level
+     * @param bool $deep
      *
      * @return Grammar
+     * @throws Exception\MissingTraitAlias
      */
-    public static function optimize(Grammar $grammar, $level = self::LEVEL_1)
+    public static function optimize(Grammar $grammar, $level = self::LEVEL_1, bool $deep = false)
     {
         $optimizer = new self();
         $optimizations = self::getOptimizations($level);
@@ -91,7 +93,7 @@ final class Optimizer
             (new OptimizationPass(true))->add(...$optimizations)
         );
 
-        return $optimizer->process($grammar);
+        return $optimizer->process($grammar, $deep);
     }
 
     /**
@@ -123,13 +125,23 @@ final class Optimizer
     }
 
     /**
-     * @param Grammar $grammar
+     * @param Grammar $grammar The grammar to process
+     * @param bool $deep Whether to process the grammar's parents and traits.
      *
      * @return Grammar
+     * @throws Exception\MissingTraitAlias
      */
-    public function process(Grammar $grammar)
+    public function process(Grammar $grammar, bool $deep = false)
     {
         $grammar = clone $grammar;
+        if ($deep) {
+            $parent = $this->process($grammar->getParent(), $deep);
+            $grammar->extends($parent);
+            foreach ($grammar->getTraits() as $alias => $trait) {
+                $trait = $this->process($trait, $deep);
+                $grammar->use($trait, $alias);
+            }
+        }
         /** @var OptimizationPass $pass */
         foreach ($this->passes as $pass) {
             $grammar = $pass->process($grammar);

@@ -74,7 +74,7 @@ class OptimizationPass
      *
      * @return Grammar
      */
-    public function process(Grammar $grammar, OptimizationContext $context = null): Grammar
+    public function process(Grammar $grammar, ?OptimizationContext $context = null): Grammar
     {
         $context = $context ?: OptimizationContext::of($grammar);
 

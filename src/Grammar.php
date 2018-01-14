@@ -48,7 +48,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
     /**
      * Imported grammars
      *
-     * @var array
+     * @var Grammar[]
      */
     protected $traits = [];
 
@@ -355,6 +355,15 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      */
     public function tracing(bool $enable = true): Grammar
     {
+        if ($this->parent) {
+            $this->parent->tracing($enable);
+        }
+        foreach ($this->traits as $trait) {
+            $trait->tracing($enable);
+        }
+        // On failure, a parser will re-parse the input with tracing enabled for error-reporting.
+        // Since we want to benefit from the memo table, we don't clone expressions
+        // so that they keep their UIDs.
         return (new GrammarTraverser(false))
             ->addVisitor(new GrammarTracer($enable))
             ->traverse($this);

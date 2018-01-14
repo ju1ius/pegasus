@@ -2,10 +2,10 @@
 
 * [ ] Error reporting
     * [x] Tracing
+* [x] Apply transforms to parent & traits:
+    * [x] Trace
+    * [x] Optimizations
 * [ ] Grammar composition
-    * [ ] All (?) grammar transforms should apply to composed grammars:
-        * Trace
-        * Optimizations
 * [ ] Grammar inheritance
 * [ ] Error recovery
 * [ ] CST decimation
@@ -19,8 +19,6 @@
 
 * [ ] Do not automatically remove unused rules,
         or add syntax to preserve alternative grammar entrypoints
-* [ ] Combining quantified matches doesn't always work,
-        see examples/Css/nth with -O2
 
 ## Compiler
 
