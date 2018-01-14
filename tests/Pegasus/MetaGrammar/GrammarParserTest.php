@@ -10,6 +10,7 @@
 
 namespace ju1ius\Pegasus\Tests\MetaGrammar;
 
+use ju1ius\Pegasus\Expression\Decorator\Cut;
 use ju1ius\Pegasus\Expression\Decorator\NodeAction;
 use ju1ius\Pegasus\Expression\Combinator\OneOf;
 use ju1ius\Pegasus\Expression\Combinator\Sequence;
@@ -267,6 +268,56 @@ class GrammarParserTest extends PegasusTestCase
             'Between 2 and 4 match' => [
                 'x = /x/{2,4}',
                 Grammar::fromArray(['x' => new Quantifier(new Match('x'), 2, 4)])
+            ],
+            'Cut operator' => [
+                'x = "["^',
+                Grammar::fromArray(['x' => new Cut(new Literal('['))])
+            ],
+            'Cut quantifier' => [
+                'x = "X"+^',
+                Grammar::fromArray(['x' => new Cut(new OneOrMore(new Literal('X')))])
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider getDecoratorPrecedenceProvider
+     *
+     * @param string $syntax
+     * @param Grammar $expected
+     */
+    public function testDecoratorPrecedence(string $syntax, Grammar $expected)
+    {
+        $grammar = $this->parseSyntax($syntax);
+        $this->assertGrammarEquals($expected, $grammar);
+    }
+
+    public function getDecoratorPrecedenceProvider()
+    {
+        return [
+            'ignore and quantifier' => [
+                'x = ~"foo"+',
+                Grammar::fromArray([
+                    'x' => new Ignore(new OneOrMore(new Literal('foo'))),
+                ])
+            ],
+            'token and cut' => [
+                'x = %"foo"^',
+                Grammar::fromArray([
+                    'x' => new Token(new Cut(new Literal('foo'))),
+                ])
+            ],
+            'cut and quantifier' => [
+                'x = "foo"+^',
+                Grammar::fromArray([
+                    'x' => new Cut(new OneOrMore(new Literal('foo'))),
+                ])
+            ],
+            'ignore and token' => [
+                'x = ~%"foo"',
+                Grammar::fromArray([
+                    'x' => new Ignore(new Token(new Literal('foo'))),
+                ])
             ],
         ];
     }

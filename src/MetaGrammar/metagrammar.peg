@@ -30,12 +30,16 @@ rule            = rule_directive* (identifier ~'=' _ <= RuleName) expression
 
 ##### Decorator expressions #####
 
-quantifier      = /(?> ([*+?]) | (?: \{ (\d+) (?:,(\d*))? \} ) )/ _
+# prefix
 token           = ~'%' prefixable
 ignore          = ~'~' prefixable
 assert          = ~'&' prefixable
 not             = ~'!' prefixable
 labeled         = IDENT ~':' labelable
+
+# postfix
+quantifier      = /(?> ([*+?]) | (?: \{ (\d+) (?:,(\d*))? \} ) )/ _
+cut             = "^" _
 
 ##### Terminal expressions #####
 
@@ -87,7 +91,7 @@ prefixable      = prefixed
 suffixable      = suffixed
                 | primary
 
-suffixed        = suffixable quantifier
+suffixed        = suffixable (quantifier | cut)
 
 primary         = parenthesized
                 | atom

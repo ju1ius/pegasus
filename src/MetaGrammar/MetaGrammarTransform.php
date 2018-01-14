@@ -13,6 +13,8 @@ namespace ju1ius\Pegasus\MetaGrammar;
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\CST\Transform;
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Expression\Decorator;
+use ju1ius\Pegasus\Expression\Decorator\Cut;
 use ju1ius\Pegasus\Expression\Decorator\NodeAction;
 use ju1ius\Pegasus\Expression\Combinator\OneOf;
 use ju1ius\Pegasus\Expression\Combinator\Sequence;
@@ -136,9 +138,11 @@ class MetaGrammarTransform extends Transform
         $this->parentGrammar = $name;
     }
 
-    private function leave_import_directive(Node $node, string $alias, string $path)
+    private function leave_import_directive(Node $node, string $alias, array $path)
     {
-        $this->imports[$alias] = $path;
+        [$quoteChar, $string] = $path;
+
+        $this->imports[$alias] = $string;
     }
 
     private function leave_ci_directive(Node $node, ...$children)
@@ -243,7 +247,7 @@ class MetaGrammarTransform extends Transform
         return new Token($prefixable);
     }
 
-    private function leave_quantifier(Node $node, $regexp): Quantifier
+    private function leave_quantifier(Node $node, Node $regexp): Quantifier
     {
         $groups = $regexp->attributes['groups'];
         if (!empty($groups['symbol'])) {
@@ -261,7 +265,12 @@ class MetaGrammarTransform extends Transform
         return new Quantifier(null, $min, $max);
     }
 
-    private function leave_suffixed(Node $node, $suffixable, Quantifier $suffix): Quantifier
+    private function leave_cut(Node $node, ...$args): Cut
+    {
+        return new Cut();
+    }
+
+    private function leave_suffixed(Node $node, Expression $suffixable, Decorator $suffix): Decorator
     {
         $suffix[0] = $suffixable;
 
@@ -272,11 +281,18 @@ class MetaGrammarTransform extends Transform
     // Terminal Expressions
     // --------------------------------------------------------------------------------------------------------------
 
-    private function leave_literal(Node $node, Node $regexp): Literal
+    private function leave_STRING(Node $node, Node $regexp): array
     {
-        list(, $quoteChar, $literal) = $regexp->attributes['groups'];
+        list(, $quoteChar, $string) = $regexp->attributes['groups'];
 
-        return new Literal($literal, '', $quoteChar);
+        return [$quoteChar, $string];
+    }
+
+    private function leave_literal(Node $node, $parts): Literal
+    {
+        [$quoteChar, $string] = $parts;
+
+        return new Literal($string, '', $quoteChar);
     }
 
     private function leave_word_literal(Node $node, string $word): Word

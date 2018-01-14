@@ -16,10 +16,10 @@ $QUANTIFIER_PATTERN = <<<'EOS'
 )
 EOS;
 
-$LITERAL_PATTERN = <<<'EOS'
+$STRING_PATTERN = <<<'EOS'
 (["'])                  # delimiter
     ((?:                # capture 0 or more
-        \\\\ .          # escaped character
+        \\.             # escaped character
         |               # or
         (?!\1) .        # anything but the delimiter
     )*)
@@ -29,7 +29,7 @@ EOS;
 $REGEXP_PATTERN = <<<'EOS'
 \/                      # delimiter
     ((?:                # capture 0 or more
-        \\\\.           # escaped character
+        \\.             # escaped character
         |               # or
         [^\/]           # anything but the delimiter
     )*)
@@ -75,7 +75,7 @@ $builder->rule('import_directive')->sequence()
     ->ignore()->literal('@import')->ref('_')
     ->ref('identifier')
     ->ignore()->literal('from')->ref('_')
-    ->ref('literal');
+    ->ref('STRING')->ref('_');
 
 $builder->rule('ws_directive')->sequence()
     ->ignore()->literal('@whitespace')->ref('_')
@@ -110,10 +110,8 @@ $builder->rule('rule')->sequence()
 //
 // decorator expressions
 // ------------------------------------------------------------------------------------------------------
-$builder->rule('quantifier')->sequence()
-    ->regexp($QUANTIFIER_PATTERN)
-    ->ref('_');
 
+// Prefix
 $builder->rule('token')->sequence()
     ->ignore()->literal('%')
     ->ref('prefixable');
@@ -129,6 +127,15 @@ $builder->rule('assert')->sequence()
 $builder->rule('not')->sequence()
     ->ignore()->literal('!')
     ->ref('prefixable');
+
+// Postfix
+$builder->rule('quantifier')->sequence()
+    ->regexp($QUANTIFIER_PATTERN)
+    ->ref('_');
+$builder->rule('cut')->sequence()
+    ->literal('^')
+    ->ref('_');
+
 //
 // terminal expressions
 // ------------------------------------------------------------------------------------------------------
@@ -155,7 +162,7 @@ $builder->rule('module_call')->sequence()
     ->ref('_');
 
 $builder->rule('literal')->sequence()
-    ->regexp($LITERAL_PATTERN)
+    ->ref('STRING')
     ->ref('_');
 
 $builder->rule('word_literal')->sequence()
@@ -247,7 +254,9 @@ $builder->rule('prefixable')->oneOf()
 
 $builder->rule('suffixed')->sequence()
     ->ref('suffixable')
-    ->ref('quantifier');
+    ->oneOf()
+        ->ref('cut')
+        ->ref('quantifier');
 
 $builder->rule('suffixable')->oneOf()
     ->ref('suffixed')
@@ -283,6 +292,7 @@ $builder->rule('label')->sequence()
     ->ignore()->literal(':');
 
 $builder->rule('IDENT')->match('[a-zA-Z_]\w*');
+$builder->rule('STRING')->regexp($STRING_PATTERN);
 //
 // whitespace
 // ------------------------------------------------------------------------------------------------------
