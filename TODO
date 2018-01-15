@@ -2,6 +2,10 @@
 
 * [ ] Error reporting
     * [x] Tracing
+    * [ ] Find a way to avoid mutation of the grammar, i.e. :
+        - Clone expressions in the visitor instead of the traverser
+        - copy the original expression id to the new trace
+        Problem is that this is not idempotent
 * [x] Apply transforms to parent & traits:
     * [x] Trace
     * [x] Optimizations
@@ -12,7 +16,7 @@
 * [ ] CST transforms
 * [ ] Semantic actions
 * [ ] Parametrized rules
-* [ ] Lexical rules (whitespace handling)
+* [ ] Lexical rules (w/ whitespace handling)
 * [ ] Profiling
 
 ## Optimizer

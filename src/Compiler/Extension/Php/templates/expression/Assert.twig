@@ -1,7 +1,5 @@
 {% extends "expr.twig" %}
 
-{# TODO: should we register a failure ? #}
-
 {% block matching %}
 {{ pos_var }} = $this->pos;
 {{ render_expr(expr[0], context) }}

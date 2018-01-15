@@ -29,11 +29,11 @@ class PhpTwigExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('repr', [$this, 'repr']),
-            new \Twig_SimpleFunction('repr_regexp', [$this, 'reprRegexp']),
-            new \Twig_SimpleFunction('result_varname', [$this, 'getResultVariableName']),
-            new \Twig_SimpleFunction('position_varname', [$this, 'getPositionVariableName']),
-            new \Twig_SimpleFunction('expr_comment', [$this, 'getExpressionComment']),
+            new \Twig_Function('repr', [$this, 'repr']),
+            new \Twig_Function('repr_regexp', [$this, 'reprRegexp']),
+            new \Twig_Function('result_varname', [$this, 'getResultVariableName']),
+            new \Twig_Function('position_varname', [$this, 'getPositionVariableName']),
+            new \Twig_Function('expr_comment', [$this, 'getExpressionComment']),
         ];
     }
 
@@ -43,7 +43,7 @@ class PhpTwigExtension extends \Twig_Extension
     public function getFilters()
     {
         return [
-            new \Twig_SimpleFilter('escape_comment', [$this, 'escapeBlockComment']),
+            new \Twig_Filter('escape_comment', [$this, 'escapeBlockComment']),
         ];
     }
 

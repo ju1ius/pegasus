@@ -67,15 +67,15 @@ class PegasusTwigExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('render_expr', [$this, 'renderExpression']),
-            new \Twig_SimpleFunction('render_rule', [$this, 'renderRule']),
+            new \Twig_Function('render_expr', [$this, 'renderExpression']),
+            new \Twig_Function('render_rule', [$this, 'renderRule']),
         ];
     }
 
     public function getFilters()
     {
         return [
-            new \Twig_SimpleFilter('indent', [$this, 'indent']),
+            new \Twig_Filter('indent', [$this, 'indent']),
         ];
     }
 
@@ -85,7 +85,7 @@ class PegasusTwigExtension extends \Twig_Extension
         $predicate = $predicate ?: 'trim';
         $out = '';
         // split lines while keeping linebreak chars
-        $lines = preg_split('/(?<=\r\n|\n|\r)/S', $text);
+        $lines = preg_split('/(?<=\n)/S', $text);
         foreach ($lines as $i => $line) {
             if ($i === 0) {
                 // skip first line to preserve existing space before twig opening tag

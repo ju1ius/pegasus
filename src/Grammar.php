@@ -85,6 +85,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      * @param int $optimizationLevel
      *
      * @return Grammar
+     * @throws MissingTraitAlias
      * @throws RuleNotFound
      */
     public static function fromArray(array $rules, ?string $startRule = null, int $optimizationLevel = 0)
@@ -110,8 +111,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      * @param int $optimizationLevel Optional optimization level.
      *
      * @return Grammar
-     * @throws Parser\Exception\IncompleteParseError
-     * @throws MissingStartRule
+     * @throws MissingTraitAlias
      */
     public static function fromSyntax(
         string $syntax,
@@ -133,12 +133,13 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
     /**
      * Factory method that constructs a Grammar object from an Expression.
      *
-     * @param Expression $expr      The expression to build the grammar from.
-     * @param string     $startRule Optional start rule name for the grammar.
-     * @param int        $optimizationLevel
+     * @param Expression $expr The expression to build the grammar from.
+     * @param string $startRule Optional start rule name for the grammar.
+     * @param int $optimizationLevel
      *
      * @return Grammar
      * @throws AnonymousTopLevelExpression If no named start rule could be determined.
+     * @throws MissingTraitAlias
      */
     public static function fromExpression(
         Expression $expr,
