@@ -21,11 +21,6 @@ use ju1ius\Pegasus\Utils\Str;
 class PegasusTwigExtension extends \Twig_Extension
 {
     /**
-     * @var \Twig_Environment
-     */
-    private $environment;
-
-    /**
      * @var CompilerInterface
      */
     private $compiler;
@@ -35,28 +30,9 @@ class PegasusTwigExtension extends \Twig_Extension
         $this->compiler = $compiler;
     }
 
-    public function initRuntime(\Twig_Environment $env)
-    {
-        parent::initRuntime($env);
-        $this->environment = $env;
-    }
-
     public function getName()
     {
         return 'pegasus';
-    }
-
-    public function getGlobals()
-    {
-        $globals = [];
-        try {
-            // if a template named macros exists,
-            // make it available globally
-            $macros = $this->environment->loadTemplate('macros.twig');
-            $globals['macros'] = $macros;
-        } catch (\Twig_Error_Loader $e) {}
-
-        return $globals;
     }
 
     public function getTokenParsers()
@@ -67,8 +43,8 @@ class PegasusTwigExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_Function('render_expr', [$this, 'renderExpression']),
-            new \Twig_Function('render_rule', [$this, 'renderRule']),
+            new \Twig_Function('render_expr', [$this, 'renderExpression'], ['needs_environment' => true]),
+            new \Twig_Function('render_rule', [$this, 'renderRule'], ['needs_environment' => true]),
         ];
     }
 
@@ -79,8 +55,12 @@ class PegasusTwigExtension extends \Twig_Extension
         ];
     }
 
-    public function indent(string $text, int $level = 1, int $size = 4, ?callable $predicate = null): string
-    {
+    public function indent(
+        string $text,
+        int $level = 1,
+        int $size = 4,
+        ?callable $predicate = null
+    ): string {
         $prefix = str_repeat(' ', $size * $level);
         $predicate = $predicate ?: 'trim';
         $out = '';
@@ -98,27 +78,32 @@ class PegasusTwigExtension extends \Twig_Extension
         return $out;
     }
 
-    public function renderRule(string $name, Expression $expr, CompilationContext $context): string
-    {
-        $tpl = $this->environment->loadTemplate('rule.twig');
-
-        return $tpl->render([
+    public function renderRule(
+        \Twig_Environment $env,
+        string $name,
+        Expression $expr,
+        CompilationContext $context
+    ): string {
+        return $env->render('rule.twig', [
             'expr' => $expr,
             'context' => $context->ofRule($name)
         ]);
     }
 
-    public function renderExpression(Expression $expr, CompilationContext $context, array $args = []): string
-    {
+    public function renderExpression(
+        \Twig_Environment $env,
+        Expression $expr,
+        CompilationContext $context,
+        array $args = []
+    ): string {
         $args = array_merge($args, [
             'expr' => $expr,
             'context' => $context
         ]);
 
         $template = $this->getTemplateForExpression($expr);
-        $tpl = $this->environment->loadTemplate($template);
 
-        return $tpl->render($args);
+        return $env->render($template, $args);
     }
 
     public function getTemplateForExpression(Expression $expr): string

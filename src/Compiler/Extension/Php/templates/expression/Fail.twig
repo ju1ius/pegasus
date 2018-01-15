@@ -3,7 +3,7 @@
 
 {% block matching %}
 {{ result_var }} = null;
-{{ macros.error(context.rule, expr) }}
+{{ failure(context.rule, expr) }}
 {%- endblock matching %}
 
 

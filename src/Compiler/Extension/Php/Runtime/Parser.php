@@ -22,7 +22,7 @@ abstract class Parser
     /**
      * @var string
      */
-    protected $text;
+    protected $source;
 
     /**
      * @var int
@@ -35,11 +35,6 @@ abstract class Parser
     protected $isCapturing = true;
 
     /**
-     * @var ParseError
-     */
-    protected $error;
-
-    /**
      * @var \Closure[]
      */
     protected $matchers = [];
@@ -50,46 +45,77 @@ abstract class Parser
     protected $startRule;
 
     /**
-     * @inheritdoc
+     * @var int
      */
-    final public function parseAll(string $text, ?string $startRule = null)
-    {
-        $result = $this->parse($text, 0, $startRule);
-        if ($this->pos < strlen($text)) {
-            throw new IncompleteParseError(
-                $text,
-                $this->pos,
-                $this->error
-            );
-        }
+    protected $rightmostFailurePosition = 0;
 
-        return $result;
+    /**
+     * @var array
+     */
+    protected $rightmostFailures = [];
+
+
+    /**
+     * Parse the entire text, using given start rule or the grammar's one,
+     * requiring the entire input to match the grammar.
+     *
+     * @api
+     * @param string $source
+     * @param string|null $startRule
+     *
+     * @return Node|true|null
+     */
+    final public function parse(string $source, ?string $startRule = null)
+    {
+        $this->isCapturing = true;
+        return $this->doParse($source, 0, $startRule, false);
     }
 
     /**
-     * @param string $text
-     * @param int $position
-     * @param null|string $startRule
+     * Parse text starting from given position, using given start rule or the grammar's one,
+     * but does not require the entire input to match the grammar.
+     *
+     * @api
+     * @param string $source
+     * @param int $pos
+     * @param string $startRule
+     *
      * @return Node|null|true
      */
-    public function parse(string $text, int $position = 0, ?string $startRule = null)
+    final public function partialParse(string $source, int $pos = 0, ?string $startRule = null)
     {
+        $this->isCapturing = true;
+        return $this->doParse($source, $pos, $startRule, true);
+    }
+
+    private function doParse(
+        string $source,
+        int $startPos,
+        ?string $startRule = null,
+        bool $allowPartial = false
+    ) {
         if (!$this->matchers) {
             $this->matchers = $this->buildMatchers();
         }
-        $this->text = $text;
-        $this->pos = $position;
-        $this->isCapturing = true;
-        $this->error = new ParseError($text);
+        $this->source = $source;
+        $this->pos = $startPos;
+        $this->rightmostFailurePosition = 0;
+        $startRule = $startRule ?: $this->startRule;
 
-        // disable garbage collection while parsing for speed
+        $this->beforeParse();
         gc_disable();
-        $result = $this->apply($startRule ?: $this->startRule);
-        gc_enable();
 
-        if (!$result) {
-            throw $this->error;
+        $result = $this->apply($startRule);
+        $parsedFully = $this->pos === strlen($source);
+
+        if (!$result || (!$parsedFully && !$allowPartial)) {
+            $this->afterParse($result);
+            gc_enable();
+            throw new ParseError();
         }
+
+        $this->afterParse($result);
+        gc_enable();
 
         return $result;
     }
@@ -118,16 +144,25 @@ abstract class Parser
     /**
      * @param string $rule
      * @param string $expr
-     * @param string $pos
+     * @param int $pos
      */
-    protected function registerFailure(string $rule, $expr, string $pos)
+    protected function registerFailure(string $rule, $expr, int $pos)
     {
-        if ($pos > $this->error->position) {
-            $this->error->rule = $rule;
-            $this->error->expr = $expr;
-            $this->error->position = $pos;
+        if ($pos >= $this->rightmostFailurePosition) {
+            $this->rightmostFailurePosition = $pos;
+            $rightmostFailures = $this->rightmostFailures[$pos] ?? [];
+            $rightmostFailures[] = [
+                'rule' => $rule,
+                'expr' => $expr,
+                'pos' => $pos,
+            ];
+            $this->rightmostFailures = $rightmostFailures;
         }
     }
+
+    protected function beforeParse() {}
+
+    protected function afterParse($result) {}
 
     /**
      * @return \Closure[]

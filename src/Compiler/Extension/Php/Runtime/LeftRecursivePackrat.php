@@ -15,8 +15,6 @@ use ju1ius\Pegasus\CST\Node;
 /**
  * A packrat parser implementing Wrath, Douglass & Millstein's algorithm
  * to fully support left-recursive rules.
- *
- * @see doc/algo/packrat-lr.pdf
  */
 class LeftRecursivePackrat extends Packrat
 {
@@ -30,20 +28,17 @@ class LeftRecursivePackrat extends Packrat
      */
     protected $lrStack;
 
-    /**
-     * @inheritdoc
-     */
-    public function parse(string $text, int $position = 0, ?string $startRule = null)
+    protected function beforeParse()
     {
+        parent::beforeParse();
         $this->heads = [];
         $this->lrStack = new \SplStack();
+    }
 
-        $result = parent::parse($text, $position, $startRule);
-
-        // free memory
+    protected function afterParse($result)
+    {
+        parent::afterParse($result);
         $this->heads = $this->lrStack = null;
-
-        return $result;
     }
 
     /**

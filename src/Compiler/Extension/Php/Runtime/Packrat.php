@@ -27,18 +27,14 @@ class Packrat extends Parser
      */
     protected $memo = [];
 
-    /**
-     * @inheritdoc
-     */
-    public function parse(string $text, int $position = 0, ?string $startRule = null)
+    protected function beforeParse()
     {
         $this->memo = [];
-        $result = parent::parse($text, $position, $startRule);
+    }
 
-        // free some memory
+    protected function afterParse($result)
+    {
         $this->memo = [];
-
-        return $result;
     }
 
     /**

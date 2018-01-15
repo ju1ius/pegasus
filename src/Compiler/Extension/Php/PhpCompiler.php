@@ -66,15 +66,9 @@ class PhpCompiler extends Compiler
     /**
      * @inheritdoc
      */
-    protected function renderParser(string $outputDirectory, array $args = []): string
+    protected function renderParser(array $args = []): string
     {
-        $output = $this->renderTemplate('parser.twig', $args);
-        if ($outputDirectory === 'php://stdout') {
-            $output_file = $outputDirectory;
-        } else {
-            $output_file = $outputDirectory . '/' . $args['class'] . '.php';
-        }
-        file_put_contents($output_file, $output);
+        return $this->renderTemplate('parser.twig', $args);
     }
 
     /**

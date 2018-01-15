@@ -34,6 +34,9 @@
         <testsuite name="MetaGrammar">
             <directory>tests/Pegasus/MetaGrammar</directory>
         </testsuite>
+        <testsuite name="Compiler">
+            <directory>tests/Pegasus/Compiler</directory>
+        </testsuite>
     </testsuites>
 
     <filter>

@@ -39,22 +39,22 @@ interface CompilerInterface
 
     /**
      * @param string $path
-     * @param string $outputDirectory
      * @param array $args
+     * @return string
      */
-    public function compileFile(string $path, string $outputDirectory = '', array $args = []): void;
+    public function compileFile(string $path, array $args = []): string;
 
     /**
      * @param string $syntax
-     * @param string $outputDirectory
      * @param array $args
+     * @return string
      */
-    public function compileSyntax(string $syntax, string $outputDirectory, array $args = []): void;
+    public function compileSyntax(string $syntax, array $args = []): string;
 
     /**
      * @param Grammar $grammar
-     * @param string $outputDirectory
      * @param array $args
+     * @return string
      */
-    public function compileGrammar(Grammar $grammar, string $outputDirectory, array $args = []): void;
+    public function compileGrammar(Grammar $grammar, array $args = []): string;
 }

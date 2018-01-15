@@ -34,6 +34,9 @@ class PhpTwigExtension extends \Twig_Extension
             new \Twig_Function('result_varname', [$this, 'getResultVariableName']),
             new \Twig_Function('position_varname', [$this, 'getPositionVariableName']),
             new \Twig_Function('expr_comment', [$this, 'getExpressionComment']),
+            new \Twig_Function('failure', [$this, 'renderFailure'], ['needs_environment' => true]),
+            new \Twig_Function('start_non_capturing', [$this, 'renderStartNonCapturing'], ['needs_environment' => true]),
+            new \Twig_Function('end_non_capturing', [$this, 'renderEndNonCapturing'], ['needs_environment' => true]),
         ];
     }
 
@@ -130,5 +133,24 @@ class PhpTwigExtension extends \Twig_Extension
     public function getPositionVariableName(Expression $expr)
     {
         return sprintf('$pos_%s', $expr->id);
+    }
+
+    public function renderFailure(\Twig_Environment $env, string $rule, Expression $expr, string $pos = '$this->pos')
+    {
+        return $env->render('helper/failure.twig', [
+            'rule' => $rule,
+            'expr' => $expr,
+            'pos' => $pos,
+        ]);
+    }
+
+    public function renderStartNonCapturing(\Twig_Environment $env, Expression $expr)
+    {
+        return $env->render('helper/start_non_capturing.twig', ['expr' => $expr]);
+    }
+
+    public function renderEndNonCapturing(\Twig_Environment $env, Expression $expr)
+    {
+        return $env->render('helper/end_non_capturing.twig', ['expr' => $expr]);
     }
 }

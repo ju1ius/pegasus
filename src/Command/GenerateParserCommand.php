@@ -97,17 +97,12 @@ class GenerateParserCommand extends Command
             } else {
                 $syntax = $this->readStandardInput();
             }
-            $compiler->compileSyntax(
-                $syntax,
-                $input->getOption('output-dir'),
-                $compilerOptions
-            );
+            $code = $compiler->compileSyntax($syntax, $compilerOptions);
         } else {
-            $compiler->compileFile(
-                $grammarPath,
-                $input->getOption('output-dir'),
-                $compilerOptions
-            );
+            $code = $compiler->compileFile($grammarPath, $compilerOptions);
         }
+
+        // TODO: write to files !
+        echo $code . PHP_EOL;
     }
 }

@@ -8,9 +8,9 @@
 {%- endblock matching %}
 
 {% block capturing %}
-{{ macros.start_non_capturing(expr) }}
+{{ start_non_capturing(expr) }}
 {{ render_expr(expr[0], context.matching()) }}
 {{ expr_comment(expr, 'result') }}
 {{ result_var }} = {{ result_varname(expr[0]) }};
-{{ macros.end_non_capturing(expr) }}
+{{ end_non_capturing(expr) }}
 {%- endblock capturing %}

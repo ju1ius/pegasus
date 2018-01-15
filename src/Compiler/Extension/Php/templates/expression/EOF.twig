@@ -2,9 +2,9 @@
 
 
 {% block matching %}
-{{ result_var }} = !isset($this->text[$this->pos]);
+{{ result_var }} = !isset($this->source[$this->pos]);
 if (!{{ result_var }}) {
-    {{ macros.error(context.rule, expr)|indent }}
+    {{ failure(context.rule, expr)|indent }}
 }
 {%- endblock matching %}
 

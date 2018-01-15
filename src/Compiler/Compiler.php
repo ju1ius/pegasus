@@ -26,12 +26,11 @@ abstract class Compiler implements CompilerInterface
     }
 
     /**
-     * @param string $outputDirectory
      * @param array $args
      *
      * @return string
      */
-    abstract protected function renderParser(string $outputDirectory, array $args = []): string;
+    abstract protected function renderParser(array $args = []): string;
 
     /**
      * Override this to add optimizations
@@ -57,51 +56,52 @@ abstract class Compiler implements CompilerInterface
 
     /**
      * @param string $path
-     * @param string $outputDirectory
      * @param array $args
+     * @return string
      */
-    public function compileFile(string $path, string $outputDirectory = '', array $args = []): void
+    public function compileFile(string $path, array $args = []): string
     {
-        if (!$outputDirectory) {
-            $outputDirectory = dirname($path);
-        }
         if (empty($args['name'])) {
             $args['name'] = ucfirst(explode('.', basename($path))[0]);
         }
         $syntax = file_get_contents($path);
-        $this->compileSyntax($syntax, $outputDirectory, $args);
+
+        return $this->compileSyntax($syntax, $args);
     }
 
     /**
      * @param string $syntax
-     * @param string $outputDirectory
      * @param array $args
+     * @return string
+     * @throws Grammar\Exception\MissingTraitAlias
      */
-    public function compileSyntax(string $syntax, string $outputDirectory, array $args = []): void
+    public function compileSyntax(string $syntax, array $args = []): string
     {
         $grammar = Grammar::fromSyntax($syntax);
-        $name = $grammar->getName();
-        if ($name) {
-            $args['class'] = ucfirst($name);
-        } else {
-            if (empty($args['name'])) {
-                throw new \InvalidArgumentException(
-                    'You must provide a name for the grammar'
-                    . ', either with the %name directive or by passing a "name" parameter to the arguments array.'
-                );
+        if (empty($args['class'])) {
+            if ($name = $grammar->getName()) {
+                $args['class'] = ucfirst($name);
+            } else {
+                if (empty($args['name'])) {
+                    throw new \InvalidArgumentException(
+                        'You must provide a name for the grammar'
+                        . ', either with the %name directive or by passing a "name" parameter to the arguments array.'
+                    );
+                }
+                $args['class'] = $args['name'];
+                unset($args['name']);
             }
-            $args['class'] = $args['name'];
-            unset($args['name']);
         }
-        $this->compileGrammar($grammar, $outputDirectory, $args);
+
+        return $this->compileGrammar($grammar, $args);
     }
 
     /**
      * @param Grammar $grammar
-     * @param string $outputDirectory
      * @param array $args
+     * @return string
      */
-    public function compileGrammar(Grammar $grammar, string $outputDirectory, array $args = []): void
+    public function compileGrammar(Grammar $grammar, array $args = []): string
     {
         $args['base_class'] = $this->getParserClass();
         $grammar = $this->optimizeGrammar($grammar);
@@ -117,14 +117,12 @@ abstract class Compiler implements CompilerInterface
         }
         $args['context'] = $context;
 
-        $this->renderParser($outputDirectory, $args);
+        return $this->renderParser($args);
     }
 
     protected function renderTemplate(string $tpl, array $args = []): string
     {
-        $tpl = $this->twig->loadTemplate($tpl);
-
-        return $tpl->render($args);
+        return $this->twig->render($tpl, $args);
     }
 
     protected function setupTwigEnvironment(): void

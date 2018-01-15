@@ -8,20 +8,20 @@
 {{ expr_comment(expr, 'result') }}
 {{ result_var }} = !{{ result_varname(expr[0]) }};
 if (!{{ result_var }}) {
-    {{ macros.error(context.rule, expr, pos_var)|indent }}
+    {{ failure(context.rule, expr, pos_var)|indent }}
 }
 $this->pos = {{ pos_var }};
 {%- endblock matching %}
 
 {% block capturing %}
 {{ pos_var }} = $this->pos;
-{{ macros.start_non_capturing(expr) }}
+{{ start_non_capturing(expr) }}
 {{ render_expr(expr[0], context.matching()) }}
 {{ expr_comment(expr, 'result') }}
 {{ result_var }} = !{{ result_varname(expr[0]) }};
-{{ macros.end_non_capturing(expr) }}
+{{ end_non_capturing(expr) }}
 if (!{{ result_var }}) {
-    {{ macros.error(context.rule, expr, pos_var)|indent }}
+    {{ failure(context.rule, expr, pos_var)|indent }}
 }
 $this->pos = {{ pos_var }};
 {%- endblock capturing %}

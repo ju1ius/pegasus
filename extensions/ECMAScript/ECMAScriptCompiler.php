@@ -64,7 +64,7 @@ class ECMAScriptCompiler extends Compiler
     /**
      * @inheritDoc
      */
-    protected function renderParser(string $outputDirectory, array $args = []): string
+    protected function renderParser(array $args = []): string
     {
         $output = $this->renderTemplate('parser.twig', $args);
         if ($outputDirectory === 'php://stdout') {

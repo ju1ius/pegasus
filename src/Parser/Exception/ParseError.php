@@ -11,7 +11,4 @@
 namespace ju1ius\Pegasus\Parser\Exception;
 
 
-/**
- * A call to Expression::parse() or match() didn't match.
- */
 class ParseError extends \RuntimeException {}
