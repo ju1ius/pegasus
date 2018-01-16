@@ -11,6 +11,9 @@
 namespace ju1ius\Pegasus\Expression\Decorator;
 
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\CST\Node;
+use ju1ius\Pegasus\Parser\Parser;
+
 
 /**
  * An expression that succeeds whether or not the contained one does.
@@ -47,6 +50,26 @@ final class Optional extends Quantifier
      */
     public function isOptional(): bool
     {
+        return true;
+    }
+
+    public function match(string $text, Parser $parser)
+    {
+        $start = $parser->pos;
+        $capturing = $parser->isCapturing;
+
+        $result = $this->children[0]->match($text, $parser);
+
+        if ($capturing) {
+            return new Node\Quantifier(
+                $this->name,
+                $start,
+                $parser->pos,
+                $result ? [$result] : [],
+                true
+            );
+        }
+
         return true;
     }
 }

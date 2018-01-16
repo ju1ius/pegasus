@@ -49,8 +49,9 @@ final class NodeAction extends Decorator
     public function match(string $text, Parser $parser)
     {
         $start = $parser->pos;
+        $capturing = $parser->isCapturing;
         if ($result = $this->children[0]->match($text, $parser)) {
-            if (!$parser->isCapturing) {
+            if (!$capturing) {
                 return $result;
             }
             if ($result === true) {
