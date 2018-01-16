@@ -94,13 +94,25 @@ class GrammarParserTest extends PegasusTestCase
                 'x = "x"',
                 Grammar::fromArray(['x' => new Literal('x', 'x', '"')])
             ],
+            'double-quoted literal with escaped characters' => [
+                'x = "x \" x"',
+                Grammar::fromArray(['x' => new Literal('x \" x', 'x', '"')])
+            ],
             'single-quoted literal' => [
                 "x = 'x'",
                 Grammar::fromArray(['x' => new Literal('x', 'x', "'")])
             ],
+            'single-quoted literal with escaped characters' => [
+                "x = 'x \' x'",
+                Grammar::fromArray(['x' => new Literal("x \' x", 'x', "'")])
+            ],
             'match' => [
                 'x = /x/',
                 Grammar::fromArray(['x' => new Match('x', [], 'x')])
+            ],
+            'match with escaped delimiter' => [
+                'x = /x \/ x/',
+                Grammar::fromArray(['x' => new Match('x \/ x', [], 'x')])
             ],
             'match with flags' => [
                 'x = /x/i',
