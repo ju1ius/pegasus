@@ -93,6 +93,8 @@ abstract class Parser
      */
     final public function parse(string $source, ?string $startRule = null)
     {
+        $this->isCapturing = true;
+
         return $this->doParse($source, 0, $startRule, false);
     }
 
@@ -109,6 +111,8 @@ abstract class Parser
      */
     final public function partialParse(string $text, int $pos = 0, ?string $startRule = null)
     {
+        $this->isCapturing = true;
+
         return $this->doParse($text, $pos, $startRule, true);
     }
 
@@ -218,7 +222,6 @@ abstract class Parser
     protected function beforeParse(): void
     {
         $this->bindings = [];
-        $this->isCapturing = true;
         $this->trace = new Trace($this->source);
         $this->cutStack = new \SplStack();
         $this->cutStack->push(false);

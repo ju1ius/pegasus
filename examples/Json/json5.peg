@@ -1,0 +1,21 @@
+@import JSON from "./json.peg"
+
+@grammar Json5
+@extends JSON
+
+# A superset of JSON, allowing comments, trailing commas & naked identifiers
+
+json5       = super::json
+members     = pair (COMMA pair)* COMMA?
+elements    = value (COMMA value)* COMMA?
+pair        = key COLON value
+key         = string | identifier
+identifier  = /[a-zA-Z_][\w]*/ _
+
+@inline COMMA = "," _
+@inline COLON = ":" _
+
+@inline _ = ~(WS | COMMENT | LINE_COMMENT)*
+@inline WS = /\s+/
+@inline COMMENT = "/*" !"*/"* "*/"
+@inline LINE_COMMENT = "//" !"\n"*
