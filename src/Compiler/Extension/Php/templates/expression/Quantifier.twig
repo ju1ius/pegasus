@@ -1,17 +1,37 @@
+{% extends "expr.twig" %}
+
 {% set result_var = result_varname(expr) %}
 {% set pos_var = position_varname(expr) %}
 {% set count_var = '$count_' ~ expr.id %}
 {% set children_var = '$children_' ~ expr.id %}
 {% set subres_var = result_varname(expr[0]) %}
-{{ expr_comment(expr) }}
+
+{% block common_header %}
 {{ result_var }} = null;
 {{ pos_var }} = $this->pos;
 {{ count_var }} = 0;
+{%- endblock %}
+
+{% block common_loop %}
+{{ render_expr(expr[0], context) }}
+if (!{{ subres_var }}) break;
+{{ count_var }}++;
+{%- endblock %}
+
+{% block matching %}
+{{ block('common_header') }}
+while ({{ count_var }} < {{ expr.upperBound }}) {
+    {{ block('common_loop')|indent }}
+}
+if ({{ count_var }} >= {{ expr.lowerBound }}) {{ result_var }} = true;
+else $this->pos = {{ pos_var }};
+{%- endblock %}
+
+{% block capturing %}
+{{ block('common_header') }}
 {{ children_var }} = $this->isCapturing ? [] : null;
 while ({{ count_var }} < {{ expr.upperBound }}) {
-    {{ render_expr(expr[0], context)|indent }}
-    if (!{{ subres_var }}) break;
-    {{ count_var }}++;
+    {{ block('common_loop')|indent }}
     if ($this->isCapturing) {{ children_var }}[] = {{ subres_var }};
 }
 if ({{ count_var }} >= {{ expr.lowerBound }}) {
@@ -19,3 +39,4 @@ if ({{ count_var }} >= {{ expr.lowerBound }}) {
 } else {
     $this->pos = {{ pos_var }};
 }
+{%- endblock %}

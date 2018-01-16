@@ -2,18 +2,14 @@
 
 {% set subres_var = result_varname(expr[0]) %}
 
-
 {% block matching %}
 {{ pos_var }} = $this->pos;
 {{ render_expr(expr[0], context) }}
-{{ expr_comment(expr, 'result') }}
-if ({{ subres_var }}) {
-    $bindings['{{ expr.label }}'] = substr($this->source, {{ pos_var }}, $this->pos - {{ pos_var }});
-}
 {{ result_var }} = {{ subres_var }};
-{%- endblock matching %}
+if ({{ result_var }}) $this->cut({{ pos_var }});
+{%- endblock %}
 
 
 {% block capturing %}
 {{ block('matching') }}
-{%- endblock capturing %}
+{%- endblock %}

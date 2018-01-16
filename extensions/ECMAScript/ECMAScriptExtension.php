@@ -10,6 +10,7 @@
 
 namespace ju1ius\Pegasus\Compiler\Extension\ECMAScript;
 
+use ju1ius\Pegasus\Compiler\CompilerInterface;
 use ju1ius\Pegasus\Compiler\Extension;
 
 /**
@@ -36,7 +37,7 @@ class ECMAScriptExtension extends Extension
     /**
      * @inheritDoc
      */
-    public function getCompiler(): Compiler
+    public function getCompiler(): CompilerInterface
     {
         return new ECMAScriptCompiler();
     }

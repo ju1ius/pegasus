@@ -109,6 +109,9 @@ class PegasusTwigExtension extends \Twig_Extension
     public function getTemplateForExpression(Expression $expr): string
     {
         if ($expr instanceof Quantifier) {
+            if ($expr->isOptional()) {
+                return 'expression/Optional.twig';
+            }
             return 'expression/Quantifier.twig';
         }
         if ($expr instanceof Match) {

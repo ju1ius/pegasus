@@ -11,6 +11,7 @@
 namespace ju1ius\Pegasus\Command;
 
 use ju1ius\Pegasus\Compiler\ExtensionRegistry;
+use ju1ius\Pegasus\Grammar\Optimizer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -39,6 +40,13 @@ class GenerateParserCommand extends Command
                 null,
                 InputOption::VALUE_REQUIRED,
                 'The class name of the generated parser.'
+            )
+            ->addOption(
+                'optimize',
+                'O',
+                InputOption::VALUE_REQUIRED,
+                'Optimization level to apply.',
+                Optimizer::LEVEL_1
             )
             ->addOption(
                 'extension-dir',
@@ -87,6 +95,7 @@ class GenerateParserCommand extends Command
         $compilerOptions = [
             'namespace' => $input->getOption('namespace'),
             'name' => $input->getOption('name'),
+            'optimization_level' => (int)$input->getOption('optimize'),
         ];
 
         $grammarPath = $input->getArgument('grammar');

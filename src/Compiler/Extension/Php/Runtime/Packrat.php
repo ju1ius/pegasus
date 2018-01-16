@@ -29,39 +29,63 @@ class Packrat extends Parser
 
     protected function beforeParse()
     {
-        $this->memo = [];
+        parent::beforeParse();
+        $this->memo = [
+            false => [],
+            true => [],
+        ];
     }
 
     protected function afterParse($result)
     {
+        parent::afterParse($result);
         $this->memo = [];
     }
 
     /**
      * @inheritdoc
      */
-    protected function apply(string $rule)
+    protected function apply($rule)
     {
         $pos = $this->pos;
         $capturing = (int)$this->isCapturing;
         $memo = $this->memo[$capturing][$pos][$rule] ?? null;
 
         if ($memo) {
-            $this->pos = $memo->end;
+            //$this->pos = $memo->end;
+            $this->pos = $memo[1];
 
-            return $memo->result;
+            //return $memo->result;
+            return $memo[0];
         }
 
         // Store a result of FAIL in the memo table before it evaluates the body of a rule.
         // This has the effect of making all left-recursive applications (both direct and indirect) fail.
-        $memo = new MemoEntry(null, $pos);
+        //$memo = new MemoEntry(null, $pos);
+        $memo = [null, $pos];
         $this->memo[$capturing][$pos][$rule] = $memo;
         // evaluate expression
         $result = $this->matchers[$rule]();
         // update the result in the memo table
-        $memo->result = $result;
-        $memo->end = $this->pos;
+        //$memo->result = $result;
+        //$memo->end = $this->pos;
+        $memo[0] = $result;
+        $memo[1] = $this->pos;
 
         return $result;
+    }
+
+    protected function cut(int $position)
+    {
+        $this->cutStack->pop();
+        $this->cutStack->push(true);
+        // clear memo entries for previous positions
+        foreach ($this->memo as $capturing => $table) {
+            foreach ($table as $pos => $rules) {
+                if ($pos < $position) {
+                    unset($this->memo[$capturing][$pos]);
+                }
+            }
+        }
     }
 }

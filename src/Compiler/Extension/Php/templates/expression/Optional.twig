@@ -1,0 +1,24 @@
+{% extends "expr.twig" %}
+
+{% set result_var = result_varname(expr) %}
+{% set pos_var = position_varname(expr) %}
+{% set children_var = '$children_' ~ expr.id %}
+{% set subres_var = result_varname(expr[0]) %}
+
+
+{% block matching %}
+{# TODO: do we need to backtrack in case of failure ? #}
+{{ render_expr(expr[0], context) }}
+{{ result_var }} = true;
+{%- endblock %}
+
+{% block capturing %}
+{# TODO: do we need to backtrack in case of failure ? #}
+{{ pos_var }} = $this->pos;
+{{ result_var }} = true;
+{{ render_expr(expr[0], context) }}
+if ($this->isCapturing) {
+    {{ children_var }} = {{ subres_var }} ? [{{ subres_var }}] : [];
+    {{ result_var }} = new Quantifier('{{ expr.name }}', {{ pos_var }}, $this->pos, {{ children_var }}, true);
+}
+{%- endblock %}

@@ -7,7 +7,7 @@
 public function match_{{ expr.name }}()
 {
 {% if context.needsBindings(expr.name) %}
-    $scope = [];
+    $bi = [];
 {% endif %}
     {{ render_expr(expr, context)|indent }}
 

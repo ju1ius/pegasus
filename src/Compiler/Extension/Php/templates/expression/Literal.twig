@@ -1,6 +1,7 @@
 {% extends "expr.twig" %}
 {#
     TODO: check performance of substr_compare
+    caveat: substr_compare warns if $pos is > strlen($text)
 #}
 {% set literal = repr(expr.literal) %}
 

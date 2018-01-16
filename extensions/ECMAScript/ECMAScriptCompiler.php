@@ -78,7 +78,7 @@ class ECMAScriptCompiler extends Compiler
     /**
      * @inheritDoc
      */
-    protected function optimizeGrammar(Grammar $grammar): Grammar
+    protected function optimizeGrammar(Grammar $grammar, int $optimizationLevel): Grammar
     {
         return Optimizer::optimize($grammar, Optimizer::LEVEL_2);
     }

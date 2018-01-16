@@ -22,8 +22,8 @@ $input = file_get_contents('/home/ju1ius/w3/embo/vhosts/lembobineuse.biz/compose
 $stopwatch->stop('load_data');
 
 // ----- Pegasus parse
-$parser = new Parser\RecursiveDescent($grammar);
-//$parser = new Parser\Packrat($grammar);
+//$parser = new Parser\RecursiveDescent($grammar);
+$parser = new Parser\Packrat($grammar);
 
 $stopwatch->start('parse_json');
 $probe->enable();

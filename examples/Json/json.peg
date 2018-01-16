@@ -1,10 +1,10 @@
 @grammar JSON
 
 json        = _ (object | array) EOF
-object      = ~'{' _ members? ~'}' _
+object      = ~'{'^ _ members? ~'}' _
 members     = pair (~',' _ pair)*
 pair        = string ~':' _ value
-array       = ~'[' _ elements? ~']' _
+array       = ~'['^ _ elements? ~']' _
 elements    = value (~',' _ value)*
 
 value       = object
@@ -15,7 +15,7 @@ value       = object
             | 'false' _   <= false
             | 'null' _    <= null
 
-string      = ~'"' /(?:\\.|[^"])*/ ~'"' _
+string      = ~'"' /(?:\\.|[^"]+)*/ ~'"' _
 number      = %(int frac? expo?) _
 
 int         = /-?(?:[1-9]\d*|0(?!\d))/

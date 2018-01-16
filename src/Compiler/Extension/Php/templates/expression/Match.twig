@@ -1,5 +1,6 @@
 {% extends "expr.twig" %}
 
+
 {% block matching %}
 if ({{ result_var }} = (bool)preg_match({{ repr_regexp(expr.compiledPattern) }}, $this->source, $matches, 0, $this->pos)) {
     $this->pos += strlen($matches[0]);
@@ -7,6 +8,7 @@ if ({{ result_var }} = (bool)preg_match({{ repr_regexp(expr.compiledPattern) }},
     {{ failure(context.rule, expr)|indent }}
 }
 {%- endblock matching %}
+
 
 {% block capturing %}
 if ({{ result_var }} = (bool)preg_match({{ repr_regexp(expr.compiledPattern) }}, $this->source, $matches, 0, $this->pos)) {

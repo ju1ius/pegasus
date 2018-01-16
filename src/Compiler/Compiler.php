@@ -12,6 +12,8 @@ namespace ju1ius\Pegasus\Compiler;
 
 use ju1ius\Pegasus\Compiler\Twig\Extension\PegasusTwigExtension;
 use ju1ius\Pegasus\Grammar;
+use ju1ius\Pegasus\Grammar\Optimizer;
+
 
 abstract class Compiler implements CompilerInterface
 {
@@ -36,10 +38,10 @@ abstract class Compiler implements CompilerInterface
      * Override this to add optimizations
      *
      * @param Grammar $grammar
-     *
+     * @param int $optimizationLevel
      * @return Grammar
      */
-    abstract protected function optimizeGrammar(Grammar $grammar): Grammar;
+    abstract protected function optimizeGrammar(Grammar $grammar, int $optimizationLevel): Grammar;
 
     public function getTwigEnvironment(): \Twig_Environment
     {
@@ -58,9 +60,9 @@ abstract class Compiler implements CompilerInterface
      * @param string $path
      * @param array $args
      * @return string
+     * @throws Grammar\Exception\MissingTraitAlias
      */
-    public function compileFile(string $path, array $args = []): string
-    {
+    public function compileFile(string $path, array $args = []): string {
         if (empty($args['name'])) {
             $args['name'] = ucfirst(explode('.', basename($path))[0]);
         }
@@ -77,7 +79,7 @@ abstract class Compiler implements CompilerInterface
      */
     public function compileSyntax(string $syntax, array $args = []): string
     {
-        $grammar = Grammar::fromSyntax($syntax);
+        $grammar = Grammar::fromSyntax($syntax, null, 0);
         if (empty($args['class'])) {
             if ($name = $grammar->getName()) {
                 $args['class'] = ucfirst($name);
@@ -104,7 +106,8 @@ abstract class Compiler implements CompilerInterface
     public function compileGrammar(Grammar $grammar, array $args = []): string
     {
         $args['base_class'] = $this->getParserClass();
-        $grammar = $this->optimizeGrammar($grammar);
+        $optimizationLevel = $args['optimization_level'] ?? Optimizer::LEVEL_1;
+        $grammar = $this->optimizeGrammar($grammar, $optimizationLevel);
         $context = CompilationContext::of($grammar);
         // analyse grammar
         $analysis = $context->getAnalysis();
@@ -120,7 +123,7 @@ abstract class Compiler implements CompilerInterface
         return $this->renderParser($args);
     }
 
-    protected function renderTemplate(string $tpl, array $args = []): string
+    public function renderTemplate(string $tpl, array $args = []): string
     {
         return $this->twig->render($tpl, $args);
     }

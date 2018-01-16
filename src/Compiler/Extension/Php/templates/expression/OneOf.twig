@@ -3,37 +3,32 @@
 {% set pos_var = position_varname(expr) %}
 
 
-{% block matching %}
+{% block body %}
 {{ result_var }} = null;
+$this->cutStack->push(false);
 do {
     {{ pos_var }} = $this->pos;
 {% for child in expr %}
     {% set subres_var = result_varname(child) -%}
     {{ render_expr(child, context)|indent }}
     if ({{ subres_var }}) {
-        {{ result_var }} = true;
+        {{ result_var }} = {{ context.isMatching ? 'true' : subres_var }};
         break;
     }
     $this->pos = {{ pos_var }};
 {% endfor %}
 } while (0);
-{%- endblock matching %}
+$this->cutStack->pop();
+{% endblock %}
+
+
+{% block matching %}
+{{ block('body') }}
+{%- endblock %}
 
 
 {% block capturing %}
-{{ result_var }} = null;
-do {
-    {{ pos_var }} = $this->pos;
-{% for child in expr %}
-    {% set subres_var = result_varname(child) -%}
-    {{ render_expr(child, context)|indent }}
-    if ({{ subres_var }}) {
-        {{ result_var }} = {{ subres_var }};
-        break;
-    }
-    $this->pos = {{ pos_var }};
-{% endfor %}
-} while (0);
+{{ block('body') }}
 {# If we're not a grammar rule, the result node is already lifted! #}
 {% if expr.name %}
 if ($this->isCapturing && {{ result_var }} && {{ result_var }} !== true) {
@@ -41,4 +36,4 @@ if ($this->isCapturing && {{ result_var }} && {{ result_var }} !== true) {
     else {{ result_var }} = new Decorator('{{ expr.name }}', {{ pos_var }}, $this->pos, {{ result_var }});
 }
 {%- endif %}
-{%- endblock capturing %}
+{%- endblock %}

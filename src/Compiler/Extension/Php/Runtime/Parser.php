@@ -54,6 +54,10 @@ abstract class Parser
      */
     protected $rightmostFailures = [];
 
+    /**
+     * @var \SplStack
+     */
+    protected $cutStack;
 
     /**
      * Parse the entire text, using given start rule or the grammar's one,
@@ -127,7 +131,7 @@ abstract class Parser
      *
      * @return Node|true|null
      */
-    abstract protected function apply(string $rule);
+    abstract protected function apply($rule);
 
     /**
      * Evaluates an expression.
@@ -160,7 +164,16 @@ abstract class Parser
         }
     }
 
-    protected function beforeParse() {}
+    protected function cut(int $position)
+    {
+        $this->cutStack->pop();
+        $this->cutStack->push(true);
+    }
+
+    protected function beforeParse() {
+        $this->cutStack = new \SplStack();
+        $this->cutStack->push(false);
+    }
 
     protected function afterParse($result) {}
 

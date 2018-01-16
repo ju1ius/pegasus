@@ -1,19 +1,19 @@
 {% extends "expr.twig" %}
 
 {% block matching %}
-{{ pos_var }} = $this->pos;
+{{ store_position(expr) }}
 {{ render_expr(expr[0], context) }}
 {{ expr_comment(expr, 'result') }}
 {{ result_var }} = {{ result_varname(expr[0]) }};
-$this->pos = {{ pos_var }};
+{{ backtrack(expr) }}
 {%- endblock matching %}
 
 {% block caturing %}
-{{ pos_var }} = $this->pos;
+{{ store_position(expr) }}
 {{ start_non_capturing(expr) }}
 {{ render_expr(expr[0], context.matching()) }}
 {{ expr_comment(expr, 'result') }}
 {{ result_var }} = {{ result_varname(expr[0]) }};
 {{ end_non_capturing(expr) }}
-$this->pos = {{ pos_var }};
+{{ backtrack(expr) }}
 {%- endblock caturing %}

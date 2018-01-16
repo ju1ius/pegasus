@@ -1,7 +1,7 @@
 {% extends "expr.twig" %}
 
 {% set subres_var = result_varname(expr[0]) %}
-
+{% set capturing_var = '$capturing_' ~ expr.id %}
 
 {% block matching %}
 {{ render_expr(expr[0], context) }}
@@ -15,7 +15,7 @@
 {{ result_var }} = {{ subres_var }};
 if ($this->isCapturing && {{ result_var }}) {
     if ({{ result_var }} === true) {{ result_var }} = new Node\Decorator('{{ expr.label }}', {{ pos_var }}, $this->pos);
-    elseif (!{{ result_var }}->name) {{ result_var }}->name = '{{ expr.label }}';
+    else if (!{{ result_var }}->name) {{ result_var }}->name = '{{ expr.label }}';
     else {{ result_var }} = new Node\Decorator('{{ expr.label }}', {{ pos_var }}, $this->pos, {{ result_var }});
 }
 {%- endblock capturing %}

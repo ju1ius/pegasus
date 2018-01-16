@@ -1,20 +1,19 @@
 {% extends "expr.twig" %}
 
-{# TODO: should we register a failure ? #}
 
 {% block matching %}
-{{ pos_var }} = $this->pos;
+{{ store_position(expr) }}
 {{ render_expr(expr[0], context) }}
 {{ expr_comment(expr, 'result') }}
 {{ result_var }} = !{{ result_varname(expr[0]) }};
 if (!{{ result_var }}) {
     {{ failure(context.rule, expr, pos_var)|indent }}
 }
-$this->pos = {{ pos_var }};
+{{ backtrack(expr) }}
 {%- endblock matching %}
 
 {% block capturing %}
-{{ pos_var }} = $this->pos;
+{{ store_position(expr) }}
 {{ start_non_capturing(expr) }}
 {{ render_expr(expr[0], context.matching()) }}
 {{ expr_comment(expr, 'result') }}
@@ -23,5 +22,5 @@ $this->pos = {{ pos_var }};
 if (!{{ result_var }}) {
     {{ failure(context.rule, expr, pos_var)|indent }}
 }
-$this->pos = {{ pos_var }};
+{{ backtrack(expr) }}
 {%- endblock capturing %}

@@ -42,7 +42,7 @@ do {
     {{ result_var }} = true;
 } while(0);
 if (!{{ result_var }}) $this->pos = {{ pos_var }};
-elseif ($this->isCapturing) {
+else if ($this->isCapturing) {
 {{ capturing_decidable
     ? block('capturing_decidable_success')
     : block('capturing_default_success')
@@ -55,11 +55,15 @@ elseif ($this->isCapturing) {
 {% if capture_count == 1 and not expr.name %}
     {{ result_var }} = {{ children_var }}[0];
 {%- elseif capture_count == 1 %}
-    if ({{ children_var }}[0]->name) {{ result_var }} = new Decorator('{{ expr.name }}', {{ pos_var }}, $this->pos, {{ children_var }}[0]);
-    else {{ result_var }} = {{ children_var }}[0]; {{ result_var }}->name = '{{ expr.name }}';
+    if ({{ children_var }}[0]->name) {
+        {{ result_var }} = new Decorator('{{ expr.name }}', {{ pos_var }}, $this->pos, {{ children_var }}[0]);
+    } else {
+        {{ result_var }} = {{ children_var }}[0];
+        {{ result_var }}->name = '{{ expr.name }}';
+    }
 {%- else %}
     {{ result_var }} = new Composite('{{ expr.name }}', {{ pos_var }}, $this->pos, {{ children_var }});
-{% endif %}
+{%- endif %}
 {%- endblock capturing_decidable_success %}
 
 
@@ -70,10 +74,16 @@ elseif ($this->isCapturing) {
         case 1: {{ result_var }} = {{ children_var }}[0]; break;
 {% else %}
         case 1:
-            if ({{ children_var }}[0]->name) {{ result_var }} = new Decorator('{{ expr.name }}', {{ pos_var }}, $this->pos, {{ children_var }}[0]);
-            else {{ result_var }} = {{ children_var }}[0]; {{ result_var }}->name = '{{ expr.name }}';
+            if ({{ children_var }}[0]->name) {
+                {{ result_var }} = new Decorator('{{ expr.name }}', {{ pos_var }}, $this->pos, {{ children_var }}[0]);
+            } else {
+                {{ result_var }} = {{ children_var }}[0];
+                {{ result_var }}->name = '{{ expr.name }}';
+            }
             break;
 {% endif %}
-        default: {{ result_var }} = new Composite('{{ expr.name }}', {{ pos_var }}, $this->pos, {{ children_var }});  break;
+        default:
+            {{ result_var }} = new Composite('{{ expr.name }}', {{ pos_var }}, $this->pos, {{ children_var }});
+            break;
     }
 {%- endblock capturing_default_success %}

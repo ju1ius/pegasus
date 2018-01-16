@@ -1,14 +1,17 @@
 <?php declare(strict_types=1);
 
+
 namespace ju1ius\Pegasus\Tests\Compiler\Extension\Php\Expression;
 
+
 use ju1ius\Pegasus\CST\Node;
+use ju1ius\Pegasus\CST\Node\Composite;
 use ju1ius\Pegasus\CST\Node\Terminal;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Tests\Compiler\Extension\Php\PhpCompilerTestCase;
 
 
-class LiteralTest extends PhpCompilerTestCase
+class SequenceTest extends PhpCompilerTestCase
 {
     /**
      * @dataProvider parseProvider
@@ -29,9 +32,21 @@ class LiteralTest extends PhpCompilerTestCase
     {
         return [
             [
-                'x = "foo"',
-                'foo',
-                new Terminal('x', 0, 3, 'foo'),
+                'x = "foo" "bar"',
+                'foobar',
+                new Composite('x', 0, 6, [
+                    new Terminal('', 0, 3, 'foo'),
+                    new Terminal('', 3, 6, 'bar'),
+                ]),
+            ],
+            [
+                'x = "foo" "bar" "baz"',
+                'foobarbaz',
+                new Composite('x', 0, 9, [
+                    new Terminal('', 0, 3, 'foo'),
+                    new Terminal('', 3, 6, 'bar'),
+                    new Terminal('', 6, 9, 'baz'),
+                ]),
             ],
         ];
     }
@@ -53,8 +68,8 @@ class LiteralTest extends PhpCompilerTestCase
     public function parseFailureProvider()
     {
         return [
-            ['x = "foo"', 'bar'],
-            ['x = "foo"', 'foobar'],
+            ['x = "foo" "bar"', 'bar'],
+            ['x = "foo" "bar"', 'foobarbaz'],
         ];
     }
 }

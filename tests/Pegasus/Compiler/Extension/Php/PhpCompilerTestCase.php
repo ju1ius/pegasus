@@ -20,7 +20,7 @@ class PhpCompilerTestCase extends PegasusTestCase
     protected function compile($syntaxOrGrammar)
     {
         if (is_string($syntaxOrGrammar)) {
-            $grammar = Grammar::fromSyntax($syntaxOrGrammar);
+            $grammar = Grammar::fromSyntax($syntaxOrGrammar, null, 0);
             $hash = spl_object_hash($grammar) . '_' . sha1($syntaxOrGrammar);
         } else {
             $grammar = $syntaxOrGrammar;

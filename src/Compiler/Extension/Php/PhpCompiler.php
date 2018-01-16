@@ -35,7 +35,7 @@ class PhpCompiler extends Compiler
     public function getTwigExtensions(): array
     {
         return [
-            new PhpTwigExtension(),
+            new PhpTwigExtension($this),
         ];
     }
 
@@ -74,8 +74,8 @@ class PhpCompiler extends Compiler
     /**
      * @inheritDoc
      */
-    protected function optimizeGrammar(Grammar $grammar): Grammar
+    protected function optimizeGrammar(Grammar $grammar, int $optimizationLevel): Grammar
     {
-        return Optimizer::optimize($grammar, Optimizer::LEVEL_2);
+        return Optimizer::optimize($grammar, $optimizationLevel);
     }
 }
