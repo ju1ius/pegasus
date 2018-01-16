@@ -5,18 +5,14 @@ grammar             = _ header rules
 
 ########### Directives ##########
 
-header              = header_directive*
-header_directive    = name_directive
-                    | start_directive
-                    | extends_directive
-                    | import_directive
+header              = import_directive* grammar_directive? header_directive*
+header_directive    = start_directive
                     | ws_directive
                     | ci_directive
 
-name_directive      = ~'@name' _ identifier
-start_directive     = ~'@start' _ identifier
-extends_directive   = ~'@extends' _ identifier
+grammar_directive   = ~'@grammar' _ identifier (~`extends` _ identifier)?
 import_directive    = ~'@import' _ identifier _ ~'from' _ literal
+start_directive     = ~'@start' _ identifier
 ws_directive        = ~'@whitespace' _ ~'=' _ unattributed
 ci_directive        = ~'@case_insensitive' _
 

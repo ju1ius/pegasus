@@ -109,11 +109,11 @@ class MetaGrammarTransform extends Transform
         if ($this->startRule) {
             $this->grammar->setStartRule($this->startRule);
         }
-        if ($this->parentGrammar) {
-            // TODO: handle parent grammar !
-        }
         if ($this->imports) {
             // TODO: handle imports !
+        }
+        if ($this->parentGrammar) {
+            // TODO: handle parent grammar !
         }
 
         return $this->grammar;
@@ -123,26 +123,25 @@ class MetaGrammarTransform extends Transform
     // Directives
     // --------------------------------------------------------------------------------------------------------------
 
-    private function leave_name_directive(Node $node, string $name)
-    {
-        $this->grammar->setName($name);
-    }
-
-    private function leave_start_directive(Node $node, string $name)
-    {
-        $this->startRule = $name;
-    }
-
-    private function leave_extends_directive(Node $node, string $name)
-    {
-        $this->parentGrammar = $name;
-    }
 
     private function leave_import_directive(Node $node, string $alias, array $path)
     {
         [$quoteChar, $string] = $path;
 
         $this->imports[$alias] = $string;
+    }
+
+    private function leave_grammar_directive(Node $node, string $name, ?string $parent = null)
+    {
+        $this->grammar->setName($name);
+        if ($parent) {
+            $this->parentGrammar = $name;
+        }
+    }
+
+    private function leave_start_directive(Node $node, string $name)
+    {
+        $this->startRule = $name;
     }
 
     private function leave_ci_directive(Node $node, ...$children)

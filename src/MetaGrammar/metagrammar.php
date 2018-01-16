@@ -34,32 +34,41 @@ $REGEXP_PATTERN = <<<'EOS'
         [^\/]           # anything but the delimiter
     )*)
 \/                      # delimiter
-([imsuUX]*)?            # optional flags
+([imsUX]*)?             # optional flags
 EOS;
 
 $builder = GrammarBuilder::create('Pegasus');
 $builder->rule('grammar')->sequence()
     ->ref('_')
-    ->ref('directives')
+    ->ref('header')
     ->ref('rules');
 //
 // Directives
 // ------------------------------------------------------------------------------------------------------
-$builder->rule('directives')->zeroOrMore()
-    ->ref('directive');
+$builder->rule('header')->sequence()
+    ->zeroOrMore()->ref('import_directive')
+    ->optional()->ref('grammar_directive')
+    ->zeroOrMore()->ref('header_directive');
 
-$builder->rule('directive')->oneOf()
-    ->ref('name_directive')
-    ->ref('start_directive')
-    ->ref('extends_directive')
-    ->ref('import_directive')
-    ->ref('ws_directive')
-    ->ref('ci_directive');
+$builder->rule('import_directive')->sequence()
+    ->ignore()->literal('@import')->ref('_')
+    ->ref('identifier')
+    ->ignore()->literal('from')->ref('_')
+    ->ref('STRING')->ref('_');
 
-$builder->rule('name_directive')->sequence()
+$builder->rule('grammar_directive')->sequence()
     ->ignore()->literal('@grammar')
     ->ref('_')
-    ->ref('identifier');
+    ->ref('identifier')
+    ->optional()->sequence()
+        ->ignore()->literal('extends')
+        ->ref('_')
+        ->ref('identifier');
+
+$builder->rule('header_directive')->oneOf()
+    ->ref('start_directive')
+    ->ref('ws_directive')
+    ->ref('ci_directive');
 
 $builder->rule('start_directive')->sequence()
     ->ignore()->literal('@start')
@@ -70,12 +79,6 @@ $builder->rule('extends_directive')->sequence()
     ->ignore()->literal('@extends')
     ->ref('_')
     ->ref('identifier');
-
-$builder->rule('import_directive')->sequence()
-    ->ignore()->literal('@import')->ref('_')
-    ->ref('identifier')
-    ->ignore()->literal('from')->ref('_')
-    ->ref('STRING')->ref('_');
 
 $builder->rule('ws_directive')->sequence()
     ->ignore()->literal('@whitespace')->ref('_')
