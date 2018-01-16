@@ -15,10 +15,10 @@
         </testsuite>
         <testsuite name="Expressions">
             <file>tests/Pegasus/ExpressionTest.php</file>
-            <file>tests/Pegasus/Expression/LiteralTest.php</file>
-            <file>tests/Pegasus/Expression/MatchTest.php</file>
-            <file>tests/Pegasus/Expression/RegExpTest.php</file>
-            <file>tests/Pegasus/Expression/QuantifierTest.php</file>
+            <file>tests/Pegasus/Expression/Terminal/LiteralTest.php</file>
+            <file>tests/Pegasus/Expression/Terminal/MatchTest.php</file>
+            <file>tests/Pegasus/Expression/Terminal/RegExpTest.php</file>
+            <file>tests/Pegasus/Expression/Decorator/QuantifierTest.php</file>
             <directory>tests/Pegasus/Expression</directory>
         </testsuite>
         <testsuite name="CST">
