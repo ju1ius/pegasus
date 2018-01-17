@@ -28,6 +28,26 @@ class FormatterTest extends TestCase
                 '( [a-z] | (?! [0-9] ) )*',
                 '([a-z]|(?![0-9]))*',
             ],
+            'removes inline comments' => [
+                '/foo(?# a foo)|bar(?# a bar)|baz(?# or a baz)/',
+                '/foo|bar|baz/',
+            ],
+            'preserves whitespace in character classes' => [
+                '[\t \n]',
+                '[\t \n]',
+            ],
+            'preserves hash in character classes' => [
+                '[\t#\n]',
+                '[\t#\n]',
+            ],
+            'handles POSIX character classes' => [
+                '[[:alnum:] #] #foo',
+                '[[:alnum:] #]',
+            ],
+            'handles weird character classes' => [
+                '[[\] #] #foo',
+                '[[\] #]',
+            ],
             'removes comments & whitespace' => [
                 <<<'EOS'
 /
