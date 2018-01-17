@@ -128,8 +128,9 @@ class PCREGroupInfoTest extends PegasusTestCase
             'Numbered capturing group' => [
                 'foo(bar|baz)',
                 [
-                    [
+                    1 => [
                         'type' => 'numbered',
+                        'parent' => null,
                         'capturing' => true,
                         'number' => 1,
                         'start' => 3,
@@ -141,8 +142,9 @@ class PCREGroupInfoTest extends PegasusTestCase
             'Named capturing groups' => [
                 "(?P<foo>foo)|(?<bar>bar)|(?'baz'baz)",
                 [
-                    [
+                    1 => [
                         'type' => 'named',
+                        'parent' => null,
                         'capturing' => true,
                         'name' => 'foo',
                         'number' => 1,
@@ -150,8 +152,9 @@ class PCREGroupInfoTest extends PegasusTestCase
                         'end' => 12,
                         'pattern' => '(?P<foo>foo)',
                     ],
-                    [
+                    2 => [
                         'type' => 'named',
+                        'parent' => null,
                         'capturing' => true,
                         'name' => 'bar',
                         'number' => 2,
@@ -159,8 +162,9 @@ class PCREGroupInfoTest extends PegasusTestCase
                         'end' => 24,
                         'pattern' => '(?<bar>bar)',
                     ],
-                    [
+                    3 => [
                         'type' => 'named',
+                        'parent' => null,
                         'capturing' => true,
                         'name' => 'baz',
                         'number' => 3,
@@ -173,8 +177,9 @@ class PCREGroupInfoTest extends PegasusTestCase
             'Non-capturing group' => [
                 'foo(?:bar|baz)',
                 [
-                    [
+                    1 => [
                         'type' => 'noncapturing',
+                        'parent' => null,
                         'capturing' => false,
                         'start' => 3,
                         'end' => 14,
@@ -185,8 +190,9 @@ class PCREGroupInfoTest extends PegasusTestCase
             'Atomic group' => [
                 'foo(?>bar|baz)',
                 [
-                    [
+                    1 => [
                         'type' => 'atomic',
+                        'parent' => null,
                         'capturing' => false,
                         'start' => 3,
                         'end' => 14,
@@ -197,29 +203,33 @@ class PCREGroupInfoTest extends PegasusTestCase
             'Assertions ' => [
                 '(?<!foo)foo(?<=foo)bar(?=baz)baz(?!foo)',
                 [
-                    [
+                    1 => [
                         'type' => 'assertion',
+                        'parent' => null,
                         'capturing' => false,
                         'start' => 0,
                         'end' => 8,
                         'pattern' => '(?<!foo)',
                     ],
-                    [
+                    2 => [
                         'type' => 'assertion',
+                        'parent' => null,
                         'capturing' => false,
                         'start' => 11,
                         'end' => 19,
                         'pattern' => '(?<=foo)',
                     ],
-                    [
+                    3 => [
                         'type' => 'assertion',
+                        'parent' => null,
                         'capturing' => false,
                         'start' => 22,
                         'end' => 29,
                         'pattern' => '(?=baz)',
                     ],
-                    [
+                    4 => [
                         'type' => 'assertion',
+                        'parent' => null,
                         'capturing' => false,
                         'start' => 32,
                         'end' => 39,
@@ -230,27 +240,64 @@ class PCREGroupInfoTest extends PegasusTestCase
             'Options setting' => [
                 'foo(?i-m:bar|baz)(?J)qux',
                 [
-                    [
+                    1 => [
                         'type' => 'setopt',
+                        'parent' => null,
                         'capturing' => false,
                         'start' => 3,
                         'end' => 17,
                         'pattern' => '(?i-m:bar|baz)',
+                        'options' => ['i' => true, 'm' => false],
+                        'applies_to' => 'self',
+                        'applies_from' => 3,
+                        'applies_until' => 17,
                     ],
-                    [
+                    2 => [
                         'type' => 'setopt',
+                        'parent' => null,
                         'capturing' => false,
                         'start' => 17,
                         'end' => 21,
                         'pattern' => '(?J)',
+                        'options' => ['J' => true],
+                        'applies_to' => 'parent',
+                        'applies_from' => 17,
+                        'applies_until' => 23,
+                    ],
+                ]
+            ],
+            'Options setting #2' => [
+                'a(b(?i)c|d)b',
+                [
+                    1 => [
+                        'type' => 'numbered',
+                        'parent' => null,
+                        'number' => 1,
+                        'capturing' => true,
+                        'start' => 1,
+                        'end' => 11,
+                        'pattern' => '(b(?i)c|d)',
+                    ],
+                    2 => [
+                        'type' => 'setopt',
+                        'parent' => 1,
+                        'capturing' => false,
+                        'start' => 3,
+                        'end' => 7,
+                        'pattern' => '(?i)',
+                        'options' => ['i' => true],
+                        'applies_to' => 'parent',
+                        'applies_from' => 3,
+                        'applies_until' => 11,
                     ],
                 ]
             ],
             'Branch reset' => [
                 'foo(?|bar|baz)',
                 [
-                    [
+                    1 => [
                         'type' => 'branchreset',
+                        'parent' => null,
                         'capturing' => false,
                         'start' => 3,
                         'end' => 14,
@@ -261,29 +308,33 @@ class PCREGroupInfoTest extends PegasusTestCase
             'Conditional groups' => [
                 'foo(?(?=bar)bar|baz)(?(1)qux)',
                 [
-                    [
+                    1 => [
                         'type' => 'conditional',
+                        'parent' => null,
                         'capturing' => false,
                         'start' => 3,
                         'end' => 20,
                         'pattern' => '(?(?=bar)bar|baz)',
                     ],
-                    [
+                    2 => [
                         'type' => 'condition',
+                        'parent' => 1,
                         'capturing' => false,
                         'start' => 5,
                         'end' => 12,
                         'pattern' => '(?=bar)',
                     ],
-                    [
+                    3 => [
                         'type' => 'conditional',
+                        'parent' => null,
                         'capturing' => false,
                         'start' => 20,
                         'end' => 29,
                         'pattern' => '(?(1)qux)',
                     ],
-                    [
+                    4 => [
                         'type' => 'condition',
+                        'parent' => 3,
                         'capturing' => false,
                         'start' => 22,
                         'end' => 25,
@@ -294,8 +345,9 @@ class PCREGroupInfoTest extends PegasusTestCase
             'Comments' => [
                 'foo(?# its a foo)|bar',
                 [
-                    [
+                    1 => [
                         'type' => 'comment',
+                        'parent' => null,
                         'capturing' => false,
                         'start' => 3,
                         'end' => 17,
