@@ -290,7 +290,19 @@ class PCREGroupInfoTest extends PegasusTestCase
                         'pattern' => '(1)',
                     ],
                 ]
-            ]
+            ],
+            'Comments' => [
+                'foo(?# its a foo)|bar',
+                [
+                    [
+                        'type' => 'comment',
+                        'capturing' => false,
+                        'start' => 3,
+                        'end' => 17,
+                        'pattern' => '(?# its a foo)',
+                    ]
+                ]
+            ],
         ];
     }
 }

@@ -31,6 +31,7 @@ final class PCREGroupInfo
           )
         | (?<setopt> [imsxUXJ-]+:?) # option setting
         | (?<branchreset> \|)       # pcre branch reset
+        | (?<comment> \#)           # inline comment
     )
 )
 /Sx
