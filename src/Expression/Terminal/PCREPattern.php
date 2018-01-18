@@ -5,7 +5,7 @@ namespace ju1ius\Pegasus\Expression\Terminal;
 
 
 use ju1ius\Pegasus\Expression\Terminal;
-use ju1ius\Pegasus\RegExp\Formatter;
+use ju1ius\Pegasus\RegExp\Normalizer;
 
 
 /**
@@ -31,9 +31,8 @@ abstract class PCREPattern extends Terminal
     public function __construct(string $pattern, array $flags = [], string $name = '')
     {
         parent::__construct($name);
-        $this->pattern = Formatter::removeComments($pattern);
         $this->flags = array_unique(array_filter($flags));
-
+        $this->pattern = Normalizer::normalize($pattern, $this->compileFlags());
         $this->compiledPattern = $this->compilePattern();
     }
 
@@ -65,7 +64,12 @@ abstract class PCREPattern extends Terminal
         return sprintf(
             '/\G%s/%s',
             $this->pattern,
-            implode('', array_unique(array_merge($this->flags, ['S', 'x'])))
+            implode('', $this->compileFlags())
         );
+    }
+
+    private function compileFlags()
+    {
+        return array_unique(array_merge($this->flags, ['S', 'x']));
     }
 }

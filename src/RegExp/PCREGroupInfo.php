@@ -29,13 +29,18 @@ final class PCREGroupInfo
             P?<(?<name>\w+)>
             |'(?<name>\w+)'
           )
-        | (?<setopt> [imsxUXJ-]+:?) # option setting
+        | (?<setopt>                # option setting
+            (?<setopt_opts> [imsxUXJ-]+)
+            (?<setopt_inside> :)?   # options only apply inside this group
+          )
         | (?<branchreset> \|)       # pcre branch reset
         | (?<comment> \#)           # inline comment
     )
 )
 /Sx
 REGEXP;
+
+    private $patternLength = 0;
 
     /**
      * @var int
@@ -103,7 +108,7 @@ REGEXP;
      *
      * - 'type' (string)        The type of the group. Can be one of:
      *                          'numbered', 'named', 'noncapturing', 'atomic', 'assertion', 'setopt', 'branchreset',
-     *                          'conditional', 'condition'.
+     *                          'conditional', 'condition', 'comment'.
      * - 'capturing' (boolean)  Whether the group is capturing
      * - 'number' (integer)     The group number if it's a capturing group.
      * - 'name' (string)        The group name if it's a named capturing group.
@@ -118,7 +123,7 @@ REGEXP;
     public function parse(string $pattern): array
     {
         $this->pos = 0;
-        $length = strlen($pattern);
+        $length = $this->patternLength = strlen($pattern);
         $this->groups = [];
         $this->groupCount = 0;
         $this->groupStack = new \SplStack();
@@ -148,7 +153,9 @@ REGEXP;
             throw new MissingClosingParenthesis($pattern);
         }
 
-        return array_values($this->groups);
+        $this->handleModifiers();
+
+        return $this->groups;
     }
 
     private function handleGroupStart(string $pattern): void
@@ -161,16 +168,23 @@ REGEXP;
 
             return;
         }
+
+        $p = $this->groupStack->isEmpty() ? null : $this->groupStack->top();
+        $parent = $p ? $this->groups[$p] : null;
+
         // conditional subpattern, push one group plus another for the condition
         if (substr($pattern, $this->pos, 3) === '(?(') {
-            $this->groups[++$this->groupCount] = [
+            $i = ++$this->groupCount;
+            $this->groups[$i] = [
                 'type' => 'conditional',
+                'parent' => $parent,
                 'capturing' => false,
                 'start' => $this->pos
             ];
             $this->groupStack->push($this->groupCount);
             $this->groups[++$this->groupCount] = [
                 'type' => 'condition',
+                'parent' => $i,
                 'capturing' => false,
                 'start' => $this->pos + 2
             ];
@@ -183,10 +197,19 @@ REGEXP;
     {
         $i = $this->groupStack->pop();
         $group = $this->groups[$i];
+        if (!$this->groupStack->isEmpty()) {
+            $group['parent'] = $this->groupStack->top();
+        }
         $this->pos++;
 
         $group['end'] = $this->pos;
         $group['pattern'] = substr($pattern, $group['start'], $group['end'] - $group['start']);
+
+        if ($group['type'] === 'setopt') {
+            if ($group['applies_to'] === 'self') {
+                $group['applies_until'] = $this->pos;
+            }
+        }
 
         $this->groups[$i] = $group;
     }
@@ -204,7 +227,8 @@ REGEXP;
         $groupInfo = [
             'type' => $type,
             'capturing' => $capturing,
-            'start' => $this->pos
+            'parent' => null,
+            'start' => $this->pos,
         ];
         if ($capturing) {
             $groupInfo['number'] = ++$this->captureCount;
@@ -212,7 +236,68 @@ REGEXP;
         if ($type === 'named') {
             $groupInfo['name'] = $filtered['name'];
         }
+        if ($type === 'setopt') {
+            preg_match_all('/-?[imsxUXJ]/', $filtered['setopt_opts'], $options);
+            $groupInfo['options'] = [];
+            foreach ($options[0] as $option) {
+                if ($option[0] === '-') {
+                    $groupInfo['options'][$option[1]] = false;
+                } else {
+                    $groupInfo['options'][$option[0]] = true;
+                }
+            }
+            if (!empty($filtered['setopt_inside'])) {
+                $groupInfo['applies_to'] = 'self';
+            } else {
+                $groupInfo['applies_to'] = 'parent';
+            }
+            $groupInfo['applies_from'] = $this->pos;
+        }
 
         return $groupInfo;
+    }
+
+    private function handleModifiers()
+    {
+        // get setopt groups
+        $setopts = [];
+        foreach ($this->groups as $i => $group) {
+            if ($group['type'] === 'setopt' && $group['applies_to'] === 'parent') {
+                if ($p = $group['parent']) {
+                    $parent = $this->groups[$p];
+                    $group['applies_until'] = $parent['end'];
+                } else {
+                    $group['applies_until'] = $this->pos - 1;
+                }
+                $this->groups[$i] = $group;
+            }
+            //unset($group['applies_to']);
+        }
+        //foreach ($setopts as $i => $setopt) {
+        //    $parent = $this->findParentGroup($setopt);
+        //    $setopt['applies_until'] = $parent ? $parent['end'] : $this->patternLength - 1;
+        //    $this->groups[$i] = $setopt;
+        //}
+    }
+
+    private function findParentGroup($group)
+    {
+        $parent = null;
+        $nearestStart = INF;
+        $nearestEnd = INF;
+        foreach ($this->groups as $candidate) {
+            if ($candidate['start'] >= $group['start'] || $candidate['end'] <= $group['end']) {
+                continue;
+            }
+            $distanceLeft = $group['start'] - $candidate['start'];
+            $distanceRight = $candidate['end'] - $group['end'];
+            if ($distanceLeft < $nearestStart && $distanceRight < $nearestEnd) {
+                $nearestStart = $distanceLeft;
+                $nearestEnd = $distanceRight;
+                $parent = $candidate;
+            }
+        }
+
+        return $parent;
     }
 }

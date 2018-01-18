@@ -44,7 +44,7 @@ class LeftRecursivePackrat extends Packrat
     /**
      * @inheritdoc
      */
-    protected function apply(string $rule)
+    protected function apply($rule)
     {
         $memo = $this->recall($rule);
 

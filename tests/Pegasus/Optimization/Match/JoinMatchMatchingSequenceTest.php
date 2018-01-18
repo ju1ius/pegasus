@@ -52,10 +52,10 @@ class JoinMatchMatchingSequenceTest extends OptimizationTestCase
             'Joins a sequence of only matches with flags' => [
                 GrammarBuilder::create()->rule('test')->sequence()
                     ->match('a', ['i'])
-                    ->match('b', ['um'])
+                    ->match('b', ['m'])
                     ->match('c')
                     ->getGrammar(),
-                new Match('(?>(?i)a)(?>(?um)b)(?>c)', [], 'test')
+                new Match('(?>(?i)a)(?>(?m)b)(?>c)', [], 'test')
             ],
             'Joins a sequence of literals' => [
                 GrammarBuilder::create()->rule('test')->sequence()

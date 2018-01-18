@@ -2,26 +2,27 @@
 
 namespace ju1ius\Pegasus\Tests\RegExp;
 
-use ju1ius\Pegasus\RegExp\Formatter;
+use ju1ius\Pegasus\RegExp\Normalizer;
 use PHPUnit\Framework\TestCase;
 
 
 /**
  * @coversDefaultClass ju1ius\Pegasus\RegExp\Formatter
  */
-class FormatterTest extends TestCase
+class NormalizerTest extends TestCase
 {
     /**
-     * @dataProvider removeCommentsProvider
+     * @dataProvider normalizeProvider
      * @param string $pattern
      * @param string $expected
+     * @param string[] $flags
      */
-    public function testRemoveComments(string $pattern, string $expected)
+    public function testNormalize(string $pattern, string $expected, array $flags = ['x'])
     {
-        $this->assertSame($expected, Formatter::removeComments($pattern));
+        $this->assertSame($expected, Normalizer::normalize($pattern, $flags));
     }
 
-    public function removeCommentsProvider()
+    public function normalizeProvider()
     {
         return [
             'removes whitespace' => [
@@ -40,6 +41,16 @@ class FormatterTest extends TestCase
                 '[\t#\n]',
                 '[\t#\n]',
             ],
+            'Initial x flag not set' => [
+                'a b c #d(?# this can be removed)',
+                'a b c #d',
+                [],
+            ],
+            'Initial x flag not set but overriden in the pattern' => [
+                'a b (?x) c d (?-x) f g',
+                'a b (?x)cd(?-x) f g',
+                [],
+            ],
             'handles POSIX character classes' => [
                 '[[:alnum:] #] #foo',
                 '[[:alnum:] #]',
@@ -48,7 +59,7 @@ class FormatterTest extends TestCase
                 '[[\] #] #foo',
                 '[[\] #]',
             ],
-            'removes comments & whitespace' => [
+            'handles block comments' => [
                 <<<'EOS'
 /
     foo     # literal foo
@@ -65,11 +76,19 @@ EOS
 /
     \#foo       # id foo
     |
-    \\#bar      # a backslash and bar is a comment
+    \\#bar      # a backslash, then bar is a comment
 /
 EOS
                 , '/\#foo|\\\\/'
-            ]
+            ],
+            'inline modifiers #1' => [
+                'a b (?-x:c d) e (?-x:#f ) g #end',
+                'ab(?-x:c d)e(?-x:#f )g',
+            ],
+            'inline modifiers #2' => [
+                'a b (?-x:c d) e (f (?-x) g) h',
+                'ab(?-x:c d)e(f(?-x) g)h',
+            ],
         ];
     }
 }
