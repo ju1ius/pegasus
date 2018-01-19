@@ -13,12 +13,19 @@ namespace ju1ius\Pegasus\Compiler\Extension\Php;
 use ju1ius\Pegasus\Compiler\Compiler;
 use ju1ius\Pegasus\Compiler\Extension\Php\Runtime\LeftRecursivePackrat;
 use ju1ius\Pegasus\Compiler\Extension\Php\Runtime\Packrat;
+use ju1ius\Pegasus\Compiler\Extension\Php\Runtime\RecursiveDescent;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimizer;
 use ju1ius\Pegasus\CST\Transform;
 
 class PhpCompiler extends Compiler
 {
+    private const PARSER_CLASSES = [
+        self::PARSER_RECURSIVE_DESCENT => RecursiveDescent::class,
+        self::PARSER_PACKRAT => Packrat::class,
+        self::PARSER_EXTENDED_PACKRAT => LeftRecursivePackrat::class,
+    ];
+
     /**
      * @inheritdoc
      */
@@ -39,20 +46,9 @@ class PhpCompiler extends Compiler
         ];
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getParserClass(): string
+    public function getParserClass(string $parserType): string
     {
-        return Packrat::class;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getExtendedParserClass(): string
-    {
-        return LeftRecursivePackrat::class;
+        return self::PARSER_CLASSES[$parserType];
     }
 
     /**

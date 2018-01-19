@@ -15,18 +15,12 @@ interface CompilerInterface
     public function getTemplateDirectories(): array;
 
     /**
-     * Returns the packrat parser's FQCN.
+     * Returns the parser's FQCN for the given type.
      *
+     * @param string $parserType
      * @return string
      */
-    public function getParserClass(): string;
-
-    /**
-     * Returns the left-recursive packrat parser's FQCN.
-     *
-     * @return string
-     */
-    public function getExtendedParserClass(): string;
+    public function getParserClass(string $parserType): string;
 
     public function getNodeVisitorClass(): string;
 

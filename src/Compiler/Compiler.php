@@ -17,6 +17,12 @@ use ju1ius\Pegasus\Grammar\Optimizer;
 
 abstract class Compiler implements CompilerInterface
 {
+    const PARSER_RECURSIVE_DESCENT = 'recursive_descent';
+
+    const PARSER_PACKRAT = 'packrat';
+
+    const PARSER_EXTENDED_PACKRAT = 'extended_packrat';
+
     /**
      * @var \Twig_Environment
      */
@@ -82,7 +88,7 @@ abstract class Compiler implements CompilerInterface
         $grammar = Grammar::fromSyntax($syntax, null, 0);
         if (empty($args['class'])) {
             if ($name = $grammar->getName()) {
-                $args['class'] = ucfirst($name);
+                $args['class'] = sprintf('%sParser', ucfirst($name));
             } else {
                 if (empty($args['name'])) {
                     throw new \InvalidArgumentException(
@@ -105,22 +111,23 @@ abstract class Compiler implements CompilerInterface
      */
     public function compileGrammar(Grammar $grammar, array $args = []): string
     {
-        $args['base_class'] = $this->getParserClass();
         $optimizationLevel = $args['optimization_level'] ?? Optimizer::LEVEL_1;
         $grammar = $this->optimizeGrammar($grammar, $optimizationLevel);
         $context = CompilationContext::of($grammar);
-        // analyse grammar
-        $analysis = $context->getAnalysis();
-        // find the appropriate parser class
-        foreach ($grammar as $ruleName => $expr) {
-            if ($analysis->isLeftRecursive($ruleName)) {
-                $args['base_class'] = $this->getExtendedParserClass();
-                break;
-            }
-        }
-        $args['context'] = $context;
 
-        return $this->renderParser($args);
+        $parserType = $this->guessParserType($context, $args);
+        if ($parent = $grammar->getParent()) {
+            $parserClass = sprintf('%sParser', $parent->getName());
+        } else {
+            $parserClass = $this->getParserClass($parserType);
+        }
+
+        return $this->renderParser([
+            'class' => $args['class'],
+            'base_class' => $parserClass,
+            'parser_type' => $parserType,
+            'context' => $context,
+        ]);
     }
 
     public function renderTemplate(string $tpl, array $args = []): string
@@ -144,5 +151,22 @@ abstract class Compiler implements CompilerInterface
         foreach ($extensions as $ext) {
             $this->twig->addExtension($ext);
         }
+    }
+
+    protected function guessParserType(CompilationContext $context, array $args)
+    {
+        $grammar = $context->getGrammar();
+        $analysis = $context->getAnalysis();
+        $noCache = $args['no_cache'] ?? false;
+        $parserType = $noCache ? self::PARSER_RECURSIVE_DESCENT : self::PARSER_PACKRAT;
+        // find the appropriate parser class
+        foreach ($grammar as $ruleName => $expr) {
+            if ($analysis->isLeftRecursive($ruleName)) {
+                $parserType = self::PARSER_EXTENDED_PACKRAT;
+                break;
+            }
+        }
+
+        return $parserType;
     }
 }

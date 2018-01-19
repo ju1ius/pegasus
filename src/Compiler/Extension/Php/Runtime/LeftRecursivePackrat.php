@@ -28,9 +28,17 @@ class LeftRecursivePackrat extends Packrat
      */
     protected $lrStack;
 
+    /**
+     * @var \Closure[]
+     */
+    private $matchers;
+
     protected function beforeParse()
     {
         parent::beforeParse();
+        if (!$this->matchers) {
+            $this->matchers = $this->buildMatchers();
+        }
         $this->heads = [];
         $this->lrStack = new \SplStack();
     }
@@ -56,7 +64,7 @@ class LeftRecursivePackrat extends Packrat
             // Memoize $lr, then evaluate $name.
             $memo = new MemoEntry($lr, $pos);
             $this->memo[$this->isCapturing][$pos][$rule] = $memo;
-            $result = $this->evaluate($rule);
+            $result = $this->matchers[$rule]();
             // Pop $lr off the invocation stack
             $this->lrStack->pop();
             $memo->end = $this->pos;
@@ -132,12 +140,12 @@ class LeftRecursivePackrat extends Packrat
         while (true) {
             $this->pos = $position;
             $head->eval = $head->involved;
-            $result = $this->evaluate($ruleName);
+            $result = $this->matchers[$ruleName]();
             if (!$result || $this->pos <= $memo->end) {
                 break;
             }
             $memo->result = $result;
-            $memo->end = $this->pos;  /*$result->end;*/
+            $memo->end = $this->pos;
         }
         unset($this->heads[$position]);
         $this->pos = $memo->end;
@@ -148,7 +156,6 @@ class LeftRecursivePackrat extends Packrat
     private function recall(string $ruleName): ?MemoEntry
     {
         $pos = $this->pos;
-        // inline this to save a method call: $memo = $this->memo($name, $pos);
         /** @var MemoEntry $memo */
         $memo = $this->memo[$this->isCapturing][$pos][$ruleName] ?? null;
         $head = $this->heads[$pos] ?? null;
@@ -161,11 +168,28 @@ class LeftRecursivePackrat extends Packrat
         // Allow involved rules to be evaluated, but only once, during a seed-growing iteration.
         if (isset($head->eval[$ruleName])) {
             unset($head->eval[$ruleName]);
-            $result = $this->evaluate($ruleName);
+            $result = $this->matchers[$ruleName]();
             $memo->result = $result;
             $memo->end = $this->pos;
         }
 
         return $memo;
+    }
+
+    /**
+     * @return \Closure[]
+     */
+    private function buildMatchers(): array
+    {
+        $matchers = [];
+        $class = new \ReflectionClass($this);
+        foreach ($class->getMethods() as $method) {
+            if (strpos($method->name, 'match_') === 0) {
+                $ruleName = substr($method->name, 6);
+                $matchers[$ruleName] = $method->getClosure($this);
+            }
+        }
+
+        return $matchers;
     }
 }

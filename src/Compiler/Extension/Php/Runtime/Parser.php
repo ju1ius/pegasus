@@ -35,11 +35,6 @@ abstract class Parser
     protected $isCapturing = true;
 
     /**
-     * @var \Closure[]
-     */
-    protected $matchers = [];
-
-    /**
      * @var string
      */
     protected $startRule;
@@ -98,9 +93,6 @@ abstract class Parser
         ?string $startRule = null,
         bool $allowPartial = false
     ) {
-        if (!$this->matchers) {
-            $this->matchers = $this->buildMatchers();
-        }
         $this->source = $source;
         $this->pos = $startPos;
         $this->rightmostFailurePosition = 0;
@@ -124,25 +116,11 @@ abstract class Parser
         return $result;
     }
 
-    /**
-     * Applies a grammar rule at the current position.
-     *
-     * @param string $rule The rule name to apply
-     *
-     * @return Node|true|null
-     */
-    abstract protected function apply($rule);
-
-    /**
-     * Evaluates an expression.
-     *
-     * @param string $ruleName
-     *
-     * @return Node|true|null
-     */
-    final protected function evaluate(string $ruleName)
+    protected function apply(string $rule)
     {
-        return $this->matchers[$ruleName]();
+        $matcher = "match_{$rule}";
+
+        return $this->$matcher();
     }
 
     /**
@@ -176,21 +154,4 @@ abstract class Parser
     }
 
     protected function afterParse($result) {}
-
-    /**
-     * @return \Closure[]
-     */
-    private function buildMatchers(): array
-    {
-        $matchers = [];
-        $refClass = new \ReflectionClass($this);
-        foreach ($refClass->getMethods() as $method) {
-            if (strpos($method->name, 'match_') === 0) {
-                $ruleName = substr($method->name, 6);
-                $matchers[$ruleName] = $method->getClosure($this);
-            }
-        }
-
-        return $matchers;
-    }
 }

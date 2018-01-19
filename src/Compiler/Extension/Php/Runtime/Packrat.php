@@ -20,7 +20,7 @@ use ju1ius\Pegasus\CST\Node;
  *
  * @see doc/algo/packrat-lr.pdf
  */
-class Packrat extends Parser
+class Packrat extends RecursiveDescent
 {
     /**
      * @var array
@@ -40,39 +40,6 @@ class Packrat extends Parser
     {
         parent::afterParse($result);
         $this->memo = [];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function apply($rule)
-    {
-        $pos = $this->pos;
-        $capturing = (int)$this->isCapturing;
-        $memo = $this->memo[$capturing][$pos][$rule] ?? null;
-
-        if ($memo) {
-            //$this->pos = $memo->end;
-            $this->pos = $memo[1];
-
-            //return $memo->result;
-            return $memo[0];
-        }
-
-        // Store a result of FAIL in the memo table before it evaluates the body of a rule.
-        // This has the effect of making all left-recursive applications (both direct and indirect) fail.
-        //$memo = new MemoEntry(null, $pos);
-        $memo = [null, $pos];
-        $this->memo[$capturing][$pos][$rule] = $memo;
-        // evaluate expression
-        $result = $this->matchers[$rule]();
-        // update the result in the memo table
-        //$memo->result = $result;
-        //$memo->end = $this->pos;
-        $memo[0] = $result;
-        $memo[1] = $this->pos;
-
-        return $result;
     }
 
     protected function cut(int $position)

@@ -43,8 +43,14 @@ class PegasusTwigExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_Function('render_expr', [$this, 'renderExpression'], ['needs_environment' => true]),
-            new \Twig_Function('render_rule', [$this, 'renderRule'], ['needs_environment' => true]),
+            new \Twig_Function('render_expr', [$this, 'renderExpression'], [
+                'needs_environment' => true,
+                'needs_context' => true,
+            ]),
+            new \Twig_Function('render_rule', [$this, 'renderRule'], [
+                'needs_environment' => true,
+                'needs_context' => true,
+            ]),
         ];
     }
 
@@ -80,25 +86,29 @@ class PegasusTwigExtension extends \Twig_Extension
 
     public function renderRule(
         \Twig_Environment $env,
+        $twigContext,
         string $name,
         Expression $expr,
         CompilationContext $context
     ): string {
-        return $env->render('rule.twig', [
+        $args = array_merge($twigContext, [
             'expr' => $expr,
-            'context' => $context->ofRule($name)
+            'context' => $context->ofRule($name),
         ]);
+
+        return $env->render('rule.twig', $args);
     }
 
     public function renderExpression(
         \Twig_Environment $env,
+        $twigContext,
         Expression $expr,
         CompilationContext $context,
         array $args = []
     ): string {
-        $args = array_merge($args, [
+        $args = array_merge($twigContext, $args, [
             'expr' => $expr,
-            'context' => $context
+            'context' => $context,
         ]);
 
         $template = $this->getTemplateForExpression($expr);

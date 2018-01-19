@@ -1,8 +1,13 @@
 {% extends "expr.twig" %}
 
+{% set use_apply = parser_type is constant('ju1ius\\Pegasus\\Compiler\\Compiler::PARSER_EXTENDED_PACKRAT') %}
 
 {% block matching %}
-{{ result_var }} = $this->apply('{{ expr.identifier }}');
+{% if use_apply -%}
+    {{ result_var }} = $this->apply('{{ expr.name }}');
+{%- else %}
+    {{ result_var }} = $this->match_{{ expr.name }}();
+{%- endif %}
 {%- endblock matching %}
 
 

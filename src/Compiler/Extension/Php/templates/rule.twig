@@ -1,4 +1,5 @@
 {% set result_var = result_varname(expr) %}
+{% set use_cache = parser_type is constant('ju1ius\\Pegasus\\Compiler\\Compiler::PARSER_PACKRAT') %}
 /**
  * Matching rule: {{ expr.name }} = {{ expr|escape_comment }}
  *
@@ -6,10 +7,24 @@
  */
 public function match_{{ expr.name }}()
 {
+{% if use_cache %}
+    $memo = $this->memo[$this->isCapturing][$this->pos]['{{ expr.name }}'] ?? null;
+    if ($memo) {
+        $this->pos = $memo[0];
+        return $memo[1];
+    }
+    $memo = [$this->pos, null];
+{% endif %}
 {% if context.needsBindings(expr.name) %}
-    $bi = [];
+    $bindings = [];
 {% endif %}
     {{ render_expr(expr, context)|indent }}
+
+{% if use_cache %}
+    $memo[0] = $this->pos;
+    $memo[1] = {{ result_var }};
+    $this->cache[$this->isCapturing][$this->pos]['{{ expr.name }}'] = $memo;
+{% endif %}
 
     return {{ result_var }};
 }

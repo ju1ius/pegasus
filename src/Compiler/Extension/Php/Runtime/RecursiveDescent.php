@@ -10,10 +10,4 @@
 
 namespace ju1ius\Pegasus\Compiler\Extension\Php\Runtime;
 
-class RecursiveDescent extends Parser
-{
-    protected function apply($rule)
-    {
-        return $this->matchers[$rule]();
-    }
-}
+class RecursiveDescent extends Parser {}
