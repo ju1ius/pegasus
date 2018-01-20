@@ -1,5 +1,5 @@
 
-export default class Node {
+export default class CSTNode {
   constructor (name, start, end, value, children = [], attributes = {}) {
     this.name = name
     this.value = value
@@ -16,25 +16,25 @@ export default class Node {
   }
 
   static terminal (name, start, end, value, attributes = {}) {
-    const node = new Node(name, start, end, value, null, attributes)
+    const node = new CSTNode(name, start, end, value, null, attributes)
     node.isTerminal = true
     return node
   }
 
   static composite (name, start, end, children = [], attributes = {}) {
-    const node = new Node(name, start, end, null, children, attributes)
+    const node = new CSTNode(name, start, end, null, children, attributes)
     node.isComposite = true
     return node
   }
 
   static decorator (name, start, end, child, attributes = {}) {
-    const node = new Node(name, start, end, null, [child], attributes)
+    const node = new CSTNode(name, start, end, null, [child], attributes)
     node.isDecorator = true
     return node
   }
 
   static quantifier (name, start, end, children = [], optional = false) {
-    const node = new Node(name, start, end, null, children)
+    const node = new CSTNode(name, start, end, null, children)
     node.isQuantifier = true
     node.isOptional = optional
     return node

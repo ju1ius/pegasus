@@ -19,6 +19,12 @@ use ju1ius\Pegasus\Grammar\Optimizer;
  */
 class ECMAScriptCompiler extends Compiler
 {
+    private const PARSER_CLASSES = [
+        self::PARSER_RECURSIVE_DESCENT => 'RecursiveDescentParser',
+        self::PARSER_PACKRAT => 'PackratParser',
+        self::PARSER_EXTENDED_PACKRAT => 'LeftRecursivePackratParser',
+    ];
+
     /**
      * @inheritDoc
      */
@@ -38,19 +44,14 @@ class ECMAScriptCompiler extends Compiler
     }
 
     /**
-     * @inheritDoc
+     * Returns the parser's FQCN for the given type.
+     *
+     * @param string $parserType
+     * @return string
      */
-    public function getParserClass(): string
+    public function getParserClass(string $parserType): string
     {
-        return 'PackratParser';
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getExtendedParserClass(): string
-    {
-        return 'LeftRecursivePackratParser';
+        return self::PARSER_CLASSES[$parserType];
     }
 
     /**
@@ -66,13 +67,7 @@ class ECMAScriptCompiler extends Compiler
      */
     protected function renderParser(array $args = []): string
     {
-        $output = $this->renderTemplate('parser.twig', $args);
-        if ($outputDirectory === 'php://stdout') {
-            $output_file = $outputDirectory;
-        } else {
-            $output_file = $outputDirectory . '/' . $args['class'] . '.js';
-        }
-        file_put_contents($output_file, $output);
+        return $this->renderTemplate('parser.twig', $args);
     }
 
     /**

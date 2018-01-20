@@ -1,7 +1,7 @@
 
 export default class MemoEntry {
-  constructor (result, end) {
-    this.result = result
+  constructor (end, result) {
     this.end = end
+    this.result = result
   }
 }

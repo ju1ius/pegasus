@@ -1,5 +1,6 @@
-import MemoEntry from './memo'
-import Packrat from './packrat'
+import MemoEntry from './MemoEntry'
+import Packrat from './Packrat'
+
 
 class Head {
   /**
@@ -21,10 +22,11 @@ class Head {
   }
 }
 
+
 class LeftRecursion {
   /**
    * @param {string} ruleName
-   * @param {Node} [seed]
+   * @param {CSTNode} [seed]
    * @param {Head} [head]
    */
   constructor (ruleName, seed, head) {
@@ -34,33 +36,35 @@ class LeftRecursion {
   }
 }
 
+
 export default class LeftRecursivePackrat extends Packrat {
+
+  heads = new Map()
+  lrStack = []
+
   constructor () {
     super()
+  }
+
+  _beforeParse () {
+    super._beforeParse()
     this.heads = new Map()
     this.lrStack = []
   }
 
-  parse (text, pos, startRule = this.startRule) {
-    this.heads = new Map()
-    this.lrStack = []
-
-    const result = super.parse(text, pos, startRule)
-
+  _afterParse (result) {
+    super._afterParse(result)
     this.heads = this.lrStack = null
-
-    return result
   }
 
-  apply (ruleName) {
+  _apply (rule) {
     const {pos} = this
-    let memo = this.recall(ruleName)
+    let memo = this._recall(rule)
     if (!memo) {
-      const lr = new LeftRecursion(ruleName)
+      const lr = new LeftRecursion(rule)
       this.lrStack.push(lr)
-      memo = new MemoEntry(lr, pos)
-      this.setMemo(ruleName, pos, memo)
-      const result = this.evaluate(ruleName)
+      memo = this._setMemo(rule, lr)
+      const result = this.evaluate(rule)
       this.lrStack.pop()
       memo.end = this.pos
       if (!lr.head) {
@@ -70,12 +74,12 @@ export default class LeftRecursivePackrat extends Packrat {
       }
       lr.seed = result
 
-      return this.leftRecursionAnswer(ruleName, pos, memo)
+      return this._leftRecursionAnswer(rule, pos, memo)
     }
 
     this.pos = memo.end
     if (memo instanceof LeftRecursion) {
-      this.setupLeftRecursion(ruleName, memo.result)
+      this._setupLeftRecursion(rule, memo.result)
 
       return memo.seed
     }
@@ -84,13 +88,13 @@ export default class LeftRecursivePackrat extends Packrat {
   }
 
   /**
-   * @param {string} ruleName
+   * @param {string} rule
    * @param {LeftRecursion} lr
    */
-  setupLeftRecursion (ruleName, lr) {
+  _setupLeftRecursion (rule, lr) {
     const {lrStack} = this
     if (!lr.head) {
-      lr.head = new Head(ruleName)
+      lr.head = new Head(rule)
     }
     for (let i = 0, l = lrStack.length, item; i < l; i++) {
       item = lrStack[i]
@@ -100,35 +104,35 @@ export default class LeftRecursivePackrat extends Packrat {
   }
 
   /**
-   * @param {string} ruleName
+   * @param {string} rule
    * @param {number} pos
    * @param {MemoEntry} memo
    *
-   * @returns {Node|LeftRecursion|null}
+   * @returns {CSTNode|LeftRecursion|null}
    */
-  leftRecursionAnswer (ruleName, pos, memo) {
+  _leftRecursionAnswer (rule, pos, memo) {
     const {head, seed} = memo.result
-    if (head.rule !== ruleName) return seed
+    if (head.rule !== rule) return seed
     memo.result = seed
     if (!memo.result) return null
 
-    return this.growSeedParse(ruleName, pos, memo, head)
+    return this._growSeedParse(rule, pos, memo, head)
   }
 
   /**
-   * @param {string} ruleName
+   * @param {string} rule
    * @param {number} pos
    * @param {MemoEntry} memo
    * @param {Head} head
    *
-   * @returns {Node|LeftRecursion|null}
+   * @returns {CSTNode|LeftRecursion|null}
    */
-  growSeedParse (ruleName, pos, memo, head) {
+  _growSeedParse (rule, pos, memo, head) {
     this.heads.set(pos, head)
     while (true) {
       this.pos = pos
       head.eval = head.involved
-      const result = this.evaluate(ruleName)
+      const result = this.evaluate(rule)
       if (!result || this.pos <= memo.end) {
         break
       }
@@ -142,24 +146,24 @@ export default class LeftRecursivePackrat extends Packrat {
   }
 
   /**
-   * @param {string} ruleName
+   * @param {string} rule
    *
    * @returns {MemoEntry|null}
    */
-  recall (ruleName) {
+  _recall (rule) {
     const {pos} = this
-    const memo = this.getMemo(ruleName, pos)
+    const memo = this._getMemo(rule)
     const head = this.heads.get(pos)
 
     if (!head) {
       return memo
     }
-    if (!memo && !head.involves(ruleName)) {
-      return new MemoEntry(null, pos)
+    if (!memo && !head.involves(rule)) {
+      return new MemoEntry(pos, null)
     }
-    if (head.eval.has(ruleName)) {
-      head.eval.delete(ruleName)
-      memo.result = this.evaluate(ruleName)
+    if (head.eval.has(rule)) {
+      head.eval.delete(rule)
+      memo.result = this.evaluate(rule)
       memo.end = this.pos
     }
 
