@@ -24,6 +24,17 @@ class GenerateParserCommand extends Command
     use StandardInputReaderTrait;
 
     /**
+     * @var ExtensionRegistry
+     */
+    private $registry;
+
+    public function __construct(ExtensionRegistry $registry, ?string $name = null)
+    {
+        parent::__construct($name);
+        $this->registry = $registry;
+    }
+
+    /**
      * @inheritdoc
      */
     protected function configure()
@@ -42,11 +53,18 @@ class GenerateParserCommand extends Command
                 'The class name of the generated parser.'
             )
             ->addOption(
-                'optimize',
+                'optimization-level',
                 'O',
                 InputOption::VALUE_REQUIRED,
                 'Optimization level to apply.',
                 Optimizer::LEVEL_1
+            )
+            ->addOption(
+                'no-cache',
+                null,
+                InputOption::VALUE_NONE,
+                'Disables the Packrat cache if the grammar is not left-recursive.',
+                false
             )
             ->addOption(
                 'extension-dir',
@@ -62,12 +80,6 @@ class GenerateParserCommand extends Command
                 'php'
             )
             ->addOption(
-                'namespace',
-                null,
-                InputOption::VALUE_REQUIRED,
-                'The namespace of the generated parser.'
-            )
-            ->addOption(
                 'output-dir',
                 'o',
                 InputOption::VALUE_REQUIRED,
@@ -77,27 +89,25 @@ class GenerateParserCommand extends Command
         ;
     }
 
+    protected function initialize(InputInterface $input, OutputInterface $output)
+    {
+        $extension_dirs = array_merge(
+            [__DIR__ . '/../../extensions'],
+            $input->getOption('extension-dir')
+        );
+        $this->registry->addDirectory(...$extension_dirs);
+    }
+
     /**
      * @inheritdoc
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $language = $input->getOption('language');
-        $extension_dirs = array_merge(
-            [__DIR__ . '/../../extensions'],
-            $input->getOption('extension-dir')
-        );
-
-        $manager = new ExtensionRegistry($extension_dirs);
-        $extension = $manager->getExtension($language);
+        $extension = $this->registry->getExtension($language);
         $compiler = $extension->getCompiler();
 
-        $compilerOptions = [
-            'namespace' => $input->getOption('namespace'),
-            'name' => $input->getOption('name'),
-            'optimization_level' => (int)$input->getOption('optimize'),
-        ];
-
+        $compilerOptions = $this->getCompilerOptions($input);
         $grammarPath = $input->getArgument('grammar');
 
         if (!$grammarPath || $grammarPath === '-') {
@@ -113,5 +123,19 @@ class GenerateParserCommand extends Command
 
         // TODO: write to files !
         echo $code . PHP_EOL;
+    }
+
+    protected function getCompilerOptions(InputInterface $input)
+    {
+        $options = $input->getOptions();
+        $excluded = [
+            'language', 'extension-dir', 'output-dir',
+            'help', 'quiet', 'verbose', 'version',
+            'ansi', 'no-ansi', 'no-interaction',
+        ];
+
+        return array_filter($options, function ($name) use ($excluded) {
+            return !in_array($name, $excluded);
+        }, ARRAY_FILTER_USE_KEY);
     }
 }

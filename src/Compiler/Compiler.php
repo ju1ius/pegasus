@@ -111,7 +111,7 @@ abstract class Compiler implements CompilerInterface
      */
     public function compileGrammar(Grammar $grammar, array $args = []): string
     {
-        $optimizationLevel = $args['optimization_level'] ?? Optimizer::LEVEL_1;
+        $optimizationLevel = $args['optimization-level'] ?? Optimizer::LEVEL_1;
         $grammar = $this->optimizeGrammar($grammar, $optimizationLevel);
         $context = CompilationContext::of($grammar);
 
@@ -157,7 +157,7 @@ abstract class Compiler implements CompilerInterface
     {
         $grammar = $context->getGrammar();
         $analysis = $context->getAnalysis();
-        $noCache = $args['no_cache'] ?? false;
+        $noCache = $args['no-cache'] ?? false;
         $parserType = $noCache ? self::PARSER_RECURSIVE_DESCENT : self::PARSER_PACKRAT;
         // find the appropriate parser class
         foreach ($grammar as $ruleName => $expr) {

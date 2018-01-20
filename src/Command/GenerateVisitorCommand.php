@@ -11,18 +11,30 @@
 
 namespace ju1ius\Pegasus\Command;
 
+use ju1ius\Pegasus\Compiler\ExtensionRegistry;
+use ju1ius\Pegasus\Compiler\Twig\Extension\PegasusTwigExtension;
+use ju1ius\Pegasus\Grammar;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Compiler\PegasusTwigExtension;
-
 
 class GenerateVisitorCommand extends Command
 {
+
+    /**
+     * @var ExtensionRegistry
+     */
+    private $registry;
+
+    public function __construct(ExtensionRegistry $registry, ?string $name = null)
+    {
+        parent::__construct($name);
+        $this->registry = $registry;
+    }
+
     protected function configure()
     {
         $this->setName('generate:visitor')

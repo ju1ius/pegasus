@@ -6,12 +6,19 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use ju1ius\Pegasus\Command\DumpGrammarCommand;
 use ju1ius\Pegasus\Command\GenerateParserCommand;
 use ju1ius\Pegasus\Command\GenerateVisitorCommand;
+use ju1ius\Pegasus\Compiler\ExtensionRegistry;
 use Symfony\Component\Console\Application;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+
+
+$dispatcher = new EventDispatcher();
+$registry = new ExtensionRegistry($dispatcher);
 
 $app = new Application();
+$app->setDispatcher($dispatcher);
 $app->addCommands([
-    new GenerateParserCommand(),
-    new GenerateVisitorCommand(),
+    new GenerateParserCommand($registry),
+    new GenerateVisitorCommand($registry),
     new DumpGrammarCommand()
 ]);
 $app->run();

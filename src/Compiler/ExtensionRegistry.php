@@ -2,6 +2,9 @@
 
 namespace ju1ius\Pegasus\Compiler;
 
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+
+
 class ExtensionRegistry
 {
     /**
@@ -10,24 +13,32 @@ class ExtensionRegistry
     protected $extensions = [];
 
     /**
+     * @var EventDispatcherInterface
+     */
+    private $dispatcher;
+
+    /**
+     * @param EventDispatcherInterface $dispatcher
      * @param string[] $extensionDirs
      */
-    public function __construct(array $extensionDirs = [])
-    {
+    public function __construct(
+        EventDispatcherInterface $dispatcher,
+        array $extensionDirs = []
+    ) {
+        $this->dispatcher = $dispatcher;
         $extensionDirs = array_merge([__DIR__ . '/Extension'], $extensionDirs);
-        foreach ($extensionDirs as $dir) {
-            $this->discoverExtensions($dir);
-        }
+        $this->addDirectory(...$extensionDirs);
     }
 
     /**
-     * @param string $dir
-     *
+     * @param string[] $dirs
      * @return $this
      */
-    public function addDirectory(string $dir)
+    public function addDirectory(string ...$dirs)
     {
-        $this->discoverExtensions($dir);
+        foreach ($dirs as $dir) {
+            $this->discoverExtensions($dir);
+        }
 
         return $this;
     }
@@ -39,6 +50,7 @@ class ExtensionRegistry
      */
     public function registerExtension(Extension $ext)
     {
+        $ext->setEventDispatcher($this->dispatcher);
         $name = $ext->getName();
         $this->extensions[$name] = $ext;
 
