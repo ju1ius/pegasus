@@ -28,6 +28,8 @@ class LeftRecursivePackrat extends Packrat
      */
     protected $lrStack;
 
+    protected $isGrowingSeedParse = false;
+
     /**
      * @var \Closure[]
      */
@@ -47,6 +49,22 @@ class LeftRecursivePackrat extends Packrat
     {
         parent::afterParse($result);
         $this->heads = $this->lrStack = null;
+    }
+
+    protected function cut(int $position)
+    {
+        $this->cutStack->pop();
+        $this->cutStack->push(true);
+        // we're growing a seed parse, don't clear anything !
+        if ($this->isGrowingSeedParse) return;
+        // clear memo entries for previous positions
+        foreach ($this->memo as $capturing => $table) {
+            foreach ($table as $pos => $rules) {
+                if ($pos < $position) {
+                    unset($this->memo[$capturing][$pos]);
+                }
+            }
+        }
     }
 
     /**
@@ -136,6 +154,7 @@ class LeftRecursivePackrat extends Packrat
      */
     private function growSeedParse(string $ruleName, int $position, MemoEntry $memo, Head $head)
     {
+        $this->isGrowingSeedParse = true;
         $this->heads[$position] = $head;
         while (true) {
             $this->pos = $position;
@@ -149,6 +168,7 @@ class LeftRecursivePackrat extends Packrat
         }
         unset($this->heads[$position]);
         $this->pos = $memo->end;
+        $this->isGrowingSeedParse = false;
 
         return $memo->result;
     }

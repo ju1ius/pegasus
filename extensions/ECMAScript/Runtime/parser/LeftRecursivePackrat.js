@@ -41,6 +41,7 @@ export default class LeftRecursivePackrat extends Packrat {
 
   heads = new Map()
   lrStack = []
+  isGrowingSeedParse = false
 
   constructor () {
     super()
@@ -55,6 +56,13 @@ export default class LeftRecursivePackrat extends Packrat {
   _afterParse (result) {
     super._afterParse(result)
     this.heads = this.lrStack = null
+  }
+
+  _cut (position) {
+    this.cutStack.pop()
+    this.cutStack.push(true)
+    if (this.isGrowingSeedParse) return
+    this.memoTable.forEach(table => table.cut(position))
   }
 
   _apply (rule) {
@@ -128,6 +136,7 @@ export default class LeftRecursivePackrat extends Packrat {
    * @returns {CSTNode|LeftRecursion|null}
    */
   _growSeedParse (rule, pos, memo, head) {
+    this.isGrowingSeedParse = true
     this.heads.set(pos, head)
     while (true) {
       this.pos = pos
@@ -141,6 +150,7 @@ export default class LeftRecursivePackrat extends Packrat {
     }
     this.heads.delete(pos)
     this.pos = memo.end
+    this.isGrowingSeedParse = false
 
     return memo.result
   }
