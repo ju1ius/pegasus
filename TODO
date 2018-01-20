@@ -26,12 +26,14 @@
 
 ## Compiler
 
-* [ ] Import resolver
+* [ ] Import resolver (dependency graph)
 * [ ] Update runtime / templates
 * [ ] Investigate virtual machines
 
 ## Examples
 
+* [x] JSON
+* [ ] Json5
 * [ ] CSS selectors
 * [ ] code cleanup
 
