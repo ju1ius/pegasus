@@ -18,7 +18,7 @@ use ju1ius\Pegasus\Grammar\Optimization;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 
 /**
- * `Token` and `Skip` decorators only have meaning in a capturing context.
+ * `Token` and `Ignore` decorators only have meaning in a capturing context.
  *
  * @author ju1ius <ju1ius@laposte.net>
  */

@@ -11,6 +11,7 @@
 namespace ju1ius\Pegasus\Grammar\Optimization;
 
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\Expression\Terminal\Match;
 use ju1ius\Pegasus\Expression\Decorator\Quantifier;
 use ju1ius\Pegasus\Expression\Terminal\RegExp;
@@ -32,7 +33,9 @@ class CombineQuantifiedMatch extends Optimization
     {
         return $context->isMatching()
             && $expr instanceof Quantifier
-            && ($expr[0] instanceof Match || $expr[0] instanceof RegExp);
+            && ($expr[0] instanceof Literal
+                || $expr[0] instanceof Match
+                || $expr[0] instanceof RegExp);
     }
 
     /**
@@ -41,9 +44,16 @@ class CombineQuantifiedMatch extends Optimization
     public function postProcessExpression(Expression $expr, OptimizationContext $context): ?Expression
     {
         /** @var Quantifier $expr */
-        /** @var Match $match */
         $match = $expr[0];
+        if ($match instanceof Literal) {
+            return new Match(sprintf(
+                '(?>%s)%s',
+                preg_quote($match->getLiteral(), '/'),
+                $this->getQuantifier($expr)
+            ));
+        }
 
+        /** @var Match $match */
         return new Match(
             sprintf('(?>%s)%s', $match->getPattern(), $this->getQuantifier($expr)),
             $match->getFlags()
