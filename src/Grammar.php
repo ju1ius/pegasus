@@ -13,6 +13,7 @@ namespace ju1ius\Pegasus;
 use ju1ius\Pegasus\Grammar\Exception\InvalidRuleType;
 use ju1ius\Pegasus\Grammar\Exception\MissingTraitAlias;
 use ju1ius\Pegasus\Grammar\Exception\TraitNotFound;
+use ju1ius\Pegasus\MetaGrammar\FileParser;
 use ju1ius\Pegasus\MetaGrammar\MetaGrammarTransform;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar\Exception\AnonymousTopLevelExpression;
@@ -76,6 +77,23 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
     //
     // Factory methods
     // --------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Factory method that constructs a Grammar object from a grammar file.
+     *
+     * @param string $path
+     * @param int $optimizationLevel
+     * @return Grammar
+     * @throws MissingTraitAlias
+     */
+    public static function fromFile(string $path, int $optimizationLevel = 0)
+    {
+        $grammar = (new FileParser())->parse($path);
+
+        return $optimizationLevel
+            ? Optimizer::optimize($grammar, $optimizationLevel)
+            : $grammar;
+    }
 
     /**
      * Factory method that constructs a Grammar object from an associative array of rules.

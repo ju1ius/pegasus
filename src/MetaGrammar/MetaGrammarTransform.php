@@ -85,6 +85,16 @@ class MetaGrammarTransform extends Transform
      */
     private $lexical;
 
+    public function getImports(): array
+    {
+        return $this->imports;
+    }
+
+    public function getParent(): ?string
+    {
+        return $this->parentGrammar;
+    }
+
     /**
      * @inheritDoc
      */
@@ -109,12 +119,6 @@ class MetaGrammarTransform extends Transform
         if ($this->startRule) {
             $this->grammar->setStartRule($this->startRule);
         }
-        if ($this->imports) {
-            // TODO: handle imports !
-        }
-        if ($this->parentGrammar) {
-            // TODO: handle parent grammar !
-        }
 
         return $this->grammar;
     }
@@ -135,7 +139,7 @@ class MetaGrammarTransform extends Transform
     {
         $this->grammar->setName($name);
         if ($parent) {
-            $this->parentGrammar = $name;
+            $this->parentGrammar = $parent;
         }
     }
 

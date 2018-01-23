@@ -21,8 +21,9 @@
 
 ## Optimizer
 
-* [ ] Do not automatically remove unused rules,
-        or add syntax to preserve alternative grammar entrypoints
+* [ ] Remove unused rules:
+    * [ ] Should not remove a rule that may extend a parent
+    * [ ] Add new syntax to preserve alternative grammar entrypoints
 
 ## Compiler
 

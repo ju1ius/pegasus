@@ -193,7 +193,7 @@ final class Optimizer
                         new JoinMatchCapturingSequence(),
                         // join match choice
                         new JoinMatchChoice(),
-                        new RemoveUnusedRules(),
+                        //new RemoveUnusedRules(),
                     ];
                     break;
             }
