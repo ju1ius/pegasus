@@ -27,6 +27,9 @@
 
 ## Compiler
 
+* [-] Allow extensions to hook into the cli commands
+    * [x] Add listeners for command events
+    * [ ] Display extension-specific options in command's help
 * [ ] Import resolver (dependency graph)
 * [ ] Update runtime / templates
 * [ ] Investigate virtual machines

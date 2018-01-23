@@ -53,6 +53,20 @@ class GenerateParserCommand extends Command
                 'The class name of the generated parser.'
             )
             ->addOption(
+                'language',
+                'l',
+                InputOption::VALUE_REQUIRED,
+                'The language to use for the generated parser',
+                'php'
+            )
+            ->addOption(
+                'output-dir',
+                'o',
+                InputOption::VALUE_REQUIRED,
+                'The output directory of the generated parser.',
+                'php://stdout'
+            )
+            ->addOption(
                 'optimization-level',
                 'O',
                 InputOption::VALUE_REQUIRED,
@@ -71,20 +85,6 @@ class GenerateParserCommand extends Command
                 'e',
                 InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
                 'Add a directory to lookup for extensions.'
-            )
-            ->addOption(
-                'language',
-                'l',
-                InputOption::VALUE_REQUIRED,
-                'The language to use for the generated parser',
-                'php'
-            )
-            ->addOption(
-                'output-dir',
-                'o',
-                InputOption::VALUE_REQUIRED,
-                'The output directory of the generated parser.',
-                'php://stdout'
             )
         ;
     }
