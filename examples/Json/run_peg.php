@@ -22,15 +22,14 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 \Symfony\Component\Debug\Debug::enable();
 $stopwatch = new Stopwatch();
 $probe = \BlackfireProbe::getMainInstance();
+$stopwatch->openSection();
 
 // ----- Runtime parser
-$syntax = file_get_contents(__DIR__ . '/json.peg');
 
-$stopwatch->openSection();
 $stopwatch->start('parse_syntax');
-$grammar = Grammar::fromSyntax($syntax, null, 2);
+$grammar = Grammar::fromFile(__DIR__ . '/json5.peg', 2);
 $stopwatch->stop('parse_syntax');
-//\ju1ius\Pegasus\Debug\Debug::dump($grammar);
+\ju1ius\Pegasus\Debug\Debug::dump($grammar);
 //$grammar = $grammar->tracing();
 
 $parser = new Parser\RecursiveDescent($grammar);
@@ -65,7 +64,7 @@ $tree = $parser->parse($input);
 $probe->disable();
 $stopwatch->stop('parse_json');
 $stopwatch->start('visit');
-$object = (new JsonTransform())->transform($tree);
+$object = (new Json5Transform())->transform($tree);
 $stopwatch->stop('visit');
 
 $stopwatch->stopSection('script');
