@@ -16,6 +16,7 @@ use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\Decorator\Assert;
 use ju1ius\Pegasus\Expression\Decorator\Not;
 use ju1ius\Pegasus\Expression\Terminal\EOF;
+use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\Expression\Terminal\Match;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
@@ -52,14 +53,18 @@ trait PredicateMatchChoiceJoinerTrait
 
     protected function prepareBarePattern(Expression $child): string
     {
-        if ($child instanceof Match) {
-            return $child->getPattern();
+        if ($child instanceof Match || $child instanceof Literal) {
+            return $this->manipulator->patternFor($child);
         }
         if ($child instanceof Assert) {
-            return sprintf('(?=%s)', $child[0]->getPattern());
+            $pattern = $this->manipulator->patternFor($child[0]);
+
+            return $this->manipulator->positiveLookahead($pattern);
         }
         if ($child instanceof Not) {
-            return sprintf('(?!%s)', $child[0]->getPattern());
+            $pattern = $this->manipulator->patternFor($child[0]);
+
+            return $this->manipulator->negativeLookahead($pattern);
         }
         if ($child instanceof EOF) {
             return '\z';

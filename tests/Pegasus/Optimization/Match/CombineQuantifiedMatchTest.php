@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace ju1ius\Pegasus\Tests\Optimization;
+namespace ju1ius\Pegasus\Tests\Optimization\Match;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Terminal\Match;
@@ -17,11 +17,13 @@ use ju1ius\Pegasus\GrammarBuilder as GrammarBuilder;
 use ju1ius\Pegasus\ExpressionBuilder;
 use ju1ius\Pegasus\Grammar\Optimization\CombineQuantifiedMatch;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
+use ju1ius\Pegasus\Tests\Optimization\OptimizationTestCase;
+
 
 /**
  * @author ju1ius <ju1ius@laposte.net>
  */
-class CombineQuantifiedMatchTest extends OptimizationTestCase
+class CombineQuantifiedMatchTest extends RegExpOptimizationTestCase
 {
 
     /**
@@ -35,7 +37,7 @@ class CombineQuantifiedMatchTest extends OptimizationTestCase
     {
         $grammar = $this->createMock(Grammar::class);
         $ctx = OptimizationContext::of($grammar, $contextType);
-        $optim = new CombineQuantifiedMatch();
+        $optim = $this->createOptimization(CombineQuantifiedMatch::class);
         $result = $optim->willPostProcessExpression($expr, $ctx);
         $this->assertSame($expected, $result);
     }
@@ -58,8 +60,13 @@ class CombineQuantifiedMatchTest extends OptimizationTestCase
                 OptimizationContext::TYPE_MATCHING,
                 true,
             ],
-            'Returns false for quantified expression other than match or regexp.' => [
+            'Applies to a quantified literal in matching context.' => [
                 ExpressionBuilder::create()->between(2, 4)->literal('a')->getExpression(),
+                OptimizationContext::TYPE_MATCHING,
+                true,
+            ],
+            'Returns false for quantified expression other than match, regexp or literal.' => [
+                ExpressionBuilder::create()->between(2, 4)->epsilon()->getExpression(),
                 OptimizationContext::TYPE_MATCHING,
                 false,
             ],
@@ -80,7 +87,8 @@ class CombineQuantifiedMatchTest extends OptimizationTestCase
     public function testApply(Grammar $grammar, Expression $expected)
     {
         $ctx = OptimizationContext::of($grammar, OptimizationContext::TYPE_MATCHING);
-        $result = $this->applyOptimization(new CombineQuantifiedMatch(), $grammar, $ctx);
+        $optim = $this->createOptimization(CombineQuantifiedMatch::class);
+        $result = $this->applyOptimization($optim, $grammar, $ctx);
         $this->assertExpressionEquals($expected, $result);
     }
 

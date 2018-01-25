@@ -45,7 +45,7 @@ final class JoinMatchCapturingSequence extends MatchJoiningOptimization
     /**
      * @inheritDoc
      */
-    protected function isEligibleChild(Expression $child)
+    protected function isEligibleChild(Expression $child): bool
     {
         return parent::isEligibleChild($child)
             || ($child instanceof GroupMatch && $child->getCaptureCount() === 1)
@@ -55,39 +55,24 @@ final class JoinMatchCapturingSequence extends MatchJoiningOptimization
     /**
      * @inheritDoc
      */
-    protected function createPatterns(array $matches)
+    protected function createPatterns(array $matches): array
     {
         $groupCount = 0;
         $patterns = array_map(function ($expr) use(&$groupCount) {
-            if ($expr instanceof Match) {
+            if ($expr instanceof Match || $expr instanceof Literal) {
                 $groupCount++;
-                if (count($expr->getFlags())) {
-                    return sprintf('((?%s)%s)', implode('', $expr->getFlags()), $expr->getPattern());
-                }
-                return sprintf('(%s)', $expr->getPattern());
-            }
-            if ($expr instanceof Literal) {
-                $groupCount++;
-
-                return sprintf('(%s)', preg_quote($expr->getLiteral(), '/'));
+                return sprintf('(%s)', $this->manipulator->patternFor($expr));
             }
             if ($expr instanceof GroupMatch) {
                 $groupCount += $expr->getCaptureCount();
-                if (count($expr->getFlags())) {
-                    return sprintf('(?>(?%s)%s)', implode('', $expr->getFlags()), $expr->getPattern());
-                }
-                return sprintf('(?>%s)', $expr->getPattern());
+                $pattern = $this->manipulator->patternFor($expr);
+
+                return $this->manipulator->atomic($pattern);
             }
             if ($expr instanceof Ignore) {
-                if ($expr[0] instanceof Literal) {
-                    return sprintf('(?>%s)', preg_quote($expr[0]->getLiteral(), '/'));
-                }
-                if ($expr[0] instanceof Match) {
-                    if (count($expr[0]->getFlags())) {
-                        return sprintf('(?>(?%s)%s)', implode('', $expr[0]->getFlags()), $expr[0]->getPattern());
-                    }
-                    return sprintf('(?>%s)', $expr[0]->getPattern());
-                }
+                $pattern = $this->manipulator->patternFor($expr[0]);
+
+                return $this->manipulator->atomic($pattern);
             }
         }, $matches);
 

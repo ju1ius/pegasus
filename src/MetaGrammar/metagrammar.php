@@ -34,7 +34,7 @@ $REGEXP_PATTERN = <<<'EOS'
         [^\/]           # anything but the delimiter
     )*)
 \/                      # delimiter
-([imsUX]*)?             # optional flags
+([imsUXJ]*)?            # optional flags
 EOS;
 
 $builder = GrammarBuilder::create('Pegasus');
@@ -178,6 +178,10 @@ $builder->rule('regexp')->sequence()
     ->regexp($REGEXP_PATTERN)
     ->ref('_');
 
+$builder->rule('any')->sequence()
+    ->literal('.')
+    ->ref('_');
+
 $builder->rule('eof')->sequence()
     ->word('EOF')
     ->ref('_');
@@ -275,6 +279,7 @@ $builder->rule('parenthesized')->sequence()
     ->ignore()->literal(')')->ref('_');
 
 $builder->rule('atom')->oneOf()
+    ->ref('any')
     ->ref('eof')
     ->ref('epsilon')
     ->ref('fail')

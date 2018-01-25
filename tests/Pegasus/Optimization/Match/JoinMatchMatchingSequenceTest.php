@@ -23,7 +23,7 @@ use ju1ius\Pegasus\Tests\Optimization\OptimizationTestCase;
 /**
  * @author ju1ius <ju1ius@laposte.net>
  */
-class JoinMatchMatchingSequenceTest extends OptimizationTestCase
+class JoinMatchMatchingSequenceTest extends RegExpOptimizationTestCase
 {
     /**
      * @dataProvider getApplyProvider
@@ -34,7 +34,8 @@ class JoinMatchMatchingSequenceTest extends OptimizationTestCase
     public function testApply(Grammar $input, Expression $expected)
     {
         $ctx = OptimizationContext::of($input, OptimizationContext::TYPE_MATCHING);
-        $result = $this->applyOptimization(new JoinMatchMatchingSequence(), $input, $ctx);
+        $optim = $this->createOptimization(JoinMatchMatchingSequence::class);
+        $result = $this->applyOptimization($optim, $input, $ctx);
         $this->assertExpressionEquals($expected, $result);
     }
 
@@ -55,7 +56,7 @@ class JoinMatchMatchingSequenceTest extends OptimizationTestCase
                     ->match('b', ['m'])
                     ->match('c')
                     ->getGrammar(),
-                new Match('(?>(?i)a)(?>(?m)b)(?>c)', [], 'test')
+                new Match('(?>(?i:a))(?>(?m:b))(?>c)', [], 'test')
             ],
             'Joins a sequence of literals' => [
                 GrammarBuilder::create()->rule('test')->sequence()
@@ -80,7 +81,7 @@ class JoinMatchMatchingSequenceTest extends OptimizationTestCase
                     ->ref('c')
                     ->getGrammar(),
                 new Sequence([
-                    new Match('(?>(?i)a)(?>b)'),
+                    new Match('(?>(?i:a))(?>b)'),
                     new Reference('c'),
                 ], 'test')
             ],
@@ -92,7 +93,7 @@ class JoinMatchMatchingSequenceTest extends OptimizationTestCase
                     ->getGrammar(),
                 new Sequence([
                     new Reference('c'),
-                    new Match('(?>(?i)a)(?>b)'),
+                    new Match('(?>(?i:a))(?>b)'),
                 ], 'test')
             ],
         ];
@@ -109,8 +110,8 @@ class JoinMatchMatchingSequenceTest extends OptimizationTestCase
     public function testAppliesTo(Grammar $input, $context, $applies)
     {
         $ctx = OptimizationContext::of($input, $context);
-        $result = (new JoinMatchMatchingSequence)
-            ->willPostProcessExpression($input->getStartExpression(), $ctx);
+        $optim = $this->createOptimization(JoinMatchMatchingSequence::class);
+        $result = $optim->willPostProcessExpression($input->getStartExpression(), $ctx);
         $this->assertSame($applies, $result);
     }
 

@@ -11,6 +11,7 @@
 namespace ju1ius\Pegasus\Grammar\Optimization\MatchJoining;
 
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\Expression\Terminal\Match;
 use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Utils\Iter;
@@ -50,7 +51,9 @@ abstract class PredicateNestedMatchJoiningOptimization extends PredicateMatchJoi
 
     protected function isEligibleMatch(Expression $expr): bool
     {
-        return $expr instanceof Ignore && $expr[0] instanceof Match;
+        return $expr instanceof Ignore
+            && ($expr[0] instanceof Match
+                || $expr[0] instanceof Literal);
     }
 
     abstract protected function prepareBarePattern(Expression $child): string;

@@ -24,6 +24,7 @@ use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinPredicateBareMatch;
 use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinPredicateNestedMatch;
 use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinPredicateOrBareMatch;
 use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinPredicateOrNestedMatch;
+use ju1ius\Pegasus\Grammar\Optimization\PCREManipulator;
 use ju1ius\Pegasus\Grammar\Optimization\RemoveMeaninglessDecorator;
 use ju1ius\Pegasus\Grammar\Optimization\RemoveUnusedRules;
 use ju1ius\Pegasus\Grammar\Optimization\SimplifyRedundantQuantifier;
@@ -170,6 +171,7 @@ final class Optimizer
                     ];
                     break;
                 case self::LEVEL_2:
+                    $manipulator= new PCREManipulator();
                     self::$OPTIMIZATIONS[$level] = [
                         new InlineNonRecursiveRules(),
                         new SimplifyRedundantQuantifier(),
@@ -181,18 +183,18 @@ final class Optimizer
                         //
                         new FlattenChoice(),
                         //
-                        new CombineQuantifiedMatch(),
+                        new CombineQuantifiedMatch($manipulator),
                         // join predicate matches,
-                        new JoinPredicateBareMatch(),
-                        new JoinPredicateNestedMatch(),
+                        new JoinPredicateBareMatch($manipulator),
+                        new JoinPredicateNestedMatch($manipulator),
                         // join predicate match choice,
-                        new JoinPredicateOrBareMatch(),
-                        new JoinPredicateOrNestedMatch(),
+                        new JoinPredicateOrBareMatch($manipulator),
+                        new JoinPredicateOrNestedMatch($manipulator),
                         // join match sequence,
-                        new JoinMatchMatchingSequence(),
-                        new JoinMatchCapturingSequence(),
+                        new JoinMatchMatchingSequence($manipulator),
+                        new JoinMatchCapturingSequence($manipulator),
                         // join match choice
-                        new JoinMatchChoice(),
+                        new JoinMatchChoice($manipulator),
                         //new RemoveUnusedRules(),
                     ];
                     break;

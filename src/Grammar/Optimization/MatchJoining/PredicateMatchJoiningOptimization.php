@@ -14,18 +14,18 @@ use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Decorator\Assert;
 use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\Terminal\EOF;
+use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\Expression\Terminal\Match;
 use ju1ius\Pegasus\Expression\Decorator\Not;
-use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization\CompositeReducerTrait;
-use ju1ius\Pegasus\Grammar\Optimization;
+use ju1ius\Pegasus\Grammar\Optimization\RegExpOptimization;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\Utils\Iter;
 
 /**
  * @author ju1ius <ju1ius@laposte.net>
  */
-abstract class PredicateMatchJoiningOptimization extends Optimization
+abstract class PredicateMatchJoiningOptimization extends RegExpOptimization
 {
     use CompositeReducerTrait;
 
@@ -84,7 +84,7 @@ abstract class PredicateMatchJoiningOptimization extends Optimization
      */
     protected function isEligibleMatch(Expression $expr): bool
     {
-        return $expr instanceof Match;
+        return $expr instanceof Match || $expr instanceof Literal;
     }
 
     /**
@@ -98,7 +98,7 @@ abstract class PredicateMatchJoiningOptimization extends Optimization
             return true;
         }
         if ($expr instanceof Assert || $expr instanceof Not) {
-            return $expr[0] instanceof Match;
+            return $expr[0] instanceof Match || $expr[0] instanceof Literal;
         }
 
         return false;

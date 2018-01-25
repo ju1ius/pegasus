@@ -11,7 +11,7 @@ header_directive    = start_directive
                     | ci_directive
 
 grammar_directive   = ~'@grammar' _ identifier (~`extends` _ identifier)?
-import_directive    = ~'@import' _ identifier _ ~'from' _ literal
+import_directive    = ~'@import' _ identifier _ ~'from' _ STRING _
 start_directive     = ~'@start' _ identifier
 ws_directive        = ~'@whitespace' _ ~'=' _ unattributed
 ci_directive        = ~'@case_insensitive' _
@@ -44,9 +44,10 @@ back_reference  = ~'$' identifier
 super_call      = ~`super` (~'::' identifier)?
 module_call     = IDENT ~'::' identifier
 
-literal         = / (["']) ( (?:\\.|(?!\1).)* ) \1 / _
+literal         = STRING _
 word_literal    = ~'`' /[^`]+/ ~'`' _
-regexp          = / \/ ((?:\\.|[^\/])*) \/ ([imsuUX]*) / _
+regexp          = / \/ ((?:\\.|[^\/])*) \/ ([imsUXJ]*) / _
+any             = "." _
 eof             = `EOF` _
 epsilon         = `E` _
 fail            = `FAIL` _
@@ -110,6 +111,7 @@ identifier      = IDENT _
 ##### Tokens #####
 
 @inline IDENT   = /[a-zA-Z_]\w*/
+@inline STRING  = / (["']) ( (?:\\.|(?!\1).)* ) \1 /
 
 ##### Whitespace & comments #####
 

@@ -11,6 +11,7 @@
 namespace ju1ius\Pegasus\Grammar;
 
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Expression\Application\Call;
 use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\Decorator\Label;
 use ju1ius\Pegasus\Expression\Combinator\OneOf;
@@ -45,13 +46,9 @@ class Analysis
      */
     public function canModifyBindings(string $ruleName): bool
     {
-        foreach ($this->grammar[$ruleName]->iterate() as $expr) {
-            if ($expr instanceof Label) {
-                return true;
-            }
-        }
-
-        return false;
+        return Iter::some(function (Expression $expr) {
+            return $expr instanceof Label;
+        }, $this->grammar[$ruleName]->iterate());
     }
 
     /**
@@ -76,8 +73,8 @@ class Analysis
      */
     public function isRecursive(string $ruleName): bool
     {
-        if ($this->containsSuperCall($ruleName)) {
-            // TODO: check that the super call is actually recursive when called like super::another_rule
+        if ($this->containsExternalCall($ruleName)) {
+            // TODO: check that the external call is actually recursive when called like super::another_rule
             return true;
         }
         // TODO: check imported grammars
@@ -121,13 +118,9 @@ class Analysis
      */
     public function isReferencedFrom(string $referencer, string $referencee): bool
     {
-        foreach ($this->iterateReferences($referencer) as $name => $expr) {
-            if ($name === $referencee) {
-                return true;
-            }
-        }
-
-        return false;
+        return Iter::some(function (Expression $expr, string $name) use($referencee) {
+            return $name === $referencee;
+        }, $this->iterateReferences($referencer));
     }
 
     /**
@@ -140,13 +133,9 @@ class Analysis
      */
     public function isLeftReferencedFrom(string $referencer, string $referencee): bool
     {
-        foreach ($this->iterateLeftReferences($referencer) as $name => $expr) {
-            if ($name === $referencee) {
-                return true;
-            }
-        }
-
-        return false;
+        return Iter::some(function (Expression $expr, string $name) use($referencee) {
+            return $name === $referencee;
+        }, $this->iterateLeftReferences($referencer));
     }
 
     /**
@@ -178,21 +167,17 @@ class Analysis
     }
 
     /**
-     * Returns whether given rule contains a super call
+     * Returns whether given rule contains a `Super` or `Call` expression
      *
      * @param string $ruleName
      *
      * @return bool
      */
-    protected function containsSuperCall(string $ruleName): bool
+    protected function containsExternalCall(string $ruleName): bool
     {
-        foreach ($this->grammar[$ruleName]->iterate() as $expr) {
-            if ($expr instanceof Super) {
-                return true;
-            }
-        }
-
-        return false;
+        return Iter::some(function (Expression $expr) {
+            return $expr instanceof Super || $expr instanceof Call;
+        }, $this->grammar[$ruleName]->iterate());
     }
 
     /**

@@ -14,16 +14,15 @@ use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\Expression\Terminal\Match;
-use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Grammar\Optimization;
 use ju1ius\Pegasus\Grammar\Optimization\CompositeReducerTrait;
+use ju1ius\Pegasus\Grammar\Optimization\RegExpOptimization;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\Utils\Iter;
 
 /**
  * @author ju1ius <ju1ius@laposte.net>
  */
-abstract class MatchJoiningOptimization extends Optimization
+abstract class MatchJoiningOptimization extends RegExpOptimization
 {
     use CompositeReducerTrait;
 
@@ -70,7 +69,7 @@ abstract class MatchJoiningOptimization extends Optimization
      *
      * @return bool
      */
-    protected function isEligibleChild(Expression $child)
+    protected function isEligibleChild(Expression $child): bool
     {
         return $child instanceof Match || $child instanceof Literal;
     }
@@ -91,9 +90,9 @@ abstract class MatchJoiningOptimization extends Optimization
     /**
      * @param Match[] $matches
      *
-     * @return array
+     * @return string[]
      */
-    protected function createPatterns(array $matches)
+    protected function createPatterns(array $matches): array
     {
         return array_map(function ($match) {
             return $this->createPattern($match);
@@ -103,7 +102,7 @@ abstract class MatchJoiningOptimization extends Optimization
     /**
      * @param string[] $patterns
      *
-     * @return string
+     * @return string|array
      */
     protected function joinPatterns(array $patterns)
     {
@@ -115,18 +114,9 @@ abstract class MatchJoiningOptimization extends Optimization
      *
      * @return string
      */
-    protected function createPattern(Expression $expr)
+    protected function createPattern(Expression $expr): string
     {
-        if ($expr instanceof Match) {
-            if (count($expr->getFlags())) {
-                return sprintf('(?%s:%s)', implode('', $expr->getFlags()), $expr->getPattern());
-            }
-
-            return $expr->getPattern();
-        }
-        if ($expr instanceof Literal) {
-            return preg_quote($expr->getLiteral(), '/');
-        }
+        return $this->manipulator->patternFor($expr);
     }
 
     /**

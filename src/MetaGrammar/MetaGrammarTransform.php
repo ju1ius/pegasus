@@ -30,6 +30,7 @@ use ju1ius\Pegasus\Expression\Decorator\Token;
 use ju1ius\Pegasus\Expression\Decorator\ZeroOrMore;
 use ju1ius\Pegasus\Expression\Application\Reference;
 use ju1ius\Pegasus\Expression\Application\Super;
+use ju1ius\Pegasus\Expression\Terminal\Any;
 use ju1ius\Pegasus\Expression\Terminal\BackReference;
 use ju1ius\Pegasus\Expression\Terminal\EOF;
 use ju1ius\Pegasus\Expression\Terminal\Epsilon;
@@ -295,7 +296,15 @@ class MetaGrammarTransform extends Transform
     {
         [$quoteChar, $string] = $parts;
 
+        // TODO: handle special characters: \n, \x20, \u{666}, etc...
+        // if ($quoteChar === '"') $string = stripcslashes($string);
+
         return new Literal($string, '', $quoteChar);
+    }
+
+    private function leave_any(Node $node)
+    {
+        return new Any();
     }
 
     private function leave_word_literal(Node $node, string $word): Word

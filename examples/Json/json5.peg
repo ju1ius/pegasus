@@ -17,5 +17,5 @@ identifier  = /[a-zA-Z_][\w]*/ _
 _ = ~(WS | COMMENT | LINE_COMMENT)*
 @inline WS = /\s+/
 # TODO: this rule should be compiled to a single regexp by the optimizer
-@inline COMMENT = "/*" (!"*/")* "*/"
-@inline LINE_COMMENT = "//" (!"\n")* "\n"
+@inline COMMENT = "/*" (!"*/" .)* "*/"
+@inline LINE_COMMENT = "//" (!"\n" .)* "\n"

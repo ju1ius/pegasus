@@ -18,9 +18,10 @@ use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinPredicateOrNestedMatch;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
+use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Tests\Optimization\OptimizationTestCase;
 
-class JoinPredicateOrNestedMatchTest extends OptimizationTestCase
+class JoinPredicateOrNestedMatchTest extends RegExpOptimizationTestCase
 {
     /**
      * @dataProvider getApplyProvider
@@ -30,7 +31,7 @@ class JoinPredicateOrNestedMatchTest extends OptimizationTestCase
      */
     public function testApply(Grammar $input, Expression $expected)
     {
-        $optim = new JoinPredicateOrNestedMatch();
+        $optim = $this->createOptimization(JoinPredicateOrNestedMatch::class);
         $ctx = OptimizationContext::of($input);
 
         $result = $this->applyOptimization($optim, $input, $ctx);
@@ -44,7 +45,7 @@ class JoinPredicateOrNestedMatchTest extends OptimizationTestCase
     {
         return [
             'Choice with Skipped Match before an Assert of a Match' => [
-                \ju1ius\Pegasus\GrammarBuilder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->ref('a')
                     ->ignore()->match('b')
                     ->assert()->match('c')
@@ -55,7 +56,7 @@ class JoinPredicateOrNestedMatchTest extends OptimizationTestCase
                 ], 'test')
             ],
             'Choice with Skipped Match before a Not of a Match' => [
-                \ju1ius\Pegasus\GrammarBuilder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->ref('a')
                     ->ignore()->match('b')
                     ->not()->match('c')
@@ -66,7 +67,7 @@ class JoinPredicateOrNestedMatchTest extends OptimizationTestCase
                 ], 'test')
             ],
             'Choice with Skipped Match before a EOF' => [
-                \ju1ius\Pegasus\GrammarBuilder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->ref('a')
                     ->ignore()->match('b')
                     ->eof()
@@ -77,7 +78,7 @@ class JoinPredicateOrNestedMatchTest extends OptimizationTestCase
                 ], 'test')
             ],
             'Choice with Skipped Match after an Assert of a Match' => [
-                \ju1ius\Pegasus\GrammarBuilder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->ref('a')
                     ->assert()->match('b')
                     ->ignore()->match('c')
@@ -88,7 +89,7 @@ class JoinPredicateOrNestedMatchTest extends OptimizationTestCase
                 ], 'test')
             ],
             'Choice with Skipped Match after a Not of a Match' => [
-                \ju1ius\Pegasus\GrammarBuilder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->ref('a')
                     ->not()->match('b')
                     ->ignore()->match('c')
@@ -99,7 +100,7 @@ class JoinPredicateOrNestedMatchTest extends OptimizationTestCase
                 ], 'test')
             ],
             'Choice with Skipped Match after EOF' => [
-                \ju1ius\Pegasus\GrammarBuilder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->ref('a')
                     ->eof()
                     ->ignore()->match('c')
@@ -120,7 +121,7 @@ class JoinPredicateOrNestedMatchTest extends OptimizationTestCase
      */
     public function testAppliesTo(Grammar $input, $applies)
     {
-        $optim = new JoinPredicateOrNestedMatch();
+        $optim = $this->createOptimization(JoinPredicateOrNestedMatch::class);
         $expr = $input->getStartExpression();
         $ctx = OptimizationContext::of($input);
 
@@ -135,7 +136,7 @@ class JoinPredicateOrNestedMatchTest extends OptimizationTestCase
     {
         return [
             'Choice with Skipped Match before an Assert of a Match' => [
-                \ju1ius\Pegasus\GrammarBuilder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->ref('a')
                     ->ignore()->match('b')
                     ->assert()->match('c')
@@ -143,7 +144,7 @@ class JoinPredicateOrNestedMatchTest extends OptimizationTestCase
                 true
             ],
             'Choice with Skipped Match before a Not of a Match' => [
-                \ju1ius\Pegasus\GrammarBuilder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->ref('a')
                     ->ignore()->match('b')
                     ->not()->match('c')
@@ -151,7 +152,7 @@ class JoinPredicateOrNestedMatchTest extends OptimizationTestCase
                 true
             ],
             'Choice with Skipped Match before a EOF' => [
-                \ju1ius\Pegasus\GrammarBuilder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->ref('a')
                     ->ignore()->match('b')
                     ->eof()
@@ -159,7 +160,7 @@ class JoinPredicateOrNestedMatchTest extends OptimizationTestCase
                 true
             ],
             'Choice with Skipped Match after an Assert of a Match' => [
-                \ju1ius\Pegasus\GrammarBuilder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->ref('a')
                     ->assert()->match('b')
                     ->ignore()->match('c')
@@ -167,7 +168,7 @@ class JoinPredicateOrNestedMatchTest extends OptimizationTestCase
                 true
             ],
             'Choice with Skipped Match after a Not of a Match' => [
-                \ju1ius\Pegasus\GrammarBuilder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->ref('a')
                     ->not()->match('b')
                     ->ignore()->match('c')
@@ -175,7 +176,7 @@ class JoinPredicateOrNestedMatchTest extends OptimizationTestCase
                 true
             ],
             'Choice with Skipped Match after EOF' => [
-                \ju1ius\Pegasus\GrammarBuilder::create()->rule('test')->oneOf()
+                GrammarBuilder::create()->rule('test')->oneOf()
                     ->ref('a')
                     ->eof()
                     ->ignore()->match('c')

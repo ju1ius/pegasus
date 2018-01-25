@@ -20,7 +20,7 @@ final class Any extends Match
      */
     public function __construct(string $name = '')
     {
-        parent::__construct('.', [], $name);
+        parent::__construct('.', ['s'], $name);
     }
 
     /**

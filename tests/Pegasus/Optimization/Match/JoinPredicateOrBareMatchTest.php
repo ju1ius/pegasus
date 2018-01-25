@@ -20,7 +20,7 @@ use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinPredicateOrBareMatch;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\Tests\Optimization\OptimizationTestCase;
 
-class JoinPredicateOrBareMatchTest extends OptimizationTestCase
+class JoinPredicateOrBareMatchTest extends RegExpOptimizationTestCase
 {
     /**
      * @dataProvider getApplyProvider
@@ -30,7 +30,7 @@ class JoinPredicateOrBareMatchTest extends OptimizationTestCase
      */
     public function testApply(Grammar $input, Expression $expected)
     {
-        $optim = new JoinPredicateOrBareMatch();
+        $optim = $this->createOptimization(JoinPredicateOrBareMatch::class);
         $ctx = OptimizationContext::of($input);
 
         $result = $this->applyOptimization($optim, $input, $ctx);
@@ -120,7 +120,7 @@ class JoinPredicateOrBareMatchTest extends OptimizationTestCase
      */
     public function testAppliesTo(Grammar $input, $applies)
     {
-        $optim = new JoinPredicateOrBareMatch();
+        $optim = $this->createOptimization(JoinPredicateOrBareMatch::class);
         $expr = $input->getStartExpression();
         $ctx = OptimizationContext::of($input);
 

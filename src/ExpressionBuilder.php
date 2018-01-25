@@ -29,6 +29,7 @@ use ju1ius\Pegasus\Expression\Decorator\ZeroOrMore;
 use ju1ius\Pegasus\Expression\Application\Reference;
 use ju1ius\Pegasus\Expression\Application\Super;
 use ju1ius\Pegasus\Expression\Exception\CapturingGroupInMatchPattern;
+use ju1ius\Pegasus\Expression\Terminal\Any;
 use ju1ius\Pegasus\Expression\Terminal\BackReference;
 use ju1ius\Pegasus\Expression\Terminal\EOF;
 use ju1ius\Pegasus\Expression\Terminal\Epsilon;
@@ -166,6 +167,11 @@ class ExpressionBuilder
     public function literal(string $literal)
     {
         return $this->add(new Literal($literal));
+    }
+
+    public function any()
+    {
+        return $this->add(new Any());
     }
 
     /**

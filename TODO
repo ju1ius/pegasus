@@ -31,8 +31,10 @@
     * [x] Add listeners for command events
     * [ ] Display extension-specific options in command's help
 * [ ] Import resolver (dependency graph)
+* [ ] Allow escape chars in grammar files (\n, \x20, \u{666}, etc...)
+    * [ ] transform them back when compiling
+    * [ ] OR just don't care and let people use regexps ???
 * [ ] Update runtime / templates
-* [ ] Investigate virtual machines
 
 ## Examples
 

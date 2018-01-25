@@ -11,6 +11,8 @@
 namespace ju1ius\Pegasus\Tests\Optimization\Match;
 
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Expression\Decorator\ZeroOrMore;
+use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\Expression\Terminal\Match;
 use ju1ius\Pegasus\Expression\Application\Reference;
 use ju1ius\Pegasus\Expression\Combinator\Sequence;
@@ -23,7 +25,7 @@ use ju1ius\Pegasus\Tests\Optimization\OptimizationTestCase;
 /**
  * @author ju1ius <ju1ius@laposte.net>
  */
-class JoinPredicateBareMatchTest extends OptimizationTestCase
+class JoinPredicateBareMatchTest extends RegExpOptimizationTestCase
 {
     /**
      * @dataProvider getApplyProvider
@@ -33,7 +35,7 @@ class JoinPredicateBareMatchTest extends OptimizationTestCase
      */
     public function testApply(Grammar $input, Expression $expected)
     {
-        $optim = new JoinPredicateBareMatch();
+        $optim = $this->createOptimization(JoinPredicateBareMatch::class);
         $ctx = OptimizationContext::of($input);
 
         $result = $this->applyOptimization($optim, $input, $ctx);
@@ -122,7 +124,7 @@ class JoinPredicateBareMatchTest extends OptimizationTestCase
      */
     public function testAppliesTo(Grammar $input, $applies)
     {
-        $optim = new JoinPredicateBareMatch();
+        $optim = $this->createOptimization(JoinPredicateBareMatch::class);
         $expr = $input->getStartExpression();
         $ctx = OptimizationContext::of($input);
 

@@ -24,7 +24,7 @@ use ju1ius\Pegasus\Tests\Optimization\OptimizationTestCase;
 /**
  * @author ju1ius <ju1ius@laposte.net>
  */
-class JoinPredicateNestedMatchTest extends OptimizationTestCase
+class JoinPredicateNestedMatchTest extends RegExpOptimizationTestCase
 {
     /**
      * @dataProvider getApplyProvider
@@ -34,7 +34,7 @@ class JoinPredicateNestedMatchTest extends OptimizationTestCase
      */
     public function testApply(Grammar $input, Expression $expected)
     {
-        $optim = new JoinPredicateNestedMatch();
+        $optim = $this->createOptimization(JoinPredicateNestedMatch::class);
         $ctx = OptimizationContext::of($input);
 
         $result = $this->applyOptimization($optim, $input, $ctx);
@@ -123,7 +123,7 @@ class JoinPredicateNestedMatchTest extends OptimizationTestCase
      */
     public function testAppliesTo(Grammar $input, $applies)
     {
-        $optim = new JoinPredicateNestedMatch();
+        $optim = $this->createOptimization(JoinPredicateNestedMatch::class);
         $expr = $input->getStartExpression();
         $ctx = OptimizationContext::of($input);
 

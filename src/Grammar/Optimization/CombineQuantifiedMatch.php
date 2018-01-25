@@ -24,7 +24,7 @@ use ju1ius\Pegasus\Grammar\OptimizationContext;
  *
  * @author ju1ius <ju1ius@laposte.net>
  */
-class CombineQuantifiedMatch extends Optimization
+class CombineQuantifiedMatch extends RegExpOptimization
 {
     /**
      * @inheritDoc
@@ -44,41 +44,9 @@ class CombineQuantifiedMatch extends Optimization
     public function postProcessExpression(Expression $expr, OptimizationContext $context): ?Expression
     {
         /** @var Quantifier $expr */
-        $match = $expr[0];
-        if ($match instanceof Literal) {
-            return new Match(sprintf(
-                '(?>%s)%s',
-                preg_quote($match->getLiteral(), '/'),
-                $this->getQuantifier($expr)
-            ));
-        }
+        $quantifier = $this->manipulator->patternFor($expr);
+        $pattern = $this->manipulator->atomic($this->manipulator->patternFor($expr[0]));
 
-        /** @var Match $match */
-        return new Match(
-            sprintf('(?>%s)%s', $match->getPattern(), $this->getQuantifier($expr)),
-            $match->getFlags()
-        );
-    }
-
-    private function getQuantifier(Quantifier $expr): string
-    {
-        if ($expr->isZeroOrMore()) {
-            return '*';
-        }
-        if ($expr->isOneOrMore()) {
-            return '+';
-        }
-        if ($expr->isOptional()) {
-            return '?';
-        }
-        if ($expr->isExact()) {
-            return sprintf('{%d}', $expr->getLowerBound());
-        }
-
-        return sprintf(
-            '{%d,%s}',
-            $expr->getLowerBound(),
-            $expr->isUnbounded() ? '' : $expr->getUpperBound()
-        );
+        return new Match(sprintf('%s%s', $pattern, $quantifier));
     }
 }

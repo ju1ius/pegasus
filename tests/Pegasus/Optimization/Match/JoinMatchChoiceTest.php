@@ -23,7 +23,7 @@ use ju1ius\Pegasus\Tests\Optimization\OptimizationTestCase;
 /**
  * @author ju1ius <ju1ius@laposte.net>
  */
-class JoinMatchChoiceTest extends OptimizationTestCase
+class JoinMatchChoiceTest extends RegExpOptimizationTestCase
 {
     /**
      * @dataProvider getApplyProvider
@@ -33,7 +33,7 @@ class JoinMatchChoiceTest extends OptimizationTestCase
      */
     public function testApply(Grammar $input, Expression $expected)
     {
-        $optim = new JoinMatchChoice();
+        $optim = $this->createOptimization(JoinMatchChoice::class);
         $ctx = OptimizationContext::of($input);
 
         $result = $this->applyOptimization($optim, $input, $ctx);
@@ -87,7 +87,7 @@ class JoinMatchChoiceTest extends OptimizationTestCase
      */
     public function testAppliesTo(Grammar $input, $applies)
     {
-        $optim = new JoinMatchChoice();
+        $optim = $this->createOptimization(JoinMatchChoice::class);
         $expr = $input->getStartExpression();
         $ctx = OptimizationContext::of($input);
 

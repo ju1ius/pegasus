@@ -20,21 +20,11 @@ use ju1ius\Pegasus\Parser\Parser;
  *
  * @author ju1ius <ju1ius@laposte.net>
  */
-final class Not extends Decorator
+final class Not extends Assertion
 {
     public function __toString(): string
     {
         return sprintf('!%s', $this->stringChildren()[0]);
-    }
-
-    public function isCapturing(): bool
-    {
-        return false;
-    }
-
-    public function isCapturingDecidable(): bool
-    {
-        return true;
     }
 
     public function match(string $text, Parser $parser)

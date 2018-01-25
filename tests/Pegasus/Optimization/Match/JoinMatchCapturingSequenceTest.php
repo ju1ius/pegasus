@@ -25,7 +25,7 @@ use ju1ius\Pegasus\Tests\Optimization\OptimizationTestCase;
 /**
  * @author ju1ius <ju1ius@laposte.net>
  */
-class JoinMatchCapturingSequenceTest extends OptimizationTestCase
+class JoinMatchCapturingSequenceTest extends RegExpOptimizationTestCase
 {
     /**
      * @dataProvider getApplyProvider
@@ -35,7 +35,8 @@ class JoinMatchCapturingSequenceTest extends OptimizationTestCase
      */
     public function testApply(Grammar $input, Expression $expected)
     {
-        $result = $this->applyOptimization(new JoinMatchCapturingSequence(), $input);
+        $optim = $this->createOptimization(JoinMatchCapturingSequence::class);
+        $result = $this->applyOptimization($optim, $input);
         $this->assertExpressionEquals($expected, $result);
     }
 
@@ -112,8 +113,8 @@ class JoinMatchCapturingSequenceTest extends OptimizationTestCase
     public function testAppliesTo(Grammar $input, $applies)
     {
         $ctx = OptimizationContext::of($input);
-        $result = (new JoinMatchCapturingSequence)
-            ->willPostProcessExpression($input->getStartExpression(), $ctx);
+        $optim = $this->createOptimization(JoinMatchCapturingSequence::class);
+        $result = $optim->willPostProcessExpression($input->getStartExpression(), $ctx);
         $this->assertSame($applies, $result);
     }
 

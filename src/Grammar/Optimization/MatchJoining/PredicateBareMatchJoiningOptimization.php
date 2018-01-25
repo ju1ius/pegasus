@@ -11,6 +11,7 @@
 namespace ju1ius\Pegasus\Grammar\Optimization\MatchJoining;
 
 use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\Expression\Terminal\Match;
 
 /**
@@ -42,6 +43,6 @@ abstract class PredicateBareMatchJoiningOptimization extends PredicateMatchJoini
      */
     protected function isEligibleMatch(Expression $expr): bool
     {
-        return $expr instanceof Match;
+        return $expr instanceof Match || $expr instanceof Literal;
     }
 }
