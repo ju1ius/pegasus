@@ -10,14 +10,15 @@
 
 namespace ju1ius\Pegasus\Examples\Json;
 
+use ju1ius\Pegasus\Debug\Debug;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Parser;
 use Symfony\Component\Stopwatch\Stopwatch;
 
-
 require_once __DIR__ . '/../../vendor/autoload.php';
 
-
+$inputFile = $argv[1] ?? __DIR__ . '/test.json5';
+$grammarFile = __DIR__ . '/json5.peg';
 
 \Symfony\Component\Debug\Debug::enable();
 $stopwatch = new Stopwatch();
@@ -27,9 +28,9 @@ $stopwatch->openSection();
 // ----- Runtime parser
 
 $stopwatch->start('parse_syntax');
-$grammar = Grammar::fromFile(__DIR__ . '/json5.peg', 2);
+$grammar = Grammar::fromFile($grammarFile, 2);
 $stopwatch->stop('parse_syntax');
-\ju1ius\Pegasus\Debug\Debug::dump($grammar);
+Debug::dump($grammar);
 //$grammar = $grammar->tracing();
 
 $parser = new Parser\RecursiveDescent($grammar);
@@ -52,7 +53,7 @@ $parser = new Parser\RecursiveDescent($grammar);
 //
 //$input = empty($argv[1]) ? $test_input : $argv[1];
 $stopwatch->start('load_data');
-$input = file_get_contents('/home/ju1ius/w3/embo/vhosts/lembobineuse.biz/composer.lock');
+$input = file_get_contents($inputFile);
 //dump($input);
 $stopwatch->stop('load_data');
 
@@ -60,9 +61,16 @@ $stopwatch->stop('load_data');
 $stopwatch->start('parse_json');
 //mb_regex_encoding('ASCII');
 $probe->enable();
-$tree = $parser->parse($input);
+try {
+    $tree = $parser->parse($input);
+} catch (Parser\Exception\ParseError $err) {
+    Debug::dump($parser->getTrace());
+    printf("\n%s\n%s", $err->getMessage(), $err->getTraceAsString());
+    exit(1);
+}
 $probe->disable();
 $stopwatch->stop('parse_json');
+//Debug::dump($parser->getTrace());
 $stopwatch->start('visit');
 $object = (new Json5Transform())->transform($tree);
 $stopwatch->stop('visit');
@@ -71,3 +79,4 @@ $stopwatch->stopSection('script');
 foreach ($stopwatch->getSectionEvents('script') as $name => $event) {
     echo $name, ': ', $event, PHP_EOL;
 }
+dump($object);

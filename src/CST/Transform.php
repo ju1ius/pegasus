@@ -175,6 +175,7 @@ class Transform
         $name = $node->name;
         if (!isset($this->traits[$namespace])) {
             //TODO: throw something !
+            throw new \LogicException("Undefined trait: {$namespace}");
         }
         if ($name && isset($this->enterVisitors[$name])) {
             $this->enterVisitors[$name]($node);

@@ -5,6 +5,7 @@
 # A superset of JSON, allowing comments, trailing commas & naked identifiers
 
 json5       = super::json
+# TODO: investigate why we have to explicitly skip COMMA at end of expression,
 members     = pair (COMMA pair)* COMMA?
 elements    = value (COMMA value)* COMMA?
 pair        = key COLON value
@@ -16,6 +17,5 @@ identifier  = /[a-zA-Z_][\w]*/ _
 
 _ = ~(WS | COMMENT | LINE_COMMENT)*
 @inline WS = /\s+/
-# TODO: this rule should be compiled to a single regexp by the optimizer
 @inline COMMENT = "/*" (!"*/" .)* "*/"
 @inline LINE_COMMENT = "//" (!"\n" .)* "\n"
