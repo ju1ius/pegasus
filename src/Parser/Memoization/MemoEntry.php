@@ -21,10 +21,7 @@ final class MemoEntry
      */
     public $result;
 
-    /**
-     * @var int
-     */
-    public $end;
+    public int $end;
 
     /**
      * @var int

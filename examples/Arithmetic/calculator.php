@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__.'/../../vendor/autoload.php';
 
+use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Debug\Debug;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
@@ -13,7 +14,7 @@ final class Calculator extends Transform
     /**
      * @inheritDoc
      */
-    protected function beforeTraverse(\ju1ius\Pegasus\CST\Node $node)
+    protected function beforeTraverse(Node $node)
     {
         return;
     }
@@ -23,7 +24,7 @@ final class Calculator extends Transform
         return $lhs + $rhs;
     }
 
-    protected function leave_Substract($node, $lhs, $rhs)
+    protected function leave_Subtract($node, $lhs, $rhs)
     {
         return $lhs - $rhs;
     }

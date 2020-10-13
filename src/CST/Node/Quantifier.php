@@ -17,10 +17,8 @@ class Quantifier extends Composite
 {
     /**
      * Whether this node is the result of an optional match (? quantifier).
-     *
-     * @var bool
      */
-    public $isOptional;
+    public bool $isOptional;
 
     public function __construct(
         string $name,

@@ -21,25 +21,23 @@ use ju1ius\Pegasus\Grammar\Optimizer;
 final class MetaGrammar
 {
     /**
-     * @var Grammar The unique instance of the optimized meta grammar.
+     * The unique instance of the optimized meta grammar.
      */
-    private static $instance = null;
+    private static ?Grammar $instance = null;
 
     /**
-     * @var Grammar Unique instance of the unoptimized grammar.
+     * Unique instance of the unoptimized grammar.
      */
-    private static $grammar = null;
+    private static ?Grammar $grammar = null;
 
     private function __construct() {}
 
     /**
      * Returns the unique instance of the (optimized) MetaGrammar.
-     *
-     * @return Grammar
      */
     public static function create(): Grammar
     {
-        if (null === self::$instance) {
+        if (!self::$instance) {
             $grammar = self::getGrammar();
             self::$instance = Optimizer::optimize($grammar, Optimizer::LEVEL_2);
         }
@@ -51,12 +49,10 @@ final class MetaGrammar
      * Returns the unique instance of the (unoptimized) MetaGrammar.
      *
      * Useful for debugging.
-     *
-     * @return Grammar
      */
     public static function getGrammar(): Grammar
     {
-        if (null === self::$grammar) {
+        if (!self::$grammar) {
             self::$grammar = require __DIR__ . '/MetaGrammar/metagrammar.php';
         }
 

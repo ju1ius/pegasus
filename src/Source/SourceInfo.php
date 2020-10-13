@@ -11,35 +11,18 @@ use ju1ius\Pegasus\Utils\Str;
 
 final class SourceInfo
 {
-    /**
-     * @var string
-     */
-    private $source;
-
-    /**
-     * @var int
-     */
-    private $sourceLength;
-
-    /**
-     * @var int
-     */
-    private $tabSize = 4;
-
+    private string $source;
+    private int $sourceLength;
+    private int $tabSize = 4;
     /**
      * The line info array (0-based offsets)
      * [
      *   int $lineno => [int $startOffset, int $endOffset, int $length, string $line],
      *   ...
      * ]
-     * @var array
      */
-    private $lines;
-
-    /**
-     * @var int
-     */
-    private $numLines;
+    private array $lines = [];
+    private int $numLines = 0;
 
     public function __construct(string $text, int $tabSize = 4)
     {
@@ -56,7 +39,6 @@ final class SourceInfo
     private function getLines(): array
     {
         if (!$this->lines) {
-            $this->lines = [];
             $lines = preg_split('/\R/', $this->source, -1, PREG_SPLIT_OFFSET_CAPTURE);
             foreach ($lines as $i => [$line, $offset]) {
                 $length = strlen($line);
@@ -89,7 +71,7 @@ final class SourceInfo
      * @param int $offset
      * @return int[]
      */
-    public function positionFromOffset(int $offset)
+    public function positionFromOffset(int $offset): array
     {
         $line = $this->lineFromOffset($offset);
         [$bol] = $this->lines[$line];

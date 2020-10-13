@@ -24,15 +24,10 @@ class GrammarBuilder extends ExpressionBuilder
 {
     /**
      * Current rule name.
-     *
-     * @var string
      */
-    protected $currentRule;
+    protected string $currentRule;
 
-    /**
-     * @var Grammar
-     */
-    protected $grammar;
+    protected Grammar $grammar;
 
     /**
      * GrammarBuilder constructor.
@@ -45,11 +40,7 @@ class GrammarBuilder extends ExpressionBuilder
         parent::__construct();
     }
 
-    /**
-     * @param string $name
-     * @return GrammarBuilder
-     */
-    public static function create(string $name = '')
+    public static function create(string $name = ''): self
     {
         $grammar = new Grammar();
         if ($name) {
@@ -59,7 +50,7 @@ class GrammarBuilder extends ExpressionBuilder
         return new self($grammar);
     }
 
-    public static function of(Grammar $grammar)
+    public static function of(Grammar $grammar): self
     {
         return new self($grammar);
     }
@@ -80,9 +71,6 @@ class GrammarBuilder extends ExpressionBuilder
         return $this;
     }
 
-    /**
-     * @return Grammar
-     */
     public function getGrammar(): Grammar
     {
         $this->endRule();

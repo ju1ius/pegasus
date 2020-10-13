@@ -12,43 +12,25 @@ use ju1ius\Pegasus\Expression\Terminal;
 
 final class TraceEntry implements \IteratorAggregate
 {
-    /**
-     * @var TraceEntry
-     */
-    public $parent;
+    public ?TraceEntry $parent = null;
 
-    /**
-     * @var int
-     */
-    public $index = 0;
+    public int $index = 0;
 
     /**
      * @var TraceEntry[]
      */
-    public $children = [];
+    public array $children = [];
+
+    public int $depth;
+
+    public Expression $expression;
+
+    public int $start;
+
+    public int $end;
 
     /**
-     * @var int
-     */
-    public $depth;
-
-    /**
-     * @var Expression
-     */
-    public $expression;
-
-    /**
-     * @var int
-     */
-    public $start;
-
-    /**
-     * @var int
-     */
-    public $end;
-
-    /**
-     * @var Node|true|null
+     * @var Node|bool
      */
     public $result;
 

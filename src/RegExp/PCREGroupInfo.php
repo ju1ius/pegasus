@@ -12,6 +12,7 @@ namespace ju1ius\Pegasus\RegExp;
 
 use ju1ius\Pegasus\RegExp\Exception\MissingClosingParenthesis;
 use ju1ius\Pegasus\RegExp\Exception\UnmatchedClosingParenthesis;
+use SplStack;
 
 /**
  * @author ju1ius <ju1ius@laposte.net>
@@ -40,36 +41,21 @@ final class PCREGroupInfo
 /Sx
 REGEXP;
 
-    private $patternLength = 0;
-
-    /**
-     * @var int
-     */
-    private $pos = 0;
-
-    /**
-     * @var array
-     */
-    private $groups = [];
-
+    private int $patternLength = 0;
+    private int $pos = 0;
+    private array $groups = [];
     /**
      * Total group count.
-     *
-     * @var int
      */
-    private $groupCount = 0;
-
+    private int $groupCount = 0;
     /**
      * A stack of indexes into the groups array, so we know which one to close.
-     *
-     * @var \SplStack
      */
-    private $groupStack;
-
+    private SplStack $groupStack;
     /**
-     * @var int Number of capturing groups.
+     * Number of capturing groups.
      */
-    private $captureCount = 0;
+    private int $captureCount = 0;
 
     /**
      * Returns the number of capturing groups in the given pattern.
@@ -126,7 +112,7 @@ REGEXP;
         $length = $this->patternLength = strlen($pattern);
         $this->groups = [];
         $this->groupCount = 0;
-        $this->groupStack = new \SplStack();
+        $this->groupStack = new SplStack();
         $this->captureCount = 0;
         while ($this->pos < $length) {
             $char = $pattern[$this->pos];

@@ -17,9 +17,9 @@ use ju1ius\Pegasus\CST\Node;
  */
 class Invalid extends Node
 {
-    public $value;
+    public ?string $value;
 
-    public function __construct($value)
+    public function __construct(?string $value = null)
     {
         $this->value = $value;
     }

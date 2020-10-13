@@ -11,10 +11,7 @@ use ju1ius\Pegasus\Grammar\GrammarVisitor;
 
 final class GrammarTracer extends GrammarVisitor
 {
-    /**
-     * @var bool
-     */
-    private $enable;
+    private bool $enable;
 
     public function __construct(bool $enable = true)
     {

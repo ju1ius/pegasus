@@ -1,7 +1,7 @@
 @grammar Arithmetic
 
 expr    = expr _ ~"+" _ term       <= Add
-        | expr _ ~"-" _ term       <= Substract
+        | expr _ ~"-" _ term       <= Subtract
         | term
 
 term    = term _ ~"*" _ primary    <= Multiply

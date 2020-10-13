@@ -22,52 +22,45 @@ abstract class Parser
      * The grammar used to parse the input string.
      *
      * @internal
-     * @var Grammar
      */
-    public $grammar;
+    public Grammar $grammar;
 
     /**
      * The input string.
-     *
-     * @var string
      */
-    protected $source;
+    protected string $source;
 
     /**
      * The current position into the input string.
      *
      * @internal
-     * @var int
      */
-    public $pos = 0;
+    public int $pos = 0;
 
     /**
      * Stores named bindings produced by `Label` expressions.
      *
      * @internal
-     * @var array
      */
-    public $bindings;
+    public array $bindings = [];
 
     /**
      * @internal
-     * @var \SplStack
      */
-    public $cutStack;
+    public \SplStack $cutStack;
 
     /**
      * Flag that can be set by expressions to signal whether their children
      * should return parse nodes or just true on success.
      *
      * @internal
-     * @var bool
      */
-    public $isCapturing = true;
+    public bool $isCapturing = true;
 
     /**
      * @var Trace
      */
-    protected $trace;
+    protected Trace $trace;
 
     /**
      * The stack of currently applied grammar rules.
@@ -107,7 +100,7 @@ abstract class Parser
      * @param int $pos
      * @param string $startRule
      *
-     * @return Node|null|true
+     * @return Node|bool
      */
     final public function partialParse(string $text, int $pos = 0, ?string $startRule = null)
     {
@@ -162,7 +155,7 @@ abstract class Parser
      * @internal
      *
      * @param Expression $expr
-     * @return Node|null|true
+     * @return Node|bool
      */
     abstract public function apply(Expression $expr);
 
@@ -171,7 +164,7 @@ abstract class Parser
      *
      * @param Expression $expr
      *
-     * @return Node|null|true
+     * @return Node|bool
      */
     final public function evaluate(Expression $expr)
     {

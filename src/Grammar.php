@@ -34,45 +34,39 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
 {
     /**
      * The name of this grammar
-     *
-     * @var string
      */
-    protected $name = '';
+    protected string $name = '';
 
     /**
      * The parent grammar.
-     *
-     * @var Grammar
      */
-    protected $parent;
+    protected ?Grammar $parent = null;
 
     /**
      * Imported grammars
      *
      * @var Grammar[]
      */
-    protected $traits = [];
+    protected array $traits = [];
 
     /**
      * The start rule of this grammar.
-     *
-     * @var string
      */
-    protected $startRule = null;
+    protected ?string $startRule = null;
 
     /**
      * The rules used by this Grammar.
      *
      * @var Expression[]
      */
-    protected $rules = [];
+    protected array $rules = [];
 
     /**
      * List of rule names to be inlined during optimization.
      *
      * @var string[]
      */
-    protected $inlineRules = [];
+    protected array $inlineRules = [];
 
     //
     // Factory methods

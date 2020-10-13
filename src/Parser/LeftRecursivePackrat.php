@@ -13,6 +13,7 @@ namespace ju1ius\Pegasus\Parser;
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Parser\Memoization\MemoEntry;
+use SplStack;
 
 
 /**
@@ -26,29 +27,27 @@ class LeftRecursivePackrat extends Packrat
     /**
      * @var Head[]
      */
-    protected $heads;
+    protected array $heads;
 
     /**
-     * @var \SplStack<LeftRecursion>
+     * @var SplStack<LeftRecursion>|null
      */
-    protected $lrStack;
+    protected ?SplStack $lrStack;
 
-    /**
-     * @var bool
-     */
-    protected $isGrowingSeedParse = false;
+    protected bool $isGrowingSeedParse = false;
 
     protected function beforeParse(): void
     {
         parent::beforeParse();
         $this->heads = [];
-        $this->lrStack = new \SplStack();
+        $this->lrStack = new SplStack();
     }
 
     protected function afterParse($result): void
     {
         parent::afterParse($result);
-        $this->heads = $this->lrStack = null;
+        $this->heads = [];
+        $this->lrStack = null;
     }
 
     /**

@@ -5,39 +5,24 @@ namespace ju1ius\Pegasus\Trace;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Source\SourceInfo;
+use SplStack;
 
 
 final class Trace implements \IteratorAggregate
 {
-    /**
-     * @var SourceInfo
-     */
-    private $source;
-
-    /**
-     * @var \SplStack
-     */
-    private $stack;
-
+    private SourceInfo $source;
+    private SplStack $stack;
     /**
      * @var TraceEntry[]
      */
-    private $entries = [];
-
-    /**
-     * @var int
-     */
-    private $rightmostFailurePosition = 0;
-
-    /**
-     * @var Expression
-     */
-    private $rightmostFailure;
+    private array $entries = [];
+    private int $rightmostFailurePosition = 0;
+    private ?Expression $rightmostFailure = null;
 
     public function __construct(string $text)
     {
         $this->source = new SourceInfo($text);
-        $this->stack = new \SplStack();
+        $this->stack = new SplStack();
     }
 
     public function getSource(): SourceInfo

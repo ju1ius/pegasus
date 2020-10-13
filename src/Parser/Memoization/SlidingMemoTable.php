@@ -17,32 +17,26 @@ final class SlidingMemoTable extends MemoTable
 {
     const DEFAULT_WIDTH = 64;
 
-    /**
-     * @var int
-     */
-    private $size;
+    private int $size;
 
     /**
      * @var MemoEntry[]
      */
-    private $entries = [];
+    private array $entries = [];
 
     /**
      * @var int[]
      */
-    private $rules = [];
+    private array $rules = [];
 
-    /**
-     * @var int
-     */
-    private $shift;
+    private int $shift;
 
     public function __construct(Grammar $grammar, int $width = self::DEFAULT_WIDTH)
     {
         $height = $this->collectRules($grammar);
         $this->size = $width * $height + 1;
         $this->entries = [];
-        $this->shift = floor((log($height) / log(2)) + 1);
+        $this->shift = (int)floor(log($height) / log(2) + 1);
     }
 
     public function getWindowSize()

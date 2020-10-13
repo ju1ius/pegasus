@@ -9,25 +9,10 @@ use ju1ius\Pegasus\Expression;
 
 abstract class MemoTable
 {
-    /**
-     * @var int
-     */
-    protected $storages = 0;
-
-    /**
-     * @var int
-     */
-    protected $hits = 0;
-
-    /**
-     * @var int
-     */
-    protected $misses = 0;
-
-    /**
-     * @var int
-     */
-    protected $invalidations = 0;
+    protected int $storages = 0;
+    protected int $hits = 0;
+    protected int $misses = 0;
+    protected int $invalidations = 0;
 
     abstract public function has(int $pos, Expression $expr): bool;
 

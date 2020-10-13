@@ -20,7 +20,7 @@ class Composite extends Node
     /**
      * @var Node[]
      */
-    public $children;
+    public array $children;
 
     public function __construct(
         string $name,

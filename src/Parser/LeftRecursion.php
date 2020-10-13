@@ -23,30 +23,21 @@ final class LeftRecursion
 {
     /**
      * The expression we're currently matching.
-     *
-     * @var Expression
      */
-    public $rule;
+    public Expression $rule;
 
     /**
      * The initial parse tree found for the associated `rule`
      *
-     * @var Node
+     * @var Node|bool
      */
     public $seed;
 
     /**
      * Holds information pertinent to the left recursion (null for non-left-recursive invocations)
-     *
-     * @var Head|null
      */
-    public $head;
+    public ?Head $head;
 
-    /**
-     * @param Expression $rule
-     * @param Node       $seed
-     * @param Head       $head
-     */
     public function __construct(Expression $rule, ?Node $seed = null, ?Head $head = null)
     {
         $this->rule = $rule;

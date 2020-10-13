@@ -9,7 +9,7 @@ use ju1ius\Pegasus\Expression;
 
 final class PackratMemoTable extends MemoTable
 {
-    private $entries = [];
+    private array $entries = [];
 
     public function has(int $pos, Expression $expr): bool
     {

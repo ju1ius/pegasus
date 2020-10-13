@@ -28,7 +28,7 @@ class Packrat extends RecursiveDescent
     /**
      * @var MemoTable[]
      */
-    protected $memo = [];
+    protected array $memo = [];
 
     protected function beforeParse(): void
     {
@@ -45,7 +45,7 @@ class Packrat extends RecursiveDescent
     protected function afterParse($result): void
     {
         parent::afterParse($result);
-        $this->memo = null;
+        $this->memo = [];
     }
 
     // --------------------------------------------------------------------------------------------------------------

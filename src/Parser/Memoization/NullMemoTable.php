@@ -28,7 +28,6 @@ final class NullMemoTable extends MemoTable
 
     /**
      * @codeCoverageIgnore
-     * @param int $pos
      */
     public function cut(int $pos): void
     {

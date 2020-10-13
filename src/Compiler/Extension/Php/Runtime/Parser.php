@@ -79,7 +79,7 @@ abstract class Parser
      * @param int $pos
      * @param string $startRule
      *
-     * @return Node|null|true
+     * @return Node|bool
      */
     final public function partialParse(string $source, int $pos = 0, ?string $startRule = null)
     {

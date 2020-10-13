@@ -26,38 +26,30 @@ final class Head
 {
     /**
      * The head rule of the left recursion.
-     *
-     * @var Expression
      */
-    public $rule;
+    public Expression $rule;
 
     /**
      * The set of rules involved in the left recursion.
      *
      * @var Expression[]
      */
-    public $involved;
+    public array $involved = [];
 
     /**
      * The subset of the involved rules that may still be evaluated during the current growth cycle.
      *
      * @var Expression[]
      */
-    public $eval;
+    public array $eval = [];
 
     public function __construct(Expression $rule)
     {
         $this->rule = $rule;
-        $this->involved = [];
-        $this->eval = [];
     }
 
     /**
      * Returns whether the given expression is involved in this left recursion.
-     *
-     * @param Expression $rule
-     *
-     * @return bool
      */
     public function involves(Expression $rule): bool
     {
