@@ -62,12 +62,12 @@ abstract class Expression
      * Returns either:
      *   - a `Node` instance if the match succeeded and the expression is capturing
      *   - `true` if the match succeeded and the expression is not capturing
-     *   - `null` if the match failed
+     *   - `false` if the match failed
      *
      * @param string $text The full text of the match subject.
      * @param Parser $parser The parser used for this expression.
      *
-     * @return Node|true|null
+     * @return Node|bool
      */
     abstract public function match(string $text, Parser $parser);
 

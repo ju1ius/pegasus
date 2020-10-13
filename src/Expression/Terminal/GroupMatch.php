@@ -106,6 +106,7 @@ final class GroupMatch extends Terminal
                 'captures' => array_slice($matches, 1)
             ]);
         }
+        return false;
     }
 
     /**

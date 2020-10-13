@@ -34,9 +34,7 @@ final class EOF extends Terminal
     public function match(string $text, Parser $parser)
     {
         $start = $parser->pos;
-        if (!isset($text[$start])) {
-            return true;
-        }
+        return !isset($text[$start]);
     }
 
     public function __toString(): string

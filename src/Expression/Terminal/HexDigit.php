@@ -17,7 +17,7 @@ final class HexDigit extends Match
 {
     public function __construct(string $name = '')
     {
-        parent::__construct('[\da-fA-F]', [], $name);
+        parent::__construct('[0-9A-Fa-f]', [], $name);
     }
 
     public function __toString(): string

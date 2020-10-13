@@ -65,7 +65,7 @@ final class Optional extends Quantifier
                 $this->name,
                 $start,
                 $parser->pos,
-                $result ? [$result] : [],
+                ($result && $result !== true) ? [$result] : [],
                 true
             );
         }

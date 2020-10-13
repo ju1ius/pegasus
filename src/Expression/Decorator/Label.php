@@ -51,5 +51,6 @@ final class Label extends Decorator
 
             return $result;
         }
+        return false;
     }
 }

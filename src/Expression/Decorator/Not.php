@@ -38,8 +38,6 @@ final class Not extends Assertion
         $parser->pos = $start;
         $parser->isCapturing = $capturing;
 
-        if (!$result) {
-            return true;
-        }
+        return !$result;
     }
 }

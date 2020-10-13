@@ -60,9 +60,8 @@ final class OneOf extends Combinator
         $parser->cutStack->pop();
 
         if (!$result) {
-            return null;
+            return false;
         }
-
         if (!$capturing || $result === true) {
             return true;
         }

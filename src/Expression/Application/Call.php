@@ -55,7 +55,7 @@ class Call extends Application
         $parser->bindings = [];
 
         $result = $parser->apply($trait[$this->identifier]);
-        if ($capturing && $result instanceof Node) {
+        if ($capturing && $result && $result !== true) {
             $result = new ExternalReference(
                 $this->namespace,
                 $this->name,

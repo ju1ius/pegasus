@@ -66,6 +66,7 @@ final class NodeAction extends Decorator
             return new Node\Decorator($this->label, $start, $parser->pos, $result);
         }
         $parser->pos = $start;
+        return false;
     }
 
     /**

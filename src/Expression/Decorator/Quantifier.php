@@ -138,7 +138,7 @@ class Quantifier extends Decorator
         $matchCount = 0;
         $results = $capturing ? [] : null;
         while ($result = $expr->match($text, $parser)) {
-            if ($capturing) {
+            if ($capturing && !is_bool($result)) {
                 $results[] = $result;
             }
             if (++$matchCount === $this->upperBound) {
@@ -151,5 +151,6 @@ class Quantifier extends Decorator
                 : true;
         }
         $parser->pos = $startPos;
+        return false;
     }
 }

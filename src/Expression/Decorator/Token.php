@@ -24,16 +24,17 @@ final class Token extends Decorator
         $result = $this->children[0]->match($text, $parser);
 
         $parser->isCapturing = $capturing;
-        if ($result) {
-            return $capturing
-                ? new Node\Terminal(
-                    $this->name,
-                    $startPos,
-                    $parser->pos,
-                    substr($text, $startPos, $parser->pos - $startPos)
-                )
-                : true;
+        if (!$result) {
+            return false;
         }
+        return $capturing
+            ? new Node\Terminal(
+                $this->name,
+                $startPos,
+                $parser->pos,
+                substr($text, $startPos, $parser->pos - $startPos)
+            )
+            : true;
     }
 
     public function __toString(): string

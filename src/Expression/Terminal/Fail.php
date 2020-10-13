@@ -33,11 +33,8 @@ final class Fail extends Terminal
         return false;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function match(string $text, Parser $parser)
     {
-        return null;
+        return false;
     }
 }

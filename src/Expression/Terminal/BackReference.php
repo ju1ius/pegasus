@@ -53,6 +53,7 @@ final class BackReference extends Terminal
                 new Node\Terminal($this->name, $start, $end, $pattern)
                 : true;
         }
+        return false;
     }
 
     public function __toString(): string

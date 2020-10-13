@@ -46,7 +46,7 @@ final class Sequence extends Combinator
             $result = $child->match($text, $parser);
             if (!$result) {
                 $parser->pos = $startPos;
-                return null;
+                return false;
             }
             if (!$capturing || $result === true) {
                 continue;
