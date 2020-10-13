@@ -1,4 +1,13 @@
 {
   /* Basic Options */
   "options": "foo", // bar
+  $naked: "identifier",
+  single: 'quoted \' string',
+  "hex": 0xdecaf,
+  "float": +.666,
+  "float2": -6.,
+  "inf": Infinity,
+  "nan": NaN,
+  bar: "baz \
+  qux",
 }

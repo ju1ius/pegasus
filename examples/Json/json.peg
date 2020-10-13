@@ -18,7 +18,7 @@ value       = object
 string      = ~'"' /(?:\\.|[^"]+)*/ ~'"' _
 number      = %(int frac? expo?) _
 
-int         = /-?(?:[1-9]\d*|0(?!\d))/
+int         = / -? (?: [1-9]\d* | 0(?!\d) )/
 frac        = /\.\d+/
 expo        = /[eE][+-]?\d+/
 
