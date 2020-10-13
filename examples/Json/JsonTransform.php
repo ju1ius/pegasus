@@ -6,7 +6,7 @@ use ju1ius\Pegasus\CST\Transform;
 
 class JsonTransform extends Transform
 {
-    protected function leave_object($node, ...$elements)
+    protected function leave_object($node, $elements)
     {
         return $elements ?: [];
     }
@@ -14,14 +14,14 @@ class JsonTransform extends Transform
     protected function leave_members($node, $first, $others)
     {
         $assoc = [$first[0] => $first[1]];
-        foreach ($others as list($key, $value)) {
+        foreach ($others as [$key, $value]) {
             $assoc[$key] = $value;
         }
 
         return $assoc;
     }
 
-    protected function leave_array($node, ...$elements)
+    protected function leave_array($node, $elements)
     {
         return $elements;
     }
