@@ -118,7 +118,7 @@ final class ExpressionHighlighter extends ExpressionVisitor
                 $this->output->write(sprintf(
                     '<d>%1$s</d><term>%2$s</term><d>%1$s</d>',
                     $expr->getQuoteCharacter(),
-                    $expr->getLiteral()
+                    $this->highlightLiteral($expr->getLiteral()),
                 ));
             } elseif ($expr instanceof Word) {
                 $this->output->write(sprintf(
@@ -233,5 +233,15 @@ final class ExpressionHighlighter extends ExpressionVisitor
             return $expr[0] instanceof OneOf || $expr[0] instanceof NodeAction;
         }
         return $expr[0] instanceof Composite;
+    }
+
+    private function highlightLiteral(string $literal): string
+    {
+        return strtr($literal, [
+            "\n" => '<esc>\n</esc>',
+            "\r" => '<esc>\r</esc>',
+            "\t" => '<esc>\t</esc>',
+            "\f" => '<esc>\f</esc>',
+        ]);
     }
 }

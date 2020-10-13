@@ -35,6 +35,8 @@ final class OutputStyles
                 'q' => new OutputFormatterStyle('magenta'),
                 // terminals
                 'term' => new OutputFormatterStyle('green'),
+                // string escape sequences
+                'esc' => new OutputFormatterStyle('yellow'),
                 // rule
                 'rule' => new OutputFormatterStyle('blue', null, ['bold']),
                 // directive
