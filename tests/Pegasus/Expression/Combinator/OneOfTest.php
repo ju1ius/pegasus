@@ -8,7 +8,9 @@ use ju1ius\Pegasus\CST\Node\Terminal;
 use ju1ius\Pegasus\Expression\Combinator\OneOf;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\GrammarBuilder;
+use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
+use PHPUnit\Framework\Assert;
 
 class OneOfTest extends ExpressionTestCase
 {
@@ -56,11 +58,11 @@ class OneOfTest extends ExpressionTestCase
 
     /**
      * @dataProvider provideTestMatchError
-     * @expectedException \ju1ius\Pegasus\Parser\Exception\ParseError
      */
     public function testMatchError($children, $match_args)
     {
         $expr = new OneOf($children, 'choice');
+        $this->expectException(ParseError::class);
         $this->parse($expr, ...$match_args);
     }
     public function provideTestMatchError()

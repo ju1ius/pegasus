@@ -8,6 +8,7 @@ use ju1ius\Pegasus\CST\Node\Terminal;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Decorator\OneOrMore;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
+use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class OneOrMoreTest extends ExpressionTestCase
@@ -38,11 +39,11 @@ class OneOrMoreTest extends ExpressionTestCase
 
     /**
      * @dataProvider provideTestMatchError
-     * @expectedException \ju1ius\Pegasus\Parser\Exception\ParseError
      */
     public function testMatchError(Expression $child, array $match_args)
     {
         $expr = new OneOrMore($child, '+');
+        $this->expectException(ParseError::class);
         $this->parse($expr, ...$match_args);
     }
     public function provideTestMatchError()

@@ -5,6 +5,7 @@ namespace ju1ius\Pegasus\Tests\Expression\Decorator;
 use ju1ius\Pegasus\Expression\Decorator\Assert;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarBuilder;
+use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class AssertTest extends ExpressionTestCase
@@ -50,13 +51,13 @@ class AssertTest extends ExpressionTestCase
 
     /**
      * @dataProvider provideTestMatchError
-     * @expectedException \ju1ius\Pegasus\Parser\Exception\ParseError
      *
      * @param Grammar $expr
      * @param array   $args
      */
     public function testMatchError(Grammar $expr, array $args)
     {
+        $this->expectException(ParseError::class);
         $this->parse($expr, ...$args);
     }
 

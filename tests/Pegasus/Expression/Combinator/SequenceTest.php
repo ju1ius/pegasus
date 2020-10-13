@@ -8,6 +8,7 @@ use ju1ius\Pegasus\CST\Node\Decorator;
 use ju1ius\Pegasus\CST\Node\Terminal;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarBuilder;
+use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class SequenceTest extends ExpressionTestCase
@@ -99,13 +100,13 @@ class SequenceTest extends ExpressionTestCase
 
     /**
      * @dataProvider provideTestMatchError
-     * @expectedException \ju1ius\Pegasus\Parser\Exception\ParseError
      *
      * @param Grammar $expr
      * @param array   $match_args
      */
     public function testMatchError(Grammar $expr, array $match_args)
     {
+        $this->expectException(ParseError::class);
         $this->parse($expr, ...$match_args);
     }
     public function provideTestMatchError()

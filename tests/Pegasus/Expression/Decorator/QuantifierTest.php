@@ -5,6 +5,7 @@ namespace ju1ius\Pegasus\Tests\Expression\Decorator;
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\CST\Node\Terminal;
 use ju1ius\Pegasus\GrammarBuilder;
+use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class QuantifierTest extends ExpressionTestCase
@@ -85,10 +86,10 @@ class QuantifierTest extends ExpressionTestCase
 
     /**
      * @dataProvider provideTestMatchError
-     * @expectedException \ju1ius\Pegasus\Parser\Exception\ParseError
      */
     public function testMatchError($expr, $match_args)
     {
+        $this->expectException(ParseError::class);
         $this->parse($expr, ...$match_args);
     }
     public function provideTestMatchError()

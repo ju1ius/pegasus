@@ -5,6 +5,7 @@ namespace ju1ius\Pegasus\Tests\Expression\Decorator;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Decorator\Not;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
+use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class NotTest extends ExpressionTestCase
@@ -38,11 +39,11 @@ class NotTest extends ExpressionTestCase
 
     /**
      * @dataProvider provideTestMatchError
-     * @expectedException \ju1ius\Pegasus\Parser\Exception\ParseError
      */
     public function testMatchError(Expression $child, $args)
     {
         $expr = new Not($child, 'not');
+        $this->expectException(ParseError::class);
         $this->parse($expr, ...$args);
     }
     public function provideTestMatchError()
