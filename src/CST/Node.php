@@ -47,6 +47,13 @@ abstract class Node
     public $end;
 
     /**
+     * The value matched by this node (only for terminals).
+     *
+     * @var string|null
+     */
+    public ?string $value = null;
+
+    /**
      * Optional attributes map.
      *
      * @var array

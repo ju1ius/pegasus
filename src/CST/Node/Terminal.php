@@ -14,13 +14,6 @@ use ju1ius\Pegasus\CST\Node;
 
 class Terminal extends Node
 {
-    /**
-     * The value matched by this node (only for terminals).
-     *
-     * @var string
-     */
-    public $value;
-
     public function __construct(
         string $name,
         int $start,
