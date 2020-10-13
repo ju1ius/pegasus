@@ -16,13 +16,13 @@ use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Decorator\Quantifier;
 use ju1ius\Pegasus\Expression\Terminal\Match;
 use ju1ius\Pegasus\Utils\Str;
+use Twig\Environment;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 
-class PegasusTwigExtension extends \Twig_Extension
+class PegasusTwigExtension extends AbstractExtension
 {
-    /**
-     * @var CompilerInterface
-     */
-    private $compiler;
+    private CompilerInterface $compiler;
 
     public function __construct(CompilerInterface $compiler)
     {
@@ -56,7 +56,7 @@ class PegasusTwigExtension extends \Twig_Extension
     public function getFilters()
     {
         return [
-            new \Twig_Filter('indent', [$this, 'indent']),
+            new TwigFilter('indent', [$this, 'indent']),
         ];
     }
 
@@ -84,7 +84,7 @@ class PegasusTwigExtension extends \Twig_Extension
     }
 
     public function renderRule(
-        \Twig_Environment $env,
+        Environment $env,
         $twigContext,
         string $name,
         Expression $expr,
@@ -99,7 +99,7 @@ class PegasusTwigExtension extends \Twig_Extension
     }
 
     public function renderExpression(
-        \Twig_Environment $env,
+        Environment $env,
         $twigContext,
         Expression $expr,
         CompilationContext $context,

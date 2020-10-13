@@ -12,41 +12,34 @@ namespace ju1ius\Pegasus\Compiler\Extension\Php;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Utils\Str;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
 
-class PhpTwigExtension extends \Twig_Extension
+class PhpTwigExtension extends AbstractExtension
 {
-    /**
-     * @var PhpCompiler
-     */
-    private $compiler;
+    private PhpCompiler $compiler;
 
     public function __construct(PhpCompiler $compiler)
     {
         $this->compiler = $compiler;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getName()
     {
         return 'pegasus-php';
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getFunctions()
     {
         return [
-            new \Twig_Function('repr', [$this, 'repr']),
-            new \Twig_Function('repr_regexp', [$this, 'reprRegexp']),
-            new \Twig_Function('result_varname', [$this, 'getResultVariableName']),
-            new \Twig_Function('position_varname', [$this, 'getPositionVariableName']),
-            new \Twig_Function('expr_comment', [$this, 'getExpressionComment']),
-            new \Twig_Function('failure', [$this, 'renderFailure']),
-            new \Twig_Function('start_non_capturing', [$this, 'renderStartNonCapturing']),
-            new \Twig_Function('end_non_capturing', [$this, 'renderEndNonCapturing']),
+            new TwigFunction('repr', [$this, 'repr']),
+            new TwigFunction('repr_regexp', [$this, 'reprRegexp']),
+            new TwigFunction('result_varname', [$this, 'getResultVariableName']),
+            new TwigFunction('position_varname', [$this, 'getPositionVariableName']),
+            new TwigFunction('expr_comment', [$this, 'getExpressionComment']),
+            new TwigFunction('failure', [$this, 'renderFailure']),
+            new TwigFunction('start_non_capturing', [$this, 'renderStartNonCapturing']),
+            new TwigFunction('end_non_capturing', [$this, 'renderEndNonCapturing']),
         ];
     }
 
