@@ -15,7 +15,7 @@ use ju1ius\Pegasus\Tests\ExpressionTestCase;
 class BackReferenceTest extends ExpressionTestCase
 {
     /**
-     * @dataProvider getMatchProvider
+     * @dataProvider provideTestMatch
      *
      * @param       $grammar
      * @param array $params
@@ -27,45 +27,43 @@ class BackReferenceTest extends ExpressionTestCase
         $this->assertNodeEquals($expected, $result);
     }
 
-    public function getMatchProvider()
+    public function provideTestMatch()
     {
-        return [
-            'BackReference to a label in scope' => [
-                GrammarBuilder::create()
-                    ->rule('start')->seq()
-                        ->label('a')->literal('foo')
-                        ->literal('bar')
-                        ->backref('a')
-                    ->getGrammar(),
-                ['foobarfoo'],
-                new Composite('start', 0, 9, [
-                    new Terminal('', 0, 3, 'foo'),
-                    new Terminal('', 3, 6, 'bar'),
-                    new Terminal('', 6, 9, 'foo'),
-                ])
-            ],
-            'Scope is not overwritten by rule applications' => [
-                GrammarBuilder::create()
-                    ->rule('a')->sequence()
-                        ->label('a')->literal('a')
-                        ->ref('b')
-                        ->backref('a')
-                    ->rule('b')->sequence()
-                        ->label('a')->literal('b')
-                        ->literal('c')
-                        ->backref('a')
-                    ->getGrammar(),
-                ['abcba'],
-                new Composite('a', 0, 5, [
-                    new Terminal('', 0, 1, 'a'),
-                    new Composite('b', 1, 4, [
-                        new Terminal('', 1, 2, 'b'),
-                        new Terminal('', 2, 3, 'c'),
-                        new Terminal('', 3, 4, 'b'),
-                    ]),
-                    new Terminal('', 4, 5, 'a'),
-                ])
-            ]
+        yield 'BackReference to a label in scope' => [
+            GrammarBuilder::create()
+                ->rule('start')->seq()
+                    ->label('a')->literal('foo')
+                    ->literal('bar')
+                    ->backref('a')
+                ->getGrammar(),
+            ['foobarfoo'],
+            new Composite('start', 0, 9, [
+                new Terminal('', 0, 3, 'foo'),
+                new Terminal('', 3, 6, 'bar'),
+                new Terminal('', 6, 9, 'foo'),
+            ])
+        ];
+        yield 'Scope is not overwritten by rule applications' => [
+            GrammarBuilder::create()
+                ->rule('a')->sequence()
+                    ->label('a')->literal('a')
+                    ->ref('b')
+                    ->backref('a')
+                ->rule('b')->sequence()
+                    ->label('a')->literal('b')
+                    ->literal('c')
+                    ->backref('a')
+                ->getGrammar(),
+            ['abcba'],
+            new Composite('a', 0, 5, [
+                new Terminal('', 0, 1, 'a'),
+                new Composite('b', 1, 4, [
+                    new Terminal('', 1, 2, 'b'),
+                    new Terminal('', 2, 3, 'c'),
+                    new Terminal('', 3, 4, 'b'),
+                ]),
+                new Terminal('', 4, 5, 'a'),
+            ])
         ];
     }
 
@@ -73,7 +71,7 @@ class BackReferenceTest extends ExpressionTestCase
      * @param       $grammar
      * @param array $params
      *
-     * @dataProvider getOutOfScopeReferenceProvider
+     * @dataProvider provideTestOutOfScopeReference
      */
     public function testOutOfScopeReference($grammar, array $params)
     {
@@ -81,20 +79,18 @@ class BackReferenceTest extends ExpressionTestCase
         $this->parse($grammar, ...$params);
     }
 
-    public function getOutOfScopeReferenceProvider()
+    public function provideTestOutOfScopeReference()
     {
-        return [
-            'reference in another rule' => [
-                GrammarBuilder::create()
-                    ->rule('foobarfoo')->seq()
-                        ->ref('foo')->ref('bar')->backref('a')
-                    ->rule('foo')
-                        ->label('a')->literal('foo')
-                    ->rule('bar')
-                        ->literal('bar')
-                    ->getGrammar(),
-                ['foobarfoo']
-            ],
+        yield 'reference in another rule' => [
+            GrammarBuilder::create()
+                ->rule('foobarfoo')->seq()
+                    ->ref('foo')->ref('bar')->backref('a')
+                ->rule('foo')
+                    ->label('a')->literal('foo')
+                ->rule('bar')
+                    ->literal('bar')
+                ->getGrammar(),
+            ['foobarfoo']
         ];
     }
 }

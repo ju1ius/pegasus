@@ -54,7 +54,7 @@ class BuilderTest extends PegasusTestCase
     }
 
     /**
-     * @dataProvider getTestBuildingComplexRulesProvider
+     * @dataProvider provideTestBuildingComplexRules
      *
      * @param Grammar $grammar
      * @param array   $expected
@@ -65,19 +65,17 @@ class BuilderTest extends PegasusTestCase
         $this->assertGrammarEquals($expected, $grammar);
     }
 
-    public function getTestBuildingComplexRulesProvider()
+    public function provideTestBuildingComplexRules()
     {
-        return [
-            'Sequence with nested decorators' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ignore()->label('a')->oneOrMore()->literal('foo')
-                    ->literal('bar')
-                    ->getGrammar(),
-                ['test' => new Sequence([
-                    new Ignore(new Label(new OneOrMore(new Literal('foo')), 'a')),
-                    new Literal('bar')
-                ], 'test')]
-            ]
+        yield 'Sequence with nested decorators' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ignore()->label('a')->oneOrMore()->literal('foo')
+                ->literal('bar')
+                ->getGrammar(),
+            ['test' => new Sequence([
+                new Ignore(new Label(new OneOrMore(new Literal('foo')), 'a')),
+                new Literal('bar')
+            ], 'test')]
         ];
     }
 }

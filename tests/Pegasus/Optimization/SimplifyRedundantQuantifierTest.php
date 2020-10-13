@@ -27,7 +27,7 @@ use ju1ius\Pegasus\Grammar\Optimization\SimplifyRedundantQuantifier;
 class SimplifyRedundantQuantifierTest extends OptimizationTestCase
 {
     /**
-     * @dataProvider getApplyProvider
+     * @dataProvider provideTestApply
      * @param Grammar    $grammar
      * @param Expression $expected
      */
@@ -39,70 +39,68 @@ class SimplifyRedundantQuantifierTest extends OptimizationTestCase
         $this->assertEquals((string)$expected, (string)$result);
     }
 
-    public function getApplyProvider()
+    public function provideTestApply()
     {
-        return [
-            '("foo"*)* => "foo"*' => [
-                GrammarBuilder::create()->rule('test')->zeroOrMore()
-                    ->zeroOrMore()->literal('foo')
+        yield '("foo"*)* => "foo"*' => [
+            GrammarBuilder::create()->rule('test')->zeroOrMore()
+                ->zeroOrMore()->literal('foo')
+            ->getGrammar(),
+            new ZeroOrMore(new Literal('foo'), 'test')
+        ];
+        yield '("foo"+)* => "foo"*' => [
+            GrammarBuilder::create()->rule('test')->zeroOrMore()
+                ->oneOrMore()->literal('foo')
                 ->getGrammar(),
-                new ZeroOrMore(new Literal('foo'), 'test')
-            ],
-            '("foo"+)* => "foo"*' => [
-                GrammarBuilder::create()->rule('test')->zeroOrMore()
-                    ->oneOrMore()->literal('foo')
-                    ->getGrammar(),
-                new ZeroOrMore(new Literal('foo'), 'test')
-            ],
-            '("foo"?)* => "foo"*' => [
-                GrammarBuilder::create()->rule('test')->zeroOrMore()
-                    ->optional()->literal('foo')
-                    ->getGrammar(),
-                new ZeroOrMore(new Literal('foo'), 'test')
-            ],
-            '("foo"*)+ => "foo"*' => [
-                GrammarBuilder::create()->rule('test')->oneOrMore()
-                    ->zeroOrMore()->literal('foo')
-                    ->getGrammar(),
-                new ZeroOrMore(new Literal('foo'), 'test')
-            ],
-            '("foo"+)+ => "foo"+' => [
-                GrammarBuilder::create()->rule('test')->oneOrMore()
-                    ->oneOrMore()->literal('foo')
-                    ->getGrammar(),
-                new OneOrMore(new Literal('foo'), 'test')
-            ],
-            '("foo"?)+ => "foo"*' => [
-                GrammarBuilder::create()->rule('test')->oneOrMore()
-                    ->optional()->literal('foo')
-                    ->getGrammar(),
-                new ZeroOrMore(new Literal('foo'), 'test')
-            ],
-            '("foo"*)? => "foo"*' => [
-                GrammarBuilder::create()->rule('test')->optional()
-                    ->zeroOrMore()->literal('foo')
-                    ->getGrammar(),
-                new ZeroOrMore(new Literal('foo'), 'test')
-            ],
-            '("foo"+)? => "foo"*' => [
-                GrammarBuilder::create()->rule('test')->optional()
-                    ->oneOrMore()->literal('foo')
-                    ->getGrammar(),
-                new ZeroOrMore(new Literal('foo'), 'test')
-            ],
-            '("foo"?)? => "foo"?' => [
-                GrammarBuilder::create()->rule('test')->optional()
-                    ->optional()->literal('foo')
-                    ->getGrammar(),
-                new Optional(new Literal('foo'), 'test')
-            ],
-            // Now test that the optimization does not apply!
-            '("foo"{2,2})?' => [
-                GrammarBuilder::create()->rule('test')->optional()
-                    ->exactly(2)->literal('foo')
-                    ->getGrammar(),
-                new Optional(new Quantifier(new Literal('foo'), 2, 2), 'test')
-            ]
+            new ZeroOrMore(new Literal('foo'), 'test')
+        ];
+        yield '("foo"?)* => "foo"*' => [
+            GrammarBuilder::create()->rule('test')->zeroOrMore()
+                ->optional()->literal('foo')
+                ->getGrammar(),
+            new ZeroOrMore(new Literal('foo'), 'test')
+        ];
+        yield '("foo"*)+ => "foo"*' => [
+            GrammarBuilder::create()->rule('test')->oneOrMore()
+                ->zeroOrMore()->literal('foo')
+                ->getGrammar(),
+            new ZeroOrMore(new Literal('foo'), 'test')
+        ];
+        yield '("foo"+)+ => "foo"+' => [
+            GrammarBuilder::create()->rule('test')->oneOrMore()
+                ->oneOrMore()->literal('foo')
+                ->getGrammar(),
+            new OneOrMore(new Literal('foo'), 'test')
+        ];
+        yield '("foo"?)+ => "foo"*' => [
+            GrammarBuilder::create()->rule('test')->oneOrMore()
+                ->optional()->literal('foo')
+                ->getGrammar(),
+            new ZeroOrMore(new Literal('foo'), 'test')
+        ];
+        yield '("foo"*)? => "foo"*' => [
+            GrammarBuilder::create()->rule('test')->optional()
+                ->zeroOrMore()->literal('foo')
+                ->getGrammar(),
+            new ZeroOrMore(new Literal('foo'), 'test')
+        ];
+        yield '("foo"+)? => "foo"*' => [
+            GrammarBuilder::create()->rule('test')->optional()
+                ->oneOrMore()->literal('foo')
+                ->getGrammar(),
+            new ZeroOrMore(new Literal('foo'), 'test')
+        ];
+        yield '("foo"?)? => "foo"?' => [
+            GrammarBuilder::create()->rule('test')->optional()
+                ->optional()->literal('foo')
+                ->getGrammar(),
+            new Optional(new Literal('foo'), 'test')
+        ];
+        // Now test that the optimization does not apply!
+        yield '("foo"{2,2})?' => [
+            GrammarBuilder::create()->rule('test')->optional()
+                ->exactly(2)->literal('foo')
+                ->getGrammar(),
+            new Optional(new Quantifier(new Literal('foo'), 2, 2), 'test')
         ];
     }
 }

@@ -160,131 +160,129 @@ class ExpressionBuilderTest extends PegasusTestCase
 
     public function testItCanBuildExpressions()
     {
-        foreach ($this->getItCanBuildExpressionsProvider() as $msg => list($input, $expected)) {
+        foreach ($this->provideTestItCanBuildExpressions() as $msg => list($input, $expected)) {
             $this->assertExpressionEquals($expected, $input, $msg);
         }
     }
 
-    public function getItCanBuildExpressionsProvider()
+    public function provideTestItCanBuildExpressions()
     {
-        return [
-            // Terminals
-            'Literal' => [
-                Builder::create()->literal('foo')->getExpression(),
-                new Literal('foo'),
-            ],
-            'Match' => [
-                Builder::create()->match('foo', ['i'])->getExpression(),
-                new Match('foo', ['i']),
-            ],
-            'RegExp' => [
-                Builder::create()->regexp('foo(bar)', ['i'])->getExpression(),
-                new RegExp('foo(bar)', ['i']),
-            ],
-            'Reference' => [
-                Builder::create()->ref('foo')->getExpression(),
-                new Reference('foo'),
-            ],
-            'BackReference' => [
-                Builder::create()->backref('foo')->getExpression(),
-                new BackReference('foo'),
-            ],
-            'EOF' => [
-                Builder::create()->eof()->getExpression(),
-                new EOF(),
-            ],
-            'Epsilon' => [
-                Builder::create()->epsilon()->getExpression(),
-                new Epsilon(),
-            ],
-            'Fail' => [
-                Builder::create()->fail()->getExpression(),
-                new Fail(),
-            ],
-            // Predicates
-            'Assert' => [
-                Builder::create()->assert()->literal('foo')->getExpression(),
-                new Assert(new Literal('foo')),
-            ],
-            'Not' => [
-                Builder::create()->not()->literal('foo')->getExpression(),
-                new Not(new Literal('foo')),
-            ],
-            // Composites
-            'Sequence' => [
-                new Seq([new Literal('foo'), new Ref('bar')]),
-                Builder::create()->seq()
-                    ->literal('foo')
-                    ->ref('bar')
-                    ->getExpression(),
-            ],
-            'NodeAction' => [
-                new NodeAction(new Sequence([new Literal('foo'), new Literal('bar')]), 'FooBar'),
-                Builder::create()->named('FooBar')->sequence()
-                    ->literal('foo')
-                    ->literal('bar')
-                    ->getExpression(),
-            ],
-            'Choice' => [
-                new OneOf([new Literal('bar'), new Literal('baz')]),
-                Builder::create()->oneOf()
-                    ->literal('bar')
-                    ->literal('baz')
-                    ->getExpression(),
-            ],
-            'Choice of sequences' => [
-                Builder::create()->oneOf()
-                    ->seq()->literal('foo')->literal('bar')->end()
-                    ->seq()->ref('baz')->ref('qux')->end()
-                    ->getExpression(),
-                new OneOf([
-                    new Seq([new Literal('foo'), new Literal('bar')]),
-                    new Seq([new Ref('baz'), new Ref('qux')]),
-                ]),
-            ],
-            'Sequence of choices' => [
-                Builder::create()->seq()
-                    ->oneOf()->literal('foo')->literal('bar')->end()
-                    ->oneOf()->ref('baz')->ref('qux')->end()
-                    ->getExpression(),
-                new Seq([
-                    new OneOf([new Literal('foo'), new Literal('bar')]),
-                    new OneOf([new Ref('baz'), new Ref('qux')]),
-                ]),
-            ],
-            // Decorators
-            'Top-level decorator' => [
-                Builder::create()->q(1)->literal('foo')->getExpression(),
+        // Terminals
+        yield 'Literal' => [
+            Builder::create()->literal('foo')->getExpression(),
+            new Literal('foo'),
+        ];
+        yield 'Match' => [
+            Builder::create()->match('foo', ['i'])->getExpression(),
+            new Match('foo', ['i']),
+        ];
+        yield 'RegExp' => [
+            Builder::create()->regexp('foo(bar)', ['i'])->getExpression(),
+            new RegExp('foo(bar)', ['i']),
+        ];
+        yield 'Reference' => [
+            Builder::create()->ref('foo')->getExpression(),
+            new Reference('foo'),
+        ];
+        yield 'BackReference' => [
+            Builder::create()->backref('foo')->getExpression(),
+            new BackReference('foo'),
+        ];
+        yield 'EOF' => [
+            Builder::create()->eof()->getExpression(),
+            new EOF(),
+        ];
+        yield 'Epsilon' => [
+            Builder::create()->epsilon()->getExpression(),
+            new Epsilon(),
+        ];
+        yield 'Fail' => [
+            Builder::create()->fail()->getExpression(),
+            new Fail(),
+        ];
+        // Predicates
+        yield 'Assert' => [
+            Builder::create()->assert()->literal('foo')->getExpression(),
+            new Assert(new Literal('foo')),
+        ];
+        yield 'Not' => [
+            Builder::create()->not()->literal('foo')->getExpression(),
+            new Not(new Literal('foo')),
+        ];
+        // Composites
+        yield 'Sequence' => [
+            new Seq([new Literal('foo'), new Ref('bar')]),
+            Builder::create()->seq()
+                ->literal('foo')
+                ->ref('bar')
+                ->getExpression(),
+        ];
+        yield 'NodeAction' => [
+            new NodeAction(new Sequence([new Literal('foo'), new Literal('bar')]), 'FooBar'),
+            Builder::create()->named('FooBar')->sequence()
+                ->literal('foo')
+                ->literal('bar')
+                ->getExpression(),
+        ];
+        yield 'Choice' => [
+            new OneOf([new Literal('bar'), new Literal('baz')]),
+            Builder::create()->oneOf()
+                ->literal('bar')
+                ->literal('baz')
+                ->getExpression(),
+        ];
+        yield 'Choice of sequences' => [
+            Builder::create()->oneOf()
+                ->seq()->literal('foo')->literal('bar')->end()
+                ->seq()->ref('baz')->ref('qux')->end()
+                ->getExpression(),
+            new OneOf([
+                new Seq([new Literal('foo'), new Literal('bar')]),
+                new Seq([new Ref('baz'), new Ref('qux')]),
+            ]),
+        ];
+        yield 'Sequence of choices' => [
+            Builder::create()->seq()
+                ->oneOf()->literal('foo')->literal('bar')->end()
+                ->oneOf()->ref('baz')->ref('qux')->end()
+                ->getExpression(),
+            new Seq([
+                new OneOf([new Literal('foo'), new Literal('bar')]),
+                new OneOf([new Ref('baz'), new Ref('qux')]),
+            ]),
+        ];
+        // Decorators
+        yield 'Top-level decorator' => [
+            Builder::create()->q(1)->literal('foo')->getExpression(),
+            new Quantifier(new Literal('foo'), 1),
+        ];
+        yield 'Nested decorators' => [
+            Builder::create()->not()->exactly(1)->literal('foo')->getExpression(),
+            new Not(new Quantifier(new Literal('foo'), 1, 1)),
+        ];
+        yield 'Quantifiers' => [
+            Builder::create()->seq()
+                ->q(1)->literal('foo')
+                ->exactly(1)->literal('bar')
+                ->q(2, 42)->literal('baz')
+                ->getExpression(),
+            new Seq([
                 new Quantifier(new Literal('foo'), 1),
-            ],
-            'Nested decorators' => [
-                Builder::create()->not()->exactly(1)->literal('foo')->getExpression(),
-                new Not(new Quantifier(new Literal('foo'), 1, 1)),
-            ],
-            'Quantifiers' => [
-                Builder::create()->seq()
-                    ->q(1)->literal('foo')
-                    ->exactly(1)->literal('bar')
-                    ->q(2, 42)->literal('baz')
-                    ->getExpression(),
-                new Seq([
-                    new Quantifier(new Literal('foo'), 1),
-                    new Quantifier(new Literal('bar'), 1, 1),
-                    new Quantifier(new Literal('baz'), 2, 42),
-                ]),
-            ],
-            'Label' => [
-                Builder::create()->label('a')->literal('foo')->getExpression(),
-                new Label(new Literal('foo'), 'a'),
-            ],
-            'Skip' => [
-                Builder::create()->ignore()->literal('foo')->getExpression(),
-                new Ignore(new Literal('foo')),
-            ],
-            'Token' => [
-                Builder::create()->token()->literal('foo')->getExpression(),
-                new Token(new Literal('foo')),
-            ]
+                new Quantifier(new Literal('bar'), 1, 1),
+                new Quantifier(new Literal('baz'), 2, 42),
+            ]),
+        ];
+        yield 'Label' => [
+            Builder::create()->label('a')->literal('foo')->getExpression(),
+            new Label(new Literal('foo'), 'a'),
+        ];
+        yield 'Skip' => [
+            Builder::create()->ignore()->literal('foo')->getExpression(),
+            new Ignore(new Literal('foo')),
+        ];
+        yield 'Token' => [
+            Builder::create()->token()->literal('foo')->getExpression(),
+            new Token(new Literal('foo')),
         ];
     }
 }

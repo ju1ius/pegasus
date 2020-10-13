@@ -27,12 +27,10 @@ class LiteralTest extends PhpCompilerTestCase
 
     public function parseProvider()
     {
-        return [
-            [
-                'x = "foo"',
-                'foo',
-                new Terminal('x', 0, 3, 'foo'),
-            ],
+        yield [
+            'x = "foo"',
+            'foo',
+            new Terminal('x', 0, 3, 'foo'),
         ];
     }
 
@@ -52,9 +50,7 @@ class LiteralTest extends PhpCompilerTestCase
 
     public function parseFailureProvider()
     {
-        return [
-            ['x = "foo"', 'bar'],
-            ['x = "foo"', 'foobar'],
-        ];
+            yield ['x = "foo"', 'bar'];
+            yield ['x = "foo"', 'foobar'];
     }
 }

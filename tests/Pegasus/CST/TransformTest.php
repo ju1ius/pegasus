@@ -45,7 +45,7 @@ class TransformTest extends TestCase
     }
 
     /**
-     * @dataProvider getTestDefaultVisitationBehaviorProvider
+     * @dataProvider provideTestDefaultVisitationBehavior
      *
      * @param Node  $node
      * @param mixed $expected
@@ -57,56 +57,54 @@ class TransformTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function getTestDefaultVisitationBehaviorProvider()
+    public function provideTestDefaultVisitationBehavior()
     {
-        return [
-            'Returns the value of a terminal node' => [
-                new Terminal('foo', 0, 3, 'foo'),
-                'foo'
-            ],
-            'Returns the node if a terminal node has a groups attribute.' => [
-                new Terminal('foo', 0, 3, 'foo', ['groups' => ['bar', 'baz']]),
-                new Terminal('foo', 0, 3, 'foo', ['groups' => ['bar', 'baz']]),
-            ],
-            'Returns a terminal `captures` attribute if present.' => [
-                new Terminal('foo', 0, 3, 'foobar', ['captures' => ['foo', 'bar']]),
-                ['foo', 'bar'],
-            ],
-            'Returns the child of a decorator node' => [
-                new Decorator('foo', 0, 3, new Terminal('', 0, 3, 'foo')),
-                'foo'
-            ],
-            'Returns the children of a quantifier node' => [
-                new Quantifier('foo', 0, 6, [
-                    new Terminal('', 0, 3, 'foo'),
-                    new Terminal('', 3, 6, 'foo'),
-                ]),
-                ['foo', 'foo']
-            ],
-            'Returns the child of an optional quantifier node' => [
-                new Quantifier('foo', 0, 3, [
-                    new Terminal('', 0, 3, 'foo'),
-                ], true),
-                'foo'
-            ],
-            'Returns null for an optional quantifier node with no children' => [
-                new Quantifier('foo', 0, 3, [], true),
-                null
-            ],
-            'Returns the children of a composite node' => [
-                new Composite('foobar', 0, 9, [
-                    new Terminal('', 0, 3, 'foo'),
-                    new Terminal('', 3, 6, 'bar'),
-                    new Terminal('', 3, 6, 'baz'),
-                ]),
-                ['foo', 'bar', 'baz']
-            ],
-            'Returns a single child for a composite node with one child.' => [
-                new Composite('foobar', 0, 3, [
-                    new Terminal('', 0, 3, 'foo'),
-                ]),
-                'foo'
-            ],
+        yield 'Returns the value of a terminal node' => [
+            new Terminal('foo', 0, 3, 'foo'),
+            'foo'
+            ];
+        yield 'Returns the node if a terminal node has a groups attribute.' => [
+            new Terminal('foo', 0, 3, 'foo', ['groups' => ['bar', 'baz']]),
+            new Terminal('foo', 0, 3, 'foo', ['groups' => ['bar', 'baz']]),
+        ];
+        yield 'Returns a terminal `captures` attribute if present.' => [
+            new Terminal('foo', 0, 3, 'foobar', ['captures' => ['foo', 'bar']]),
+            ['foo', 'bar'],
+        ];
+        yield 'Returns the child of a decorator node' => [
+            new Decorator('foo', 0, 3, new Terminal('', 0, 3, 'foo')),
+            'foo'
+        ];
+        yield 'Returns the children of a quantifier node' => [
+            new Quantifier('foo', 0, 6, [
+                new Terminal('', 0, 3, 'foo'),
+                new Terminal('', 3, 6, 'foo'),
+            ]),
+            ['foo', 'foo']
+        ];
+        yield 'Returns the child of an optional quantifier node' => [
+            new Quantifier('foo', 0, 3, [
+                new Terminal('', 0, 3, 'foo'),
+            ], true),
+            'foo'
+        ];
+        yield 'Returns null for an optional quantifier node with no children' => [
+            new Quantifier('foo', 0, 3, [], true),
+            null
+        ];
+        yield 'Returns the children of a composite node' => [
+            new Composite('foobar', 0, 9, [
+                new Terminal('', 0, 3, 'foo'),
+                new Terminal('', 3, 6, 'bar'),
+                new Terminal('', 3, 6, 'baz'),
+            ]),
+            ['foo', 'bar', 'baz']
+        ];
+        yield 'Returns a single child for a composite node with one child.' => [
+            new Composite('foobar', 0, 3, [
+                new Terminal('', 0, 3, 'foo'),
+            ]),
+            'foo'
         ];
     }
 

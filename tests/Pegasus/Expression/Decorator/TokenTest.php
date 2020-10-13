@@ -22,7 +22,7 @@ use ju1ius\Pegasus\Tests\ExpressionTestCase;
 class TokenTest extends ExpressionTestCase
 {
     /**
-     * @dataProvider getMatchProvider
+     * @dataProvider provideTestMatch
      *
      * @param Grammar $grammar
      * @param array   $params
@@ -33,33 +33,31 @@ class TokenTest extends ExpressionTestCase
         $this->assertParseResult($expected, $grammar, ...$params);
     }
 
-    public function getMatchProvider()
+    public function provideTestMatch()
     {
-        return [
-            "Returns the entire string match by it's child" => [
-                GrammarBuilder::create()->rule('test')->token()
-                    ->sequence()
-                        ->match('\w+')
-                        ->match('=')
-                        ->match('\d+')
-                    ->getGrammar(),
-                ['foo=42'],
-                new Terminal('test', 0, 6, 'foo=42')
-            ],
-            "Even if the child is non-capturing" => [
-                GrammarBuilder::create()->rule('test')->token()
-                    ->ignore()->match('\w+')
-                    ->getGrammar(),
-                ['foo_bar'],
-                new Terminal('test', 0, 7, 'foo_bar')
-            ],
-            "Should fail if the child fails" => [
-                GrammarBuilder::create()->rule('test')->token()
-                    ->match('[a-z]+')
-                    ->getGrammar(),
-                ['666'],
-                null
-            ],
+        yield "Returns the entire string match by it's child" => [
+            GrammarBuilder::create()->rule('test')->token()
+                ->sequence()
+                    ->match('\w+')
+                    ->match('=')
+                    ->match('\d+')
+                ->getGrammar(),
+            ['foo=42'],
+            new Terminal('test', 0, 6, 'foo=42')
+        ];
+        yield "Even if the child is non-capturing" => [
+            GrammarBuilder::create()->rule('test')->token()
+                ->ignore()->match('\w+')
+                ->getGrammar(),
+            ['foo_bar'],
+            new Terminal('test', 0, 7, 'foo_bar')
+        ];
+        yield "Should fail if the child fails" => [
+            GrammarBuilder::create()->rule('test')->token()
+                ->match('[a-z]+')
+                ->getGrammar(),
+            ['666'],
+            null
         ];
     }
 }

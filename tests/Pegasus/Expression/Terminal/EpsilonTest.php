@@ -22,7 +22,7 @@ use ju1ius\Pegasus\Tests\ExpressionTestCase;
 class EpsilonTest extends ExpressionTestCase
 {
     /**
-     * @dataProvider getMatchProvider
+     * @dataProvider provideTestMatch
      *
      * @param string $input
      * @param int    $pos
@@ -43,15 +43,13 @@ class EpsilonTest extends ExpressionTestCase
         $this->assertSame($pos, $parser->pos, 'Does not consume any input.');
     }
 
-    public function getMatchProvider()
+    public function provideTestMatch()
     {
-        return [
-            'Matches when input is empty.' => [
-                '', 0, true,
-            ],
-            'Matches anything without consuming any input.' => [
-                'foo', 1, true,
-            ],
+        yield 'Matches when input is empty.' => [
+            '', 0, true,
+        ];
+        yield 'Matches anything without consuming any input.' => [
+            'foo', 1, true,
         ];
     }
 

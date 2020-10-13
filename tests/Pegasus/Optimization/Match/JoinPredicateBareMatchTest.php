@@ -28,7 +28,7 @@ use ju1ius\Pegasus\Tests\Optimization\OptimizationTestCase;
 class JoinPredicateBareMatchTest extends RegExpOptimizationTestCase
 {
     /**
-     * @dataProvider getApplyProvider
+     * @dataProvider provideTestApply
      *
      * @param Grammar    $input
      * @param Expression $expected
@@ -45,79 +45,77 @@ class JoinPredicateBareMatchTest extends RegExpOptimizationTestCase
         $this->assertExpressionEquals($expected, $result, 'In matching context');
     }
 
-    public function getApplyProvider()
+    public function provideTestApply()
     {
-        return [
-            'Sequence with a Match before an Assert of a Match' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->match('b')
-                    ->assert()->match('c')
-                    ->ref('d')
-                    ->getGrammar(),
-                new Sequence([
-                    new Reference('a'),
-                    new Match('(?>b)(?=c)'),
-                    new Reference('d'),
-                ], 'test')
-            ],
-            'Sequence with a Match before a Not of a Match' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->match('b')
-                    ->not()->match('c')
-                    ->ref('d')
-                    ->getGrammar(),
-                new Sequence([
-                    new Reference('a'),
-                    new Match('(?>b)(?!c)'),
-                    new Reference('d'),
-                ], 'test')
-            ],
-            'Sequence with a Match before EOF' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->match('b')
-                    ->eof()
-                    ->ref('c')
-                    ->getGrammar(),
-                new Sequence([
-                    new Reference('a'),
-                    new Match('(?>b)\z'),
-                    new Reference('c'),
-                ], 'test')
-            ],
-            'Sequence with a Match after an Assert of a Match' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->assert()->match('b')
-                    ->match('c')
-                    ->ref('d')
-                    ->getGrammar(),
-                new Sequence([
-                    new Reference('a'),
-                    new Match('(?=b)(?>c)'),
-                    new Reference('d'),
-                ], 'test')
-            ],
-            'Sequence with a Match after a Not of a Match' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->not()->match('b')
-                    ->match('c')
-                    ->ref('d')
-                    ->getGrammar(),
-                new Sequence([
-                    new Reference('a'),
-                    new Match('(?!b)(?>c)'),
-                    new Reference('d'),
-                ], 'test')
-            ],
+        yield 'Sequence with a Match before an Assert of a Match' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->match('b')
+                ->assert()->match('c')
+                ->ref('d')
+                ->getGrammar(),
+            new Sequence([
+                new Reference('a'),
+                new Match('(?>b)(?=c)'),
+                new Reference('d'),
+            ], 'test')
+        ];
+        yield 'Sequence with a Match before a Not of a Match' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->match('b')
+                ->not()->match('c')
+                ->ref('d')
+                ->getGrammar(),
+            new Sequence([
+                new Reference('a'),
+                new Match('(?>b)(?!c)'),
+                new Reference('d'),
+            ], 'test')
+        ];
+        yield 'Sequence with a Match before EOF' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->match('b')
+                ->eof()
+                ->ref('c')
+                ->getGrammar(),
+            new Sequence([
+                new Reference('a'),
+                new Match('(?>b)\z'),
+                new Reference('c'),
+            ], 'test')
+        ];
+        yield 'Sequence with a Match after an Assert of a Match' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->assert()->match('b')
+                ->match('c')
+                ->ref('d')
+                ->getGrammar(),
+            new Sequence([
+                new Reference('a'),
+                new Match('(?=b)(?>c)'),
+                new Reference('d'),
+            ], 'test')
+        ];
+        yield 'Sequence with a Match after a Not of a Match' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->not()->match('b')
+                ->match('c')
+                ->ref('d')
+                ->getGrammar(),
+            new Sequence([
+                new Reference('a'),
+                new Match('(?!b)(?>c)'),
+                new Reference('d'),
+            ], 'test')
         ];
     }
 
     /**
-     * @dataProvider getAppliesToProvider
+     * @dataProvider provideTestAppliesTo
      *
      * @param Grammar $input
      * @param bool    $applies
@@ -135,108 +133,106 @@ class JoinPredicateBareMatchTest extends RegExpOptimizationTestCase
         $this->assertSame($applies, $result, 'In matching context');
     }
 
-    public function getAppliesToProvider()
+    public function provideTestAppliesTo()
     {
-        return [
-            'Sequence with a Match before an Assert of a Match' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->match('b')
-                    ->assert()->match('c')
-                    ->ref('d')
-                    ->getGrammar(),
-                true
-            ],
-            'Sequence with a Match before a Not of a Match' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->match('b')
-                    ->not()->match('c')
-                    ->ref('d')
-                    ->getGrammar(),
-                true
-            ],
-            'Sequence with a Match before EOF' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->match('b')
-                    ->eof()
-                    ->ref('c')
-                    ->getGrammar(),
-                true
-            ],
-            'Sequence with a Match before an Assert of something else' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->match('b')
-                    ->assert()->ref('c')
-                    ->ref('d')
-                    ->getGrammar(),
-                false
-            ],
-            'Sequence with a Match before a Not of something else' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->match('b')
-                    ->not()->ref('c')
-                    ->ref('d')
-                    ->getGrammar(),
-                false
-            ],
-            'Sequence with a Match after an Assert of a Match' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->assert()->match('b')
-                    ->match('c')
-                    ->ref('d')
-                    ->getGrammar(),
-                true
-            ],
-            'Sequence with a Match after a Not of a Match' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->not()->match('b')
-                    ->match('c')
-                    ->ref('d')
-                    ->getGrammar(),
-                true
-            ],
-            'Sequence with a Match after an Assert of something else' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->assert()->ref('b')
-                    ->match('c')
-                    ->ref('d')
-                    ->getGrammar(),
-                false
-            ],
-            'Sequence with a Match after a Not of something else' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->not()->ref('b')
-                    ->match('c')
-                    ->ref('d')
-                    ->getGrammar(),
-                false
-            ],
-            'Sequence with a Match after a EOF' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->eof()
-                    ->match('c')
-                    ->ref('d')
-                    ->getGrammar(),
-                true
-            ],
-            'Sequence with non-consecutive match & predicate' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->match('b')
-                    ->ref('c')
-                    ->assert()->match('d')
-                    ->getGrammar(),
-                false
-            ],
+        yield 'Sequence with a Match before an Assert of a Match' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->match('b')
+                ->assert()->match('c')
+                ->ref('d')
+                ->getGrammar(),
+            true
+        ];
+        yield 'Sequence with a Match before a Not of a Match' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->match('b')
+                ->not()->match('c')
+                ->ref('d')
+                ->getGrammar(),
+            true
+        ];
+        yield 'Sequence with a Match before EOF' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->match('b')
+                ->eof()
+                ->ref('c')
+                ->getGrammar(),
+            true
+        ];
+        yield 'Sequence with a Match before an Assert of something else' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->match('b')
+                ->assert()->ref('c')
+                ->ref('d')
+                ->getGrammar(),
+            false
+        ];
+        yield 'Sequence with a Match before a Not of something else' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->match('b')
+                ->not()->ref('c')
+                ->ref('d')
+                ->getGrammar(),
+            false
+        ];
+        yield 'Sequence with a Match after an Assert of a Match' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->assert()->match('b')
+                ->match('c')
+                ->ref('d')
+                ->getGrammar(),
+            true
+        ];
+        yield 'Sequence with a Match after a Not of a Match' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->not()->match('b')
+                ->match('c')
+                ->ref('d')
+                ->getGrammar(),
+            true
+        ];
+        yield 'Sequence with a Match after an Assert of something else' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->assert()->ref('b')
+                ->match('c')
+                ->ref('d')
+                ->getGrammar(),
+            false
+        ];
+        yield 'Sequence with a Match after a Not of something else' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->not()->ref('b')
+                ->match('c')
+                ->ref('d')
+                ->getGrammar(),
+            false
+        ];
+        yield 'Sequence with a Match after a EOF' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->eof()
+                ->match('c')
+                ->ref('d')
+                ->getGrammar(),
+            true
+        ];
+        yield 'Sequence with non-consecutive match & predicate' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->match('b')
+                ->ref('c')
+                ->assert()->match('d')
+                ->getGrammar(),
+            false
         ];
     }
 }

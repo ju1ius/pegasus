@@ -22,7 +22,7 @@ use ju1ius\Pegasus\Tests\ExpressionTestCase;
 class IgnoreTest extends ExpressionTestCase
 {
     /**
-     * @dataProvider getMatchProvider
+     * @dataProvider provideTestMatch
      *
      * @param Grammar   $grammar
      * @param array     $args
@@ -38,35 +38,33 @@ class IgnoreTest extends ExpressionTestCase
         }
     }
 
-    public function getMatchProvider()
+    public function provideTestMatch()
     {
-        return [
-            'returns true' => [
-                GrammarBuilder::create()->rule('nope')->ignore()->literal('nope')->getGrammar(),
-                ['nope'],
-                true
-            ],
-            'skip parenthesis around (foo)' => [
-                GrammarBuilder::create()->rule('start')->seq()
-                    ->ignore()->literal('(')
-                    ->literal('foo')
-                    ->ignore()->literal(')')
-                    ->getGrammar(),
-                ['(foo)'],
-                new Terminal('start', 1, 4, 'foo')
-            ],
-            'skip choice result at sequence start' => [
-                GrammarBuilder::create()->rule('start')->seq()
-                    ->ignore()->oneOf()
-                        ->literal('€')
-                        ->literal('$')
-                        ->literal('£')
-                    ->end()
-                    ->literal('42')
-                    ->getGrammar(),
-                ['$42'],
-                new Terminal('start', 1, 3, '42')
-            ]
+        yield 'returns true' => [
+            GrammarBuilder::create()->rule('nope')->ignore()->literal('nope')->getGrammar(),
+            ['nope'],
+            true
+        ];
+        yield 'skip parenthesis around (foo)' => [
+            GrammarBuilder::create()->rule('start')->seq()
+                ->ignore()->literal('(')
+                ->literal('foo')
+                ->ignore()->literal(')')
+                ->getGrammar(),
+            ['(foo)'],
+            new Terminal('start', 1, 4, 'foo')
+        ];
+        yield 'skip choice result at sequence start' => [
+            GrammarBuilder::create()->rule('start')->seq()
+                ->ignore()->oneOf()
+                    ->literal('€')
+                    ->literal('$')
+                    ->literal('£')
+                ->end()
+                ->literal('42')
+                ->getGrammar(),
+            ['$42'],
+            new Terminal('start', 1, 3, '42')
         ];
     }
 }

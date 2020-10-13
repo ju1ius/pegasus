@@ -29,7 +29,7 @@ use ju1ius\Pegasus\Grammar\OptimizationContext;
 class InlineNonRecursiveRulesTest extends OptimizationTestCase
 {
     /**
-     * @dataProvider getTestApplyProvider
+     * @dataProvider provideTestApply
      * @param Grammar    $grammar
      * @param            $rule
      * @param Expression $expected
@@ -44,23 +44,21 @@ class InlineNonRecursiveRulesTest extends OptimizationTestCase
         $this->assertExpressionEquals($expected, $result);
     }
 
-    public function getTestApplyProvider()
+    public function provideTestApply()
     {
-        return [
-            [
-                GrammarBuilder::create()
-                    ->rule('a')->ref('b')
-                    ->rule('b')->literal('b')
-                    ->getGrammar()
-                    ->inline('b'),
-                'a',
-                new Literal('b', 'a')
-            ],
+        yield [
+            GrammarBuilder::create()
+                ->rule('a')->ref('b')
+                ->rule('b')->literal('b')
+                ->getGrammar()
+                ->inline('b'),
+            'a',
+            new Literal('b', 'a')
         ];
     }
 
     /**
-     * @dataProvider getTestAppliesToProvider
+     * @dataProvider provideTestAppliesTo
      *
      * @param Grammar $grammar
      * @param         $rule
@@ -73,40 +71,38 @@ class InlineNonRecursiveRulesTest extends OptimizationTestCase
         $this->assertSame($expected, $result);
     }
 
-    public function getTestAppliesToProvider()
+    public function provideTestAppliesTo()
     {
-        return [
-            'Reference to a non-recursive rule' => [
-                GrammarBuilder::create()
-                    ->rule('a')->ref('b')
-                    ->rule('b')->literal('b')
-                    ->getGrammar()
-                    ->inline('b'),
-                'a',
-                true
-            ],
-            'Reference to a non-recursive rule, not explicitly inlined' => [
-                GrammarBuilder::create()
-                    ->rule('a')->ref('b')
-                    ->rule('b')->literal('b')
-                    ->getGrammar(),
-                'a',
-                false
-            ],
-            'Not a reference' => [
-                GrammarBuilder::create()
-                    ->rule('a')->literal('b')
-                    ->rule('b')->literal('b')
-                    ->getGrammar()
-                    ->inline('b'),
-                'a',
-                false
-            ],
+        yield 'Reference to a non-recursive rule' => [
+            GrammarBuilder::create()
+                ->rule('a')->ref('b')
+                ->rule('b')->literal('b')
+                ->getGrammar()
+                ->inline('b'),
+            'a',
+            true
+        ];
+        yield 'Reference to a non-recursive rule, not explicitly inlined' => [
+            GrammarBuilder::create()
+                ->rule('a')->ref('b')
+                ->rule('b')->literal('b')
+                ->getGrammar(),
+            'a',
+            false
+        ];
+        yield 'Not a reference' => [
+            GrammarBuilder::create()
+                ->rule('a')->literal('b')
+                ->rule('b')->literal('b')
+                ->getGrammar()
+                ->inline('b'),
+            'a',
+            false
         ];
     }
 
     /**
-     * @dataProvider getTestApplyOnWholeGrammarProvider
+     * @dataProvider provideTestApplyOnWholeGrammar
      *
      * @param Grammar $grammar
      * @param         $ruleToTest
@@ -119,7 +115,7 @@ class InlineNonRecursiveRulesTest extends OptimizationTestCase
         $this->assertExpressionEquals($expected, $actual);
     }
 
-    public function getTestApplyOnWholeGrammarProvider()
+    public function provideTestApplyOnWholeGrammar()
     {
         return [
             [

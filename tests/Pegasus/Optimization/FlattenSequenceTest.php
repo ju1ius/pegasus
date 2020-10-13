@@ -14,7 +14,7 @@ use ju1ius\Pegasus\Grammar\Optimization\FlattenSequence;
 class FlattenSequenceTest extends OptimizationTestCase
 {
     /**
-     * @dataProvider getApplyProvider
+     * @dataProvider provideTestApply
      *
      * @param Grammar $grammar
      * @param Expression $expected
@@ -29,44 +29,42 @@ class FlattenSequenceTest extends OptimizationTestCase
         $this->assertExpressionEquals($expected, $result);
         $this->assertEquals((string)$expected, (string)$result);
     }
-    public function getApplyProvider()
+    public function provideTestApply()
     {
-        return [
-            // (("foo" "bar") "baz") "w00t" => "foo" "bar" "baz" "w00t"
-            '(("foo" "bar") "baz") "qux" => "foo" "bar" "baz" "qux"' => [
-                GrammarBuilder::create()->rule('test')->seq()
+        // (("foo" "bar") "baz") "w00t" => "foo" "bar" "baz" "w00t"
+        yield '(("foo" "bar") "baz") "qux" => "foo" "bar" "baz" "qux"' => [
+            GrammarBuilder::create()->rule('test')->seq()
+                ->seq()
                     ->seq()
-                        ->seq()
-                            ->literal('foo')
-                            ->literal('bar')
-                        ->end()
-                        ->literal('baz')
-                    ->end()
-                    ->literal('qux')
-                ->getGrammar(),
-                new Sequence([
-                    new Literal('foo'),
-                    new Literal('bar'),
-                    new Literal('baz'),
-                    new Literal('qux')
-                ], 'test')
-            ],
-            '"foo" ("bar" ("baz" "qux")) => "foo" "bar" "baz" "qux"' => [
-                GrammarBuilder::create()->rule('test')->seq()
-                    ->literal('foo')
-                    ->seq()
+                        ->literal('foo')
                         ->literal('bar')
-                        ->seq()
-                            ->literal('baz')
-                            ->literal('qux')
-                ->getGrammar(),
-                new Sequence([
-                    new Literal('foo'),
-                    new Literal('bar'),
-                    new Literal('baz'),
-                    new Literal('qux')
-                ], 'test')
-            ],
+                    ->end()
+                    ->literal('baz')
+                ->end()
+                ->literal('qux')
+            ->getGrammar(),
+            new Sequence([
+                new Literal('foo'),
+                new Literal('bar'),
+                new Literal('baz'),
+                new Literal('qux')
+            ], 'test')
+        ];
+        yield '"foo" ("bar" ("baz" "qux")) => "foo" "bar" "baz" "qux"' => [
+            GrammarBuilder::create()->rule('test')->seq()
+                ->literal('foo')
+                ->seq()
+                    ->literal('bar')
+                    ->seq()
+                        ->literal('baz')
+                        ->literal('qux')
+            ->getGrammar(),
+            new Sequence([
+                new Literal('foo'),
+                new Literal('bar'),
+                new Literal('baz'),
+                new Literal('qux')
+            ], 'test')
         ];
     }
 }

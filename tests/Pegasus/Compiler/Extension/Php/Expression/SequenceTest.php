@@ -30,24 +30,22 @@ class SequenceTest extends PhpCompilerTestCase
 
     public function parseProvider()
     {
-        return [
-            [
-                'x = "foo" "bar"',
-                'foobar',
-                new Composite('x', 0, 6, [
-                    new Terminal('', 0, 3, 'foo'),
-                    new Terminal('', 3, 6, 'bar'),
-                ]),
-            ],
-            [
-                'x = "foo" "bar" "baz"',
-                'foobarbaz',
-                new Composite('x', 0, 9, [
-                    new Terminal('', 0, 3, 'foo'),
-                    new Terminal('', 3, 6, 'bar'),
-                    new Terminal('', 6, 9, 'baz'),
-                ]),
-            ],
+        yield [
+            'x = "foo" "bar"',
+            'foobar',
+            new Composite('x', 0, 6, [
+                new Terminal('', 0, 3, 'foo'),
+                new Terminal('', 3, 6, 'bar'),
+            ]),
+        ];
+        yield [
+            'x = "foo" "bar" "baz"',
+            'foobarbaz',
+            new Composite('x', 0, 9, [
+                new Terminal('', 0, 3, 'foo'),
+                new Terminal('', 3, 6, 'bar'),
+                new Terminal('', 6, 9, 'baz'),
+            ]),
         ];
     }
 
@@ -67,9 +65,7 @@ class SequenceTest extends PhpCompilerTestCase
 
     public function parseFailureProvider()
     {
-        return [
-            ['x = "foo" "bar"', 'bar'],
-            ['x = "foo" "bar"', 'foobarbaz'],
-        ];
+        yield ['x = "foo" "bar"', 'bar'];
+        yield ['x = "foo" "bar"', 'foobarbaz'];
     }
 }

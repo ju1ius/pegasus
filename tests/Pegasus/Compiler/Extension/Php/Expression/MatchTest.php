@@ -28,17 +28,15 @@ class MatchTest extends PhpCompilerTestCase
 
     public function parseProvider()
     {
-        return [
-            [
-                'x = /foo|bar/',
-                'foo',
-                new Node\Terminal('x', 0, 3, 'foo'),
-            ],
-            [
-                'x = /foo|bar/',
-                'bar',
-                new Node\Terminal('x', 0, 3, 'bar'),
-            ],
+        yield [
+            'x = /foo|bar/',
+            'foo',
+            new Node\Terminal('x', 0, 3, 'foo'),
+        ];
+        yield [
+            'x = /foo|bar/',
+            'bar',
+            new Node\Terminal('x', 0, 3, 'bar'),
         ];
     }
 
@@ -58,9 +56,7 @@ class MatchTest extends PhpCompilerTestCase
 
     public function parseFailureProvider()
     {
-        return [
-            ['x = /foo|bar/', 'baz'],
-            ['x = /foo|bar/', 'foobar'],
-        ];
+            yield ['x = /foo|bar/', 'baz'];
+            yield ['x = /foo|bar/', 'foobar'];
     }
 }

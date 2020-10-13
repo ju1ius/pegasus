@@ -29,91 +29,89 @@ class QuantifierTest extends PhpCompilerTestCase
 
     public function parseProvider()
     {
-        return [
-            'optional, failure' => [
-                'x = "foo"?',
-                '',
-                new Quantifier('x', 0, 0, [], true),
-            ],
-            'optional, success' => [
-                'x = "foo"?',
-                'foo',
-                new Quantifier('x', 0, 3, [
-                    new Terminal('', 0, 3, 'foo'),
-                ], true),
-            ],
-            'zero or more, failure' => [
-                'x = "a"*',
-                '',
-                new Quantifier('x', 0, 0, [], false),
-            ],
-            'zero or more, success' => [
-                'x = "a"*',
-                'aaa',
-                new Quantifier('x', 0, 3, [
-                    new Terminal('', 0, 1, 'a'),
-                    new Terminal('', 1, 2, 'a'),
-                    new Terminal('', 2, 3, 'a'),
-                ], false),
-            ],
-            'one or more, one success' => [
-                'x = "a"+',
-                'a',
-                new Quantifier('x', 0, 1, [
-                    new Terminal('', 0, 1, 'a'),
-                ], false),
-            ],
-            'one or more, more success' => [
-                'x = "a"+',
-                'aaa',
-                new Quantifier('x', 0, 3, [
-                    new Terminal('', 0, 1, 'a'),
-                    new Terminal('', 1, 2, 'a'),
-                    new Terminal('', 2, 3, 'a'),
-                ], false),
-            ],
-            'exact' => [
-                'x = "a"{2}',
-                'aa',
-                new Quantifier('x', 0, 2, [
-                    new Terminal('', 0, 1, 'a'),
-                    new Terminal('', 1, 2, 'a'),
-                ], false),
-            ],
-            'between, lower bound' => [
-                'x = "a"{1,3}',
-                'a',
-                new Quantifier('x', 0, 1, [
-                    new Terminal('', 0, 1, 'a'),
-                ], false),
-            ],
-            'between, between bounds' => [
-                'x = "a"{1,3}',
-                'aa',
-                new Quantifier('x', 0, 2, [
-                    new Terminal('', 0, 1, 'a'),
-                    new Terminal('', 1, 2, 'a'),
-                ], false),
-            ],
-            'between, upper bound' => [
-                'x = "a"{1,3}',
-                'aaa',
-                new Quantifier('x', 0, 3, [
-                    new Terminal('', 0, 1, 'a'),
-                    new Terminal('', 1, 2, 'a'),
-                    new Terminal('', 2, 3, 'a'),
-                ], false),
-            ],
-            'unbounded' => [
-                'x = "a"{2,}',
-                'aaaa',
-                new Quantifier('x', 0, 4, [
-                    new Terminal('', 0, 1, 'a'),
-                    new Terminal('', 1, 2, 'a'),
-                    new Terminal('', 2, 3, 'a'),
-                    new Terminal('', 3, 4, 'a'),
-                ], false),
-            ],
+        yield 'optional, failure' => [
+            'x = "foo"?',
+            '',
+            new Quantifier('x', 0, 0, [], true),
+        ];
+        yield 'optional, success' => [
+            'x = "foo"?',
+            'foo',
+            new Quantifier('x', 0, 3, [
+                new Terminal('', 0, 3, 'foo'),
+            ], true),
+        ];
+        yield 'zero or more, failure' => [
+            'x = "a"*',
+            '',
+            new Quantifier('x', 0, 0, [], false),
+        ];
+        yield 'zero or more, success' => [
+            'x = "a"*',
+            'aaa',
+            new Quantifier('x', 0, 3, [
+                new Terminal('', 0, 1, 'a'),
+                new Terminal('', 1, 2, 'a'),
+                new Terminal('', 2, 3, 'a'),
+            ], false),
+        ];
+        yield 'one or more, one success' => [
+            'x = "a"+',
+            'a',
+            new Quantifier('x', 0, 1, [
+                new Terminal('', 0, 1, 'a'),
+            ], false),
+        ];
+        yield 'one or more, more success' => [
+            'x = "a"+',
+            'aaa',
+            new Quantifier('x', 0, 3, [
+                new Terminal('', 0, 1, 'a'),
+                new Terminal('', 1, 2, 'a'),
+                new Terminal('', 2, 3, 'a'),
+            ], false),
+        ];
+        yield 'exact' => [
+            'x = "a"{2}',
+            'aa',
+            new Quantifier('x', 0, 2, [
+                new Terminal('', 0, 1, 'a'),
+                new Terminal('', 1, 2, 'a'),
+            ], false),
+        ];
+        yield 'between, lower bound' => [
+            'x = "a"{1,3}',
+            'a',
+            new Quantifier('x', 0, 1, [
+                new Terminal('', 0, 1, 'a'),
+            ], false),
+        ];
+        yield 'between, between bounds' => [
+            'x = "a"{1,3}',
+            'aa',
+            new Quantifier('x', 0, 2, [
+                new Terminal('', 0, 1, 'a'),
+                new Terminal('', 1, 2, 'a'),
+            ], false),
+        ];
+        yield 'between, upper bound' => [
+            'x = "a"{1,3}',
+            'aaa',
+            new Quantifier('x', 0, 3, [
+                new Terminal('', 0, 1, 'a'),
+                new Terminal('', 1, 2, 'a'),
+                new Terminal('', 2, 3, 'a'),
+            ], false),
+        ];
+        yield 'unbounded' => [
+            'x = "a"{2,}',
+            'aaaa',
+            new Quantifier('x', 0, 4, [
+                new Terminal('', 0, 1, 'a'),
+                new Terminal('', 1, 2, 'a'),
+                new Terminal('', 2, 3, 'a'),
+                new Terminal('', 3, 4, 'a'),
+            ], false),
         ];
     }
 
@@ -133,16 +131,14 @@ class QuantifierTest extends PhpCompilerTestCase
 
     public function parseFailureProvider()
     {
-        return [
-            ['x = "foo"?', 'bar'],
-            ['x = "foo"?', 'foobar'],
-            ['x = "a"*', 'b'],
-            ['x = "a"+', ''],
-            ['x = "a"{3}', 'aa'],
-            ['x = "a"{3}', 'aaaa'],
-            ['x = "a"{1,3}', ''],
-            ['x = "a"{1,3}', 'aaaa'],
-            ['x = "a"{3,}', 'aa'],
-        ];
+        yield ['x = "foo"?', 'bar'];
+        yield ['x = "foo"?', 'foobar'];
+        yield ['x = "a"*', 'b'];
+        yield ['x = "a"+', ''];
+        yield ['x = "a"{3}', 'aa'];
+        yield ['x = "a"{3}', 'aaaa'];
+        yield ['x = "a"{1,3}', ''];
+        yield ['x = "a"{1,3}', 'aaaa'];
+        yield ['x = "a"{3,}', 'aa'];
     }
 }

@@ -39,14 +39,12 @@ class SourceInfoTest extends TestCase
 
     public function positionFromOffsetProvider()
     {
-        return [
-            ["foo\nbar", 0, [0, 0]],
-            ["foo\nbar", 3, [0, 3]],
-            ["foo\nbar", 4, [1, 0]],
-            ["foo\nbar", 6, [1, 2]],
-            ["foo\nbar\rbaz", 8, [2, 0]],
-            ["foo\nbar\r\nbaz", 9, [2, 0]],
-        ];
+        yield ["foo\nbar", 0, [0, 0]];
+        yield ["foo\nbar", 3, [0, 3]];
+        yield ["foo\nbar", 4, [1, 0]];
+        yield ["foo\nbar", 6, [1, 2]];
+        yield ["foo\nbar\rbaz", 8, [2, 0]];
+        yield ["foo\nbar\r\nbaz", 9, [2, 0]];
     }
 
     /**
@@ -64,10 +62,8 @@ class SourceInfoTest extends TestCase
 
     public function offsetFromPositionProvider()
     {
-        return [
-            ["foo\nbar", [0, 0], 0],
-            ["foo\nbar", [0, 3], 3],
-        ];
+        yield ["foo\nbar", [0, 0], 0];
+        yield ["foo\nbar", [0, 3], 3];
     }
 
     public function testExcerptWithShortLines()

@@ -27,7 +27,7 @@ use ju1ius\Pegasus\Tests\Optimization\OptimizationTestCase;
 class JoinPredicateNestedMatchTest extends RegExpOptimizationTestCase
 {
     /**
-     * @dataProvider getApplyProvider
+     * @dataProvider provideTestApply
      *
      * @param Grammar    $input
      * @param Expression $expected
@@ -44,79 +44,77 @@ class JoinPredicateNestedMatchTest extends RegExpOptimizationTestCase
         $this->assertExpressionEquals($expected, $result, 'In matching context');
     }
 
-    public function getApplyProvider()
+    public function provideTestApply()
     {
-        return [
-            'Sequence with a Skipped Match before an Assert of a Match' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->ignore()->match('b')
-                    ->assert()->match('c')
-                    ->ref('d')
-                    ->getGrammar(),
-                new Sequence([
-                    new Reference('a'),
-                    new Ignore(new Match('(?>b)(?=c)')),
-                    new Reference('d'),
-                ], 'test')
-            ],
-            'Sequence with a Skipped Match before a Not of a Match' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->ignore()->match('b')
-                    ->not()->match('c')
-                    ->ref('d')
-                    ->getGrammar(),
-                new Sequence([
-                    new Reference('a'),
-                    new Ignore(new Match('(?>b)(?!c)')),
-                    new Reference('d'),
-                ], 'test')
-            ],
-            'Sequence with a Skipped Match before EOF' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->ignore()->match('b')
-                    ->eof()
-                    ->ref('d')
-                    ->getGrammar(),
-                new Sequence([
-                    new Reference('a'),
-                    new Ignore(new Match('(?>b)\z')),
-                    new Reference('d'),
-                ], 'test')
-            ],
-            'Sequence with a Skipped Match after an Assert of a Match' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->assert()->match('b')
-                    ->ignore()->match('c')
-                    ->ref('d')
-                    ->getGrammar(),
-                new Sequence([
-                    new Reference('a'),
-                    new Ignore(new Match('(?=b)(?>c)')),
-                    new Reference('d'),
-                ], 'test')
-            ],
-            'Sequence with a Skipped Match after a Not of a Match' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->not()->match('b')
-                    ->ignore()->match('c')
-                    ->ref('d')
-                    ->getGrammar(),
-                new Sequence([
-                    new Reference('a'),
-                    new Ignore(new Match('(?!b)(?>c)')),
-                    new Reference('d'),
-                ], 'test')
-            ],
+        yield 'Sequence with a Skipped Match before an Assert of a Match' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->ignore()->match('b')
+                ->assert()->match('c')
+                ->ref('d')
+                ->getGrammar(),
+            new Sequence([
+                new Reference('a'),
+                new Ignore(new Match('(?>b)(?=c)')),
+                new Reference('d'),
+            ], 'test')
+        ];
+        yield 'Sequence with a Skipped Match before a Not of a Match' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->ignore()->match('b')
+                ->not()->match('c')
+                ->ref('d')
+                ->getGrammar(),
+            new Sequence([
+                new Reference('a'),
+                new Ignore(new Match('(?>b)(?!c)')),
+                new Reference('d'),
+            ], 'test')
+        ];
+        yield 'Sequence with a Skipped Match before EOF' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->ignore()->match('b')
+                ->eof()
+                ->ref('d')
+                ->getGrammar(),
+            new Sequence([
+                new Reference('a'),
+                new Ignore(new Match('(?>b)\z')),
+                new Reference('d'),
+            ], 'test')
+        ];
+        yield 'Sequence with a Skipped Match after an Assert of a Match' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->assert()->match('b')
+                ->ignore()->match('c')
+                ->ref('d')
+                ->getGrammar(),
+            new Sequence([
+                new Reference('a'),
+                new Ignore(new Match('(?=b)(?>c)')),
+                new Reference('d'),
+            ], 'test')
+        ];
+        yield 'Sequence with a Skipped Match after a Not of a Match' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->not()->match('b')
+                ->ignore()->match('c')
+                ->ref('d')
+                ->getGrammar(),
+            new Sequence([
+                new Reference('a'),
+                new Ignore(new Match('(?!b)(?>c)')),
+                new Reference('d'),
+            ], 'test')
         ];
     }
 
     /**
-     * @dataProvider getAppliesToProvider
+     * @dataProvider provideTestAppliesTo
      *
      * @param Grammar $input
      * @param bool    $applies
@@ -134,7 +132,7 @@ class JoinPredicateNestedMatchTest extends RegExpOptimizationTestCase
         $this->assertSame($applies, $result, 'In matching context');
     }
 
-    public function getAppliesToProvider()
+    public function provideTestAppliesTo()
     {
         return [
             'Sequence with a Skipped Match before an Assert of a Match' => [

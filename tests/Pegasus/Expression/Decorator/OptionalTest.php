@@ -13,7 +13,7 @@ use ju1ius\Pegasus\Tests\ExpressionTestCase;
 class OptionalTest extends ExpressionTestCase
 {
     /**
-     * @dataProvider getMatchProvider
+     * @dataProvider provideTestMatch
      */
     public function testMatch(Expression $child, array $match_args, Node $expected)
     {
@@ -23,34 +23,32 @@ class OptionalTest extends ExpressionTestCase
             $this->parse($expr, ...$match_args)
         );
     }
-    public function getMatchProvider()
+    public function provideTestMatch()
     {
-        return [
-            [
-                new Literal('foo'),
-                ['foo'],
-                new Quantifier('?', 0, 3, [new Terminal('', 0, 3, 'foo')], true)
-            ],
-            [
-                new Literal('foo'),
-                ['bar'],
-                new Quantifier('?', 0, 0, [], true)
-            ],
-            [
-                new Match('[\w-]+'),
-                ['d-o_0-b'],
-                new Quantifier('?', 0, 7, [new Terminal('', 0, 7, 'd-o_0-b')], true)
-            ],
-            [
-                new Match('[\w-]+'),
-                ['$_o_$'],
-                new Quantifier('?', 0, 0, [], true)
-            ],
-            [
-                new Match('[\w-]+'),
-                ['micro$oft'],
-                new Quantifier('?', 0, 5, [new Terminal('', 0, 5, 'micro')], true)
-            ],
+        yield [
+            new Literal('foo'),
+            ['foo'],
+            new Quantifier('?', 0, 3, [new Terminal('', 0, 3, 'foo')], true)
+        ];
+        yield [
+            new Literal('foo'),
+            ['bar'],
+            new Quantifier('?', 0, 0, [], true)
+        ];
+        yield [
+            new Match('[\w-]+'),
+            ['d-o_0-b'],
+            new Quantifier('?', 0, 7, [new Terminal('', 0, 7, 'd-o_0-b')], true)
+        ];
+        yield [
+            new Match('[\w-]+'),
+            ['$_o_$'],
+            new Quantifier('?', 0, 0, [], true)
+        ];
+        yield [
+            new Match('[\w-]+'),
+            ['micro$oft'],
+            new Quantifier('?', 0, 5, [new Terminal('', 0, 5, 'micro')], true)
         ];
     }
 }

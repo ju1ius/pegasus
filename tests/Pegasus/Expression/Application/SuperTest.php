@@ -29,7 +29,7 @@ class SuperTest extends ExpressionTestCase
     }
 
     /**
-     * @dataProvider getMatchProvider
+     * @dataProvider provideTestMatch
      *
      * @param Grammar $grammar
      * @param array   $args
@@ -45,27 +45,25 @@ class SuperTest extends ExpressionTestCase
         $this->assertNodeEquals($expected, $this->parse($grammar, ...$args));
     }
 
-    public function getMatchProvider()
+    public function provideTestMatch()
     {
-        return [
-            [
-                GrammarBuilder::create()
-                    ->rule('foo')->oneOf()
-                        ->literal('foobar')
-                        ->super()
-                    ->getGrammar(),
-                ['foo'],
-                new Node\Decorator('foo', 0, 3, new Terminal('foo', 0, 3, 'foo'))
-            ],
-            [
-                GrammarBuilder::create()
-                    ->rule('foo')->oneOf()
-                        ->literal('foobar')
-                        ->super('bar')
-                    ->getGrammar(),
-                ['bar'],
-                new Node\Decorator('foo', 0, 3, new Terminal('bar', 0, 3, 'bar'))
-            ],
+        yield [
+            GrammarBuilder::create()
+                ->rule('foo')->oneOf()
+                    ->literal('foobar')
+                    ->super()
+                ->getGrammar(),
+            ['foo'],
+            new Node\Decorator('foo', 0, 3, new Terminal('foo', 0, 3, 'foo'))
+        ];
+        yield [
+            GrammarBuilder::create()
+                ->rule('foo')->oneOf()
+                    ->literal('foobar')
+                    ->super('bar')
+                ->getGrammar(),
+            ['bar'],
+            new Node\Decorator('foo', 0, 3, new Terminal('bar', 0, 3, 'bar'))
         ];
     }
 }

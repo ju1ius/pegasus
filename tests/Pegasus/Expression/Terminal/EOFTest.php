@@ -22,7 +22,7 @@ use ju1ius\Pegasus\Tests\ExpressionTestCase;
 class EOFTest extends ExpressionTestCase
 {
     /**
-     * @dataProvider getMatchProvider
+     * @dataProvider provideTestMatch
      *
      * @param string $input
      * @param int    $pos
@@ -41,18 +41,16 @@ class EOFTest extends ExpressionTestCase
         $this->assertSame($pos, $parser->pos, 'Does not consume any input.');
     }
 
-    public function getMatchProvider()
+    public function provideTestMatch()
     {
-        return [
-            'Matches when input is empty.' => [
-                '', 0, true,
-            ],
-            'Matches at the end of the input.' => [
-                'foo', 3, true,
-            ],
-            'Fails if not at end of the input.' => [
-                'foo', 0, false,
-            ],
+        yield 'Matches when input is empty.' => [
+            '', 0, true,
+        ];
+        yield 'Matches at the end of the input.' => [
+            'foo', 3, true,
+        ];
+        yield 'Fails if not at end of the input.' => [
+            'foo', 0, false,
         ];
     }
 

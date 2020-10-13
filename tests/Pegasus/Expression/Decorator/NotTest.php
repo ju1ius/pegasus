@@ -10,36 +10,34 @@ use ju1ius\Pegasus\Tests\ExpressionTestCase;
 class NotTest extends ExpressionTestCase
 {
     /**
-     * @dataProvider getMatchProvider
+     * @dataProvider provideTestMatch
      */
     public function testMatch(Expression $child, $args, $expected)
     {
         $expr = new Not($child, 'not');
         $this->assertParseResult($expected, $expr, ...$args);
     }
-    public function getMatchProvider()
+    public function provideTestMatch()
     {
-        return [
-            [
-                new Literal('foo'),
-                ['barbaz'],
-                true
-            ],
-            [
-                new Literal('bar'),
-                ['foobar'],
-                true
-            ],
-            [
-                new Literal('foo'),
-                ['foobar', 3],
-                true
-            ],
+        yield [
+            new Literal('foo'),
+            ['barbaz'],
+            true
+        ];
+        yield [
+            new Literal('bar'),
+            ['foobar'],
+            true
+        ];
+        yield [
+            new Literal('foo'),
+            ['foobar', 3],
+            true
         ];
     }
 
     /**
-     * @dataProvider getMatchErrorProvider
+     * @dataProvider provideTestMatchError
      * @expectedException \ju1ius\Pegasus\Parser\Exception\ParseError
      */
     public function testMatchError(Expression $child, $args)
@@ -47,13 +45,11 @@ class NotTest extends ExpressionTestCase
         $expr = new Not($child, 'not');
         $this->parse($expr, ...$args);
     }
-    public function getMatchErrorProvider()
+    public function provideTestMatchError()
     {
-        return [
-            [
-                new Literal('bar'),
-                ['barbaz']
-            ]
+        yield [
+            new Literal('bar'),
+            ['barbaz']
         ];
     }
 

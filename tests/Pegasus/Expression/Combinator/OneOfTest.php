@@ -13,7 +13,7 @@ use ju1ius\Pegasus\Tests\ExpressionTestCase;
 class OneOfTest extends ExpressionTestCase
 {
     /**
-     * @dataProvider getMatchProvider
+     * @dataProvider provideTestMatch
      */
     public function testMatch($expr, $args, $expected)
     {
@@ -24,40 +24,38 @@ class OneOfTest extends ExpressionTestCase
             $this->assertSame($expected, $result);
         }
     }
-    public function getMatchProvider()
+    public function provideTestMatch()
     {
-        return [
-            'Returns true with no capturing children' => [
-                GrammarBuilder::create()->rule('test')->oneOf()
-                    ->ignore()->literal('foo')
-                    ->ignore()->literal('bar')
-                    ->getGrammar(),
-                ['bar'],
-                true
-            ],
-            'Lifts the first matching result if it is not a grammar rule.' => [
-                GrammarBuilder::create()->rule('test')->oneOf()
+        yield 'Returns true with no capturing children' => [
+            GrammarBuilder::create()->rule('test')->oneOf()
+                ->ignore()->literal('foo')
+                ->ignore()->literal('bar')
+                ->getGrammar(),
+            ['bar'],
+            true
+        ];
+        yield 'Lifts the first matching result if it is not a grammar rule.' => [
+            GrammarBuilder::create()->rule('test')->oneOf()
+                ->literal('bar')
+                ->literal('foo')
+                ->getGrammar(),
+            ['foo'],
+            new Terminal('test', 0, 3, 'foo')
+        ];
+        yield 'Decorates the first matching result if is a grammar rule.' => [
+            GrammarBuilder::create()
+                ->rule('test')->oneOf()
                     ->literal('bar')
-                    ->literal('foo')
-                    ->getGrammar(),
-                ['foo'],
-                new Terminal('test', 0, 3, 'foo')
-            ],
-            'Decorates the first matching result if is a grammar rule.' => [
-                GrammarBuilder::create()
-                    ->rule('test')->oneOf()
-                        ->literal('bar')
-                        ->ref('foo')
-                    ->rule('foo')->literal('foo')
-                    ->getGrammar(),
-                ['foo'],
-                new Decorator('test', 0, 3, new Terminal('foo', 0, 3, 'foo'))
-            ],
+                    ->ref('foo')
+                ->rule('foo')->literal('foo')
+                ->getGrammar(),
+            ['foo'],
+            new Decorator('test', 0, 3, new Terminal('foo', 0, 3, 'foo'))
         ];
     }
 
     /**
-     * @dataProvider getMatchErrorProvider
+     * @dataProvider provideTestMatchError
      * @expectedException \ju1ius\Pegasus\Parser\Exception\ParseError
      */
     public function testMatchError($children, $match_args)
@@ -65,13 +63,11 @@ class OneOfTest extends ExpressionTestCase
         $expr = new OneOf($children, 'choice');
         $this->parse($expr, ...$match_args);
     }
-    public function getMatchErrorProvider()
+    public function provideTestMatchError()
     {
-        return [
-            [
-                [new Literal('foo'), new Literal('doh')],
-                ['barbaz'],
-            ]
+        yield [
+            [new Literal('foo'), new Literal('doh')],
+            ['barbaz'],
         ];
     }
 

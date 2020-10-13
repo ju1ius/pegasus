@@ -24,7 +24,7 @@ use ju1ius\Pegasus\Tests\Optimization\OptimizationTestCase;
 class JoinPredicateOrNestedMatchTest extends RegExpOptimizationTestCase
 {
     /**
-     * @dataProvider getApplyProvider
+     * @dataProvider provideTestApply
      *
      * @param Grammar    $input
      * @param Expression $expected
@@ -41,80 +41,78 @@ class JoinPredicateOrNestedMatchTest extends RegExpOptimizationTestCase
         $this->assertExpressionEquals($expected, $result, 'In matching context');
     }
 
-    public function getApplyProvider()
+    public function provideTestApply()
     {
-        return [
-            'Choice with Skipped Match before an Assert of a Match' => [
-                GrammarBuilder::create()->rule('test')->oneOf()
-                    ->ref('a')
-                    ->ignore()->match('b')
-                    ->assert()->match('c')
-                    ->getGrammar(),
-                new OneOf([
-                    new Reference('a'),
-                    new Ignore(new Match('b|(?=c)'))
-                ], 'test')
-            ],
-            'Choice with Skipped Match before a Not of a Match' => [
-                GrammarBuilder::create()->rule('test')->oneOf()
-                    ->ref('a')
-                    ->ignore()->match('b')
-                    ->not()->match('c')
-                    ->getGrammar(),
-                new OneOf([
-                    new Reference('a'),
-                    new Ignore(new Match('b|(?!c)'))
-                ], 'test')
-            ],
-            'Choice with Skipped Match before a EOF' => [
-                GrammarBuilder::create()->rule('test')->oneOf()
-                    ->ref('a')
-                    ->ignore()->match('b')
-                    ->eof()
-                    ->getGrammar(),
-                new OneOf([
-                    new Reference('a'),
-                    new Ignore(new Match('b|\z'))
-                ], 'test')
-            ],
-            'Choice with Skipped Match after an Assert of a Match' => [
-                GrammarBuilder::create()->rule('test')->oneOf()
-                    ->ref('a')
-                    ->assert()->match('b')
-                    ->ignore()->match('c')
-                    ->getGrammar(),
-                new OneOf([
-                    new Reference('a'),
-                    new Ignore(new Match('(?=b)|c'))
-                ], 'test')
-            ],
-            'Choice with Skipped Match after a Not of a Match' => [
-                GrammarBuilder::create()->rule('test')->oneOf()
-                    ->ref('a')
-                    ->not()->match('b')
-                    ->ignore()->match('c')
-                    ->getGrammar(),
-                new OneOf([
-                    new Reference('a'),
-                    new Ignore(new Match('(?!b)|c'))
-                ], 'test')
-            ],
-            'Choice with Skipped Match after EOF' => [
-                GrammarBuilder::create()->rule('test')->oneOf()
-                    ->ref('a')
-                    ->eof()
-                    ->ignore()->match('c')
-                    ->getGrammar(),
-                new OneOf([
-                    new Reference('a'),
-                    new Ignore(new Match('\z|c'))
-                ], 'test')
-            ],
+        yield 'Choice with Skipped Match before an Assert of a Match' => [
+            GrammarBuilder::create()->rule('test')->oneOf()
+                ->ref('a')
+                ->ignore()->match('b')
+                ->assert()->match('c')
+                ->getGrammar(),
+            new OneOf([
+                new Reference('a'),
+                new Ignore(new Match('b|(?=c)'))
+            ], 'test')
+        ];
+        yield 'Choice with Skipped Match before a Not of a Match' => [
+            GrammarBuilder::create()->rule('test')->oneOf()
+                ->ref('a')
+                ->ignore()->match('b')
+                ->not()->match('c')
+                ->getGrammar(),
+            new OneOf([
+                new Reference('a'),
+                new Ignore(new Match('b|(?!c)'))
+            ], 'test')
+        ];
+        yield 'Choice with Skipped Match before a EOF' => [
+            GrammarBuilder::create()->rule('test')->oneOf()
+                ->ref('a')
+                ->ignore()->match('b')
+                ->eof()
+                ->getGrammar(),
+            new OneOf([
+                new Reference('a'),
+                new Ignore(new Match('b|\z'))
+            ], 'test')
+        ];
+        yield 'Choice with Skipped Match after an Assert of a Match' => [
+            GrammarBuilder::create()->rule('test')->oneOf()
+                ->ref('a')
+                ->assert()->match('b')
+                ->ignore()->match('c')
+                ->getGrammar(),
+            new OneOf([
+                new Reference('a'),
+                new Ignore(new Match('(?=b)|c'))
+            ], 'test')
+        ];
+        yield 'Choice with Skipped Match after a Not of a Match' => [
+            GrammarBuilder::create()->rule('test')->oneOf()
+                ->ref('a')
+                ->not()->match('b')
+                ->ignore()->match('c')
+                ->getGrammar(),
+            new OneOf([
+                new Reference('a'),
+                new Ignore(new Match('(?!b)|c'))
+            ], 'test')
+        ];
+        yield 'Choice with Skipped Match after EOF' => [
+            GrammarBuilder::create()->rule('test')->oneOf()
+                ->ref('a')
+                ->eof()
+                ->ignore()->match('c')
+                ->getGrammar(),
+            new OneOf([
+                new Reference('a'),
+                new Ignore(new Match('\z|c'))
+            ], 'test')
         ];
     }
 
     /**
-     * @dataProvider getAppliesToProvider
+     * @dataProvider provideTestAppliesTo
      *
      * @param Grammar $input
      * @param bool    $applies
@@ -132,7 +130,7 @@ class JoinPredicateOrNestedMatchTest extends RegExpOptimizationTestCase
         $this->assertSame($applies, $result, 'In matching context');
     }
 
-    public function getAppliesToProvider()
+    public function provideTestAppliesTo()
     {
         return [
             'Choice with Skipped Match before an Assert of a Match' => [

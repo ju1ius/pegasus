@@ -27,7 +27,7 @@ class CombineQuantifiedMatchTest extends RegExpOptimizationTestCase
 {
 
     /**
-     * @dataProvider getTestAcceptsExpressionProvider
+     * @dataProvider provideTestAcceptsExpression
      *
      * @param Expression $expr
      * @param int        $contextType
@@ -42,44 +42,42 @@ class CombineQuantifiedMatchTest extends RegExpOptimizationTestCase
         $this->assertSame($expected, $result);
     }
 
-    public function getTestAcceptsExpressionProvider()
+    public function provideTestAcceptsExpression()
     {
-        return [
-            'Returns false in capturing context.' => [
-                ExpressionBuilder::create()->between(2, 4)->match('a')->getExpression(),
-                OptimizationContext::TYPE_CAPTURING,
-                false,
-            ],
-            'Applies to a quantified match in matching context.' => [
-                ExpressionBuilder::create()->between(2, 4)->match('a')->getExpression(),
-                OptimizationContext::TYPE_MATCHING,
-                true,
-            ],
-            'Applies to a quantified regexp in matching context.' => [
-                ExpressionBuilder::create()->between(2, 4)->regexp('a')->getExpression(),
-                OptimizationContext::TYPE_MATCHING,
-                true,
-            ],
-            'Applies to a quantified literal in matching context.' => [
-                ExpressionBuilder::create()->between(2, 4)->literal('a')->getExpression(),
-                OptimizationContext::TYPE_MATCHING,
-                true,
-            ],
-            'Returns false for quantified expression other than match, regexp or literal.' => [
-                ExpressionBuilder::create()->between(2, 4)->epsilon()->getExpression(),
-                OptimizationContext::TYPE_MATCHING,
-                false,
-            ],
-            'Returns false for anything other than quantifier.' => [
-                ExpressionBuilder::create()->assert()->literal('a')->getExpression(),
-                OptimizationContext::TYPE_MATCHING,
-                false,
-            ]
+        yield 'Returns false in capturing context.' => [
+            ExpressionBuilder::create()->between(2, 4)->match('a')->getExpression(),
+            OptimizationContext::TYPE_CAPTURING,
+            false,
+        ];
+        yield 'Applies to a quantified match in matching context.' => [
+            ExpressionBuilder::create()->between(2, 4)->match('a')->getExpression(),
+            OptimizationContext::TYPE_MATCHING,
+            true,
+        ];
+        yield 'Applies to a quantified regexp in matching context.' => [
+            ExpressionBuilder::create()->between(2, 4)->regexp('a')->getExpression(),
+            OptimizationContext::TYPE_MATCHING,
+            true,
+        ];
+        yield 'Applies to a quantified literal in matching context.' => [
+            ExpressionBuilder::create()->between(2, 4)->literal('a')->getExpression(),
+            OptimizationContext::TYPE_MATCHING,
+            true,
+        ];
+        yield 'Returns false for quantified expression other than match, regexp or literal.' => [
+            ExpressionBuilder::create()->between(2, 4)->epsilon()->getExpression(),
+            OptimizationContext::TYPE_MATCHING,
+            false,
+        ];
+        yield 'Returns false for anything other than quantifier.' => [
+            ExpressionBuilder::create()->assert()->literal('a')->getExpression(),
+            OptimizationContext::TYPE_MATCHING,
+            false,
         ];
     }
 
     /**
-     * @dataProvider getTestApplyProvider
+     * @dataProvider provideTestApply
      *
      * @param Grammar    $grammar
      * @param Expression $expected
@@ -92,45 +90,43 @@ class CombineQuantifiedMatchTest extends RegExpOptimizationTestCase
         $this->assertExpressionEquals($expected, $result);
     }
 
-    public function getTestApplyProvider()
+    public function provideTestApply()
     {
-        return [
-            'Quantified match with an upper bound' => [
-                GrammarBuilder::create()->rule('test')
-                    ->between(2, 4)->match('a')
-                    ->getGrammar(),
-                new Match('(?>a){2,4}', [], 'test')
-            ],
-            'Quantified match with no upper bound' => [
-                GrammarBuilder::create()->rule('test')
-                    ->atLeast(2)->match('a')
-                    ->getGrammar(),
-                new Match('(?>a){2,}', [], 'test')
-            ],
-            'Exact quantified match' => [
-                GrammarBuilder::create()->rule('test')
-                    ->exactly(2)->match('a')
-                    ->getGrammar(),
-                new Match('(?>a){2}', [], 'test')
-            ],
-            'zero-or-more quantified match' => [
-                GrammarBuilder::create()->rule('test')
-                    ->zeroOrMore()->match('a')
-                    ->getGrammar(),
-                new Match('(?>a)*', [], 'test')
-            ],
-            'one-or-more quantified match' => [
-                GrammarBuilder::create()->rule('test')
-                    ->oneOrMore()->match('a')
-                    ->getGrammar(),
-                new Match('(?>a)+', [], 'test')
-            ],
-            'optional match' => [
-                GrammarBuilder::create()->rule('test')
-                    ->optional()->match('a')
-                    ->getGrammar(),
-                new Match('(?>a)?', [], 'test')
-            ],
+        yield 'Quantified match with an upper bound' => [
+            GrammarBuilder::create()->rule('test')
+                ->between(2, 4)->match('a')
+                ->getGrammar(),
+            new Match('(?>a){2,4}', [], 'test')
+        ];
+        yield 'Quantified match with no upper bound' => [
+            GrammarBuilder::create()->rule('test')
+                ->atLeast(2)->match('a')
+                ->getGrammar(),
+            new Match('(?>a){2,}', [], 'test')
+        ];
+        yield 'Exact quantified match' => [
+            GrammarBuilder::create()->rule('test')
+                ->exactly(2)->match('a')
+                ->getGrammar(),
+            new Match('(?>a){2}', [], 'test')
+        ];
+        yield 'zero-or-more quantified match' => [
+            GrammarBuilder::create()->rule('test')
+                ->zeroOrMore()->match('a')
+                ->getGrammar(),
+            new Match('(?>a)*', [], 'test')
+        ];
+        yield 'one-or-more quantified match' => [
+            GrammarBuilder::create()->rule('test')
+                ->oneOrMore()->match('a')
+                ->getGrammar(),
+            new Match('(?>a)+', [], 'test')
+        ];
+        yield 'optional match' => [
+            GrammarBuilder::create()->rule('test')
+                ->optional()->match('a')
+                ->getGrammar(),
+            new Match('(?>a)?', [], 'test')
         ];
     }
 }

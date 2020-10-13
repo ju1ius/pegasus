@@ -24,71 +24,69 @@ class NormalizerTest extends TestCase
 
     public function normalizeProvider()
     {
-        return [
-            'removes whitespace' => [
-                '( [a-z] | (?! [0-9] ) )*',
-                '([a-z]|(?![0-9]))*',
-            ],
-            'removes inline comments' => [
-                '/foo(?# a foo)|bar(?# a bar)|baz(?# or a baz)/',
-                '/foo|bar|baz/',
-            ],
-            'preserves whitespace in character classes' => [
-                '[\t \n]',
-                '[\t \n]',
-            ],
-            'preserves hash in character classes' => [
-                '[\t#\n]',
-                '[\t#\n]',
-            ],
-            'Initial x flag not set' => [
-                'a b c #d(?# this can be removed)',
-                'a b c #d',
-                [],
-            ],
-            'Initial x flag not set but overriden in the pattern' => [
-                'a b (?x) c d (?-x) f g',
-                'a b (?x)cd(?-x) f g',
-                [],
-            ],
-            'handles POSIX character classes' => [
-                '[[:alnum:] #] #foo',
-                '[[:alnum:] #]',
-            ],
-            'handles weird character classes' => [
-                '[[\] #] #foo',
-                '[[\] #]',
-            ],
-            'handles block comments' => [
-                <<<'EOS'
-/
-    foo     # literal foo
-    |       # or
-    (bar)+  # bars
-    |
-    (?!\R)  # not a newline
-/
-EOS
-                , '/foo|(bar)+|(?!\R)/'
-            ],
-            'respect escape sequences' => [
-                <<<'EOS'
-/
-    \#foo       # id foo
-    |
-    \\#bar      # a backslash, then bar is a comment
-/
-EOS
-                , '/\#foo|\\\\/'
-            ],
-            'inline modifiers #1' => [
-                'a b (?-x:c d) e (?-x:#f ) g #end',
-                'ab(?-x:c d)e(?-x:#f )g',
-            ],
-            'inline modifiers #2' => [
-                'a b (?-x:c d) e (f (?-x) g) h',
-                'ab(?-x:c d)e(f(?-x) g)h',
-            ],
+        yield 'removes whitespace' => [
+            '( [a-z] | (?! [0-9] ) )*',
+            '([a-z]|(?![0-9]))*',
+        ];
+        yield 'removes inline comments' => [
+            '/foo(?# a foo)|bar(?# a bar)|baz(?# or a baz)/',
+            '/foo|bar|baz/',
+        ];
+        yield 'preserves whitespace in character classes' => [
+            '[\t \n]',
+            '[\t \n]',
+        ];
+        yield 'preserves hash in character classes' => [
+            '[\t#\n]',
+            '[\t#\n]',
+        ];
+        yield 'Initial x flag not set' => [
+            'a b c #d(?# this can be removed)',
+            'a b c #d',
+            [],
+        ];
+        yield 'Initial x flag not set but overriden in the pattern' => [
+            'a b (?x) c d (?-x) f g',
+            'a b (?x)cd(?-x) f g',
+            [],
+        ];
+        yield 'handles POSIX character classes' => [
+            '[[:alnum:] #] #foo',
+            '[[:alnum:] #]',
+        ];
+        yield 'handles weird character classes' => [
+            '[[\] #] #foo',
+            '[[\] #]',
+        ];
+        yield 'handles block comments' => [
+            <<<'EOS'
+            /
+                foo     # literal foo
+                |       # or
+                (bar)+  # bars
+                |
+                (?!\R)  # not a newline
+            /
+            EOS,
+            '/foo|(bar)+|(?!\R)/',
+        ];
+        yield 'respect escape sequences' => [
+            <<<'EOS'
+            /
+                \#foo       # id foo
+                |
+                \\#bar      # a backslash, then bar is a comment
+            /
+            EOS,
+            '/\#foo|\\\\/',
+        ];
+        yield 'inline modifiers #1' => [
+            'a b (?-x:c d) e (?-x:#f ) g #end',
+            'ab(?-x:c d)e(?-x:#f )g',
+        ];
+        yield 'inline modifiers #2' => [
+            'a b (?-x:c d) e (f (?-x) g) h',
+            'ab(?-x:c d)e(f(?-x) g)h',
         ];
     }
 }

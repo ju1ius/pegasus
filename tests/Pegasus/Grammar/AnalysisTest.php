@@ -21,7 +21,7 @@ use ju1ius\Pegasus\Tests\PegasusTestCase;
 class AnalysisTest extends PegasusTestCase
 {
     /**
-     * @dataProvider getTestCanModifyBindingsProvider
+     * @dataProvider provideTestCanModifyBindings
      *
      * @param Grammar $grammar
      * @param bool    $expected
@@ -32,36 +32,34 @@ class AnalysisTest extends PegasusTestCase
         $this->assertSame($expected, $analysis->canModifyBindings('test'));
     }
 
-    public function getTestCanModifyBindingsProvider()
+    public function provideTestCanModifyBindings()
     {
-        return [
-            'No label' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->literal('foo')
-                    ->literal('bar')
-                    ->getGrammar(),
-                false
-            ],
-            'Top-level label' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->label('foo')->literal('foo')
-                    ->ignore()->match('\s*')
-                    ->backReference('foo')
-                    ->getGrammar(),
-                true
-            ],
-            'Skipped label' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ignore()->label('foo')->literal('foo')
-                    ->backReference('foo')
-                    ->getGrammar(),
-                true
-            ]
+        yield 'No label' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->literal('foo')
+                ->literal('bar')
+                ->getGrammar(),
+            false
+        ];
+        yield 'Top-level label' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->label('foo')->literal('foo')
+                ->ignore()->match('\s*')
+                ->backReference('foo')
+                ->getGrammar(),
+            true
+        ];
+        yield 'Skipped label' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ignore()->label('foo')->literal('foo')
+                ->backReference('foo')
+                ->getGrammar(),
+            true
         ];
     }
 
     /**
-     * @dataProvider getTestIsRecursiveProvider
+     * @dataProvider provideTestIsRecursive
      *
      * @param Grammar $grammar
      * @param string  $rule
@@ -74,60 +72,58 @@ class AnalysisTest extends PegasusTestCase
         $this->assertSame(!$expected, $analysis->isRegular($rule));
     }
 
-    public function getTestIsRecursiveProvider()
+    public function provideTestIsRecursive()
     {
-        return [
-            'Directly recursive rule' => [
-                \ju1ius\Pegasus\GrammarBuilder::create()->rule('a')->sequence()
+        yield 'Directly recursive rule' => [
+            \ju1ius\Pegasus\GrammarBuilder::create()->rule('a')->sequence()
+                ->literal('a')
+                ->ref('a')
+                ->getGrammar(),
+            'a',
+            true
+        ];
+        yield 'Indirectly recursive rule' => [
+            GrammarBuilder::create()
+                ->rule('a')->sequence()
                     ->literal('a')
+                    ->ref('b')
+                ->rule('b')->sequence()
+                    ->literal('b')
+                    ->ref('c')
+                ->rule('c')->sequence()
+                    ->literal('c')
                     ->ref('a')
-                    ->getGrammar(),
-                'a',
-                true
-            ],
-            'Indirectly recursive rule' => [
-                GrammarBuilder::create()
-                    ->rule('a')->sequence()
-                        ->literal('a')
-                        ->ref('b')
-                    ->rule('b')->sequence()
-                        ->literal('b')
-                        ->ref('c')
-                    ->rule('c')->sequence()
-                        ->literal('c')
-                        ->ref('a')
-                    ->getGrammar(),
-                'a',
-                true
-            ],
-            'Non-recursive rule' => [
-                GrammarBuilder::create()
-                    ->rule('a')->sequence()
-                        ->literal('a')
-                        ->ref('b')
-                    ->rule('b')->sequence()
-                        ->literal('b')
-                        ->ref('c')
-                    ->rule('c')->sequence()
-                        ->literal('c')
-                        ->ref('b')
-                    ->getGrammar(),
-                'a',
-                false
-            ],
-            'A rule with a super call' => [
-                GrammarBuilder::create()->rule('a')->sequence()
+                ->getGrammar(),
+            'a',
+            true
+        ];
+        yield 'Non-recursive rule' => [
+            GrammarBuilder::create()
+                ->rule('a')->sequence()
                     ->literal('a')
-                    ->super('a')
-                    ->getGrammar(),
-                'a',
-                true
-            ],
+                    ->ref('b')
+                ->rule('b')->sequence()
+                    ->literal('b')
+                    ->ref('c')
+                ->rule('c')->sequence()
+                    ->literal('c')
+                    ->ref('b')
+                ->getGrammar(),
+            'a',
+            false
+        ];
+        yield 'A rule with a super call' => [
+            GrammarBuilder::create()->rule('a')->sequence()
+                ->literal('a')
+                ->super('a')
+                ->getGrammar(),
+            'a',
+            true
         ];
     }
 
     /**
-     * @dataProvider getTestLeftIsRecursiveProvider
+     * @dataProvider provideTestLeftIsRecursive
      *
      * @param Grammar $grammar
      * @param string  $rule
@@ -139,7 +135,7 @@ class AnalysisTest extends PegasusTestCase
         $this->assertSame($expected, $analysis->isLeftRecursive($rule));
     }
 
-    public function getTestLeftIsRecursiveProvider()
+    public function provideTestLeftIsRecursive()
     {
         return [
             'Directly left-recursive rule' => [

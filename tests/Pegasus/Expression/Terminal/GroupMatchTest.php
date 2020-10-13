@@ -21,7 +21,7 @@ use ju1ius\Pegasus\Tests\ExpressionTestCase;
 class GroupMatchTest extends ExpressionTestCase
 {
     /**
-     * @dataProvider getMatchProvider
+     * @dataProvider provideTestMatch
      */
     public function testMatch($expr, $matchArgs, $expected)
     {
@@ -31,21 +31,19 @@ class GroupMatchTest extends ExpressionTestCase
         );
     }
 
-    public function getMatchProvider()
+    public function provideTestMatch()
     {
-        return [
-            'Single capturing group' => [
-                ['test' => new GroupMatch(new Match('\s*(\w+)'), 1, 'test')],
-                ['   abc123   '],
-                new Terminal('test', 0, 9, 'abc123')
-            ],
-            'Multiple capturing group' => [
-                ['test' => new GroupMatch(new Match('\s*(\w+)\s+(\w+)'), 2, 'test')],
-                ['   abc 123'],
-                new Terminal('test', 0, 10, '   abc 123', [
-                    'captures' => ['abc', '123']
-                ])
-            ]
+        yield 'Single capturing group' => [
+            ['test' => new GroupMatch(new Match('\s*(\w+)'), 1, 'test')],
+            ['   abc123   '],
+            new Terminal('test', 0, 9, 'abc123')
+        ];
+        yield 'Multiple capturing group' => [
+            ['test' => new GroupMatch(new Match('\s*(\w+)\s+(\w+)'), 2, 'test')],
+            ['   abc 123'],
+            new Terminal('test', 0, 10, '   abc 123', [
+                'captures' => ['abc', '123']
+            ])
         ];
     }
 }

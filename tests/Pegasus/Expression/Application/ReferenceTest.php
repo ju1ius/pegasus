@@ -22,7 +22,7 @@ use ju1ius\Pegasus\Tests\ExpressionTestCase;
 class ReferenceTest extends ExpressionTestCase
 {
     /**
-     * @dataProvider getMatchProvider
+     * @dataProvider provideTestMatch
      *
      * @param string $grammar
      * @param array  $args
@@ -33,17 +33,15 @@ class ReferenceTest extends ExpressionTestCase
         $this->assertNodeEquals($expected, $this->parse($grammar, ...$args));
     }
 
-    public function getMatchProvider()
+    public function provideTestMatch()
     {
-        return [
-            [
-                GrammarBuilder::create()
-                    ->rule('test')->ref('foo')
-                    ->rule('foo')->literal('foo')
-                ->getGrammar(),
-                ['foo'],
-                new Terminal('foo', 0, 3, 'foo')
-            ]
+        yield [
+            GrammarBuilder::create()
+                ->rule('test')->ref('foo')
+                ->rule('foo')->literal('foo')
+            ->getGrammar(),
+            ['foo'],
+            new Terminal('foo', 0, 3, 'foo')
         ];
     }
 }

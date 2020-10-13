@@ -19,7 +19,7 @@ class AssertTest extends ExpressionTestCase
     }
 
     /**
-     * @dataProvider getMatchProvider
+     * @dataProvider provideTestMatch
      *
      * @param Grammar $expr
      * @param array   $args
@@ -30,28 +30,26 @@ class AssertTest extends ExpressionTestCase
         $this->assertSame($expected, $this->parse($expr, ...$args));
     }
 
-    public function getMatchProvider()
+    public function provideTestMatch()
     {
-        return [
-            [
-                GrammarBuilder::create()->rule('assert')
-                    ->assert()->literal('foobar')
-                    ->getGrammar(),
-                ['foobar'],
-                true,
-            ],
-            [
-                GrammarBuilder::create()->rule('assert')
-                    ->assert()->literal('bar')
-                    ->getGrammar(),
-                ['foobar', 3],
-                true,
-            ],
+        yield [
+            GrammarBuilder::create()->rule('assert')
+                ->assert()->literal('foobar')
+                ->getGrammar(),
+            ['foobar'],
+            true,
+        ];
+        yield [
+            GrammarBuilder::create()->rule('assert')
+                ->assert()->literal('bar')
+                ->getGrammar(),
+            ['foobar', 3],
+            true,
         ];
     }
 
     /**
-     * @dataProvider getMatchErrorProvider
+     * @dataProvider provideTestMatchError
      * @expectedException \ju1ius\Pegasus\Parser\Exception\ParseError
      *
      * @param Grammar $expr
@@ -62,15 +60,13 @@ class AssertTest extends ExpressionTestCase
         $this->parse($expr, ...$args);
     }
 
-    public function getMatchErrorProvider()
+    public function provideTestMatchError()
     {
-        return [
-            [
-                GrammarBuilder::create()->rule('assert')
-                    ->assert()->literal('foo')
-                    ->getGrammar(),
-                ['barbaz'],
-            ],
+        yield [
+            GrammarBuilder::create()->rule('assert')
+                ->assert()->literal('foo')
+                ->getGrammar(),
+            ['barbaz'],
         ];
     }
 

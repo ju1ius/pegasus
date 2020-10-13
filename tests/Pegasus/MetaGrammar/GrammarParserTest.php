@@ -64,7 +64,7 @@ class GrammarParserTest extends PegasusTestCase
     }
 
     /**
-     * @dataProvider getTestItParsesTerminalRulesProvider
+     * @dataProvider provideTestItParsesTerminalRules
      *
      * @param string  $syntax
      * @param Grammar $expected
@@ -76,7 +76,7 @@ class GrammarParserTest extends PegasusTestCase
     }
 
     /**
-     * @dataProvider getTestItParsesTerminalRulesProvider
+     * @dataProvider provideTestItParsesTerminalRules
      *
      * @param string  $syntax
      * @param Grammar $expected
@@ -87,70 +87,68 @@ class GrammarParserTest extends PegasusTestCase
         $this->assertGrammarEquals($expected, $grammar);
     }
 
-    public function getTestItParsesTerminalRulesProvider()
+    public function provideTestItParsesTerminalRules()
     {
-        return [
-            'double-quoted literal' => [
-                'x = "x"',
-                Grammar::fromArray(['x' => new Literal('x', 'x', '"')])
-            ],
-            'double-quoted literal with escaped characters' => [
-                'x = "x \" x"',
-                Grammar::fromArray(['x' => new Literal('x \" x', 'x', '"')])
-            ],
-            'single-quoted literal' => [
-                "x = 'x'",
-                Grammar::fromArray(['x' => new Literal('x', 'x', "'")])
-            ],
-            'single-quoted literal with escaped characters' => [
-                "x = 'x \' x'",
-                Grammar::fromArray(['x' => new Literal("x \' x", 'x', "'")])
-            ],
-            'match' => [
-                'x = /x/',
-                Grammar::fromArray(['x' => new Match('x', [], 'x')])
-            ],
-            'match with escaped delimiter' => [
-                'x = /x \/ x/',
-                Grammar::fromArray(['x' => new Match('x \/ x', [], 'x')])
-            ],
-            'match with flags' => [
-                'x = /x/i',
-                Grammar::fromArray(['x' => new Match('x', ['i'], 'x')])
-            ],
-            'match non-capturing groups' => [
-                'x = /(?:x)(?!y)/',
-                Grammar::fromArray(['x' => new Match('(?:x)(?!y)', [], 'x')])
-            ],
-            'RegExp' => [
-                'x = /x(y)/',
-                Grammar::fromArray(['x' => new RegExp('x(y)', [], 'x')])
-            ],
-            'Word literal' => [
-                'x = `x`',
-                Grammar::fromArray(['x' => new Word('x', 'x')])
-            ],
-            'EOF' => [
-                'x = EOF',
-                Grammar::fromArray(['x' => new EOF()])
-            ],
-            'Epsilon' => [
-                'x = E',
-                Grammar::fromArray(['x' => new Epsilon()])
-            ],
-            'Fail' => [
-                'x = FAIL',
-                Grammar::fromArray(['x' => new Fail()])
-            ],
-            'BackReference' => [
-                'x = $x',
-                Grammar::fromArray(['x' => new BackReference('x')])
-            ],
+        yield 'double-quoted literal' => [
+            'x = "x"',
+            Grammar::fromArray(['x' => new Literal('x', 'x', '"')])
+        ];
+        yield 'double-quoted literal with escaped characters' => [
+            'x = "x \" x"',
+            Grammar::fromArray(['x' => new Literal('x " x', 'x', '"')])
+        ];
+        yield 'single-quoted literal' => [
+            "x = 'x'",
+            Grammar::fromArray(['x' => new Literal('x', 'x', "'")])
+        ];
+        yield 'single-quoted literal with escaped characters' => [
+            "x = 'x \' x'",
+            Grammar::fromArray(['x' => new Literal("x \' x", 'x', "'")])
+        ];
+        yield 'match' => [
+            'x = /x/',
+            Grammar::fromArray(['x' => new Match('x', [], 'x')])
+        ];
+        yield 'match with escaped delimiter' => [
+            'x = /x \/ x/',
+            Grammar::fromArray(['x' => new Match('x \/ x', [], 'x')])
+        ];
+        yield 'match with flags' => [
+            'x = /x/i',
+            Grammar::fromArray(['x' => new Match('x', ['i'], 'x')])
+        ];
+        yield 'match non-capturing groups' => [
+            'x = /(?:x)(?!y)/',
+            Grammar::fromArray(['x' => new Match('(?:x)(?!y)', [], 'x')])
+        ];
+        yield 'RegExp' => [
+            'x = /x(y)/',
+            Grammar::fromArray(['x' => new RegExp('x(y)', [], 'x')])
+        ];
+        yield 'Word literal' => [
+            'x = `x`',
+            Grammar::fromArray(['x' => new Word('x', 'x')])
+        ];
+        yield 'EOF' => [
+            'x = EOF',
+            Grammar::fromArray(['x' => new EOF()])
+        ];
+        yield 'Epsilon' => [
+            'x = E',
+            Grammar::fromArray(['x' => new Epsilon()])
+        ];
+        yield 'Fail' => [
+            'x = FAIL',
+            Grammar::fromArray(['x' => new Fail()])
+        ];
+        yield 'BackReference' => [
+            'x = $x',
+            Grammar::fromArray(['x' => new BackReference('x')])
         ];
     }
 
     /**
-     * @dataProvider getTestItParsesCombinatorsProvider
+     * @dataProvider provideTestItParsesCombinators
      *
      * @param string  $syntax
      * @param Grammar $expected
@@ -162,7 +160,7 @@ class GrammarParserTest extends PegasusTestCase
     }
 
     /**
-     * @dataProvider getTestItParsesCombinatorsProvider
+     * @dataProvider provideTestItParsesCombinators
      *
      * @param string  $syntax
      * @param Grammar $expected
@@ -173,48 +171,46 @@ class GrammarParserTest extends PegasusTestCase
         $this->assertGrammarEquals($expected, $grammar);
     }
 
-    public function getTestItParsesCombinatorsProvider()
+    public function provideTestItParsesCombinators()
     {
-        return [
-            'Sequence of matches' => [
-                'x = /x/ /y/ /z/',
-                Grammar::fromArray(['x' => new Sequence([
+        yield 'Sequence of matches' => [
+            'x = /x/ /y/ /z/',
+            Grammar::fromArray(['x' => new Sequence([
+                new Match('x'),
+                new Match('y'),
+                new Match('z'),
+            ])])
+        ];
+        yield 'Choice of matches' => [
+            'x = /x/ | /y/ | /z/',
+            Grammar::fromArray(['x' => new OneOf([
+                new Match('x'),
+                new Match('y'),
+                new Match('z'),
+            ])])
+        ];
+        yield 'NodeAction of matches' => [
+            'x = /x/ /y/ /z/ <= XYZ',
+            Grammar::fromArray([
+                'x' => new NodeAction(new Sequence([
                     new Match('x'),
                     new Match('y'),
                     new Match('z'),
-                ])])
-            ],
-            'Choice of matches' => [
-                'x = /x/ | /y/ | /z/',
-                Grammar::fromArray(['x' => new OneOf([
-                    new Match('x'),
-                    new Match('y'),
-                    new Match('z'),
-                ])])
-            ],
-            'NodeAction of matches' => [
-                'x = /x/ /y/ /z/ <= XYZ',
-                Grammar::fromArray([
-                    'x' => new NodeAction(new Sequence([
-                        new Match('x'),
-                        new Match('y'),
-                        new Match('z'),
-                    ]), 'XYZ')
-                ])
-            ],
-            'Choice with named sequence' => [
-                'x = /x/ | /y/ <= Y | /z/',
-                Grammar::fromArray(['x' => new OneOf([
-                    new Match('x'),
-                    new NodeAction(new Match('y'), 'Y'),
-                    new Match('z'),
-                ])])
-            ],
+                ]), 'XYZ')
+            ])
+        ];
+        yield 'Choice with named sequence' => [
+            'x = /x/ | /y/ <= Y | /z/',
+            Grammar::fromArray(['x' => new OneOf([
+                new Match('x'),
+                new NodeAction(new Match('y'), 'Y'),
+                new Match('z'),
+            ])])
         ];
     }
 
     /**
-     * @dataProvider getTestItParsesDecoratorsProvider
+     * @dataProvider provideTestItParsesDecorators
      */
     public function testItParsesDecorators($syntax, $expected)
     {
@@ -223,7 +219,7 @@ class GrammarParserTest extends PegasusTestCase
     }
 
     /**
-     * @dataProvider getTestItParsesDecoratorsProvider
+     * @dataProvider provideTestItParsesDecorators
      *
      * @param string  $syntax
      * @param Grammar $expected
@@ -234,66 +230,64 @@ class GrammarParserTest extends PegasusTestCase
         $this->assertGrammarEquals($expected, $grammar);
     }
 
-    public function getTestItParsesDecoratorsProvider()
+    public function provideTestItParsesDecorators()
     {
-        return [
-            'Assert of a match' => [
-                'x = &/x/',
-                Grammar::fromArray(['x' => new Assert(new Match('x'))])
-            ],
-            'Not of a match' => [
-                'x = !/x/',
-                Grammar::fromArray(['x' => new Not(new Match('x'))])
-            ],
-            'Skip of a match' => [
-                'x = ~/x/',
-                Grammar::fromArray(['x' => new Ignore(new Match('x'))])
-            ],
-            'Token of a match' => [
-                'x = %/x/',
-                Grammar::fromArray(['x' => new Token(new Match('x'))])
-            ],
-            'Labeled match' => [
-                'x = a:/x/',
-                Grammar::fromArray(['x' => new Label(new Match('x'), 'a')])
-            ],
-            'ZeroOrMore match' => [
-                'x = /x/*',
-                Grammar::fromArray(['x' => new ZeroOrMore(new Match('x'))])
-            ],
-            'OneOrMore match' => [
-                'x = /x/+',
-                Grammar::fromArray(['x' => new OneOrMore(new Match('x'))])
-            ],
-            'Optional match' => [
-                'x = /x/?',
-                Grammar::fromArray(['x' => new Optional(new Match('x'))])
-            ],
-            'Exactly 2 match' => [
-                'x = /x/{2}',
-                Grammar::fromArray(['x' => new Quantifier(new Match('x'), 2, 2)])
-            ],
-            'At least 2 match' => [
-                'x = /x/{2,}',
-                Grammar::fromArray(['x' => new Quantifier(new Match('x'), 2)])
-            ],
-            'Between 2 and 4 match' => [
-                'x = /x/{2,4}',
-                Grammar::fromArray(['x' => new Quantifier(new Match('x'), 2, 4)])
-            ],
-            'Cut operator' => [
-                'x = "["^',
-                Grammar::fromArray(['x' => new Cut(new Literal('['))])
-            ],
-            'Cut quantifier' => [
-                'x = "X"+^',
-                Grammar::fromArray(['x' => new Cut(new OneOrMore(new Literal('X')))])
-            ],
+        yield 'Assert of a match' => [
+            'x = &/x/',
+            Grammar::fromArray(['x' => new Assert(new Match('x'))])
+        ];
+        yield 'Not of a match' => [
+            'x = !/x/',
+            Grammar::fromArray(['x' => new Not(new Match('x'))])
+        ];
+        yield 'Skip of a match' => [
+            'x = ~/x/',
+            Grammar::fromArray(['x' => new Ignore(new Match('x'))])
+        ];
+        yield 'Token of a match' => [
+            'x = %/x/',
+            Grammar::fromArray(['x' => new Token(new Match('x'))])
+        ];
+        yield 'Labeled match' => [
+            'x = a:/x/',
+            Grammar::fromArray(['x' => new Label(new Match('x'), 'a')])
+        ];
+        yield 'ZeroOrMore match' => [
+            'x = /x/*',
+            Grammar::fromArray(['x' => new ZeroOrMore(new Match('x'))])
+        ];
+        yield 'OneOrMore match' => [
+            'x = /x/+',
+            Grammar::fromArray(['x' => new OneOrMore(new Match('x'))])
+        ];
+        yield 'Optional match' => [
+            'x = /x/?',
+            Grammar::fromArray(['x' => new Optional(new Match('x'))])
+        ];
+        yield 'Exactly 2 match' => [
+            'x = /x/{2}',
+            Grammar::fromArray(['x' => new Quantifier(new Match('x'), 2, 2)])
+        ];
+        yield 'At least 2 match' => [
+            'x = /x/{2,}',
+            Grammar::fromArray(['x' => new Quantifier(new Match('x'), 2)])
+        ];
+        yield 'Between 2 and 4 match' => [
+            'x = /x/{2,4}',
+            Grammar::fromArray(['x' => new Quantifier(new Match('x'), 2, 4)])
+        ];
+        yield 'Cut operator' => [
+            'x = "["^',
+            Grammar::fromArray(['x' => new Cut(new Literal('['))])
+        ];
+        yield 'Cut quantifier' => [
+            'x = "X"+^',
+            Grammar::fromArray(['x' => new Cut(new OneOrMore(new Literal('X')))])
         ];
     }
 
     /**
-     * @dataProvider getDecoratorPrecedenceProvider
+     * @dataProvider provideTestDecoratorPrecedence
      *
      * @param string $syntax
      * @param Grammar $expected
@@ -304,38 +298,36 @@ class GrammarParserTest extends PegasusTestCase
         $this->assertGrammarEquals($expected, $grammar);
     }
 
-    public function getDecoratorPrecedenceProvider()
+    public function provideTestDecoratorPrecedence()
     {
-        return [
-            'ignore and quantifier' => [
-                'x = ~"foo"+',
-                Grammar::fromArray([
-                    'x' => new Ignore(new OneOrMore(new Literal('foo'))),
-                ])
-            ],
-            'token and cut' => [
-                'x = %"foo"^',
-                Grammar::fromArray([
-                    'x' => new Token(new Cut(new Literal('foo'))),
-                ])
-            ],
-            'cut and quantifier' => [
-                'x = "foo"+^',
-                Grammar::fromArray([
-                    'x' => new Cut(new OneOrMore(new Literal('foo'))),
-                ])
-            ],
-            'ignore and token' => [
-                'x = ~%"foo"',
-                Grammar::fromArray([
-                    'x' => new Ignore(new Token(new Literal('foo'))),
-                ])
-            ],
+        yield 'ignore and quantifier' => [
+            'x = ~"foo"+',
+            Grammar::fromArray([
+                'x' => new Ignore(new OneOrMore(new Literal('foo'))),
+            ])
+        ];
+        yield 'token and cut' => [
+            'x = %"foo"^',
+            Grammar::fromArray([
+                'x' => new Token(new Cut(new Literal('foo'))),
+            ])
+        ];
+        yield 'cut and quantifier' => [
+            'x = "foo"+^',
+            Grammar::fromArray([
+                'x' => new Cut(new OneOrMore(new Literal('foo'))),
+            ])
+        ];
+        yield 'ignore and token' => [
+            'x = ~%"foo"',
+            Grammar::fromArray([
+                'x' => new Ignore(new Token(new Literal('foo'))),
+            ])
         ];
     }
 
     /**
-     * @dataProvider getTestItParsesReferencesProvider
+     * @dataProvider provideTestItParsesReferences
      *
      * @param string  $syntax
      * @param Grammar $expected
@@ -347,7 +339,7 @@ class GrammarParserTest extends PegasusTestCase
     }
 
     /**
-     * @dataProvider getTestItParsesReferencesProvider
+     * @dataProvider provideTestItParsesReferences
      *
      * @param string  $syntax
      * @param Grammar $expected
@@ -358,17 +350,15 @@ class GrammarParserTest extends PegasusTestCase
         $this->assertGrammarEquals($expected, $grammar);
     }
 
-    public function getTestItParsesReferencesProvider()
+    public function provideTestItParsesReferences()
     {
-        return [
-            'Reference' => [
-                'x = y',
-                Grammar::fromArray(['x' => new Reference('y')])
-            ],
-            'Super' => [
-                'x = super',
-                Grammar::fromArray(['x' => new Super('x')])
-            ],
+        yield 'Reference' => [
+            'x = y',
+            Grammar::fromArray(['x' => new Reference('y')])
+        ];
+        yield 'Super' => [
+            'x = super',
+            Grammar::fromArray(['x' => new Super('x')])
         ];
     }
 

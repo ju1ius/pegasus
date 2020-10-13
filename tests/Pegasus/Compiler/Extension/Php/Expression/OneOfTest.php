@@ -28,17 +28,15 @@ class OneOfTest extends PhpCompilerTestCase
 
     public function parseProvider()
     {
-        return [
-            [
-                'x = "foo" | "bar"',
-                'foo',
-                new Terminal('x', 0, 3, 'foo'),
-            ],
-            [
-                'x = "foo" | "bar"',
-                'bar',
-                new Terminal('x', 0, 3, 'bar'),
-            ],
+        yield [
+            'x = "foo" | "bar"',
+            'foo',
+            new Terminal('x', 0, 3, 'foo'),
+        ];
+        yield [
+            'x = "foo" | "bar"',
+            'bar',
+            new Terminal('x', 0, 3, 'bar'),
         ];
     }
 
@@ -58,9 +56,7 @@ class OneOfTest extends PhpCompilerTestCase
 
     public function parseFailureProvider()
     {
-        return [
-            ['x = "foo" | "bar"', 'baz'],
-            ['x = "foo" | "bar"', 'fooqux'],
-        ];
+            yield ['x = "foo" | "bar"', 'baz'];
+            yield ['x = "foo" | "bar"', 'fooqux'];
     }
 }

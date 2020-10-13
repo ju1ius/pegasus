@@ -26,7 +26,7 @@ use ju1ius\Pegasus\Tests\Optimization\OptimizationTestCase;
 class JoinMatchChoiceTest extends RegExpOptimizationTestCase
 {
     /**
-     * @dataProvider getApplyProvider
+     * @dataProvider provideTestApply
      *
      * @param Grammar    $input
      * @param Expression $expected
@@ -43,44 +43,42 @@ class JoinMatchChoiceTest extends RegExpOptimizationTestCase
         $this->assertExpressionEquals($expected, $result, 'In matching context');
     }
 
-    public function getApplyProvider()
+    public function provideTestApply()
     {
-        return [
-            'Choice of matches only' => [
-                GrammarBuilder::create()->rule('test')->oneOf()
-                    ->match('a')
-                    ->match('b')
-                    ->match('c')
+        yield 'Choice of matches only' => [
+            GrammarBuilder::create()->rule('test')->oneOf()
+                ->match('a')
+                ->match('b')
+                ->match('c')
+            ->getGrammar(),
+            new Match('a|b|c', [], 'test')
+        ];
+        yield 'Choice of matches before something else' => [
+            GrammarBuilder::create()->rule('test')->oneOf()
+                ->match('a')
+                ->match('b')
+                ->ref('c')
                 ->getGrammar(),
-                new Match('a|b|c', [], 'test')
-            ],
-            'Choice of matches before something else' => [
-                GrammarBuilder::create()->rule('test')->oneOf()
-                    ->match('a')
-                    ->match('b')
-                    ->ref('c')
-                    ->getGrammar(),
-                new OneOf([
-                    new Match('a|b'),
-                    new Reference('c'),
-                ], 'test')
-            ],
-            'Choice of matches after something else' => [
-                GrammarBuilder::create()->rule('test')->oneOf()
-                    ->ref('a')
-                    ->match('b')
-                    ->match('c')
-                    ->getGrammar(),
-                new OneOf([
-                    new Reference('a'),
-                    new Match('b|c'),
-                ], 'test')
-            ],
+            new OneOf([
+                new Match('a|b'),
+                new Reference('c'),
+            ], 'test')
+        ];
+        yield 'Choice of matches after something else' => [
+            GrammarBuilder::create()->rule('test')->oneOf()
+                ->ref('a')
+                ->match('b')
+                ->match('c')
+                ->getGrammar(),
+            new OneOf([
+                new Reference('a'),
+                new Match('b|c'),
+            ], 'test')
         ];
     }
 
     /**
-     * @dataProvider getAppliesToProvider
+     * @dataProvider provideTestAppliesTo
      *
      * @param Grammar $input
      * @param bool    $applies
@@ -98,7 +96,7 @@ class JoinMatchChoiceTest extends RegExpOptimizationTestCase
         $this->assertSame($applies, $result, 'In matching context');
     }
 
-    public function getAppliesToProvider()
+    public function provideTestAppliesTo()
     {
         return [
             'Choice of matches only' => [

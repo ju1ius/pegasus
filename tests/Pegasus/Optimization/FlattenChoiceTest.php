@@ -12,7 +12,7 @@ use ju1ius\Pegasus\Grammar\Optimization\Flattening\FlattenChoice;
 class FlattenChoiceTest extends OptimizationTestCase
 {
     /**
-     * @dataProvider getApplyProvider
+     * @dataProvider provideTestApply
      *
      * @param Grammar    $grammar
      * @param Expression $expected
@@ -24,45 +24,43 @@ class FlattenChoiceTest extends OptimizationTestCase
         $this->assertEquals((string)$expected, (string)$result);
     }
 
-    public function getApplyProvider()
+    public function provideTestApply()
     {
-        return [
-            '(("foo" | "bar") | "baz") | "qux" => "foo" | "bar" | "baz" | "qux"' => [
-                GrammarBuilder::create()->rule('test')->oneOf()
+        yield '(("foo" | "bar") | "baz") | "qux" => "foo" | "bar" | "baz" | "qux"' => [
+            GrammarBuilder::create()->rule('test')->oneOf()
+                ->oneOf()
                     ->oneOf()
-                        ->oneOf()
-                            ->literal('foo')
-                            ->literal('bar')
-                        ->end()
-                        ->literal('baz')
-                    ->end()
-                    ->literal('qux')
-                ->getGrammar(),
-                new OneOf([
-                    new Literal('foo'),
-                    new Literal('bar'),
-                    new Literal('baz'),
-                    new Literal('qux'),
-                ], 'test')
-            ],
-            '"foo" | ("bar" | ("baz" | "qux")) => "foo" | "bar" | "baz" | "qux"' => [
-                GrammarBuilder::create()->rule('test')->oneOf()
-                    ->literal('foo')
-                    ->oneOf()
+                        ->literal('foo')
                         ->literal('bar')
-                        ->oneOf()
-                            ->literal('baz')
-                            ->literal('qux')
-                        ->end()
                     ->end()
-                ->getGrammar(),
-                new OneOf([
-                    new Literal('foo'),
-                    new Literal('bar'),
-                    new Literal('baz'),
-                    new Literal('qux')
-                ], 'test')
-            ],
+                    ->literal('baz')
+                ->end()
+                ->literal('qux')
+            ->getGrammar(),
+            new OneOf([
+                new Literal('foo'),
+                new Literal('bar'),
+                new Literal('baz'),
+                new Literal('qux'),
+            ], 'test')
+        ];
+        yield '"foo" | ("bar" | ("baz" | "qux")) => "foo" | "bar" | "baz" | "qux"' => [
+            GrammarBuilder::create()->rule('test')->oneOf()
+                ->literal('foo')
+                ->oneOf()
+                    ->literal('bar')
+                    ->oneOf()
+                        ->literal('baz')
+                        ->literal('qux')
+                    ->end()
+                ->end()
+            ->getGrammar(),
+            new OneOf([
+                new Literal('foo'),
+                new Literal('bar'),
+                new Literal('baz'),
+                new Literal('qux')
+            ], 'test')
         ];
     }
 }

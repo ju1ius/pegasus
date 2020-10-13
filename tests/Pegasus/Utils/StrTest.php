@@ -21,7 +21,7 @@ use PHPUnit\Framework\TestCase;
 class StrTest extends TestCase
 {
     /**
-     * @dataProvider getTestClassNameProvider
+     * @dataProvider provideTestClassName
      *
      * @param object|string $input
      * @param string        $expected
@@ -31,34 +31,32 @@ class StrTest extends TestCase
         $this->assertSame($expected, Str::className($input));
     }
 
-    public function getTestClassNameProvider()
+    public function provideTestClassName()
     {
-        return [
-            'A FQCN as a string' => [
-                'Acme\Demo\FooBar',
-                'FooBar',
-            ],
-            'A FQCN in top-level namespace as a string' => [
-                '\FooBar',
-                'FooBar',
-            ],
-            'A FQCN in top-level namespace (without leading backslash) as a string' => [
-                'stdClass',
-                'stdClass',
-            ],
-            'An stdClass instance' => [
-                new \stdClass(),
-                'stdClass',
-            ],
-            'An Expression instance' => [
-                new Literal('foo'),
-                'Literal',
-            ],
+        yield 'A FQCN as a string' => [
+            'Acme\Demo\FooBar',
+            'FooBar',
+        ];
+        yield 'A FQCN in top-level namespace as a string' => [
+            '\FooBar',
+            'FooBar',
+        ];
+        yield 'A FQCN in top-level namespace (without leading backslash) as a string' => [
+            'stdClass',
+            'stdClass',
+        ];
+        yield 'An stdClass instance' => [
+            new \stdClass(),
+            'stdClass',
+        ];
+        yield 'An Expression instance' => [
+            new Literal('foo'),
+            'Literal',
         ];
     }
 
     /**
-     * @dataProvider getTestTruncateProvider
+     * @dataProvider provideTestTruncate
      *
      * @param array  $args
      * @param string $expected
@@ -68,25 +66,23 @@ class StrTest extends TestCase
         $this->assertSame($expected, Str::truncate(...$args));
     }
 
-    public function getTestTruncateProvider()
+    public function provideTestTruncate()
     {
-        return [
-            'No truncation' => [
-                ['foobar bazqux', 1000],
-                'foobar bazqux',
-            ],
-            'Simple truncation' => [
-                ['foobar bazqux', 8],
-                'foobar …',
-            ],
-            'Target column < max width' => [
-                ['foobar bazqux', 8, 4],
-                'foobar …',
-            ],
-            'Target column > max width' => [
-                ['foobar bazqux', 8, 8],
-                '… obar baz',
-            ],
+        yield 'No truncation' => [
+            ['foobar bazqux', 1000],
+            'foobar bazqux',
+        ];
+        yield 'Simple truncation' => [
+            ['foobar bazqux', 8],
+            'foobar …',
+        ];
+        yield 'Target column < max width' => [
+            ['foobar bazqux', 8, 4],
+            'foobar …',
+        ];
+        yield 'Target column > max width' => [
+            ['foobar bazqux', 8, 8],
+            '… obar baz',
         ];
     }
 }

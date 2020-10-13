@@ -20,7 +20,7 @@ use ju1ius\Pegasus\Tests\ExpressionTestCase;
 class RegExpTest extends ExpressionTestCase
 {
     /**
-     * @dataProvider getMatchProvider
+     * @dataProvider provideTestMatch
      */
     public function testMatch($expr, $match_args, $expected)
     {
@@ -29,33 +29,31 @@ class RegExpTest extends ExpressionTestCase
             $this->parse($expr, ...$match_args)
         );
     }
-    public function getMatchProvider()
+    public function provideTestMatch()
     {
-        return [
-            // simple literals
-            '/foo/ with "foo"' => [
-                GrammarBuilder::create()->rule('r')->regexp('foo')->getGrammar(),
-                ['foo'],
-                new Terminal('r', 0, 3, 'foo', ['groups' => ['foo']])
-            ],
-            '/bar/ @3 with "foobar"' => [
-                GrammarBuilder::create()->rule('r')->regexp('bar')->getGrammar(),
-                ['foobar', 3],
-                new Terminal('r', 3, 6, 'bar', ['groups' => ['bar']])
-            ],
-            '/fo+/ with "fooooobar!"' => [
-                GrammarBuilder::create()->rule('r')->regexp('fo+')->getGrammar(),
-                ['fooooobar!'],
-                new Terminal('r', 0, 6, 'fooooo', ['groups' => ['fooooo']])
-            ],
-            'complex pattern with capturing groups' => [
-                GrammarBuilder::create()->rule('r')->regexp('"((?:\\\\.|[^"])*)"')->getGrammar(),
-                ['"quoted\\"stri\\ng"'],
-                new Terminal('r', 0, 17, '"quoted\\"stri\\ng"', ['groups' => [
-                    '"quoted\\"stri\\ng"',
-                    'quoted\\"stri\\ng'
-                ]])
-            ],
+        // simple literals
+        yield '/foo/ with "foo"' => [
+            GrammarBuilder::create()->rule('r')->regexp('foo')->getGrammar(),
+            ['foo'],
+            new Terminal('r', 0, 3, 'foo', ['groups' => ['foo']])
+        ];
+        yield '/bar/ @3 with "foobar"' => [
+            GrammarBuilder::create()->rule('r')->regexp('bar')->getGrammar(),
+            ['foobar', 3],
+            new Terminal('r', 3, 6, 'bar', ['groups' => ['bar']])
+        ];
+        yield '/fo+/ with "fooooobar!"' => [
+            GrammarBuilder::create()->rule('r')->regexp('fo+')->getGrammar(),
+            ['fooooobar!'],
+            new Terminal('r', 0, 6, 'fooooo', ['groups' => ['fooooo']])
+        ];
+        yield 'complex pattern with capturing groups' => [
+            GrammarBuilder::create()->rule('r')->regexp('"((?:\\\\.|[^"])*)"')->getGrammar(),
+            ['"quoted\\"stri\\ng"'],
+            new Terminal('r', 0, 17, '"quoted\\"stri\\ng"', ['groups' => [
+                '"quoted\\"stri\\ng"',
+                'quoted\\"stri\\ng'
+            ]])
         ];
     }
 }
