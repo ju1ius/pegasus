@@ -31,6 +31,7 @@ abstract class MatchJoiningOptimization extends RegExpOptimization
      */
     public function willPostProcessExpression(Expression $expr, OptimizationContext $context): bool
     {
+        /** @var Composite $expr */
         return Iter::someConsecutive(function ($child) {
             return $this->isEligibleChild($child);
         }, 2, $expr);
