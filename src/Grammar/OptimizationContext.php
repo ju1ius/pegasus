@@ -12,7 +12,6 @@ namespace ju1ius\Pegasus\Grammar;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Grammar\Analysis;
 
 /**
  * Provides contextual information to optimizations.

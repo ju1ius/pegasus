@@ -10,17 +10,12 @@
 
 namespace ju1ius\Pegasus\Debug;
 
-use ju1ius\Pegasus\Expression\Composite;
-use ju1ius\Pegasus\Expression\Decorator\Trace;
-use ju1ius\Pegasus\Expression\ExpressionTraverser;
-use ju1ius\Pegasus\Grammar\GrammarTraverser;
-use ju1ius\Pegasus\Utils\Str;
-use ju1ius\Pegasus\Grammar\GrammarVisitor;
-use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Expression;
-use Symfony\Component\Console\Formatter\OutputFormatter;
-use Symfony\Component\Console\Formatter\OutputFormatterStyle;
-use Symfony\Component\Console\Output\ConsoleOutput;
+use ju1ius\Pegasus\Expression\Composite;
+use ju1ius\Pegasus\Grammar;
+use ju1ius\Pegasus\Grammar\GrammarTraverser;
+use ju1ius\Pegasus\Grammar\GrammarVisitor;
+use ju1ius\Pegasus\Utils\Str;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**

@@ -11,7 +11,6 @@
 namespace ju1ius\Pegasus\Compiler\Twig\Extension;
 
 use ju1ius\Pegasus\Compiler\CompilationContext;
-use ju1ius\Pegasus\Compiler\Compiler;
 use ju1ius\Pegasus\Compiler\CompilerInterface;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Decorator\Quantifier;

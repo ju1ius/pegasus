@@ -14,9 +14,9 @@ use ju1ius\Pegasus\Compiler\Compiler;
 use ju1ius\Pegasus\Compiler\Extension\Php\Runtime\LeftRecursivePackrat;
 use ju1ius\Pegasus\Compiler\Extension\Php\Runtime\Packrat;
 use ju1ius\Pegasus\Compiler\Extension\Php\Runtime\RecursiveDescent;
+use ju1ius\Pegasus\CST\Transform;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimizer;
-use ju1ius\Pegasus\CST\Transform;
 
 class PhpCompiler extends Compiler
 {

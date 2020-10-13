@@ -11,8 +11,8 @@
 namespace ju1ius\Pegasus\Grammar;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\Application\Reference;
+use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Exception\SelfReferencingRule;
 

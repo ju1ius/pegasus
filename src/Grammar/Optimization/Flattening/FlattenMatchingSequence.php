@@ -12,9 +12,7 @@
 namespace ju1ius\Pegasus\Grammar\Optimization\Flattening;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Decorator\NodeAction;
 use ju1ius\Pegasus\Expression\Combinator\Sequence;
-use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 
 /**

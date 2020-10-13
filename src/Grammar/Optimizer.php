@@ -26,7 +26,6 @@ use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinPredicateOrBareMatch;
 use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinPredicateOrNestedMatch;
 use ju1ius\Pegasus\Grammar\Optimization\PCREManipulator;
 use ju1ius\Pegasus\Grammar\Optimization\RemoveMeaninglessDecorator;
-use ju1ius\Pegasus\Grammar\Optimization\RemoveUnusedRules;
 use ju1ius\Pegasus\Grammar\Optimization\SimplifyRedundantQuantifier;
 use ju1ius\Pegasus\Grammar\Optimization\SimplifyTerminalToken;
 

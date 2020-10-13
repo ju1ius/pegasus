@@ -11,9 +11,8 @@
 namespace ju1ius\Pegasus\Grammar\Optimization;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Terminal;
 use ju1ius\Pegasus\Expression\Decorator\Token;
-use ju1ius\Pegasus\Grammar;
+use ju1ius\Pegasus\Expression\Terminal;
 use ju1ius\Pegasus\Grammar\Optimization;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 

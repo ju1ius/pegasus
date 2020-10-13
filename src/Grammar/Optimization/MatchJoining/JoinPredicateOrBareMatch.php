@@ -10,8 +10,6 @@
 
 namespace ju1ius\Pegasus\Grammar\Optimization\MatchJoining;
 
-use ju1ius\Pegasus\Grammar\Optimization;
-
 /**
  * A predicate and an adjacent Match in a Choice can be joined into a single Match.
  *

@@ -13,7 +13,6 @@ namespace ju1ius\Pegasus\Parser;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Parser\Memoization\MemoTable;
 use ju1ius\Pegasus\Parser\Memoization\PackratMemoTable;
-use ju1ius\Pegasus\Parser\Memoization\SlidingMemoTable;
 
 
 /**

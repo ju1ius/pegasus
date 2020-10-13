@@ -104,7 +104,7 @@ final class SourceInfo
         if ($line < 0 || $line > $this->numLines) {
             throw new PositionNotFound($line, $column);
         }
-        list($bol, $eol, $length) = $lines[$line];
+        [$bol, $eol, $length] = $lines[$line];
         if ($column > $eol - $bol) {
             throw new PositionNotFound($line, $column);
         }

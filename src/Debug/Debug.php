@@ -10,9 +10,9 @@
 
 namespace ju1ius\Pegasus\Debug;
 
+use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Trace\Trace;
 use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Output\BufferedOutput;

@@ -11,12 +11,12 @@
 namespace ju1ius\Pegasus\Grammar\Optimization\MatchJoining;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Decorator\Assert;
 use ju1ius\Pegasus\Expression\Composite;
+use ju1ius\Pegasus\Expression\Decorator\Assert;
+use ju1ius\Pegasus\Expression\Decorator\Not;
 use ju1ius\Pegasus\Expression\Terminal\EOF;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\Expression\Terminal\Match;
-use ju1ius\Pegasus\Expression\Decorator\Not;
 use ju1ius\Pegasus\Grammar\Optimization\CompositeReducerTrait;
 use ju1ius\Pegasus\Grammar\Optimization\RegExpOptimization;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
@@ -123,7 +123,7 @@ abstract class PredicateMatchJoiningOptimization extends RegExpOptimization
      */
     protected function someEligiblePairs($children): bool
     {
-        foreach (Iter::consecutive(2, $children) as list($first, $last)) {
+        foreach (Iter::consecutive(2, $children) as [$first, $last]) {
             if ($this->isEligiblePair($first, $last)) {
                 return true;
             }

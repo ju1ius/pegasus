@@ -10,9 +10,9 @@
 
 namespace ju1ius\Pegasus\CST\Exception;
 
-use ju1ius\Pegasus\Debug\Debug;
-use ju1ius\Pegasus\Debug\CSTDumper;
 use ju1ius\Pegasus\CST\Node;
+use ju1ius\Pegasus\Debug\CSTDumper;
+use ju1ius\Pegasus\Debug\Debug;
 
 /**
  * Something went wrong while traversing a parse tree.

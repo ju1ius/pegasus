@@ -10,8 +10,8 @@
 
 namespace ju1ius\Pegasus\Parser;
 
-use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\CST\Node;
+use ju1ius\Pegasus\Expression;
 
 /**
  * LeftRecursion’s `seed` field holds the initial parse found for the associated `rule`.

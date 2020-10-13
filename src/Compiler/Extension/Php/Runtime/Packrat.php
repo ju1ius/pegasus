@@ -10,8 +10,6 @@
 
 namespace ju1ius\Pegasus\Compiler\Extension\Php\Runtime;
 
-use ju1ius\Pegasus\CST\Node;
-
 /**
  * A packrat parser implementing Wrath, Douglass & Millstein's algorithm
  * to prevent infinite loops in left-recursive rules.

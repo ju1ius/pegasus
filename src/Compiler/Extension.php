@@ -9,8 +9,6 @@
  */
 
 namespace ju1ius\Pegasus\Compiler;
-use ju1ius\Pegasus\Command\GenerateParserCommand;
-use ju1ius\Pegasus\Command\GenerateVisitorCommand;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\Console\Event\ConsoleErrorEvent;

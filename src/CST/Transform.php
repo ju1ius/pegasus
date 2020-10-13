@@ -11,7 +11,6 @@
 namespace ju1ius\Pegasus\CST;
 
 use ju1ius\Pegasus\CST\Exception\TransformException;
-use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\CST\Node\Terminal;
 
 /**
