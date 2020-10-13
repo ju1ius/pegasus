@@ -32,23 +32,16 @@ abstract class Expression
      *
      * @readonly
      * @internal
-     *
-     * @var integer
      */
-    public $id;
+    public int $id;
 
     /**
      * The name of this expression.
      * Any named expression is turned into a grammar rule.
-     *
-     * @var string
      */
-    protected $name;
+    protected string $name;
 
-    /**
-     * @var int
-     */
-    private static $UID = 0;
+    private static int $UID = 0;
 
     /**
      * Expression constructor.
@@ -57,7 +50,7 @@ abstract class Expression
      *
      * @param string $name Optional name for this expression.
      */
-    public function __construct(?string $name = '')
+    public function __construct(string $name = '')
     {
         $this->name = $name;
         //$this->id = spl_object_id($this);

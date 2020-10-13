@@ -58,13 +58,13 @@ class PegasusTestCase extends TestCase
      */
     protected function cleanupExpr(Expression $expr)
     {
-        $expr->id = null;
+        $expr->id = -1;
         if ($expr instanceof Composite) {
             foreach ($expr as $child) {
                 $this->cleanupExpr($child);
             }
         } elseif ($expr instanceof GroupMatch) {
-            $expr->getMatcher()->id = null;
+            $expr->getMatcher()->id = -1;
         }
     }
 }

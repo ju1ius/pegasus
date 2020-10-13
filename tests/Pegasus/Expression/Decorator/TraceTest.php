@@ -23,7 +23,6 @@ class TraceTest extends TestCase
             ->setMethods(['enterTrace', 'leaveTrace'])
             ->getMockForAbstractClass();
         $child = $this->getMockBuilder(Terminal::class)
-            ->disableOriginalConstructor()
             ->setMethods(['match'])
             ->getMockForAbstractClass();
         $child->method('match')->willReturn(true);
@@ -51,7 +50,6 @@ class TraceTest extends TestCase
     public function testToString()
     {
         $child = $this->getMockBuilder(Terminal::class)
-            ->disableOriginalConstructor()
             ->setMethods(['__toString'])
             ->getMockForAbstractClass();
         $child->method('__toString')->willReturn('foo');
