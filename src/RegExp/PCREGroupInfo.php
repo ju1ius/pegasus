@@ -133,7 +133,7 @@ REGEXP;
             switch ($char) {
                 case '\\':
                     $this->pos += 2;
-                    continue;
+                    break;
                 case '(':
                     $this->handleGroupStart($pattern);
                     break;
