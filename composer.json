@@ -25,7 +25,8 @@
         }
     },
     "require": {
-        "php": ">=7.1",
+        "php": ">=7.4",
+        "ext-mbstring": "*",
         "symfony/console": "^4.0.2",
         "twig/twig": "^2.4.4",
         "symfony/event-dispatcher": "^4.0",
