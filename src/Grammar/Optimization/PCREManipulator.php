@@ -42,7 +42,8 @@ class PCREManipulator implements RegExpManipulator
     public function patternFor(Expression $expr): string
     {
         if ($expr instanceof Literal) {
-            return preg_quote($expr->getLiteral(), $this->delimiter);
+            $pattern = preg_quote($expr->getLiteral(), $this->delimiter);
+            return self::escapeLiteral($pattern);
         }
         if ($expr instanceof EOF) {
             return '\z';
@@ -105,5 +106,17 @@ class PCREManipulator implements RegExpManipulator
         }
 
         return $expr->getPattern();
+    }
+
+    private static function escapeLiteral(string $input): string
+    {
+        return strtr($input, [
+            " " => '\x20',
+            "\n" => '\n',
+            "\r" => '\r',
+            "\t" => '\t',
+            "\f" => '\f',
+            "\v" => '\x0b',
+        ]);
     }
 }

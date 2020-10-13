@@ -295,9 +295,9 @@ class MetaGrammarTransform extends Transform
     private function leave_literal(Node $node, $parts): Literal
     {
         [$quoteChar, $string] = $parts;
-
-        // TODO: handle special characters: \n, \x20, \u{666}, etc...
-        // if ($quoteChar === '"') $string = stripcslashes($string);
+        if ($quoteChar === '"') {
+            $string = StringEscapes::unescape($string);
+        }
 
         return new Literal($string, '', $quoteChar);
     }
