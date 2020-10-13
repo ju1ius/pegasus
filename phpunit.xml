@@ -1,50 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <phpunit
-    colors="true"
-    bootstrap="./tests/bootstrap.php"
-    stopOnFailure="false"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/8.5/phpunit.xsd"
+  colors="true"
+  bootstrap="./tests/bootstrap.php"
+  stopOnFailure="false"
+  cacheResultFile="tools/.phpunit.result.cache"
 >
-    <testsuites>
-        <testsuite name="Utils">
-            <directory>tests/Pegasus/Utils</directory>
-            <directory>tests/Pegasus/RegExp</directory>
-            <directory>tests/Pegasus/Source</directory>
-        </testsuite>
-        <testsuite name="Grammar">
-            <file>tests/Pegasus/GrammarTest.php</file>
-            <directory>tests/Pegasus/Grammar</directory>
-        </testsuite>
-        <testsuite name="Expressions">
-            <file>tests/Pegasus/ExpressionTest.php</file>
-            <file>tests/Pegasus/Expression/Terminal/LiteralTest.php</file>
-            <file>tests/Pegasus/Expression/Terminal/MatchTest.php</file>
-            <file>tests/Pegasus/Expression/Terminal/RegExpTest.php</file>
-            <file>tests/Pegasus/Expression/Decorator/QuantifierTest.php</file>
-            <directory>tests/Pegasus/Expression</directory>
-        </testsuite>
-        <testsuite name="CST">
-            <directory>tests/Pegasus/CST</directory>
-        </testsuite>
-        <testsuite name="Parsers">
-            <directory>tests/Pegasus/Parser</directory>
-            <directory>tests/Pegasus/Trace</directory>
-        </testsuite>
-        <testsuite name="Optimizations">
-            <directory>tests/Pegasus/Optimization</directory>
-        </testsuite>
-        <testsuite name="MetaGrammar">
-            <directory>tests/Pegasus/MetaGrammar</directory>
-        </testsuite>
-        <testsuite name="Compiler">
-            <directory>tests/Pegasus/Compiler</directory>
-        </testsuite>
-    </testsuites>
+  <testsuites>
+    <testsuite name="Utils">
+      <directory>tests/Pegasus/Utils</directory>
+      <directory>tests/Pegasus/RegExp</directory>
+      <directory>tests/Pegasus/Source</directory>
+    </testsuite>
+    <testsuite name="Grammar">
+      <file>tests/Pegasus/GrammarTest.php</file>
+      <directory>tests/Pegasus/Grammar</directory>
+    </testsuite>
+    <testsuite name="Expressions">
+      <file>tests/Pegasus/ExpressionTest.php</file>
+      <file>tests/Pegasus/Expression/Terminal/LiteralTest.php</file>
+      <file>tests/Pegasus/Expression/Terminal/MatchTest.php</file>
+      <file>tests/Pegasus/Expression/Terminal/RegExpTest.php</file>
+      <file>tests/Pegasus/Expression/Decorator/QuantifierTest.php</file>
+      <directory>tests/Pegasus/Expression</directory>
+    </testsuite>
+    <testsuite name="CST">
+      <directory>tests/Pegasus/CST</directory>
+    </testsuite>
+    <testsuite name="Parsers">
+      <directory>tests/Pegasus/Parser</directory>
+      <directory>tests/Pegasus/Trace</directory>
+    </testsuite>
+    <testsuite name="Optimizations">
+      <directory>tests/Pegasus/Optimization</directory>
+    </testsuite>
+    <testsuite name="MetaGrammar">
+      <directory>tests/Pegasus/MetaGrammar</directory>
+    </testsuite>
+    <testsuite name="Compiler">
+      <directory>tests/Pegasus/Compiler</directory>
+    </testsuite>
+  </testsuites>
 
-    <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">src</directory>
-            <exclude>
-                <directory suffix=".php">src/Debug</directory>
-            </exclude>
-        </whitelist>
-    </filter>
+  <filter>
+    <whitelist processUncoveredFilesFromWhitelist="true">
+      <directory suffix=".php">src</directory>
+      <exclude>
+        <directory suffix=".php">src/Debug</directory>
+      </exclude>
+    </whitelist>
+  </filter>
 </phpunit>

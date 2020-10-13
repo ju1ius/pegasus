@@ -1,6 +1,9 @@
 /.idea/
 /composer.lock
 
+/tools/*
+!/tools/.gitkeep
+
 /vendor/
 /tests/coverage/
 cache/
