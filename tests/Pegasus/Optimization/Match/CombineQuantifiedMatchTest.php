@@ -12,12 +12,11 @@ namespace ju1ius\Pegasus\Tests\Optimization\Match;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Terminal\Match;
-use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\GrammarBuilder as GrammarBuilder;
 use ju1ius\Pegasus\ExpressionBuilder;
+use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization\CombineQuantifiedMatch;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
-use ju1ius\Pegasus\Tests\Optimization\OptimizationTestCase;
+use ju1ius\Pegasus\GrammarBuilder as GrammarBuilder;
 
 
 /**

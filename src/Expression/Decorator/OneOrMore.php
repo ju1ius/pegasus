@@ -11,7 +11,6 @@
 namespace ju1ius\Pegasus\Expression\Decorator;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Decorator\Quantifier;
 
 /**
  * An expression wrapper like the + quantifier in regexes.

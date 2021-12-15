@@ -4,7 +4,6 @@
 namespace ju1ius\Pegasus\Expression\Application;
 
 
-use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\CST\Node\ExternalReference;
 use ju1ius\Pegasus\Expression\Application;
 use ju1ius\Pegasus\Parser\Parser;

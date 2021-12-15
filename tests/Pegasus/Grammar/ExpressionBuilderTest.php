@@ -10,29 +10,28 @@
 
 namespace ju1ius\Pegasus\Tests\Grammar;
 
-use ju1ius\Pegasus\Expression;
+use ju1ius\Pegasus\Expression\Application\Reference;
+use ju1ius\Pegasus\Expression\Application\Reference as Ref;
+use ju1ius\Pegasus\Expression\Combinator\OneOf;
 use ju1ius\Pegasus\Expression\Combinator\Sequence;
-use ju1ius\Pegasus\Expression\Decorator\Assert;
-use ju1ius\Pegasus\Expression\Terminal\BackReference;
+use ju1ius\Pegasus\Expression\Combinator\Sequence as Seq;
 use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\Decorator;
+use ju1ius\Pegasus\Expression\Decorator\Assert;
+use ju1ius\Pegasus\Expression\Decorator\Ignore;
+use ju1ius\Pegasus\Expression\Decorator\Label;
+use ju1ius\Pegasus\Expression\Decorator\NodeAction;
+use ju1ius\Pegasus\Expression\Decorator\Not;
+use ju1ius\Pegasus\Expression\Decorator\Quantifier;
+use ju1ius\Pegasus\Expression\Decorator\Token;
+use ju1ius\Pegasus\Expression\Terminal;
+use ju1ius\Pegasus\Expression\Terminal\BackReference;
 use ju1ius\Pegasus\Expression\Terminal\EOF;
 use ju1ius\Pegasus\Expression\Terminal\Epsilon;
 use ju1ius\Pegasus\Expression\Terminal\Fail;
-use ju1ius\Pegasus\Expression\Decorator\Label;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\Expression\Terminal\Match;
-use ju1ius\Pegasus\Expression\Decorator\NodeAction;
-use ju1ius\Pegasus\Expression\Decorator\Not;
-use ju1ius\Pegasus\Expression\Combinator\OneOf;
-use ju1ius\Pegasus\Expression\Decorator\Quantifier;
-use ju1ius\Pegasus\Expression\Application\Reference;
-use ju1ius\Pegasus\Expression\Application\Reference as Ref;
 use ju1ius\Pegasus\Expression\Terminal\RegExp;
-use ju1ius\Pegasus\Expression\Combinator\Sequence as Seq;
-use ju1ius\Pegasus\Expression\Decorator\Ignore;
-use ju1ius\Pegasus\Expression\Terminal;
-use ju1ius\Pegasus\Expression\Decorator\Token;
 use ju1ius\Pegasus\ExpressionBuilder as Builder;
 use ju1ius\Pegasus\Tests\PegasusTestCase;
 
@@ -160,7 +159,7 @@ class ExpressionBuilderTest extends PegasusTestCase
 
     public function testItCanBuildExpressions()
     {
-        foreach ($this->provideTestItCanBuildExpressions() as $msg => list($input, $expected)) {
+        foreach ($this->provideTestItCanBuildExpressions() as $msg => [$input, $expected]) {
             $this->assertExpressionEquals($expected, $input, $msg);
         }
     }

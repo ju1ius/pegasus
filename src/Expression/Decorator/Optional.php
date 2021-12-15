@@ -10,8 +10,8 @@
 
 namespace ju1ius\Pegasus\Expression\Decorator;
 
-use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\CST\Node;
+use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Parser\Parser;
 
 

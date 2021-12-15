@@ -13,23 +13,22 @@ namespace ju1ius\Pegasus\MetaGrammar;
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\CST\Transform;
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Decorator;
-use ju1ius\Pegasus\Expression\Decorator\Cut;
-use ju1ius\Pegasus\Expression\Decorator\NodeAction;
+use ju1ius\Pegasus\Expression\Application\Reference;
+use ju1ius\Pegasus\Expression\Application\Super;
 use ju1ius\Pegasus\Expression\Combinator\OneOf;
 use ju1ius\Pegasus\Expression\Combinator\Sequence;
-use ju1ius\Pegasus\Expression\Composite;
+use ju1ius\Pegasus\Expression\Decorator;
 use ju1ius\Pegasus\Expression\Decorator\Assert;
+use ju1ius\Pegasus\Expression\Decorator\Cut;
+use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Expression\Decorator\Label;
+use ju1ius\Pegasus\Expression\Decorator\NodeAction;
 use ju1ius\Pegasus\Expression\Decorator\Not;
 use ju1ius\Pegasus\Expression\Decorator\OneOrMore;
 use ju1ius\Pegasus\Expression\Decorator\Optional;
 use ju1ius\Pegasus\Expression\Decorator\Quantifier;
-use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Expression\Decorator\Token;
 use ju1ius\Pegasus\Expression\Decorator\ZeroOrMore;
-use ju1ius\Pegasus\Expression\Application\Reference;
-use ju1ius\Pegasus\Expression\Application\Super;
 use ju1ius\Pegasus\Expression\Terminal\Any;
 use ju1ius\Pegasus\Expression\Terminal\BackReference;
 use ju1ius\Pegasus\Expression\Terminal\EOF;
@@ -287,7 +286,7 @@ class MetaGrammarTransform extends Transform
 
     private function leave_STRING(Node $node, Node $regexp): array
     {
-        list(, $quoteChar, $string) = $regexp->attributes['groups'];
+        [, $quoteChar, $string] = $regexp->attributes['groups'];
 
         return [$quoteChar, $string];
     }
@@ -314,7 +313,7 @@ class MetaGrammarTransform extends Transform
 
     private function leave_regexp(Node $node, Node $regexp): PCREPattern
     {
-        list(, $pattern, $flags) = $regexp->attributes['groups'];
+        [, $pattern, $flags] = $regexp->attributes['groups'];
         // str_split returns [0 => ''] for the empty string !
         $flags = $flags ? str_split($flags) : [];
 

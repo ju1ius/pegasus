@@ -11,23 +11,23 @@
 namespace ju1ius\Pegasus;
 
 use ju1ius\Pegasus\Expression\Application\Call;
+use ju1ius\Pegasus\Expression\Application\Reference;
+use ju1ius\Pegasus\Expression\Application\Super;
 use ju1ius\Pegasus\Expression\Combinator\OneOf;
 use ju1ius\Pegasus\Expression\Combinator\Sequence;
 use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\Decorator;
 use ju1ius\Pegasus\Expression\Decorator\Assert;
 use ju1ius\Pegasus\Expression\Decorator\Cut;
+use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Expression\Decorator\Label;
 use ju1ius\Pegasus\Expression\Decorator\NodeAction;
 use ju1ius\Pegasus\Expression\Decorator\Not;
 use ju1ius\Pegasus\Expression\Decorator\OneOrMore;
 use ju1ius\Pegasus\Expression\Decorator\Optional;
 use ju1ius\Pegasus\Expression\Decorator\Quantifier;
-use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Expression\Decorator\Token;
 use ju1ius\Pegasus\Expression\Decorator\ZeroOrMore;
-use ju1ius\Pegasus\Expression\Application\Reference;
-use ju1ius\Pegasus\Expression\Application\Super;
 use ju1ius\Pegasus\Expression\Exception\CapturingGroupInMatchPattern;
 use ju1ius\Pegasus\Expression\Terminal\Any;
 use ju1ius\Pegasus\Expression\Terminal\BackReference;

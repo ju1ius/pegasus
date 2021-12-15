@@ -10,17 +10,16 @@
 
 namespace ju1ius\Pegasus;
 
-use ju1ius\Pegasus\Grammar\Exception\InvalidRuleType;
-use ju1ius\Pegasus\Grammar\Exception\MissingTraitAlias;
-use ju1ius\Pegasus\Grammar\Exception\TraitNotFound;
-use ju1ius\Pegasus\MetaGrammar\FileParser;
-use ju1ius\Pegasus\MetaGrammar\MetaGrammarTransform;
-use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar\Exception\AnonymousTopLevelExpression;
+use ju1ius\Pegasus\Grammar\Exception\InvalidRuleType;
 use ju1ius\Pegasus\Grammar\Exception\MissingStartRule;
+use ju1ius\Pegasus\Grammar\Exception\MissingTraitAlias;
 use ju1ius\Pegasus\Grammar\Exception\RuleNotFound;
+use ju1ius\Pegasus\Grammar\Exception\TraitNotFound;
 use ju1ius\Pegasus\Grammar\GrammarTraverser;
 use ju1ius\Pegasus\Grammar\Optimizer;
+use ju1ius\Pegasus\MetaGrammar\FileParser;
+use ju1ius\Pegasus\MetaGrammar\MetaGrammarTransform;
 use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
 use ju1ius\Pegasus\Trace\GrammarTracer;
 

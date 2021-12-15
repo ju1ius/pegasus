@@ -10,11 +10,11 @@
 
 namespace ju1ius\Pegasus\Tests\Expression\Application;
 
+use ju1ius\Pegasus\CST\Node;
+use ju1ius\Pegasus\CST\Node\Terminal;
 use ju1ius\Pegasus\Expression\Application\Super;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarBuilder;
-use ju1ius\Pegasus\CST\Node;
-use ju1ius\Pegasus\CST\Node\Terminal;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 /**

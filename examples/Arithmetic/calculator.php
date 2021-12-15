@@ -2,10 +2,9 @@
 require_once __DIR__.'/../../vendor/autoload.php';
 
 use ju1ius\Pegasus\CST\Node;
-use ju1ius\Pegasus\Debug\Debug;
+use ju1ius\Pegasus\CST\Transform;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
-use ju1ius\Pegasus\CST\Transform;
 
 $SYNTAX = file_get_contents(__DIR__ . '/arithmetic.peg');
 

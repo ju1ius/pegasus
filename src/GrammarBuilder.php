@@ -10,11 +10,6 @@
 
 namespace ju1ius\Pegasus;
 
-use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Terminal\Match;
-use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\ExpressionBuilder;
-
 /**
  * This class provides a fluent interface for building grammars.
  *

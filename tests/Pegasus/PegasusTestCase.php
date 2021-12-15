@@ -2,11 +2,11 @@
 
 namespace ju1ius\Pegasus\Tests;
 
+use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\Terminal\GroupMatch;
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\CST\Node;
 use PHPUnit\Framework\TestCase;
 
 

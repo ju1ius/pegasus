@@ -11,15 +11,14 @@
 namespace ju1ius\Pegasus\Tests\Optimization\Match;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Terminal\Match;
-use ju1ius\Pegasus\Expression\Combinator\OneOf;
 use ju1ius\Pegasus\Expression\Application\Reference;
+use ju1ius\Pegasus\Expression\Combinator\OneOf;
 use ju1ius\Pegasus\Expression\Decorator\Ignore;
+use ju1ius\Pegasus\Expression\Terminal\Match;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinPredicateOrNestedMatch;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\GrammarBuilder;
-use ju1ius\Pegasus\Tests\Optimization\OptimizationTestCase;
 
 class JoinPredicateOrNestedMatchTest extends RegExpOptimizationTestCase
 {

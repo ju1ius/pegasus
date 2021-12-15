@@ -2,13 +2,12 @@
 
 namespace ju1ius\Pegasus\Tests\Grammar;
 
-use ju1ius\Pegasus\Expression\Decorator\Label;
-use ju1ius\Pegasus\Expression\Terminal\Literal;
-use ju1ius\Pegasus\Expression\Terminal\Match;
-use ju1ius\Pegasus\Expression\Decorator\OneOrMore;
+use ju1ius\Pegasus\Expression\Application\Super;
 use ju1ius\Pegasus\Expression\Combinator\Sequence;
 use ju1ius\Pegasus\Expression\Decorator\Ignore;
-use ju1ius\Pegasus\Expression\Application\Super;
+use ju1ius\Pegasus\Expression\Decorator\Label;
+use ju1ius\Pegasus\Expression\Decorator\OneOrMore;
+use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Tests\PegasusTestCase;

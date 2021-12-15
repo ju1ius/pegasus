@@ -1,5 +1,4 @@
 import RecusriveDescent from './RecursiveDescent'
-import MemoEntry from './MemoEntry'
 import MemoTable from './MemoTable'
 
 export default class Packrat extends RecusriveDescent {

@@ -3,7 +3,6 @@
 namespace ju1ius\Pegasus\Tests\Compiler\Extension\Php\Expression;
 
 use ju1ius\Pegasus\CST\Node;
-use ju1ius\Pegasus\CST\Node\Composite;
 use ju1ius\Pegasus\CST\Node\Quantifier;
 use ju1ius\Pegasus\CST\Node\Terminal;
 use ju1ius\Pegasus\Parser\Exception\ParseError;

@@ -10,21 +10,21 @@
 
 namespace ju1ius\Pegasus\Tests\MetaGrammar;
 
-use ju1ius\Pegasus\Expression\Decorator\Cut;
-use ju1ius\Pegasus\Expression\Decorator\NodeAction;
+use ju1ius\Pegasus\Expression\Application\Reference;
+use ju1ius\Pegasus\Expression\Application\Super;
 use ju1ius\Pegasus\Expression\Combinator\OneOf;
 use ju1ius\Pegasus\Expression\Combinator\Sequence;
 use ju1ius\Pegasus\Expression\Decorator\Assert;
+use ju1ius\Pegasus\Expression\Decorator\Cut;
+use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Expression\Decorator\Label;
+use ju1ius\Pegasus\Expression\Decorator\NodeAction;
 use ju1ius\Pegasus\Expression\Decorator\Not;
 use ju1ius\Pegasus\Expression\Decorator\OneOrMore;
 use ju1ius\Pegasus\Expression\Decorator\Optional;
 use ju1ius\Pegasus\Expression\Decorator\Quantifier;
-use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Expression\Decorator\Token;
 use ju1ius\Pegasus\Expression\Decorator\ZeroOrMore;
-use ju1ius\Pegasus\Expression\Application\Reference;
-use ju1ius\Pegasus\Expression\Application\Super;
 use ju1ius\Pegasus\Expression\Terminal\BackReference;
 use ju1ius\Pegasus\Expression\Terminal\EOF;
 use ju1ius\Pegasus\Expression\Terminal\Epsilon;
@@ -36,10 +36,10 @@ use ju1ius\Pegasus\Expression\Terminal\Word;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimizer;
 use ju1ius\Pegasus\MetaGrammar;
+use ju1ius\Pegasus\MetaGrammar\MetaGrammarTransform;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
 use ju1ius\Pegasus\Tests\PegasusTestCase;
-use ju1ius\Pegasus\MetaGrammar\MetaGrammarTransform;
 
 /**
  * @author ju1ius <ju1ius@laposte.net>

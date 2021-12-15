@@ -10,12 +10,12 @@
 
 namespace ju1ius\Pegasus\Tests\CST;
 
+use ju1ius\Pegasus\CST\Exception\TransformException;
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\CST\Node\Composite;
 use ju1ius\Pegasus\CST\Node\Decorator;
 use ju1ius\Pegasus\CST\Node\Quantifier;
 use ju1ius\Pegasus\CST\Node\Terminal;
-use ju1ius\Pegasus\CST\Exception\TransformException;
 use ju1ius\Pegasus\CST\Transform;
 use PHPUnit\Framework\TestCase;
 

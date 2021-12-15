@@ -1,7 +1,6 @@
 <?php declare(strict_types=1);
 
 
-use ju1ius\Pegasus\Debug\Debug;
 use ju1ius\Pegasus\Grammar\Optimizer;
 use ju1ius\Pegasus\GrammarBuilder;
 

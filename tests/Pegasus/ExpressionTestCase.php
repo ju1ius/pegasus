@@ -2,9 +2,9 @@
 
 namespace ju1ius\Pegasus\Tests;
 
+use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Parser\RecursiveDescent;
 
