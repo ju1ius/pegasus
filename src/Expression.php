@@ -1,24 +1,15 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * (c) 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus;
 
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Parser\Parser;
-
+use Stringable;
 
 /**
  * An object that matches against a piece of text.
- *
  */
-abstract class Expression
+abstract class Expression implements Stringable
 {
     /**
      * A globally unique identifier for this expression.
@@ -69,12 +60,10 @@ abstract class Expression
      *
      * @return Node|bool
      */
-    abstract public function match(string $text, Parser $parser);
+    abstract public function matches(string $text, Parser $parser): Node|bool;
 
     /**
      * Returns a string representation of this expression, suitable for the right-hand-side of a rule.
-     *
-     * @return string
      */
     abstract public function __toString(): string;
 
@@ -84,10 +73,9 @@ abstract class Expression
     }
 
     /**
-     * @param string $name
      * @return $this
      */
-    public function setName(string $name)
+    public function setName(string $name): static
     {
         $this->name = $name;
 
@@ -99,9 +87,9 @@ abstract class Expression
      *
      * @param bool $depthFirst Whether to yield child expressions before their parent.
      *
-     * @return \Generator
+     * @return iterable<Expression>
      */
-    public function iterate(?bool $depthFirst = false): \Generator
+    public function iterate(?bool $depthFirst = false): iterable
     {
         yield $this;
     }

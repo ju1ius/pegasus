@@ -1,12 +1,4 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * (c) 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Expression\Combinator;
 
@@ -35,10 +27,10 @@ final class OneOf extends Combinator
             }
         }
 
-        return !$capturingChildren || $capturingChildren === count($this->children);
+        return !$capturingChildren || $capturingChildren === \count($this->children);
     }
 
-    public function match(string $text, Parser $parser)
+    public function matches(string $text, Parser $parser): Node|bool
     {
         $start = $parser->pos;
         $capturing = $parser->isCapturing;
@@ -46,7 +38,7 @@ final class OneOf extends Combinator
         $parser->cutStack->push(false);
 
         foreach ($this->children as $child) {
-            $result = $child->match($text, $parser);
+            $result = $child->matches($text, $parser);
             if ($parser->cutStack->top()) {
                 //TODO: should we backtrack in case of failure ?
                 break;
@@ -80,18 +72,12 @@ final class OneOf extends Combinator
         return new Node\Decorator($this->name, $start, $parser->pos, $result);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function __toString(): string
     {
         return implode(' | ', $this->stringChildren());
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function stringChildren()
+    protected function stringChildren(): array
     {
         return array_map(function (Expression $child) {
             return $child instanceof OneOf ? sprintf('(%s)', $child) : (string)$child;

@@ -1,12 +1,4 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * (c) 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Parser;
 
@@ -14,7 +6,6 @@ use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Parser\Memoization\MemoEntry;
 use SplStack;
-
 
 /**
  * A packrat parser implementing Wrath, Douglass & Millstein's algorithm
@@ -50,10 +41,7 @@ class LeftRecursivePackrat extends Packrat
         $this->lrStack = null;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function apply(Expression $expr)
+    public function apply(Expression $expr): Node|bool
     {
         $pos = $this->pos;
 
@@ -71,28 +59,24 @@ class LeftRecursivePackrat extends Packrat
             if (!$lr->head) {
                 $memo->result = $result;
 
-                return $result;
+                return $result ?? false;
             }
             $lr->seed = $result;
 
-            return $this->leftRecursionAnswer($expr, $pos, $memo);
+            return $this->leftRecursionAnswer($expr, $pos, $memo) ?? false;
         }
         $this->pos = $memo->end;
 
         if ($memo->result instanceof LeftRecursion) {
             $this->setupLeftRecursion($expr, $memo->result);
 
-            return $memo->result->seed;
+            return $memo->result->seed ?? false;
         }
 
-        return $memo->result;
+        return $memo->result ?? false;
     }
 
-    /**
-     * @param Expression    $expr
-     * @param LeftRecursion $lr
-     */
-    protected function setupLeftRecursion(Expression $expr, LeftRecursion $lr)
+    protected function setupLeftRecursion(Expression $expr, LeftRecursion $lr): void
     {
         if (!$lr->head) {
             $lr->head = new Head($expr);
@@ -105,14 +89,7 @@ class LeftRecursivePackrat extends Packrat
         }
     }
 
-    /**
-     * @param Expression $expr
-     * @param int        $pos
-     * @param MemoEntry  $memo
-     *
-     * @return Node|LeftRecursion|null
-     */
-    protected function leftRecursionAnswer(Expression $expr, int $pos, MemoEntry $memo)
+    protected function leftRecursionAnswer(Expression $expr, int $pos, MemoEntry $memo): Node|LeftRecursion|null
     {
         $head = $memo->result->head;
         if ($head->rule->id !== $expr->id) {
@@ -126,15 +103,7 @@ class LeftRecursivePackrat extends Packrat
         return $this->growSeedParse($expr, $pos, $memo, $head);
     }
 
-    /**
-     * @param Expression $expr
-     * @param int        $pos
-     * @param MemoEntry  $memo
-     * @param Head       $head
-     *
-     * @return Node|LeftRecursion|null
-     */
-    protected function growSeedParse(Expression $expr, int $pos, MemoEntry $memo, Head $head)
+    protected function growSeedParse(Expression $expr, int $pos, MemoEntry $memo, Head $head): Node|LeftRecursion|null
     {
         $this->isGrowingSeedParse = true;
         $this->heads[$pos] = $head;

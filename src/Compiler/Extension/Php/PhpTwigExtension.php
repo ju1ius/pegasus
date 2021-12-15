@@ -1,35 +1,26 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * (c) 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Compiler\Extension\Php;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Utils\Str;
 use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 use Twig\TwigFunction;
 
 class PhpTwigExtension extends AbstractExtension
 {
-    private PhpCompiler $compiler;
-
-    public function __construct(PhpCompiler $compiler)
-    {
-        $this->compiler = $compiler;
+    public function __construct(
+        private PhpCompiler $compiler
+    ) {
     }
 
-    public function getName()
+    public function getName(): string
     {
         return 'pegasus-php';
     }
 
-    public function getFunctions()
+    public function getFunctions(): array
     {
         return [
             new TwigFunction('repr', [$this, 'repr']),
@@ -43,27 +34,19 @@ class PhpTwigExtension extends AbstractExtension
         ];
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getFilters()
+    public function getFilters(): array
     {
         return [
-            new \Twig_Filter('escape_comment', [$this, 'escapeBlockComment']),
+            new TwigFilter('escape_comment', [$this, 'escapeBlockComment']),
         ];
     }
 
-    /**
-     * @param mixed $value
-     *
-     * @return string
-     */
-    public function repr($value)
+    public function repr(mixed $value): string
     {
         if ($value === null) {
             return 'null';
         }
-        if (is_array($value)) {
+        if (\is_array($value)) {
             $out = '[';
             $first = true;
             foreach ($value as $k => $v) {
@@ -83,39 +66,24 @@ class PhpTwigExtension extends AbstractExtension
         return var_export($value, true);
     }
 
-    /**
-     * @param string $pattern
-     *
-     * @return string
-     */
-    public function reprRegexp($pattern)
+    public function reprRegexp(string $pattern): string
     {
         $pattern = str_replace('\\\\', '\\\\\\\\', $pattern);
 
         return sprintf("'%s'", addcslashes($pattern, "'"));
     }
 
-    /**
-     * @param string $value
-     *
-     * @return string
-     */
-    public function escapeBlockComment($value)
+    public function escapeBlockComment(string $value): string
     {
         return str_replace('*/', '* /', $value);
     }
 
-    /**
-     * @param Expression $expr
-     *
-     * @return string
-     */
-    public function getResultVariableName(Expression $expr)
+    public function getResultVariableName(Expression $expr): string
     {
         return sprintf('$result_%s', $expr->id);
     }
 
-    public function getExpressionComment(Expression $expr, $msg = '')
+    public function getExpressionComment(Expression $expr, string $msg = ''): string
     {
         $class = Str::className($expr);
 
@@ -128,17 +96,12 @@ class PhpTwigExtension extends AbstractExtension
         );
     }
 
-    /**
-     * @param Expression $expr
-     *
-     * @return string
-     */
-    public function getPositionVariableName(Expression $expr)
+    public function getPositionVariableName(Expression $expr): string
     {
         return sprintf('$pos_%s', $expr->id);
     }
 
-    public function renderFailure(string $rule, Expression $expr, string $pos = '$this->pos')
+    public function renderFailure(string $rule, Expression $expr, string $pos = '$this->pos'): string
     {
         return $this->renderHelper('failure', [
             'rule' => $rule,
@@ -147,17 +110,17 @@ class PhpTwigExtension extends AbstractExtension
         ]);
     }
 
-    public function renderStartNonCapturing(Expression $expr)
+    public function renderStartNonCapturing(Expression $expr): string
     {
         return $this->renderHelper('start_non_capturing', ['expr' => $expr]);
     }
 
-    public function renderEndNonCapturing(Expression $expr)
+    public function renderEndNonCapturing(Expression $expr): string
     {
         return $this->renderHelper('end_non_capturing', ['expr' => $expr]);
     }
 
-    private function renderHelper(string $helper, array $args)
+    private function renderHelper(string $helper, array $args): string
     {
         $template = sprintf('helper/%s.twig', $helper);
         return rtrim($this->compiler->renderTemplate($template, $args));

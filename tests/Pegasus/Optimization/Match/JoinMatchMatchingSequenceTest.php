@@ -1,34 +1,20 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * © 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Tests\Optimization\Match;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Application\Reference;
 use ju1ius\Pegasus\Expression\Combinator\Sequence;
-use ju1ius\Pegasus\Expression\Terminal\Match;
+use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinMatchMatchingSequence;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\GrammarBuilder;
 
-/**
- * @author ju1ius <ju1ius@laposte.net>
- */
 class JoinMatchMatchingSequenceTest extends RegExpOptimizationTestCase
 {
     /**
      * @dataProvider provideTestApply
-     *
-     * @param Grammar    $input
-     * @param Expression $expected
      */
     public function testApply(Grammar $input, Expression $expected)
     {
@@ -38,7 +24,7 @@ class JoinMatchMatchingSequenceTest extends RegExpOptimizationTestCase
         $this->assertExpressionEquals($expected, $result);
     }
 
-    public function provideTestApply()
+    public function provideTestApply(): iterable
     {
         yield 'Joins a sequence of only matches' => [
             GrammarBuilder::create()->rule('test')->sequence()
@@ -46,7 +32,7 @@ class JoinMatchMatchingSequenceTest extends RegExpOptimizationTestCase
                 ->match('b')
                 ->match('c')
                 ->getGrammar(),
-            new Match('(?>a)(?>b)(?>c)', [], 'test')
+            new NonCapturingRegExp('(?>a)(?>b)(?>c)', [], 'test'),
         ];
         yield 'Joins a sequence of only matches with flags' => [
             GrammarBuilder::create()->rule('test')->sequence()
@@ -54,7 +40,7 @@ class JoinMatchMatchingSequenceTest extends RegExpOptimizationTestCase
                 ->match('b', ['m'])
                 ->match('c')
                 ->getGrammar(),
-            new Match('(?>(?i:a))(?>(?m:b))(?>c)', [], 'test')
+            new NonCapturingRegExp('(?>(?i:a))(?>(?m:b))(?>c)', [], 'test'),
         ];
         yield 'Joins a sequence of literals' => [
             GrammarBuilder::create()->rule('test')->sequence()
@@ -62,7 +48,7 @@ class JoinMatchMatchingSequenceTest extends RegExpOptimizationTestCase
                 ->literal('c?')
                 ->literal('{d}')
                 ->getGrammar(),
-            new Match('(?>a\/b)(?>c\?)(?>\{d\})', [], 'test')
+            new NonCapturingRegExp('(?>a\/b)(?>c\?)(?>\{d\})', [], 'test'),
         ];
         yield 'Joins a sequence of literals or matches' => [
             GrammarBuilder::create()->rule('test')->sequence()
@@ -70,7 +56,7 @@ class JoinMatchMatchingSequenceTest extends RegExpOptimizationTestCase
                 ->match('c+|d')
                 ->literal('baz')
                 ->getGrammar(),
-            new Match('(?>foo\/bar)(?>c+|d)(?>baz)', [], 'test')
+            new NonCapturingRegExp('(?>foo\/bar)(?>c+|d)(?>baz)', [], 'test'),
         ];
         yield 'Joins consecutive matches before something else' => [
             GrammarBuilder::create()->rule('test')->sequence()
@@ -79,9 +65,9 @@ class JoinMatchMatchingSequenceTest extends RegExpOptimizationTestCase
                 ->ref('c')
                 ->getGrammar(),
             new Sequence([
-                new Match('(?>(?i:a))(?>b)'),
+                new NonCapturingRegExp('(?>(?i:a))(?>b)'),
                 new Reference('c'),
-            ], 'test')
+            ], 'test'),
         ];
         yield 'Joins consecutive matches after something else' => [
             GrammarBuilder::create()->rule('test')->sequence()
@@ -91,28 +77,23 @@ class JoinMatchMatchingSequenceTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new Sequence([
                 new Reference('c'),
-                new Match('(?>(?i:a))(?>b)'),
-            ], 'test')
+                new NonCapturingRegExp('(?>(?i:a))(?>b)'),
+            ], 'test'),
         ];
     }
 
     /**
-     * @param Grammar $input
-     * @param         $context
-     * @param bool    $applies
-     *
-     * @throws Grammar\Exception\MissingStartRule
      * @dataProvider provideTestAppliesTo
      */
-    public function testAppliesTo(Grammar $input, $context, $applies)
+    public function testAppliesTo(Grammar $input, int $contextType, bool $applies)
     {
-        $ctx = OptimizationContext::of($input, $context);
+        $ctx = OptimizationContext::of($input, $contextType);
         $optim = $this->createOptimization(JoinMatchMatchingSequence::class);
         $result = $optim->willPostProcessExpression($input->getStartExpression(), $ctx);
         $this->assertSame($applies, $result);
     }
 
-    public function provideTestAppliesTo()
+    public function provideTestAppliesTo(): iterable
     {
         yield 'A sequence of matches in a matching context' => [
             GrammarBuilder::create()->rule('test')->sequence()
@@ -121,7 +102,7 @@ class JoinMatchMatchingSequenceTest extends RegExpOptimizationTestCase
                 ->match('c')
                 ->getGrammar(),
             OptimizationContext::TYPE_MATCHING,
-            true
+            true,
         ];
         yield 'A sequence of matches in a capturing context' => [
             GrammarBuilder::create()->rule('test')->sequence()
@@ -130,7 +111,7 @@ class JoinMatchMatchingSequenceTest extends RegExpOptimizationTestCase
                 ->match('c')
                 ->getGrammar(),
             OptimizationContext::TYPE_CAPTURING,
-            false
+            false,
         ];
         yield 'Consecutive matches before something else' => [
             GrammarBuilder::create()->rule('test')->sequence()
@@ -139,7 +120,7 @@ class JoinMatchMatchingSequenceTest extends RegExpOptimizationTestCase
                 ->ref('c')
                 ->getGrammar(),
             OptimizationContext::TYPE_MATCHING,
-            true
+            true,
         ];
         yield 'Consecutive matches after something else' => [
             GrammarBuilder::create()->rule('test')->sequence()
@@ -148,16 +129,16 @@ class JoinMatchMatchingSequenceTest extends RegExpOptimizationTestCase
                 ->match('b')
                 ->getGrammar(),
             OptimizationContext::TYPE_MATCHING,
-            true
+            true,
         ];
         yield 'A sequence with only one match' => [
             GrammarBuilder::create()->rule('test')->sequence()
                 ->ref('a')
                 ->match('b')
                 ->ref('c')
-            ->getGrammar(),
+                ->getGrammar(),
             OptimizationContext::TYPE_MATCHING,
-            false
+            false,
         ];
         yield 'Non-consecutive matches' => [
             GrammarBuilder::create()->rule('test')->sequence()
@@ -166,7 +147,7 @@ class JoinMatchMatchingSequenceTest extends RegExpOptimizationTestCase
                 ->match('c')
                 ->getGrammar(),
             OptimizationContext::TYPE_MATCHING,
-            false
+            false,
         ];
         yield 'A non sequence' => [
             GrammarBuilder::create()->rule('test')->oneOf()
@@ -175,7 +156,7 @@ class JoinMatchMatchingSequenceTest extends RegExpOptimizationTestCase
                 ->match('c')
                 ->getGrammar(),
             OptimizationContext::TYPE_MATCHING,
-            false
+            false,
         ];
     }
 }

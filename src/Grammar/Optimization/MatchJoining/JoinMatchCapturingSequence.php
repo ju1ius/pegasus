@@ -1,12 +1,4 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * © 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Grammar\Optimization\MatchJoining;
 
@@ -16,33 +8,23 @@ use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Expression\Terminal\GroupMatch;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
-use ju1ius\Pegasus\Expression\Terminal\Match;
+use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\Utils\Iter;
 
 /**
  * @todo handle literals
- *
- * @author ju1ius <ju1ius@laposte.net>
  */
 final class JoinMatchCapturingSequence extends MatchJoiningOptimization
 {
-    /**
-     * @inheritDoc
-     */
     public function willPostProcessExpression(Expression $expr, OptimizationContext $context): bool
     {
         return $context->isCapturing()
             && $expr instanceof Sequence
             && !$this->disqualifyingCaptures($expr)
-            && Iter::someConsecutive(function ($child) {
-                return $this->isEligibleChild($child);
-            }, 2, $expr);
+            && Iter::someConsecutive($this->isEligibleChild(...), 2, $expr);
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function isEligibleChild(Expression $child): bool
     {
         return parent::isEligibleChild($child)
@@ -50,14 +32,11 @@ final class JoinMatchCapturingSequence extends MatchJoiningOptimization
             || ($child instanceof Ignore && parent::isEligibleChild($child[0]));
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function createPatterns(array $matches): array
     {
         $groupCount = 0;
         $patterns = array_map(function ($expr) use(&$groupCount) {
-            if ($expr instanceof Match || $expr instanceof Literal) {
+            if ($expr instanceof NonCapturingRegExp || $expr instanceof Literal) {
                 $groupCount++;
                 return sprintf('(%s)', $this->manipulator->patternFor($expr));
             }
@@ -77,22 +56,16 @@ final class JoinMatchCapturingSequence extends MatchJoiningOptimization
         return ['patterns' => $patterns, 'group_count' => $groupCount];
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function joinPatterns(array $matchInfo)
+    protected function joinPatterns(array $matchInfo): array
     {
         $matchInfo['pattern'] = implode('', $matchInfo['patterns']);
 
         return $matchInfo;
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function createMatch($matchInfo)
+    protected function createMatch($matchInfo): GroupMatch|Ignore
     {
-        $match = new Match($matchInfo['pattern']);
+        $match = new NonCapturingRegExp($matchInfo['pattern']);
         if (!$matchInfo['group_count']) {
             return new Ignore($match);
         }
@@ -100,19 +73,15 @@ final class JoinMatchCapturingSequence extends MatchJoiningOptimization
         return new GroupMatch($match, $matchInfo['group_count']);
     }
 
-    private function disqualifyingCaptures(Composite $expr)
+    private function disqualifyingCaptures(Composite $expr): bool
     {
         return (
-            $expr->some(function (Expression $child) {
-                return $child->isCapturing() && $this->isEligibleChild($child);
-            })
-            && $expr->some(function (Expression $child) {
-                return $this->isCaptureIncompatible($child);
-            })
+            $expr->some(fn(Expression $child) => $child->isCapturing() && $this->isEligibleChild($child))
+            && $expr->some($this->isCaptureIncompatible(...))
         );
     }
 
-    private function isCaptureIncompatible(Expression $child)
+    private function isCaptureIncompatible(Expression $child): bool
     {
         return $child->isCapturing() && !$this->isEligibleChild($child);
     }

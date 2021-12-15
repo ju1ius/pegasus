@@ -1,12 +1,4 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * (c) 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Parser;
 
@@ -14,7 +6,7 @@ use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Trace\Trace;
-
+use SplStack;
 
 abstract class Parser
 {
@@ -47,7 +39,7 @@ abstract class Parser
     /**
      * @internal
      */
-    public \SplStack $cutStack;
+    public SplStack $cutStack;
 
     /**
      * Flag that can be set by expressions to signal whether their children
@@ -65,9 +57,9 @@ abstract class Parser
     /**
      * The stack of currently applied grammar rules.
      *
-     * @var \SplStack.<Expression>
+     * @var SplStack<Expression>
      */
-    protected $applicationStack;
+    protected SplStack $applicationStack;
 
     public function __construct(Grammar $grammar)
     {
@@ -123,7 +115,7 @@ abstract class Parser
         gc_disable();
 
         $result = $this->apply($this->grammar[$startRule]);
-        $parsedFully = $this->pos === strlen($text);
+        $parsedFully = $this->pos === \strlen($text);
 
         if (!$result || (!$parsedFully && !$allowPartial)) {
             $this->trace($startPos, $startRule);
@@ -149,35 +141,24 @@ abstract class Parser
 
     /**
      * Applies a grammar rule.
-     *
      * This is called internally by `Reference` and `Super` expressions.
-     *
      * @internal
-     *
-     * @param Expression $expr
-     * @return Node|bool
      */
-    abstract public function apply(Expression $expr);
+    abstract public function apply(Expression $expr): Node|bool;
 
     /**
      * Evaluates an expression.
-     *
-     * @param Expression $expr
-     *
-     * @return Node|bool
      */
-    final public function evaluate(Expression $expr)
+    final public function evaluate(Expression $expr): Node|bool
     {
-        $result = $expr->match($this->source, $this);
+        $result = $expr->matches($this->source, $this);
 
         return $result;
     }
 
     /**
      * Called by Trace expressions before their child rule is evaluated
-     *
      * @internal
-     * @param Expression $expr
      */
     public function enterTrace(Expression $expr): void
     {
@@ -187,12 +168,11 @@ abstract class Parser
 
     /**
      * Called by Trace expressions after their child rule is evaluated
-     *
      * @internal
      * @param Expression $expr The expression being traced
      * @param Node|true|null $result The result of evaluating the traced expression
      */
-    public function leaveTrace(Expression $expr, $result): void
+    public function leaveTrace(Expression $expr, Node|bool $result): void
     {
         if (!$result) {
             $this->trace->recordFailure($expr, $this->pos);
@@ -204,7 +184,6 @@ abstract class Parser
 
     /**
      * @internal
-     * @param int $position
      */
     public function cut(int $position): void
     {
@@ -216,7 +195,7 @@ abstract class Parser
     {
         $this->bindings = [];
         $this->trace = new Trace($this->source);
-        $this->cutStack = new \SplStack();
+        $this->cutStack = new SplStack();
         $this->cutStack->push(false);
     }
 
@@ -226,7 +205,7 @@ abstract class Parser
         //$this->cutStack = null;
     }
 
-    protected function trace(int $pos, ?string $startRule)
+    protected function trace(int $pos, ?string $startRule): void
     {
         $startRule = $startRule ?: $this->grammar->getStartRule();
 
@@ -234,7 +213,7 @@ abstract class Parser
         $this->pos = $pos;
         $this->isCapturing = false;
         $this->bindings = [];
-        $this->cutStack = new \SplStack();
+        $this->cutStack = new SplStack();
         $this->cutStack->push(false);
 
         $this->beforeTrace();

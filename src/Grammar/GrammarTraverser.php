@@ -1,12 +1,4 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * (c) 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Grammar;
 
@@ -15,32 +7,25 @@ use ju1ius\Pegasus\Expression\Application\Reference;
 use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Exception\SelfReferencingRule;
+use SplObjectStorage;
 
 class GrammarTraverser implements GrammarTraverserInterface
 {
     /**
-     * @var \SplObjectStorage|GrammarVisitorInterface[]
+     * @var SplObjectStorage<GrammarVisitorInterface>
      */
-    private $visitors;
-
-    /**
-     * @var bool
-     */
-    private $cloneExpressions;
+    private SplObjectStorage $visitors;
 
     /**
      * @param bool $cloneExpressions Whether expressions must be cloned before traversal.
      */
-    public function __construct(bool $cloneExpressions = true)
-    {
-        $this->cloneExpressions = $cloneExpressions;
-        $this->visitors = new \SplObjectStorage();
+    public function __construct(
+        private bool $cloneExpressions = true
+    ) {
+        $this->visitors = new SplObjectStorage();
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function addVisitor(GrammarVisitorInterface ...$visitors)
+    public function addVisitor(GrammarVisitorInterface ...$visitors): static
     {
         foreach ($visitors as $visitor) {
             $this->visitors->attach($visitor);
@@ -49,10 +34,7 @@ class GrammarTraverser implements GrammarTraverserInterface
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function removeVisitor(GrammarVisitorInterface ...$visitors)
+    public function removeVisitor(GrammarVisitorInterface ...$visitors): static
     {
         foreach ($visitors as $visitor) {
             $this->visitors->detach($visitor);
@@ -61,9 +43,6 @@ class GrammarTraverser implements GrammarTraverserInterface
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function traverse(Grammar $grammar)
     {
         foreach ($this->visitors as $visitor) {
@@ -129,7 +108,7 @@ class GrammarTraverser implements GrammarTraverserInterface
         }
 
         if ($expr instanceof Composite) {
-            $childCount = count($expr);
+            $childCount = \count($expr);
             foreach ($expr as $i => $child) {
                 if (null !== $result = $this->traverseExpression($grammar, $child, $i, $i === $childCount - 1)) {
                     $expr[$i] = $result;

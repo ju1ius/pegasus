@@ -1,12 +1,4 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * © 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Expression\Decorator;
 
@@ -16,11 +8,8 @@ use ju1ius\Pegasus\Expression\Combinator\OneOf;
 use ju1ius\Pegasus\Expression\Decorator;
 use ju1ius\Pegasus\Parser\Parser;
 
-
 /**
  * A sequence that must have a name, used to create "inline" rules.
- *
- * @author ju1ius <ju1ius@laposte.net>
  */
 final class NodeAction extends Decorator
 {
@@ -43,14 +32,11 @@ final class NodeAction extends Decorator
         return $this->label;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function match(string $text, Parser $parser)
+    public function matches(string $text, Parser $parser): Node|bool
     {
         $start = $parser->pos;
         $capturing = $parser->isCapturing;
-        if ($result = $this->children[0]->match($text, $parser)) {
+        if ($result = $this->children[0]->matches($text, $parser)) {
             if (!$capturing) {
                 return $result;
             }
@@ -69,9 +55,6 @@ final class NodeAction extends Decorator
         return false;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function __toString(): string
     {
         $child = $this->children[0];

@@ -5,7 +5,6 @@ namespace ju1ius\Pegasus\Grammar\Exception;
 
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Utils\Str;
 
 
 class InvalidRuleType extends GrammarException
@@ -15,7 +14,7 @@ class InvalidRuleType extends GrammarException
         $message = sprintf(
             'Expected an instance of `%s`,  but got: `%s`',
             Expression::class,
-            Str::getType($value)
+            get_debug_type($value)
         );
 
         parent::__construct($message);

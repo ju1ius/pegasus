@@ -2,25 +2,17 @@
 
 namespace ju1ius\Pegasus\Expression\Terminal;
 
-use ju1ius\Pegasus\CST\Node;
-use ju1ius\Pegasus\Expression\Terminal;
+use ju1ius\Pegasus\CST\Node\Terminal;
+use ju1ius\Pegasus\Expression\TerminalExpression;
 use ju1ius\Pegasus\Parser\Exception\UndefinedBinding;
 use ju1ius\Pegasus\Parser\Parser;
 
-
-/**
- * @author ju1ius
- */
-final class BackReference extends Terminal
+final class BackReference extends TerminalExpression
 {
-    /**
-     * @var string
-     */
-    private $identifier;
-
-    public function __construct(string $identifier, string $name = '')
-    {
-        $this->identifier = $identifier;
+    public function __construct(
+        private string $identifier,
+        string $name = ''
+    ) {
         parent::__construct($name);
     }
 
@@ -30,11 +22,9 @@ final class BackReference extends Terminal
     }
 
     /**
-     * @inheritdoc
-     *
      * @todo What if the binding is equal to the empty string ?
      */
-    public function match(string $text, Parser $parser)
+    public function matches(string $text, Parser $parser): Terminal|bool
     {
         if (!isset($parser->bindings[$this->identifier])) {
             throw new UndefinedBinding($this->identifier, $parser->bindings);
@@ -42,14 +32,14 @@ final class BackReference extends Terminal
 
         $start = $parser->pos;
         $pattern = $parser->bindings[$this->identifier];
-        $length = strlen($pattern);
+        $length = \strlen($pattern);
 
         if ($pattern === substr($text, $start, $length)) {
             $end = $parser->pos += $length;
-
-            return $parser->isCapturing ?
-                new Node\Terminal($this->name, $start, $end, $pattern)
-                : true;
+            return match ($parser->isCapturing) {
+                true => new Terminal($this->name, $start, $end, $pattern),
+                false => true,
+            };
         }
         return false;
     }

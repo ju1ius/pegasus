@@ -7,7 +7,7 @@ use ju1ius\Pegasus\CST\Node\Quantifier;
 use ju1ius\Pegasus\CST\Node\Terminal;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
-use ju1ius\Pegasus\Expression\Terminal\Match;
+use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class OptionalTest extends ExpressionTestCase
@@ -20,35 +20,37 @@ class OptionalTest extends ExpressionTestCase
         $expr = new Expression\Decorator\Optional($child, '?');
         $this->assertNodeEquals(
             $expected,
-            $this->parse($expr, ...$match_args)
+            $this->parse($expr, ...$match_args),
+            (string)$expected,
         );
     }
-    public function provideTestMatch()
+
+    public function provideTestMatch(): iterable
     {
         yield [
             new Literal('foo'),
             ['foo'],
-            new Quantifier('?', 0, 3, [new Terminal('', 0, 3, 'foo')], true)
+            new Quantifier('?', 0, 3, [new Terminal('', 0, 3, 'foo')], true),
         ];
         yield [
             new Literal('foo'),
             ['bar'],
-            new Quantifier('?', 0, 0, [], true)
+            new Quantifier('?', 0, 0, [], true),
         ];
         yield [
-            new Match('[\w-]+'),
+            new NonCapturingRegExp('[\w-]+'),
             ['d-o_0-b'],
-            new Quantifier('?', 0, 7, [new Terminal('', 0, 7, 'd-o_0-b')], true)
+            new Quantifier('?', 0, 7, [new Terminal('', 0, 7, 'd-o_0-b')], true),
         ];
         yield [
-            new Match('[\w-]+'),
+            new NonCapturingRegExp('[\w-]+'),
             ['$_o_$'],
-            new Quantifier('?', 0, 0, [], true)
+            new Quantifier('?', 0, 0, [], true),
         ];
         yield [
-            new Match('[\w-]+'),
+            new NonCapturingRegExp('[\w-]+'),
             ['micro$oft'],
-            new Quantifier('?', 0, 5, [new Terminal('', 0, 5, 'micro')], true)
+            new Quantifier('?', 0, 5, [new Terminal('', 0, 5, 'micro')], true),
         ];
     }
 }

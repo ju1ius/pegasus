@@ -54,11 +54,11 @@ final class Trace implements \IteratorAggregate
         $entry = new TraceEntry($expr, $this->stack->count());
 
         if ($this->stack->isEmpty()) {
-            $entry->index = count($this->entries);
+            $entry->index = \count($this->entries);
             $this->entries[] = $entry;
         } else {
             $top = $this->stack->top();
-            $entry->index = count($top->children);
+            $entry->index = \count($top->children);
             $entry->parent = $top;
             $top->children[] = $entry;
         }
@@ -114,7 +114,7 @@ final class Trace implements \IteratorAggregate
             $expected[] = $expr->getName() ?: (string)$expr;
         }
 
-        $length = count($expected);
+        $length = \count($expected);
         if (!$length) {
             return '';
         }

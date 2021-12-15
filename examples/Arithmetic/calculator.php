@@ -6,8 +6,6 @@ use ju1ius\Pegasus\CST\Transform;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
 
-$SYNTAX = file_get_contents(__DIR__ . '/arithmetic.peg');
-
 final class Calculator extends Transform
 {
     /**
@@ -60,8 +58,8 @@ final class Calculator extends Transform
 //Debug::dump($tree);
 //$t = new MetaGrammarTransform();
 //$grammar = $t->traverse($tree);
-
-$grammar = Grammar::fromSyntax($SYNTAX);
+$syntax = file_get_contents(__DIR__ . '/arithmetic.peg');
+$grammar = Grammar::fromSyntax($syntax);
 //echo $grammar, "\n";
 //Debug::dump($grammar);
 

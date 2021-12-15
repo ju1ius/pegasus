@@ -1,34 +1,20 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * © 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Tests\Optimization\Match;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Application\Reference;
 use ju1ius\Pegasus\Expression\Combinator\Sequence;
-use ju1ius\Pegasus\Expression\Terminal\Match;
+use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinPredicateBareMatch;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\GrammarBuilder;
 
-/**
- * @author ju1ius <ju1ius@laposte.net>
- */
 class JoinPredicateBareMatchTest extends RegExpOptimizationTestCase
 {
     /**
      * @dataProvider provideTestApply
-     *
-     * @param Grammar    $input
-     * @param Expression $expected
      */
     public function testApply(Grammar $input, Expression $expected)
     {
@@ -42,7 +28,7 @@ class JoinPredicateBareMatchTest extends RegExpOptimizationTestCase
         $this->assertExpressionEquals($expected, $result, 'In matching context');
     }
 
-    public function provideTestApply()
+    public function provideTestApply(): iterable
     {
         yield 'Sequence with a Match before an Assert of a Match' => [
             GrammarBuilder::create()->rule('test')->sequence()
@@ -53,7 +39,7 @@ class JoinPredicateBareMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new Sequence([
                 new Reference('a'),
-                new Match('(?>b)(?=c)'),
+                new NonCapturingRegExp('(?>b)(?=c)'),
                 new Reference('d'),
             ], 'test')
         ];
@@ -66,7 +52,7 @@ class JoinPredicateBareMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new Sequence([
                 new Reference('a'),
-                new Match('(?>b)(?!c)'),
+                new NonCapturingRegExp('(?>b)(?!c)'),
                 new Reference('d'),
             ], 'test')
         ];
@@ -79,7 +65,7 @@ class JoinPredicateBareMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new Sequence([
                 new Reference('a'),
-                new Match('(?>b)\z'),
+                new NonCapturingRegExp('(?>b)\z'),
                 new Reference('c'),
             ], 'test')
         ];
@@ -92,7 +78,7 @@ class JoinPredicateBareMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new Sequence([
                 new Reference('a'),
-                new Match('(?=b)(?>c)'),
+                new NonCapturingRegExp('(?=b)(?>c)'),
                 new Reference('d'),
             ], 'test')
         ];
@@ -105,7 +91,7 @@ class JoinPredicateBareMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new Sequence([
                 new Reference('a'),
-                new Match('(?!b)(?>c)'),
+                new NonCapturingRegExp('(?!b)(?>c)'),
                 new Reference('d'),
             ], 'test')
         ];
@@ -113,11 +99,8 @@ class JoinPredicateBareMatchTest extends RegExpOptimizationTestCase
 
     /**
      * @dataProvider provideTestAppliesTo
-     *
-     * @param Grammar $input
-     * @param bool    $applies
      */
-    public function testAppliesTo(Grammar $input, $applies)
+    public function testAppliesTo(Grammar $input, bool $applies)
     {
         $optim = $this->createOptimization(JoinPredicateBareMatch::class);
         $expr = $input->getStartExpression();
@@ -130,7 +113,7 @@ class JoinPredicateBareMatchTest extends RegExpOptimizationTestCase
         $this->assertSame($applies, $result, 'In matching context');
     }
 
-    public function provideTestAppliesTo()
+    public function provideTestAppliesTo(): iterable
     {
         yield 'Sequence with a Match before an Assert of a Match' => [
             GrammarBuilder::create()->rule('test')->sequence()

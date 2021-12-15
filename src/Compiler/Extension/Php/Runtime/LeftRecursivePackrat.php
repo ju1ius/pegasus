@@ -1,16 +1,10 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * (c) 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Compiler\Extension\Php\Runtime;
 
+use Closure;
 use ju1ius\Pegasus\CST\Node;
+use SplStack;
 
 /**
  * A packrat parser implementing Wrath, Douglass & Millstein's algorithm
@@ -21,37 +15,38 @@ class LeftRecursivePackrat extends Packrat
     /**
      * @var Head[]
      */
-    protected $heads;
+    protected array $heads;
 
     /**
-     * @var \SplStack<LeftRecursion>
+     * @var SplStack<LeftRecursion>
      */
-    protected $lrStack;
+    protected SplStack $lrStack;
 
-    protected $isGrowingSeedParse = false;
+    protected bool $isGrowingSeedParse = false;
 
     /**
-     * @var \Closure[]
+     * @var callable[]
      */
-    private $matchers;
+    private array $matchers;
 
-    protected function beforeParse()
+    protected function beforeParse(): void
     {
         parent::beforeParse();
         if (!$this->matchers) {
             $this->matchers = $this->buildMatchers();
         }
         $this->heads = [];
-        $this->lrStack = new \SplStack();
+        $this->lrStack = new SplStack();
     }
 
-    protected function afterParse($result)
+    protected function afterParse($result): void
     {
         parent::afterParse($result);
-        $this->heads = $this->lrStack = null;
+        $this->heads = [];
+        $this->lrStack = new SplStack();
     }
 
-    protected function cut(int $position)
+    protected function cut(int $position): void
     {
         $this->cutStack->pop();
         $this->cutStack->push(true);
@@ -67,10 +62,7 @@ class LeftRecursivePackrat extends Packrat
         }
     }
 
-    /**
-     * @inheritdoc
-     */
-    protected function apply($rule)
+    protected function apply($rule): Node|bool
     {
         $memo = $this->recall($rule);
 
@@ -89,28 +81,24 @@ class LeftRecursivePackrat extends Packrat
             if (!$lr->head) {
                 $memo->result = $result;
 
-                return $result;
+                return $result ?? false;
             }
             $lr->seed = $result;
 
-            return $this->leftRecursionAnswer($rule, $pos, $memo);
+            return $this->leftRecursionAnswer($rule, $pos, $memo) ?? false;
         }
 
         $this->pos = $memo->end;
         if ($memo->result instanceof LeftRecursion) {
             $this->setupLeftRecursion($rule, $memo->result);
 
-            return $memo->result->seed;
+            return $memo->result->seed ?? false;
         }
 
-        return $memo->result;
+        return $memo->result ?? false;
     }
 
-    /**
-     * @param string        $ruleName
-     * @param LeftRecursion $lr
-     */
-    private function setupLeftRecursion(string $ruleName, LeftRecursion $lr)
+    private function setupLeftRecursion(string $ruleName, LeftRecursion $lr): void
     {
         if (!$lr->head) {
             $lr->head = new Head($ruleName);
@@ -123,14 +111,7 @@ class LeftRecursivePackrat extends Packrat
         }
     }
 
-    /**
-     * @param string    $ruleName
-     * @param int       $position
-     * @param MemoEntry $memo
-     *
-     * @return Node|LeftRecursion|null
-     */
-    private function leftRecursionAnswer(string $ruleName, int $position, MemoEntry $memo)
+    private function leftRecursionAnswer(string $ruleName, int $position, MemoEntry $memo): Node|LeftRecursion|null
     {
         $head = $memo->result->head;
         if ($head->rule !== $ruleName) {
@@ -144,15 +125,7 @@ class LeftRecursivePackrat extends Packrat
         return $this->growSeedParse($ruleName, $position, $memo, $head);
     }
 
-    /**
-     * @param string    $ruleName
-     * @param int       $position
-     * @param MemoEntry $memo
-     * @param Head      $head
-     *
-     * @return Node|LeftRecursion|null
-     */
-    private function growSeedParse(string $ruleName, int $position, MemoEntry $memo, Head $head)
+    private function growSeedParse(string $ruleName, int $position, MemoEntry $memo, Head $head): Node|LeftRecursion|null
     {
         $this->isGrowingSeedParse = true;
         $this->heads[$position] = $head;
@@ -197,14 +170,14 @@ class LeftRecursivePackrat extends Packrat
     }
 
     /**
-     * @return \Closure[]
+     * @return Closure[]
      */
     private function buildMatchers(): array
     {
         $matchers = [];
         $class = new \ReflectionClass($this);
         foreach ($class->getMethods() as $method) {
-            if (strpos($method->name, 'match_') === 0) {
+            if (str_starts_with($method->name, 'match_')) {
                 $ruleName = substr($method->name, 6);
                 $matchers[$ruleName] = $method->getClosure($this);
             }

@@ -1,22 +1,11 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * (c) 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace ju1ius\Pegasus\Expression\Decorator;
 
 use ju1ius\Pegasus\Expression\Decorator;
 use ju1ius\Pegasus\Parser\Parser;
 
-
 /**
  * Expression that skips over what his sub-expression matches.
- *
  * It can dramatically reduce the size of the parse tree.
  */
 final class Ignore extends Decorator
@@ -36,12 +25,12 @@ final class Ignore extends Decorator
         return true;
     }
 
-    public function match(string $text, Parser $parser)
+    public function matches(string $text, Parser $parser): bool
     {
         $capturing = $parser->isCapturing;
         $parser->isCapturing = false;
 
-        $result = $this->children[0]->match($text, $parser);
+        $result = $this->children[0]->matches($text, $parser);
 
         $parser->isCapturing = $capturing;
 

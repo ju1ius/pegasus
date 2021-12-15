@@ -1,12 +1,4 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * © 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Grammar;
 
@@ -17,36 +9,28 @@ use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Expression\Decorator\Not;
 use ju1ius\Pegasus\Expression\Decorator\Token;
 use ju1ius\Pegasus\Grammar;
+use SplObjectStorage;
 
-/**
- * @author ju1ius <ju1ius@laposte.net>
- */
 class OptimizationPass
 {
     /**
-     * @var \SplObjectStorage|Optimization[]
+     * @var SplObjectStorage<Optimization>
      */
-    private $optimizations;
+    private SplObjectStorage $optimizations;
 
-    /**
-     * @var bool
-     */
-    private $cloneExpressions;
-
-    /**
-     * @param bool $cloneExpressions Whether expressions must be cloned before traversal.
-     */
-    public function __construct(bool $cloneExpressions = false)
-    {
-        $this->cloneExpressions = $cloneExpressions;
-        $this->optimizations = new \SplObjectStorage();
+    public function __construct(
+        /**
+         * Whether expressions must be cloned before traversal.
+         */
+        private bool $cloneExpressions = false
+    ) {
+        $this->optimizations = new SplObjectStorage();
     }
 
     /**
-     * @param Optimization[] $optimizations
      * @return $this
      */
-    public function add(Optimization ...$optimizations)
+    public function add(Optimization ...$optimizations): static
     {
         foreach ($optimizations as $optimization) {
             $this->optimizations->attach($optimization);
@@ -56,10 +40,9 @@ class OptimizationPass
     }
 
     /**
-     * @param Optimization[] $optimizations
      * @return $this
      */
-    public function remove(Optimization ...$optimizations)
+    public function remove(Optimization ...$optimizations): static
     {
         foreach ($optimizations as $optimization) {
             $this->optimizations->detach($optimization);
@@ -68,15 +51,9 @@ class OptimizationPass
         return $this;
     }
 
-    /**
-     * @param Grammar             $grammar
-     * @param OptimizationContext $context
-     *
-     * @return Grammar
-     */
     public function process(Grammar $grammar, ?OptimizationContext $context = null): Grammar
     {
-        $context = $context ?: OptimizationContext::of($grammar);
+        $context ??= OptimizationContext::of($grammar);
 
         foreach ($this->optimizations as $optimization) {
             if (null !== $result = $optimization->beforeTraverse($grammar, $context)) {
@@ -102,14 +79,7 @@ class OptimizationPass
         return $grammar;
     }
 
-    /**
-     * @param Grammar             $grammar
-     * @param Expression          $expr
-     * @param OptimizationContext $context
-     *
-     * @return Expression|false|null
-     */
-    protected function processRule(Grammar $grammar, Expression $expr, OptimizationContext $context)
+    protected function processRule(Grammar $grammar, Expression $expr, OptimizationContext $context): Expression|false|null
     {
         foreach ($this->optimizations as $optimization) {
             if ($optimization->willPreProcessRule($grammar, $expr, $context)) {
@@ -143,13 +113,6 @@ class OptimizationPass
         return $expr;
     }
 
-    /**
-     * @param Grammar             $grammar
-     * @param Expression          $expr
-     * @param OptimizationContext $context
-     *
-     * @return Expression
-     */
     protected function processExpression(Grammar $grammar, Expression $expr, OptimizationContext $context): Expression
     {
         if ($this->cloneExpressions) {
@@ -186,22 +149,11 @@ class OptimizationPass
         return $expr;
     }
 
-    /**
-     * @param Expression          $expr
-     * @param OptimizationContext $context
-     *
-     * @return OptimizationContext
-     */
     private function getChildContext(Expression $expr, OptimizationContext $context): OptimizationContext
     {
-        switch (get_class($expr)) {
-            case Assert::class:
-            case Not::class:
-            case Token::class:
-            case Ignore::class:
-                return $context->matching();
-            default:
-                return $context;
-        }
+        return match ($expr::class) {
+            Assert::class, Not::class, Token::class, Ignore::class => $context->matching(),
+            default => $context,
+        };
     }
 }

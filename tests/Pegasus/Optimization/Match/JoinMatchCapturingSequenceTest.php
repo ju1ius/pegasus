@@ -1,12 +1,4 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * © 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Tests\Optimization\Match;
 
@@ -15,22 +7,16 @@ use ju1ius\Pegasus\Expression\Application\Reference;
 use ju1ius\Pegasus\Expression\Combinator\Sequence;
 use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Expression\Terminal\GroupMatch;
-use ju1ius\Pegasus\Expression\Terminal\Match;
+use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinMatchCapturingSequence;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\GrammarBuilder;
 
-/**
- * @author ju1ius <ju1ius@laposte.net>
- */
 class JoinMatchCapturingSequenceTest extends RegExpOptimizationTestCase
 {
     /**
      * @dataProvider provideTestApply
-     *
-     * @param Grammar    $input
-     * @param Expression $expected
      */
     public function testApply(Grammar $input, Expression $expected)
     {
@@ -39,15 +25,15 @@ class JoinMatchCapturingSequenceTest extends RegExpOptimizationTestCase
         $this->assertExpressionEquals($expected, $result);
     }
 
-    public function provideTestApply()
+    public function provideTestApply(): iterable
     {
-        yield 'A ssequence of only skipping matches' => [
+        yield 'A sequence of only skipping matches' => [
             GrammarBuilder::create()->rule('test')->sequence()
                 ->ignore()->match('a')
                 ->ignore()->literal('b')
                 ->ignore()->match('c')
             ->getGrammar(),
-            new Ignore(new Match('(?>a)(?>b)(?>c)'), 'test')
+            new Ignore(new NonCapturingRegExp('(?>a)(?>b)(?>c)'), 'test')
         ];
         yield 'A sequence of skipping matches before something else' => [
             GrammarBuilder::create()->rule('test')->sequence()
@@ -56,7 +42,7 @@ class JoinMatchCapturingSequenceTest extends RegExpOptimizationTestCase
                 ->ref('c')
                 ->getGrammar(),
             new Sequence([
-                new Ignore(new Match('(?>a)(?>b)')),
+                new Ignore(new NonCapturingRegExp('(?>a)(?>b)')),
                 new Reference('c'),
             ], 'test')
         ];
@@ -68,7 +54,7 @@ class JoinMatchCapturingSequenceTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new Sequence([
                 new Reference('a'),
-                new Ignore(new Match('(?>b)(?>c)')),
+                new Ignore(new NonCapturingRegExp('(?>b)(?>c)')),
             ], 'test')
         ];
         yield 'A sequence of only matches' => [
@@ -77,37 +63,34 @@ class JoinMatchCapturingSequenceTest extends RegExpOptimizationTestCase
                 ->literal('b')
                 ->match('c')
                 ->getGrammar(),
-            new GroupMatch(new Match('(a)(b)(c)'), 3, 'test')
+            new GroupMatch(new NonCapturingRegExp('(a)(b)(c)'), 3, 'test')
         ];
         yield 'A sequence of only group matches' => [
             Grammar::fromArray([
                 'test' => new Sequence([
-                    new GroupMatch(new Match('\s*(a)'), 1),
-                    new GroupMatch(new Match('\s*(b)'), 1),
-                    new GroupMatch(new Match('\s*(c)'), 1),
+                    new GroupMatch(new NonCapturingRegExp('\s*(a)'), 1),
+                    new GroupMatch(new NonCapturingRegExp('\s*(b)'), 1),
+                    new GroupMatch(new NonCapturingRegExp('\s*(c)'), 1),
                 ])
             ]),
-            new GroupMatch(new Match('(?>\s*(a))(?>\s*(b))(?>\s*(c))'), 3, 'test')
+            new GroupMatch(new NonCapturingRegExp('(?>\s*(a))(?>\s*(b))(?>\s*(c))'), 3, 'test')
         ];
         yield 'A mix of matches and single-group group matches' => [
             Grammar::fromArray([
                 'test' => new Sequence([
-                    new GroupMatch(new Match('\s*(a)'), 1),
-                    new Match('[+-]'),
-                    new GroupMatch(new Match('\s*(b)'), 1),
+                    new GroupMatch(new NonCapturingRegExp('\s*(a)'), 1),
+                    new NonCapturingRegExp('[+-]'),
+                    new GroupMatch(new NonCapturingRegExp('\s*(b)'), 1),
                 ])
             ]),
-            new GroupMatch(new Match('(?>\s*(a))([+-])(?>\s*(b))'), 3, 'test')
+            new GroupMatch(new NonCapturingRegExp('(?>\s*(a))([+-])(?>\s*(b))'), 3, 'test')
         ];
     }
 
     /**
      * @dataProvider provideTestAppliesTo
-     *
-     * @param Grammar $input
-     * @param bool    $applies
      */
-    public function testAppliesTo(Grammar $input, $applies)
+    public function testAppliesTo(Grammar $input, bool $applies)
     {
         $ctx = OptimizationContext::of($input);
         $optim = $this->createOptimization(JoinMatchCapturingSequence::class);
@@ -115,7 +98,7 @@ class JoinMatchCapturingSequenceTest extends RegExpOptimizationTestCase
         $this->assertSame($applies, $result);
     }
 
-    public function provideTestAppliesTo()
+    public function provideTestAppliesTo(): iterable
     {
         yield 'Sequence of matches before something non-capturing' => [
             GrammarBuilder::create()->rule('test')->sequence()
@@ -168,8 +151,8 @@ class JoinMatchCapturingSequenceTest extends RegExpOptimizationTestCase
         yield 'Sequence of single-group group matches before sthg non-capturing' => [
             Grammar::fromArray([
                 'test' => new Sequence([
-                    new GroupMatch(new Match('a'), 1),
-                    new GroupMatch(new Match('b'), 1),
+                    new GroupMatch(new NonCapturingRegExp('a'), 1),
+                    new GroupMatch(new NonCapturingRegExp('b'), 1),
                     new Ignore(new Reference('c')),
                 ], 'test')
             ]),
@@ -178,8 +161,8 @@ class JoinMatchCapturingSequenceTest extends RegExpOptimizationTestCase
         yield 'Sequence of single-group group matches before sthg capturing' => [
             Grammar::fromArray([
                 'test' => new Sequence([
-                    new GroupMatch(new Match('a'), 1),
-                    new GroupMatch(new Match('b'), 1),
+                    new GroupMatch(new NonCapturingRegExp('a'), 1),
+                    new GroupMatch(new NonCapturingRegExp('b'), 1),
                     new Reference('c'),
                 ], 'test')
             ]),
@@ -189,8 +172,8 @@ class JoinMatchCapturingSequenceTest extends RegExpOptimizationTestCase
             Grammar::fromArray([
                 'test' => new Sequence([
                     new Ignore(new Reference('a')),
-                    new GroupMatch(new Match('b'), 1),
-                    new GroupMatch(new Match('c'), 1),
+                    new GroupMatch(new NonCapturingRegExp('b'), 1),
+                    new GroupMatch(new NonCapturingRegExp('c'), 1),
                 ], 'test')
             ]),
             true
@@ -199,8 +182,8 @@ class JoinMatchCapturingSequenceTest extends RegExpOptimizationTestCase
             Grammar::fromArray([
                 'test' => new Sequence([
                     new Reference('a'),
-                    new GroupMatch(new Match('b'), 1),
-                    new GroupMatch(new Match('c'), 1),
+                    new GroupMatch(new NonCapturingRegExp('b'), 1),
+                    new GroupMatch(new NonCapturingRegExp('c'), 1),
                 ], 'test')
             ]),
             false
@@ -208,8 +191,8 @@ class JoinMatchCapturingSequenceTest extends RegExpOptimizationTestCase
         yield 'Sequence of multi-group group matches before sthg else' => [
             Grammar::fromArray([
                 'test' => new Sequence([
-                    new GroupMatch(new Match('(a)(b)'), 2),
-                    new GroupMatch(new Match('(c)(d)'), 2),
+                    new GroupMatch(new NonCapturingRegExp('(a)(b)'), 2),
+                    new GroupMatch(new NonCapturingRegExp('(c)(d)'), 2),
                     new Reference('e'),
                 ], 'test')
             ]),
@@ -219,8 +202,8 @@ class JoinMatchCapturingSequenceTest extends RegExpOptimizationTestCase
             Grammar::fromArray([
                 'test' => new Sequence([
                     new Reference('a'),
-                    new GroupMatch(new Match('(b)(c)'), 2),
-                    new GroupMatch(new Match('(d)(e)'), 2),
+                    new GroupMatch(new NonCapturingRegExp('(b)(c)'), 2),
+                    new GroupMatch(new NonCapturingRegExp('(d)(e)'), 2),
                 ], 'test')
             ]),
             false

@@ -1,19 +1,11 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * (c) 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Parser;
 
+use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Parser\Memoization\MemoTable;
 use ju1ius\Pegasus\Parser\Memoization\PackratMemoTable;
-
 
 /**
  * A packrat parser implementing Wrath, Douglass & Millstein's algorithm
@@ -61,10 +53,7 @@ class Packrat extends RecursiveDescent
     // and returns the corresponding parse tree node.
     // --------------------------------------------------------------------------------------------------------------
 
-    /**
-     * @inheritdoc
-     */
-    public function apply(Expression $expr)
+    public function apply(Expression $expr): Node|bool
     {
         $pos = $this->pos;
         $memo = $this->memo[$this->isCapturing]->get($pos, $expr);

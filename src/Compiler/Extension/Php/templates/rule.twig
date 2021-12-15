@@ -2,10 +2,8 @@
 {% set use_cache = parser_type is constant('ju1ius\\Pegasus\\Compiler\\Compiler::PARSER_PACKRAT') %}
 /**
  * Matching rule: {{ expr.name }} = {{ expr|escape_comment }}
- *
- * @return Node|true|null
  */
-public function match_{{ expr.name }}()
+public function match_{{ expr.name }}(): Node|bool
 {
 {% if use_cache %}
     $memo = $this->memo[$this->isCapturing][$this->pos]['{{ expr.name }}'] ?? null;
@@ -26,5 +24,5 @@ public function match_{{ expr.name }}()
     $this->cache[$this->isCapturing][$this->pos]['{{ expr.name }}'] = $memo;
 {% endif %}
 
-    return {{ result_var }};
+    return {{ result_var }} ?? false;
 }

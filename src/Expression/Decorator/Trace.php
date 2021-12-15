@@ -1,13 +1,11 @@
 <?php declare(strict_types=1);
 
-
 namespace ju1ius\Pegasus\Expression\Decorator;
 
-
+use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Decorator;
 use ju1ius\Pegasus\Parser\Parser;
-
 
 final class Trace extends Decorator
 {
@@ -18,12 +16,12 @@ final class Trace extends Decorator
         $this->name = $child->name;
     }
 
-    public function match(string $text, Parser $parser)
+    public function matches(string $text, Parser $parser): Node|bool
     {
         $expr = $this->children[0];
 
         $parser->enterTrace($expr);
-        $result = $expr->match($text, $parser);
+        $result = $expr->matches($text, $parser);
         $parser->leaveTrace($expr, $result);
 
         return $result;

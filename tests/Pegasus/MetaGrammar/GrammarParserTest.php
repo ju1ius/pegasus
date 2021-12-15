@@ -1,12 +1,4 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * © 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Tests\MetaGrammar;
 
@@ -26,12 +18,11 @@ use ju1ius\Pegasus\Expression\Decorator\Quantifier;
 use ju1ius\Pegasus\Expression\Decorator\Token;
 use ju1ius\Pegasus\Expression\Decorator\ZeroOrMore;
 use ju1ius\Pegasus\Expression\Terminal\BackReference;
+use ju1ius\Pegasus\Expression\Terminal\CapturingRegExp;
 use ju1ius\Pegasus\Expression\Terminal\EOF;
 use ju1ius\Pegasus\Expression\Terminal\Epsilon;
 use ju1ius\Pegasus\Expression\Terminal\Fail;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
-use ju1ius\Pegasus\Expression\Terminal\Match;
-use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Expression\Terminal\Word;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimizer;
@@ -41,9 +32,6 @@ use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
 use ju1ius\Pegasus\Tests\PegasusTestCase;
 
-/**
- * @author ju1ius <ju1ius@laposte.net>
- */
 class GrammarParserTest extends PegasusTestCase
 {
     private function parseSyntax($syntax, $optimizationLevel = 0, $optimizedMeta = false)
@@ -53,7 +41,7 @@ class GrammarParserTest extends PegasusTestCase
         try {
             $tree = $parser->parse($syntax);
         } catch (ParseError $err) {
-            $this->fail($err);
+            $this->fail($err->getMessage());
         }
         $grammar = (new MetaGrammarTransform())->transform($tree);
         if ($optimizationLevel) {
@@ -65,11 +53,8 @@ class GrammarParserTest extends PegasusTestCase
 
     /**
      * @dataProvider provideTestItParsesTerminalRules
-     *
-     * @param string  $syntax
-     * @param Grammar $expected
      */
-    public function testItParsesTerminalRules($syntax, $expected)
+    public function testItParsesTerminalRules(string $syntax, Grammar $expected)
     {
         $grammar = $this->parseSyntax($syntax);
         $this->assertGrammarEquals($expected, $grammar);
@@ -77,17 +62,14 @@ class GrammarParserTest extends PegasusTestCase
 
     /**
      * @dataProvider provideTestItParsesTerminalRules
-     *
-     * @param string  $syntax
-     * @param Grammar $expected
      */
-    public function testItParsesTerminalRulesWithOptimizedMeta($syntax, $expected)
+    public function testItParsesTerminalRulesWithOptimizedMeta(string $syntax, Grammar $expected)
     {
         $grammar = $this->parseSyntax($syntax, 0, true);
         $this->assertGrammarEquals($expected, $grammar);
     }
 
-    public function provideTestItParsesTerminalRules()
+    public function provideTestItParsesTerminalRules(): iterable
     {
         yield 'double-quoted literal' => [
             'x = "x"',
@@ -107,23 +89,23 @@ class GrammarParserTest extends PegasusTestCase
         ];
         yield 'match' => [
             'x = /x/',
-            Grammar::fromArray(['x' => new Match('x', [], 'x')])
+            Grammar::fromArray(['x' => new CapturingRegExp('x', [], 'x')])
         ];
         yield 'match with escaped delimiter' => [
             'x = /x \/ x/',
-            Grammar::fromArray(['x' => new Match('x \/ x', [], 'x')])
+            Grammar::fromArray(['x' => new CapturingRegExp('x \/ x', [], 'x')])
         ];
         yield 'match with flags' => [
             'x = /x/i',
-            Grammar::fromArray(['x' => new Match('x', ['i'], 'x')])
+            Grammar::fromArray(['x' => new CapturingRegExp('x', ['i'], 'x')])
         ];
         yield 'match non-capturing groups' => [
             'x = /(?:x)(?!y)/',
-            Grammar::fromArray(['x' => new Match('(?:x)(?!y)', [], 'x')])
+            Grammar::fromArray(['x' => new CapturingRegExp('(?:x)(?!y)', [], 'x')])
         ];
         yield 'RegExp' => [
             'x = /x(y)/',
-            Grammar::fromArray(['x' => new RegExp('x(y)', [], 'x')])
+            Grammar::fromArray(['x' => new CapturingRegExp('x(y)', [], 'x')])
         ];
         yield 'Word literal' => [
             'x = `x`',
@@ -176,35 +158,35 @@ class GrammarParserTest extends PegasusTestCase
         yield 'Sequence of matches' => [
             'x = /x/ /y/ /z/',
             Grammar::fromArray(['x' => new Sequence([
-                new Match('x'),
-                new Match('y'),
-                new Match('z'),
+                new CapturingRegExp('x'),
+                new CapturingRegExp('y'),
+                new CapturingRegExp('z'),
             ])])
         ];
         yield 'Choice of matches' => [
             'x = /x/ | /y/ | /z/',
             Grammar::fromArray(['x' => new OneOf([
-                new Match('x'),
-                new Match('y'),
-                new Match('z'),
+                new CapturingRegExp('x'),
+                new CapturingRegExp('y'),
+                new CapturingRegExp('z'),
             ])])
         ];
         yield 'NodeAction of matches' => [
             'x = /x/ /y/ /z/ <= XYZ',
             Grammar::fromArray([
                 'x' => new NodeAction(new Sequence([
-                    new Match('x'),
-                    new Match('y'),
-                    new Match('z'),
+                    new CapturingRegExp('x'),
+                    new CapturingRegExp('y'),
+                    new CapturingRegExp('z'),
                 ]), 'XYZ')
             ])
         ];
         yield 'Choice with named sequence' => [
             'x = /x/ | /y/ <= Y | /z/',
             Grammar::fromArray(['x' => new OneOf([
-                new Match('x'),
-                new NodeAction(new Match('y'), 'Y'),
-                new Match('z'),
+                new CapturingRegExp('x'),
+                new NodeAction(new CapturingRegExp('y'), 'Y'),
+                new CapturingRegExp('z'),
             ])])
         ];
     }
@@ -234,47 +216,47 @@ class GrammarParserTest extends PegasusTestCase
     {
         yield 'Assert of a match' => [
             'x = &/x/',
-            Grammar::fromArray(['x' => new Assert(new Match('x'))])
+            Grammar::fromArray(['x' => new Assert(new CapturingRegExp('x'))])
         ];
         yield 'Not of a match' => [
             'x = !/x/',
-            Grammar::fromArray(['x' => new Not(new Match('x'))])
+            Grammar::fromArray(['x' => new Not(new CapturingRegExp('x'))])
         ];
         yield 'Skip of a match' => [
             'x = ~/x/',
-            Grammar::fromArray(['x' => new Ignore(new Match('x'))])
+            Grammar::fromArray(['x' => new Ignore(new CapturingRegExp('x'))])
         ];
         yield 'Token of a match' => [
             'x = %/x/',
-            Grammar::fromArray(['x' => new Token(new Match('x'))])
+            Grammar::fromArray(['x' => new Token(new CapturingRegExp('x'))])
         ];
         yield 'Labeled match' => [
             'x = a:/x/',
-            Grammar::fromArray(['x' => new Label(new Match('x'), 'a')])
+            Grammar::fromArray(['x' => new Label('a', new CapturingRegExp('x'))])
         ];
         yield 'ZeroOrMore match' => [
             'x = /x/*',
-            Grammar::fromArray(['x' => new ZeroOrMore(new Match('x'))])
+            Grammar::fromArray(['x' => new ZeroOrMore(new CapturingRegExp('x'))])
         ];
         yield 'OneOrMore match' => [
             'x = /x/+',
-            Grammar::fromArray(['x' => new OneOrMore(new Match('x'))])
+            Grammar::fromArray(['x' => new OneOrMore(new CapturingRegExp('x'))])
         ];
         yield 'Optional match' => [
             'x = /x/?',
-            Grammar::fromArray(['x' => new Optional(new Match('x'))])
+            Grammar::fromArray(['x' => new Optional(new CapturingRegExp('x'))])
         ];
         yield 'Exactly 2 match' => [
             'x = /x/{2}',
-            Grammar::fromArray(['x' => new Quantifier(new Match('x'), 2, 2)])
+            Grammar::fromArray(['x' => new Quantifier(new CapturingRegExp('x'), 2, 2)])
         ];
         yield 'At least 2 match' => [
             'x = /x/{2,}',
-            Grammar::fromArray(['x' => new Quantifier(new Match('x'), 2)])
+            Grammar::fromArray(['x' => new Quantifier(new CapturingRegExp('x'), 2)])
         ];
         yield 'Between 2 and 4 match' => [
             'x = /x/{2,4}',
-            Grammar::fromArray(['x' => new Quantifier(new Match('x'), 2, 4)])
+            Grammar::fromArray(['x' => new Quantifier(new CapturingRegExp('x'), 2, 4)])
         ];
         yield 'Cut operator' => [
             'x = "["^',

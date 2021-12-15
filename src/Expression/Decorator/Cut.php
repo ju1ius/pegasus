@@ -1,11 +1,10 @@
 <?php declare(strict_types=1);
 
-
 namespace ju1ius\Pegasus\Expression\Decorator;
 
+use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Expression\Decorator;
 use ju1ius\Pegasus\Parser\Parser;
-
 
 /**
  * Cut expressions make a parser commit to a particular option after certain tokens have been seen.
@@ -16,10 +15,10 @@ use ju1ius\Pegasus\Parser\Parser;
  */
 final class Cut extends Decorator
 {
-    public function match(string $text, Parser $parser)
+    public function matches(string $text, Parser $parser): Node|bool
     {
         $pos = $parser->pos;
-        $result = $this->children[0]->match($text, $parser);
+        $result = $this->children[0]->matches($text, $parser);
         if ($result) {
             $parser->cut($pos);
         }

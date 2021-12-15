@@ -3,7 +3,7 @@
 namespace ju1ius\Pegasus\Tests\Expression\Decorator;
 
 use ju1ius\Pegasus\Expression\Decorator\Trace;
-use ju1ius\Pegasus\Expression\Terminal;
+use ju1ius\Pegasus\Expression\TerminalExpression;
 use ju1ius\Pegasus\Parser\Parser;
 use PHPUnit\Framework\TestCase;
 
@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 class TraceTest extends TestCase
 {
     /**
-     * @covers ::match
+     * @covers ::matches
      */
     public function testMatch()
     {
@@ -22,10 +22,10 @@ class TraceTest extends TestCase
             ->disableOriginalConstructor()
             ->setMethods(['enterTrace', 'leaveTrace'])
             ->getMockForAbstractClass();
-        $child = $this->getMockBuilder(Terminal::class)
-            ->setMethods(['match'])
+        $child = $this->getMockBuilder(TerminalExpression::class)
+            ->setMethods(['matches'])
             ->getMockForAbstractClass();
-        $child->method('match')->willReturn(true);
+        $child->method('matches')->willReturn(true);
 
         $text = 'foo';
 
@@ -37,11 +37,11 @@ class TraceTest extends TestCase
             ->with($child, true);
 
         $child->expects($this->once())
-            ->method('match')
+            ->method('matches')
             ->with($text, $parser);
 
         $trace = new Trace($child);
-        $trace->match($text, $parser);
+        $trace->matches($text, $parser);
     }
 
     /**
@@ -49,7 +49,7 @@ class TraceTest extends TestCase
      */
     public function testToString()
     {
-        $child = $this->getMockBuilder(Terminal::class)
+        $child = $this->getMockBuilder(TerminalExpression::class)
             ->setMethods(['__toString'])
             ->getMockForAbstractClass();
         $child->method('__toString')->willReturn('foo');

@@ -7,16 +7,10 @@ use ju1ius\Pegasus\CST\Node\Terminal;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Tests\Compiler\Extension\Php\PhpCompilerTestCase;
 
-
 class LiteralTest extends PhpCompilerTestCase
 {
     /**
      * @dataProvider parseProvider
-     *
-     * @param string $syntax
-     * @param string $input
-     * @param Node $expected
-     * @throws \ju1ius\Pegasus\Grammar\Exception\MissingTraitAlias
      */
     public function testParse(string $syntax, string $input, Node $expected)
     {
@@ -25,7 +19,7 @@ class LiteralTest extends PhpCompilerTestCase
         $this->assertNodeEquals($expected, $result);
     }
 
-    public function parseProvider()
+    public function parseProvider(): iterable
     {
         yield [
             'x = "foo"',
@@ -36,10 +30,6 @@ class LiteralTest extends PhpCompilerTestCase
 
     /**
      * @dataProvider parseFailureProvider
-     *
-     * @param string $syntax
-     * @param string $input
-     * @throws \ju1ius\Pegasus\Grammar\Exception\MissingTraitAlias
      */
     public function testParseFailure(string $syntax, string $input)
     {
@@ -48,9 +38,9 @@ class LiteralTest extends PhpCompilerTestCase
         $parser->parse($input);
     }
 
-    public function parseFailureProvider()
+    public function parseFailureProvider(): iterable
     {
-            yield ['x = "foo"', 'bar'];
-            yield ['x = "foo"', 'foobar'];
+        yield ['x = "foo"', 'bar'];
+        yield ['x = "foo"', 'foobar'];
     }
 }

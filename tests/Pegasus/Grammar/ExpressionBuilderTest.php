@@ -1,12 +1,4 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * © 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Tests\Grammar;
 
@@ -24,42 +16,40 @@ use ju1ius\Pegasus\Expression\Decorator\NodeAction;
 use ju1ius\Pegasus\Expression\Decorator\Not;
 use ju1ius\Pegasus\Expression\Decorator\Quantifier;
 use ju1ius\Pegasus\Expression\Decorator\Token;
-use ju1ius\Pegasus\Expression\Terminal;
 use ju1ius\Pegasus\Expression\Terminal\BackReference;
+use ju1ius\Pegasus\Expression\Terminal\CapturingRegExp;
 use ju1ius\Pegasus\Expression\Terminal\EOF;
 use ju1ius\Pegasus\Expression\Terminal\Epsilon;
 use ju1ius\Pegasus\Expression\Terminal\Fail;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
-use ju1ius\Pegasus\Expression\Terminal\Match;
-use ju1ius\Pegasus\Expression\Terminal\RegExp;
+use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
+use ju1ius\Pegasus\Expression\TerminalExpression;
 use ju1ius\Pegasus\ExpressionBuilder as Builder;
 use ju1ius\Pegasus\Tests\PegasusTestCase;
 
 /**
  * @coversDefaultClass \ju1ius\Pegasus\ExpressionBuilder
- *
- * @author ju1ius <ju1ius@laposte.net>
  */
 class ExpressionBuilderTest extends PegasusTestCase
 {
     public function testAddReturnsBuilder()
     {
-        $expr = $this->getMockForAbstractClass(Terminal::class);
+        $expr = $this->getMockForAbstractClass(TerminalExpression::class);
         $builder = Builder::create();
         $this->assertSame($builder, $builder->add($expr));
     }
 
     public function testAddSingleTerminal()
     {
-        $expr = $this->getMockForAbstractClass(Terminal::class);
+        $expr = $this->getMockForAbstractClass(TerminalExpression::class);
         $result = Builder::create()->add($expr)->getExpression();
         $this->assertSame($expr, $result);
     }
 
     public function testTerminalCannotHaveChildren()
     {
-        $term = $this->getMockForAbstractClass(Terminal::class);
-        $term2 = $this->getMockForAbstractClass(Terminal::class);
+        $term = $this->getMockForAbstractClass(TerminalExpression::class);
+        $term2 = $this->getMockForAbstractClass(TerminalExpression::class);
         $this->expectException(\RuntimeException::class);
 
         Builder::create()
@@ -71,7 +61,7 @@ class ExpressionBuilderTest extends PegasusTestCase
     public function testAddingTwoTopLevelExpressions()
     {
         $comp = $this->getMockForAbstractClass(Composite::class);
-        $term = $this->getMockForAbstractClass(Terminal::class);
+        $term = $this->getMockForAbstractClass(TerminalExpression::class);
         $this->expectException(\RuntimeException::class);
 
         Builder::create()
@@ -93,7 +83,7 @@ class ExpressionBuilderTest extends PegasusTestCase
     public function testAddChildToComposite()
     {
         $comp = $this->getMockForAbstractClass(Composite::class);
-        $term = $this->getMockForAbstractClass(Terminal::class);
+        $term = $this->getMockForAbstractClass(TerminalExpression::class);
 
         $result = Builder::create()
             ->add($comp)
@@ -107,8 +97,8 @@ class ExpressionBuilderTest extends PegasusTestCase
     public function testDecoratorsHaveSingleChild()
     {
         $deco = $this->getMockForAbstractClass(Decorator::class);
-        $term = $this->getMockForAbstractClass(Terminal::class);
-        $term2 = $this->getMockForAbstractClass(Terminal::class);
+        $term = $this->getMockForAbstractClass(TerminalExpression::class);
+        $term2 = $this->getMockForAbstractClass(TerminalExpression::class);
 
         $this->expectException(\OverflowException::class);
         $result = Builder::create()
@@ -122,8 +112,8 @@ class ExpressionBuilderTest extends PegasusTestCase
     {
         $deco1 = $this->getMockForAbstractClass(Decorator::class);
         $deco2 = $this->getMockForAbstractClass(Decorator::class);
-        $term1 = $this->getMockForAbstractClass(Terminal::class);
-        $term2 = $this->getMockForAbstractClass(Terminal::class);
+        $term1 = $this->getMockForAbstractClass(TerminalExpression::class);
+        $term2 = $this->getMockForAbstractClass(TerminalExpression::class);
 
         $result = Builder::create()
             ->add($deco1)->add($deco2)->add($term1)
@@ -138,8 +128,8 @@ class ExpressionBuilderTest extends PegasusTestCase
         $topSeq = $this->getMockForAbstractClass(Composite::class);
         $innerSeq = $this->getMockForAbstractClass(Composite::class);
         $deco = $this->getMockForAbstractClass(Decorator::class);
-        $term1 = $this->getMockForAbstractClass(Terminal::class);
-        $term2 = $this->getMockForAbstractClass(Terminal::class);
+        $term1 = $this->getMockForAbstractClass(TerminalExpression::class);
+        $term2 = $this->getMockForAbstractClass(TerminalExpression::class);
 
         $result = Builder::create()->add($topSeq)
             ->add($deco)
@@ -164,7 +154,7 @@ class ExpressionBuilderTest extends PegasusTestCase
         }
     }
 
-    public function provideTestItCanBuildExpressions()
+    public function provideTestItCanBuildExpressions(): iterable
     {
         // Terminals
         yield 'Literal' => [
@@ -173,11 +163,11 @@ class ExpressionBuilderTest extends PegasusTestCase
         ];
         yield 'Match' => [
             Builder::create()->match('foo', ['i'])->getExpression(),
-            new Match('foo', ['i']),
+            new NonCapturingRegExp('foo', ['i']),
         ];
         yield 'RegExp' => [
             Builder::create()->regexp('foo(bar)', ['i'])->getExpression(),
-            new RegExp('foo(bar)', ['i']),
+            new CapturingRegExp('foo(bar)', ['i']),
         ];
         yield 'Reference' => [
             Builder::create()->ref('foo')->getExpression(),
@@ -273,7 +263,7 @@ class ExpressionBuilderTest extends PegasusTestCase
         ];
         yield 'Label' => [
             Builder::create()->label('a')->literal('foo')->getExpression(),
-            new Label(new Literal('foo'), 'a'),
+            new Label('a', new Literal('foo')),
         ];
         yield 'Skip' => [
             Builder::create()->ignore()->literal('foo')->getExpression(),

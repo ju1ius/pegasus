@@ -1,17 +1,9 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * © 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Expression\Terminal;
 
-use ju1ius\Pegasus\CST\Node;
-use ju1ius\Pegasus\Expression\Terminal;
+use ju1ius\Pegasus\CST\Node\Terminal as TerminalNode;
+use ju1ius\Pegasus\Expression\TerminalExpression as TerminalExpression;
 use ju1ius\Pegasus\Parser\Parser;
 
 /**
@@ -22,43 +14,21 @@ use ju1ius\Pegasus\Parser\Parser;
  * You should not use it directly.
  *
  * @internal
- *
- * @author ju1ius <ju1ius@laposte.net>
  */
-final class GroupMatch extends Terminal
+final class GroupMatch extends TerminalExpression
 {
-    /**
-     * @var Match
-     */
-    private $matcher;
+    private string $compiledPattern;
 
-    /**
-     * @var int
-     */
-    private $groupCount;
-
-    /**
-     * @var string
-     */
-    private $compiledPattern;
-
-    /**
-     * GroupMatch constructor.
-     *
-     * @param Match  $match
-     * @param int    $groupCount
-     * @param string $name
-     */
-    public function __construct(Match $match, int $groupCount, string $name = '')
-    {
-        $this->matcher = $match;
-        $this->groupCount = $groupCount;
-        $this->compiledPattern = $match->getCompiledPattern();
-
+    public function __construct(
+        private NonCapturingRegExp $matcher,
+        private int $groupCount,
+        string $name = ''
+    ) {
+        $this->compiledPattern = $matcher->getCompiledPattern();
         parent::__construct($name);
     }
 
-    public function getMatcher(): Match
+    public function getMatcher(): NonCapturingRegExp
     {
         return $this->matcher;
     }
@@ -86,32 +56,26 @@ final class GroupMatch extends Terminal
         return $this->groupCount;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function match(string $text, Parser $parser)
+    public function matches(string $text, Parser $parser): TerminalNode|bool
     {
         $start = $parser->pos;
         if (preg_match($this->compiledPattern, $text, $matches, 0, $start)) {
-            $end = $parser->pos += strlen($matches[0]);
+            $end = $parser->pos += \strlen($matches[0]);
             if (!$parser->isCapturing) {
                 return true;
             }
 
             if ($this->groupCount === 1) {
-                return new Node\Terminal($this->name, $start, $end, $matches[1]);
+                return new TerminalNode($this->name, $start, $end, $matches[1]);
             }
 
-            return new Node\Terminal($this->name, $start, $end, $matches[0], [
+            return new TerminalNode($this->name, $start, $end, $matches[0], [
                 'captures' => array_slice($matches, 1)
             ]);
         }
         return false;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function __toString(): string
     {
         return sprintf('GroupMatch[%s, %d]', $this->compiledPattern, $this->groupCount);

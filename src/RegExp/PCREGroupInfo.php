@@ -1,12 +1,4 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * © 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\RegExp;
 
@@ -14,9 +6,6 @@ use ju1ius\Pegasus\RegExp\Exception\MissingClosingParenthesis;
 use ju1ius\Pegasus\RegExp\Exception\UnmatchedClosingParenthesis;
 use SplStack;
 
-/**
- * @author ju1ius <ju1ius@laposte.net>
- */
 final class PCREGroupInfo
 {
     const GROUP_START_RX = <<<'REGEXP'
@@ -109,7 +98,7 @@ REGEXP;
     public function parse(string $pattern): array
     {
         $this->pos = 0;
-        $length = $this->patternLength = strlen($pattern);
+        $length = $this->patternLength = \strlen($pattern);
         $this->groups = [];
         $this->groupCount = 0;
         $this->groupStack = new SplStack();
@@ -150,7 +139,7 @@ REGEXP;
             $groupInfo = $this->extractGroupInfo($matches);
             $this->groups[++$this->groupCount] = $groupInfo;
             $this->groupStack->push($this->groupCount);
-            $this->pos += strlen($matches[0]);
+            $this->pos += \strlen($matches[0]);
 
             return;
         }
@@ -203,9 +192,7 @@ REGEXP;
     private function extractGroupInfo(array $matches): array
     {
         // keep only non-empty named captures
-        $filtered = array_filter($matches, function ($v, $k) {
-            return !empty($v) && is_string($k);
-        }, ARRAY_FILTER_USE_BOTH);
+        $filtered = array_filter($matches, fn($v, $k) => !empty($v) && \is_string($k), ARRAY_FILTER_USE_BOTH);
 
         $type = key($filtered);
         $capturing = in_array($type, ['numbered', 'named'], true);

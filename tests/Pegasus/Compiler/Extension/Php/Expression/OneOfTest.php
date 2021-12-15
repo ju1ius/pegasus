@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-
 namespace ju1ius\Pegasus\Tests\Compiler\Extension\Php\Expression;
 
 use ju1ius\Pegasus\CST\Node;
@@ -12,11 +11,6 @@ class OneOfTest extends PhpCompilerTestCase
 {
     /**
      * @dataProvider parseProvider
-     *
-     * @param string $syntax
-     * @param string $input
-     * @param Node $expected
-     * @throws \ju1ius\Pegasus\Grammar\Exception\MissingTraitAlias
      */
     public function testParse(string $syntax, string $input, Node $expected)
     {
@@ -25,7 +19,7 @@ class OneOfTest extends PhpCompilerTestCase
         $this->assertNodeEquals($expected, $result);
     }
 
-    public function parseProvider()
+    public function parseProvider(): iterable
     {
         yield [
             'x = "foo" | "bar"',
@@ -41,10 +35,6 @@ class OneOfTest extends PhpCompilerTestCase
 
     /**
      * @dataProvider parseFailureProvider
-     *
-     * @param string $syntax
-     * @param string $input
-     * @throws \ju1ius\Pegasus\Grammar\Exception\MissingTraitAlias
      */
     public function testParseFailure(string $syntax, string $input)
     {
@@ -53,9 +43,9 @@ class OneOfTest extends PhpCompilerTestCase
         $parser->parse($input);
     }
 
-    public function parseFailureProvider()
+    public function parseFailureProvider(): iterable
     {
-            yield ['x = "foo" | "bar"', 'baz'];
-            yield ['x = "foo" | "bar"', 'fooqux'];
+        yield ['x = "foo" | "bar"', 'baz'];
+        yield ['x = "foo" | "bar"', 'fooqux'];
     }
 }

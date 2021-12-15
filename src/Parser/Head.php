@@ -1,18 +1,8 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * (c) 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 
 namespace ju1ius\Pegasus\Parser;
 
 use ju1ius\Pegasus\Expression;
-
 
 /**
  * The Head data type contains the head rule of the left recursion,
@@ -53,7 +43,6 @@ final class Head
      */
     public function involves(Expression $rule): bool
     {
-        return $this->rule->id === $rule->id
-            || isset($this->involved[$rule->id]);
+        return $this->rule->id === $rule->id || isset($this->involved[$rule->id]);
     }
 }

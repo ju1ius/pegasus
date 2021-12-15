@@ -1,25 +1,20 @@
 <?php declare(strict_types=1);
 
-
 namespace ju1ius\Pegasus\Tests\Compiler\Extension\Php;
-
 
 use ju1ius\Pegasus\Compiler\Extension\Php\PhpCompiler;
 use ju1ius\Pegasus\Compiler\Extension\Php\Runtime\Parser;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Tests\PegasusTestCase;
 
-
 class PhpCompilerTestCase extends PegasusTestCase
 {
     /**
-     * @param string|Grammar $syntaxOrGrammar
-     * @return Parser
      * @throws Grammar\Exception\MissingTraitAlias
      */
-    protected function compile($syntaxOrGrammar)
+    protected function compile(Grammar|string $syntaxOrGrammar): Parser
     {
-        if (is_string($syntaxOrGrammar)) {
+        if (\is_string($syntaxOrGrammar)) {
             $grammar = Grammar::fromSyntax($syntaxOrGrammar, null, 0);
             $hash = spl_object_hash($grammar) . '_' . sha1($syntaxOrGrammar);
         } else {
@@ -39,9 +34,9 @@ class PhpCompilerTestCase extends PegasusTestCase
         return new $class();
     }
 
-    private function evaluateCode(string $code)
+    private function evaluateCode(string $code): void
     {
         $code = preg_replace('/^<\?php/', '', $code);
-        return eval($code);
+        eval($code);
     }
 }

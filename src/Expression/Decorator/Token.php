@@ -2,39 +2,34 @@
 
 namespace ju1ius\Pegasus\Expression\Decorator;
 
-use ju1ius\Pegasus\CST\Node;
+use ju1ius\Pegasus\CST\Node\Terminal;
 use ju1ius\Pegasus\Expression\Decorator;
 use ju1ius\Pegasus\Parser\Parser;
 
-
-/**
- * @author ju1ius
- */
 final class Token extends Decorator
 {
-    /**
-     * @inheritDoc
-     */
-    public function match(string $text, Parser $parser)
+    public function matches(string $text, Parser $parser): Terminal|bool
     {
         $capturing = $parser->isCapturing;
         $parser->isCapturing = false;
 
         $startPos = $parser->pos;
-        $result = $this->children[0]->match($text, $parser);
+        $result = $this->children[0]->matches($text, $parser);
 
         $parser->isCapturing = $capturing;
-        if (!$result) {
-            return false;
-        }
-        return $capturing
-            ? new Node\Terminal(
-                $this->name,
-                $startPos,
-                $parser->pos,
-                substr($text, $startPos, $parser->pos - $startPos)
-            )
-            : true;
+
+        return match ($result) {
+            true => match ($capturing) {
+                true => new Terminal(
+                    $this->name,
+                    $startPos,
+                    $parser->pos,
+                    substr($text, $startPos, $parser->pos - $startPos)
+                ),
+                false => true,
+            },
+            false => false,
+        };
     }
 
     public function __toString(): string

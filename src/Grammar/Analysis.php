@@ -1,12 +1,4 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * (c) 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Grammar;
 
@@ -20,43 +12,26 @@ use ju1ius\Pegasus\Expression\Decorator\Label;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Utils\Iter;
 
-
 /**
  * Static analysis of a Grammar.
  */
 class Analysis
 {
-    /**
-     * @var Grammar
-     */
-    protected $grammar;
-
-    /**
-     * @param Grammar $grammar
-     */
-    public function __construct(Grammar $grammar)
-    {
-        $this->grammar = $grammar;
+    public function __construct(
+        protected Grammar $grammar
+    ) {
     }
 
-    /**
-     * @param string $ruleName
-     *
-     * @return bool
-     */
     public function canModifyBindings(string $ruleName): bool
     {
-        return Iter::some(function (Expression $expr) {
-            return $expr instanceof Label;
-        }, $this->grammar[$ruleName]->iterate());
+        return Iter::some(
+            fn(Expression $expr) => $expr instanceof Label,
+            $this->grammar[$ruleName]->iterate(),
+        );
     }
 
     /**
      * Returns whether a rule is regular (non-recursive).
-     *
-     * @param string $ruleName The rule name to analyze.
-     *
-     * @return bool
      */
     public function isRegular(string $ruleName): bool
     {
@@ -66,10 +41,6 @@ class Analysis
     /**
      * Returns whether a rule is recursive
      * (contains a reference to itself, directly, indirectly or via a super call).
-     *
-     * @param string $ruleName The rule name to analyze.
-     *
-     * @return bool
      */
     public function isRecursive(string $ruleName): bool
     {
@@ -83,10 +54,6 @@ class Analysis
 
     /**
      * Returns whether a rule is left-recursive.
-     *
-     * @param string $ruleName The rule name to analyze.
-     *
-     * @return bool
      */
     public function isLeftRecursive(string $ruleName): bool
     {
@@ -95,10 +62,6 @@ class Analysis
 
     /**
      * Returns whether a rule is referenced by other rules in the grammar.
-     *
-     * @param string $ruleName The rule name to analyze.
-     *
-     * @return bool
      * @throws Exception\MissingStartRule
      */
     public function isReferenced(string $ruleName): bool
@@ -118,9 +81,10 @@ class Analysis
      */
     public function isReferencedFrom(string $referencer, string $referencee): bool
     {
-        return Iter::some(function (Expression $expr, string $name) use($referencee) {
-            return $name === $referencee;
-        }, $this->iterateReferences($referencer));
+        return Iter::some(
+            fn(Expression $expr, string $name) => $name === $referencee,
+            $this->iterateReferences($referencer)
+        );
     }
 
     /**
@@ -133,9 +97,10 @@ class Analysis
      */
     public function isLeftReferencedFrom(string $referencer, string $referencee): bool
     {
-        return Iter::some(function (Expression $expr, string $name) use($referencee) {
-            return $name === $referencee;
-        }, $this->iterateLeftReferences($referencer));
+        return Iter::some(
+            fn(Expression $expr, string $name) => $name === $referencee,
+            $this->iterateLeftReferences($referencer)
+        );
     }
 
     /**
@@ -168,16 +133,13 @@ class Analysis
 
     /**
      * Returns whether given rule contains a `Super` or `Call` expression
-     *
-     * @param string $ruleName
-     *
-     * @return bool
      */
     protected function containsExternalCall(string $ruleName): bool
     {
-        return Iter::some(function (Expression $expr) {
-            return $expr instanceof Super || $expr instanceof Call;
-        }, $this->grammar[$ruleName]->iterate());
+        return Iter::some(
+            fn(Expression $expr) => $expr instanceof Super || $expr instanceof Call,
+            $this->grammar[$ruleName]->iterate()
+        );
     }
 
     /**
@@ -186,9 +148,9 @@ class Analysis
      * @param string $ruleName The rule to traverse
      * @param array  $visited  Set of already visited rules (recursion guard)
      *
-     * @return \Generator
+     * @return iterable<string, Expression>
      */
-    protected function iterateReferences(string $ruleName, array $visited = []): \Generator
+    protected function iterateReferences(string $ruleName, array $visited = []): iterable
     {
         $expr = $this->grammar[$ruleName];
         if (isset($visited[$expr->id])) {
@@ -208,9 +170,9 @@ class Analysis
      * @param string $ruleName The rule to traverse
      * @param array  $visited  Set of already visited rules (recursion guard)
      *
-     * @return \Generator
+     * @return iterable<string, Expression>
      */
-    protected function iterateLeftReferences(string $ruleName, array $visited = []): \Generator
+    protected function iterateLeftReferences(string $ruleName, array $visited = []): iterable
     {
         $expr = $this->grammar[$ruleName];
         if (isset($visited[$expr->id])) {
@@ -229,11 +191,11 @@ class Analysis
      *
      * @param Expression $expr
      *
-     * @return \Generator
+     * @return iterable<string, Expression>
      *
      * @todo handle Super calls
      */
-    protected function iterateDirectReferences(Expression $expr): \Generator
+    protected function iterateDirectReferences(Expression $expr): iterable
     {
         if ($expr instanceof Reference) {
             yield $expr->getIdentifier() => $expr;
@@ -249,11 +211,11 @@ class Analysis
      *
      * @param Expression $expr
      *
-     * @return \Generator
+     * @return iterable<string, Expression>
      *
      * @todo handle Super calls
      */
-    protected function iterateDirectLeftReferences(Expression $expr): \Generator
+    protected function iterateDirectLeftReferences(Expression $expr): iterable
     {
         if ($expr instanceof Reference) {
             yield $expr->getIdentifier() => $expr;

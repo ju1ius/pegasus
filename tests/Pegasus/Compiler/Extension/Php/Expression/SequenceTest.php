@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-
 namespace ju1ius\Pegasus\Tests\Compiler\Extension\Php\Expression;
-
 
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\CST\Node\Composite;
@@ -10,16 +8,10 @@ use ju1ius\Pegasus\CST\Node\Terminal;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Tests\Compiler\Extension\Php\PhpCompilerTestCase;
 
-
 class SequenceTest extends PhpCompilerTestCase
 {
     /**
      * @dataProvider parseProvider
-     *
-     * @param string $syntax
-     * @param string $input
-     * @param Node $expected
-     * @throws \ju1ius\Pegasus\Grammar\Exception\MissingTraitAlias
      */
     public function testParse(string $syntax, string $input, Node $expected)
     {
@@ -28,7 +20,7 @@ class SequenceTest extends PhpCompilerTestCase
         $this->assertNodeEquals($expected, $result);
     }
 
-    public function parseProvider()
+    public function parseProvider(): iterable
     {
         yield [
             'x = "foo" "bar"',
@@ -51,10 +43,6 @@ class SequenceTest extends PhpCompilerTestCase
 
     /**
      * @dataProvider parseFailureProvider
-     *
-     * @param string $syntax
-     * @param string $input
-     * @throws \ju1ius\Pegasus\Grammar\Exception\MissingTraitAlias
      */
     public function testParseFailure(string $syntax, string $input)
     {
@@ -63,7 +51,7 @@ class SequenceTest extends PhpCompilerTestCase
         $parser->parse($input);
     }
 
-    public function parseFailureProvider()
+    public function parseFailureProvider(): iterable
     {
         yield ['x = "foo" "bar"', 'bar'];
         yield ['x = "foo" "bar"', 'foobarbaz'];

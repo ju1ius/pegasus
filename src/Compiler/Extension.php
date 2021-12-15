@@ -1,12 +1,4 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * (c) 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Compiler;
 use Symfony\Component\Console\ConsoleEvents;
@@ -17,15 +9,12 @@ use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-
 /**
  * Class Extension
- *
- * @author ju1ius <ju1ius@laposte.net>
  */
 abstract class Extension implements EventSubscriberInterface
 {
-    protected $dispatcher;
+    protected EventDispatcherInterface $dispatcher;
 
     abstract public function getName(): string;
 
@@ -34,10 +23,9 @@ abstract class Extension implements EventSubscriberInterface
     abstract public function getCompiler(): CompilerInterface;
 
     /**
-     * @param EventDispatcherInterface $dispatcher
      * @return $this
      */
-    final public function setEventDispatcher(EventDispatcherInterface $dispatcher)
+    final public function setEventDispatcher(EventDispatcherInterface $dispatcher): static
     {
         $this->dispatcher = $dispatcher;
         $this->dispatcher->addSubscriber($this);
@@ -45,7 +33,10 @@ abstract class Extension implements EventSubscriberInterface
         return $this;
     }
 
-    public static function getSubscribedEvents()
+    /**
+     * @return array<string, string>
+     */
+    public static function getSubscribedEvents(): array
     {
         return [
             ConsoleEvents::COMMAND => 'handleConsoleEvent',
@@ -54,22 +45,19 @@ abstract class Extension implements EventSubscriberInterface
         ];
     }
 
-    final public function handleConsoleEvent(ConsoleEvent $event)
+    final public function handleConsoleEvent(ConsoleEvent $event): void
     {
         $input = $event->getInput();
         if (!$input->hasOption('language')) return;
         if ($input->getOption('language') !== $this->getLanguage()) {
             return;
         }
-        if ($event instanceof ConsoleCommandEvent) {
-            return $this->onConsoleCommand($event);
-        }
-        if ($event instanceof ConsoleTerminateEvent) {
-            return $this->onConsoleTerminate($event);
-        }
-        if ($event instanceof ConsoleErrorEvent) {
-            return $this->onConsoleError($event);
-        }
+        match (true) {
+            $event instanceof ConsoleCommandEvent => $this->onConsoleCommand($event),
+            $event instanceof ConsoleTerminateEvent => $this->onConsoleTerminate($event),
+            $event instanceof ConsoleErrorEvent => $this->onConsoleError($event),
+            default => null,
+        };
     }
 
     public function onConsoleCommand(ConsoleCommandEvent $event)

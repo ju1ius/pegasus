@@ -7,7 +7,7 @@ namespace ju1ius\Pegasus\Trace;
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Decorator\Not;
-use ju1ius\Pegasus\Expression\Terminal;
+use ju1ius\Pegasus\Expression\TerminalExpression;
 
 
 final class TraceEntry implements \IteratorAggregate
@@ -71,7 +71,7 @@ final class TraceEntry implements \IteratorAggregate
         return $this->end === $rightMostFailurePosition
             && $this->result === null
             && (
-                $this->expression instanceof Terminal
+                $this->expression instanceof TerminalExpression
                 || $this->expression instanceof Not
             );
     }

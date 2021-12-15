@@ -1,34 +1,20 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * © 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Tests\Optimization\Match;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Application\Reference;
 use ju1ius\Pegasus\Expression\Combinator\OneOf;
-use ju1ius\Pegasus\Expression\Terminal\Match;
+use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinMatchChoice;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\GrammarBuilder;
 
-/**
- * @author ju1ius <ju1ius@laposte.net>
- */
 class JoinMatchChoiceTest extends RegExpOptimizationTestCase
 {
     /**
      * @dataProvider provideTestApply
-     *
-     * @param Grammar    $input
-     * @param Expression $expected
      */
     public function testApply(Grammar $input, Expression $expected)
     {
@@ -42,15 +28,15 @@ class JoinMatchChoiceTest extends RegExpOptimizationTestCase
         $this->assertExpressionEquals($expected, $result, 'In matching context');
     }
 
-    public function provideTestApply()
+    public function provideTestApply(): iterable
     {
         yield 'Choice of matches only' => [
             GrammarBuilder::create()->rule('test')->oneOf()
                 ->match('a')
                 ->match('b')
                 ->match('c')
-            ->getGrammar(),
-            new Match('a|b|c', [], 'test')
+                ->getGrammar(),
+            new NonCapturingRegExp('a|b|c', [], 'test'),
         ];
         yield 'Choice of matches before something else' => [
             GrammarBuilder::create()->rule('test')->oneOf()
@@ -59,9 +45,9 @@ class JoinMatchChoiceTest extends RegExpOptimizationTestCase
                 ->ref('c')
                 ->getGrammar(),
             new OneOf([
-                new Match('a|b'),
+                new NonCapturingRegExp('a|b'),
                 new Reference('c'),
-            ], 'test')
+            ], 'test'),
         ];
         yield 'Choice of matches after something else' => [
             GrammarBuilder::create()->rule('test')->oneOf()
@@ -71,18 +57,15 @@ class JoinMatchChoiceTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new OneOf([
                 new Reference('a'),
-                new Match('b|c'),
-            ], 'test')
+                new NonCapturingRegExp('b|c'),
+            ], 'test'),
         ];
     }
 
     /**
      * @dataProvider provideTestAppliesTo
-     *
-     * @param Grammar $input
-     * @param bool    $applies
      */
-    public function testAppliesTo(Grammar $input, $applies)
+    public function testAppliesTo(Grammar $input, bool $applies)
     {
         $optim = $this->createOptimization(JoinMatchChoice::class);
         $expr = $input->getStartExpression();
@@ -95,7 +78,7 @@ class JoinMatchChoiceTest extends RegExpOptimizationTestCase
         $this->assertSame($applies, $result, 'In matching context');
     }
 
-    public function provideTestAppliesTo()
+    public function provideTestAppliesTo(): iterable
     {
         return [
             'Choice of matches only' => [
@@ -104,7 +87,7 @@ class JoinMatchChoiceTest extends RegExpOptimizationTestCase
                     ->match('b')
                     ->match('c')
                     ->getGrammar(),
-                true
+                true,
             ],
             'Choice of matches before something else' => [
                 GrammarBuilder::create()->rule('test')->oneOf()
@@ -112,7 +95,7 @@ class JoinMatchChoiceTest extends RegExpOptimizationTestCase
                     ->match('b')
                     ->ref('c')
                     ->getGrammar(),
-                true
+                true,
             ],
             'Choice of matches after something else' => [
                 GrammarBuilder::create()->rule('test')->oneOf()
@@ -120,7 +103,7 @@ class JoinMatchChoiceTest extends RegExpOptimizationTestCase
                     ->match('b')
                     ->match('c')
                     ->getGrammar(),
-                true
+                true,
             ],
             'Choice with only one match' => [
                 GrammarBuilder::create()->rule('test')->oneOf()
@@ -128,7 +111,7 @@ class JoinMatchChoiceTest extends RegExpOptimizationTestCase
                     ->match('b')
                     ->ref('c')
                     ->getGrammar(),
-                false
+                false,
             ],
             'Choice with non-consecutive matches' => [
                 GrammarBuilder::create()->rule('test')->oneOf()
@@ -136,7 +119,7 @@ class JoinMatchChoiceTest extends RegExpOptimizationTestCase
                     ->ref('b')
                     ->match('c')
                     ->getGrammar(),
-                false
+                false,
             ],
             'Not a choice' => [
                 GrammarBuilder::create()->rule('test')->sequence()
@@ -144,8 +127,8 @@ class JoinMatchChoiceTest extends RegExpOptimizationTestCase
                     ->match('b')
                     ->match('c')
                     ->getGrammar(),
-                false
-            ]
+                false,
+            ],
         ];
     }
 }

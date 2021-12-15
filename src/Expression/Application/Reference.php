@@ -1,36 +1,24 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * (c) 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Expression\Application;
 
+use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Expression\Application;
 use ju1ius\Pegasus\Parser\Parser;
 
 /**
  * A reference to a grammar rule.
- *
- * @author ju1ius <ju1ius@laposte.net>
  */
 final class Reference extends Application
 {
-    /**
-     * The name of the rule this expression refers to.
-     *
-     * @var string
-     */
-    private $identifier;
-
-    public function __construct(string $identifier, string $name = '')
-    {
+    public function __construct(
+        /**
+         * The name of the rule this expression refers to.
+         */
+        private string $identifier,
+        string $name = ''
+    ) {
         parent::__construct($name);
-        $this->identifier = $identifier;
     }
 
     public function getIdentifier(): string
@@ -43,7 +31,7 @@ final class Reference extends Application
         return $this->identifier;
     }
 
-    public function match(string $text, Parser $parser)
+    public function matches(string $text, Parser $parser): Node|bool
     {
         $bindings = $parser->bindings;
         $parser->bindings = [];

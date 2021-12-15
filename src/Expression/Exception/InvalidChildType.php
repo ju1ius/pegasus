@@ -5,7 +5,6 @@ namespace ju1ius\Pegasus\Expression\Exception;
 
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Utils\Str;
 
 
 class InvalidChildType extends \LogicException
@@ -15,7 +14,7 @@ class InvalidChildType extends \LogicException
         $message = sprintf(
             'Expected an instance of `%s`,  but got: `%s`',
             $expectedClass,
-            Str::getType($child)
+            get_debug_type($child)
         );
 
         parent::__construct($message);

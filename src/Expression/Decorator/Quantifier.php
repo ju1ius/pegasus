@@ -1,45 +1,21 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * (c) 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Expression\Decorator;
 
-use ju1ius\Pegasus\CST\Node;
+use ju1ius\Pegasus\CST\Node\Quantifier as QuantifierNode;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Decorator;
 use ju1ius\Pegasus\Parser\Parser;
-
 
 /**
  * An expression wrapper like the {n, n+i} quantifier in regular expressions.
  */
 class Quantifier extends Decorator
 {
-    /**
-     * @var int
-     */
-    protected $lowerBound;
+    protected int $lowerBound;
+    protected int|float $upperBound;
 
-    /**
-     * @var int
-     */
-    protected $upperBound;
-
-    /**
-     * Quantifier constructor.
-     *
-     * @param Expression|null $child
-     * @param int             $min
-     * @param int             $max
-     * @param string          $name
-     */
-    public function __construct(?Expression $child = null, int $min, ?int $max = null, string $name = '')
+    public function __construct(?Expression $child, int $min, ?int $max = null, string $name = '')
     {
         $this->lowerBound = abs($min);
         $this->upperBound = $max === null ? INF : $max;
@@ -50,59 +26,39 @@ class Quantifier extends Decorator
         parent::__construct($child, $name);
     }
 
-    /**
-     * @return int
-     */
     public function getLowerBound(): int
     {
         return $this->lowerBound;
     }
 
-    /**
-     * @return number
-     */
-    public function getUpperBound()
+    public function getUpperBound(): int|float
     {
         return $this->upperBound;
     }
 
     /**
      * Returns whether the upper bound is infinite.
-     *
-     * @return bool
      */
     public function isUnbounded(): bool
     {
         return $this->upperBound === INF;
     }
 
-    /**
-     * @return bool
-     */
     public function isExact(): bool
     {
         return $this->lowerBound === $this->upperBound;
     }
 
-    /**
-     * @return bool
-     */
     public function isZeroOrMore(): bool
     {
         return $this->lowerBound === 0 && $this->upperBound === INF;
     }
 
-    /**
-     * @return bool
-     */
     public function isOneOrMore(): bool
     {
         return $this->lowerBound === 1 && $this->upperBound === INF;
     }
 
-    /**
-     * @return bool
-     */
     public function isOptional(): bool
     {
         return $this->lowerBound === 0 && $this->upperBound === 1;
@@ -127,18 +83,22 @@ class Quantifier extends Decorator
             $q = sprintf('{%d,%s}', $this->lowerBound, $this->isUnbounded() ? '' : $this->upperBound);
         }
 
-        return $this->stringChildren()[0] . $q;
+        return sprintf(
+            '(%s)%s',
+            implode('', $this->stringChildren()),
+            $q
+        );
     }
 
-    public function match(string $text, Parser $parser)
+    public function matches(string $text, Parser $parser): QuantifierNode|bool
     {
         $expr = $this->children[0];
         $startPos = $parser->pos;
         $capturing = $parser->isCapturing;
         $matchCount = 0;
         $results = $capturing ? [] : null;
-        while ($result = $expr->match($text, $parser)) {
-            if ($capturing && !is_bool($result)) {
+        while ($result = $expr->matches($text, $parser)) {
+            if ($capturing && !\is_bool($result)) {
                 $results[] = $result;
             }
             if (++$matchCount === $this->upperBound) {
@@ -147,7 +107,7 @@ class Quantifier extends Decorator
         }
         if ($matchCount >= $this->lowerBound) {
             return $capturing
-                ? new Node\Quantifier($this->name, $startPos, $parser->pos, $results, $this->isOptional())
+                ? new QuantifierNode($this->name, $startPos, $parser->pos, $results, $this->isOptional())
                 : true;
         }
         $parser->pos = $startPos;

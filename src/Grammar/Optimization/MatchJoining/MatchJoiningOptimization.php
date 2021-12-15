@@ -1,63 +1,46 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * © 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Grammar\Optimization\MatchJoining;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Composite;
+use ju1ius\Pegasus\Expression\Decorator\Ignore;
+use ju1ius\Pegasus\Expression\Terminal\GroupMatch;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
-use ju1ius\Pegasus\Expression\Terminal\Match;
+use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
 use ju1ius\Pegasus\Grammar\Optimization\CompositeReducerTrait;
 use ju1ius\Pegasus\Grammar\Optimization\RegExpOptimization;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\Utils\Iter;
 
-/**
- * @author ju1ius <ju1ius@laposte.net>
- */
 abstract class MatchJoiningOptimization extends RegExpOptimization
 {
     use CompositeReducerTrait;
 
-    /**
-     * @inheritDoc
-     */
     public function willPostProcessExpression(Expression $expr, OptimizationContext $context): bool
     {
-        /** @var Composite $expr */
-        return Iter::someConsecutive(function ($child) {
-            return $this->isEligibleChild($child);
-        }, 2, $expr);
+        assert($expr instanceof Composite);
+        return Iter::someConsecutive($this->isEligibleChild(...), 2, $expr);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function postProcessExpression(Expression $expr, OptimizationContext $context): ?Expression
     {
+        assert($expr instanceof Composite);
         $newChildren = [];
         $matches = [];
-        /** @var Composite $expr */
         foreach ($expr as $i => $child) {
             if ($this->isEligibleChild($child)) {
                 $matches[] = $child;
             } else {
                 if ($matches) {
-                    array_push($newChildren, $this->joinMatches($matches));
+                    $newChildren[] = $this->joinMatches($matches);
                 }
                 $matches = [];
                 $newChildren[] = $child;
             }
         }
         if ($matches) {
-            array_push($newChildren, $this->joinMatches($matches));
+            $newChildren[] = $this->joinMatches($matches);
         }
 
         return $this->finishReduction($expr, $newChildren);
@@ -65,22 +48,16 @@ abstract class MatchJoiningOptimization extends RegExpOptimization
 
     /**
      * @todo handle non mergeable flags
-     *
-     * @param Expression $child
-     *
-     * @return bool
      */
     protected function isEligibleChild(Expression $child): bool
     {
-        return $child instanceof Match || $child instanceof Literal;
+        return $child instanceof NonCapturingRegExp || $child instanceof Literal;
     }
 
     /**
-     * @param Match[] $matches
-     *
-     * @return Match
+     * @param NonCapturingRegExp[] $matches
      */
-    protected function joinMatches(array $matches)
+    protected function joinMatches(array $matches): GroupMatch|NonCapturingRegExp|Ignore
     {
         $patterns = $this->createPatterns($matches);
         $pattern = $this->joinPatterns($patterns);
@@ -89,44 +66,29 @@ abstract class MatchJoiningOptimization extends RegExpOptimization
     }
 
     /**
-     * @param Match[] $matches
-     *
+     * @param NonCapturingRegExp[] $matches
      * @return string[]
      */
     protected function createPatterns(array $matches): array
     {
-        return array_map(function ($match) {
-            return $this->createPattern($match);
-        }, $matches);
+        return array_map($this->createPattern(...), $matches);
     }
 
     /**
      * @param string[] $patterns
-     *
-     * @return string|array
      */
-    protected function joinPatterns(array $patterns)
+    protected function joinPatterns(array $patterns): array|string
     {
         return implode('', $patterns);
     }
 
-    /**
-     * @param Expression $expr
-     *
-     * @return string
-     */
     protected function createPattern(Expression $expr): string
     {
         return $this->manipulator->patternFor($expr);
     }
 
-    /**
-     * @param string $pattern
-     *
-     * @return Match
-     */
-    protected function createMatch($pattern)
+    protected function createMatch(string $pattern): GroupMatch|NonCapturingRegExp|Ignore
     {
-        return new Match($pattern);
+        return new NonCapturingRegExp($pattern);
     }
 }

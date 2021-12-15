@@ -1,38 +1,21 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * © 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Tests\Optimization\Match;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Terminal\Match;
+use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
 use ju1ius\Pegasus\ExpressionBuilder;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization\CombineQuantifiedMatch;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\GrammarBuilder as GrammarBuilder;
 
-
-/**
- * @author ju1ius <ju1ius@laposte.net>
- */
 class CombineQuantifiedMatchTest extends RegExpOptimizationTestCase
 {
-
     /**
      * @dataProvider provideTestAcceptsExpression
-     *
-     * @param Expression $expr
-     * @param int        $contextType
-     * @param bool       $expected
      */
-    public function testAcceptsExpression(Expression $expr, $contextType, $expected)
+    public function testAcceptsExpression(Expression $expr, int $contextType, bool $expected)
     {
         $grammar = $this->createMock(Grammar::class);
         $ctx = OptimizationContext::of($grammar, $contextType);
@@ -41,7 +24,7 @@ class CombineQuantifiedMatchTest extends RegExpOptimizationTestCase
         $this->assertSame($expected, $result);
     }
 
-    public function provideTestAcceptsExpression()
+    public function provideTestAcceptsExpression(): iterable
     {
         yield 'Returns false in capturing context.' => [
             ExpressionBuilder::create()->between(2, 4)->match('a')->getExpression(),
@@ -77,9 +60,6 @@ class CombineQuantifiedMatchTest extends RegExpOptimizationTestCase
 
     /**
      * @dataProvider provideTestApply
-     *
-     * @param Grammar    $grammar
-     * @param Expression $expected
      */
     public function testApply(Grammar $grammar, Expression $expected)
     {
@@ -89,43 +69,43 @@ class CombineQuantifiedMatchTest extends RegExpOptimizationTestCase
         $this->assertExpressionEquals($expected, $result);
     }
 
-    public function provideTestApply()
+    public function provideTestApply(): iterable
     {
         yield 'Quantified match with an upper bound' => [
             GrammarBuilder::create()->rule('test')
                 ->between(2, 4)->match('a')
                 ->getGrammar(),
-            new Match('(?>a){2,4}', [], 'test')
+            new NonCapturingRegExp('(?>a){2,4}', [], 'test')
         ];
         yield 'Quantified match with no upper bound' => [
             GrammarBuilder::create()->rule('test')
                 ->atLeast(2)->match('a')
                 ->getGrammar(),
-            new Match('(?>a){2,}', [], 'test')
+            new NonCapturingRegExp('(?>a){2,}', [], 'test')
         ];
         yield 'Exact quantified match' => [
             GrammarBuilder::create()->rule('test')
                 ->exactly(2)->match('a')
                 ->getGrammar(),
-            new Match('(?>a){2}', [], 'test')
+            new NonCapturingRegExp('(?>a){2}', [], 'test')
         ];
         yield 'zero-or-more quantified match' => [
             GrammarBuilder::create()->rule('test')
                 ->zeroOrMore()->match('a')
                 ->getGrammar(),
-            new Match('(?>a)*', [], 'test')
+            new NonCapturingRegExp('(?>a)*', [], 'test')
         ];
         yield 'one-or-more quantified match' => [
             GrammarBuilder::create()->rule('test')
                 ->oneOrMore()->match('a')
                 ->getGrammar(),
-            new Match('(?>a)+', [], 'test')
+            new NonCapturingRegExp('(?>a)+', [], 'test')
         ];
         yield 'optional match' => [
             GrammarBuilder::create()->rule('test')
                 ->optional()->match('a')
                 ->getGrammar(),
-            new Match('(?>a)?', [], 'test')
+            new NonCapturingRegExp('(?>a)?', [], 'test')
         ];
     }
 }

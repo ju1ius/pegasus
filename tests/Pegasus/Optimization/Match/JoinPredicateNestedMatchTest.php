@@ -1,12 +1,4 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * © 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Tests\Optimization\Match;
 
@@ -14,22 +6,16 @@ use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Application\Reference;
 use ju1ius\Pegasus\Expression\Combinator\Sequence;
 use ju1ius\Pegasus\Expression\Decorator\Ignore;
-use ju1ius\Pegasus\Expression\Terminal\Match;
+use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinPredicateNestedMatch;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\GrammarBuilder;
 
-/**
- * @author ju1ius <ju1ius@laposte.net>
- */
 class JoinPredicateNestedMatchTest extends RegExpOptimizationTestCase
 {
     /**
      * @dataProvider provideTestApply
-     *
-     * @param Grammar    $input
-     * @param Expression $expected
      */
     public function testApply(Grammar $input, Expression $expected)
     {
@@ -43,7 +29,7 @@ class JoinPredicateNestedMatchTest extends RegExpOptimizationTestCase
         $this->assertExpressionEquals($expected, $result, 'In matching context');
     }
 
-    public function provideTestApply()
+    public function provideTestApply(): iterable
     {
         yield 'Sequence with a Skipped Match before an Assert of a Match' => [
             GrammarBuilder::create()->rule('test')->sequence()
@@ -54,7 +40,7 @@ class JoinPredicateNestedMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new Sequence([
                 new Reference('a'),
-                new Ignore(new Match('(?>b)(?=c)')),
+                new Ignore(new NonCapturingRegExp('(?>b)(?=c)')),
                 new Reference('d'),
             ], 'test')
         ];
@@ -67,7 +53,7 @@ class JoinPredicateNestedMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new Sequence([
                 new Reference('a'),
-                new Ignore(new Match('(?>b)(?!c)')),
+                new Ignore(new NonCapturingRegExp('(?>b)(?!c)')),
                 new Reference('d'),
             ], 'test')
         ];
@@ -80,7 +66,7 @@ class JoinPredicateNestedMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new Sequence([
                 new Reference('a'),
-                new Ignore(new Match('(?>b)\z')),
+                new Ignore(new NonCapturingRegExp('(?>b)\z')),
                 new Reference('d'),
             ], 'test')
         ];
@@ -93,7 +79,7 @@ class JoinPredicateNestedMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new Sequence([
                 new Reference('a'),
-                new Ignore(new Match('(?=b)(?>c)')),
+                new Ignore(new NonCapturingRegExp('(?=b)(?>c)')),
                 new Reference('d'),
             ], 'test')
         ];
@@ -106,7 +92,7 @@ class JoinPredicateNestedMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new Sequence([
                 new Reference('a'),
-                new Ignore(new Match('(?!b)(?>c)')),
+                new Ignore(new NonCapturingRegExp('(?!b)(?>c)')),
                 new Reference('d'),
             ], 'test')
         ];
@@ -114,11 +100,8 @@ class JoinPredicateNestedMatchTest extends RegExpOptimizationTestCase
 
     /**
      * @dataProvider provideTestAppliesTo
-     *
-     * @param Grammar $input
-     * @param bool    $applies
      */
-    public function testAppliesTo(Grammar $input, $applies)
+    public function testAppliesTo(Grammar $input, bool $applies)
     {
         $optim = $this->createOptimization(JoinPredicateNestedMatch::class);
         $expr = $input->getStartExpression();
@@ -131,95 +114,93 @@ class JoinPredicateNestedMatchTest extends RegExpOptimizationTestCase
         $this->assertSame($applies, $result, 'In matching context');
     }
 
-    public function provideTestAppliesTo()
+    public function provideTestAppliesTo(): iterable
     {
-        return [
-            'Sequence with a Skipped Match before an Assert of a Match' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->ignore()->match('b')
-                    ->assert()->match('c')
-                    ->ref('d')
-                    ->getGrammar(),
-                true
-            ],
-            'Sequence with a Skipped Match before a Not of a Match' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->ignore()->match('b')
-                    ->not()->match('c')
-                    ->ref('d')
-                    ->getGrammar(),
-                true
-            ],
-            'Sequence with a Skipped Match before EOF' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->ignore()->match('b')
-                    ->eof()
-                    ->ref('d')
-                    ->getGrammar(),
-                true
-            ],
-            'Sequence with a Skipped Match before an Assert of something else' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->ignore()->match('b')
-                    ->assert()->ref('c')
-                    ->getGrammar(),
-                false
-            ],
-            'Sequence with a Skipped Match before a Not of something else' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->ignore()->match('b')
-                    ->not()->ref('c')
-                    ->getGrammar(),
-                false
-            ],
-            'Sequence with a Skipped Match after an Assert of a Match' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->assert()->match('b')
-                    ->ignore()->match('c')
-                    ->ref('d')
-                    ->getGrammar(),
-                true
-            ],
-            'Sequence with a Skipped Match after a Not of a Match' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->not()->match('b')
-                    ->ignore()->match('c')
-                    ->ref('d')
-                    ->getGrammar(),
-                true
-            ],
-            'Sequence with a Skipped Match after an Assert of something else' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->assert()->ref('b')
-                    ->ignore()->match('c')
-                    ->getGrammar(),
-                false
-            ],
-            'Sequence with a Skipped Match after a Not of something else' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->not()->ref('b')
-                    ->ignore()->match('c')
-                    ->getGrammar(),
-                false
-            ],
-            'Sequence with non-adjacent predicate & match' => [
-                GrammarBuilder::create()->rule('test')->sequence()
-                    ->ref('a')
-                    ->ignore()->match('b')
-                    ->ref('c')
-                    ->ignore()->match('d')
-                    ->getGrammar(),
-                false
-            ],
+        yield 'Sequence with a Skipped Match before an Assert of a Match' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->ignore()->match('b')
+                ->assert()->match('c')
+                ->ref('d')
+                ->getGrammar(),
+            true
+        ];
+        yield 'Sequence with a Skipped Match before a Not of a Match' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->ignore()->match('b')
+                ->not()->match('c')
+                ->ref('d')
+                ->getGrammar(),
+            true
+        ];
+        yield 'Sequence with a Skipped Match before EOF' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->ignore()->match('b')
+                ->eof()
+                ->ref('d')
+                ->getGrammar(),
+            true
+        ];
+        yield 'Sequence with a Skipped Match before an Assert of something else' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->ignore()->match('b')
+                ->assert()->ref('c')
+                ->getGrammar(),
+            false
+        ];
+        yield 'Sequence with a Skipped Match before a Not of something else' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->ignore()->match('b')
+                ->not()->ref('c')
+                ->getGrammar(),
+            false
+        ];
+        yield 'Sequence with a Skipped Match after an Assert of a Match' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->assert()->match('b')
+                ->ignore()->match('c')
+                ->ref('d')
+                ->getGrammar(),
+            true
+        ];
+        yield 'Sequence with a Skipped Match after a Not of a Match' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->not()->match('b')
+                ->ignore()->match('c')
+                ->ref('d')
+                ->getGrammar(),
+            true
+        ];
+        yield 'Sequence with a Skipped Match after an Assert of something else' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->assert()->ref('b')
+                ->ignore()->match('c')
+                ->getGrammar(),
+            false
+        ];
+        yield 'Sequence with a Skipped Match after a Not of something else' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->not()->ref('b')
+                ->ignore()->match('c')
+                ->getGrammar(),
+            false
+        ];
+        yield 'Sequence with non-adjacent predicate & match' => [
+            GrammarBuilder::create()->rule('test')->sequence()
+                ->ref('a')
+                ->ignore()->match('b')
+                ->ref('c')
+                ->ignore()->match('d')
+                ->getGrammar(),
+            false
         ];
     }
 }

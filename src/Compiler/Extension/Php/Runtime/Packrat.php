@@ -1,12 +1,4 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * (c) 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Compiler\Extension\Php\Runtime;
 
@@ -20,12 +12,9 @@ namespace ju1ius\Pegasus\Compiler\Extension\Php\Runtime;
  */
 class Packrat extends RecursiveDescent
 {
-    /**
-     * @var array
-     */
-    protected $memo = [];
+    protected array $memo = [];
 
-    protected function beforeParse()
+    protected function beforeParse(): void
     {
         parent::beforeParse();
         $this->memo = [
@@ -34,13 +23,13 @@ class Packrat extends RecursiveDescent
         ];
     }
 
-    protected function afterParse($result)
+    protected function afterParse($result): void
     {
         parent::afterParse($result);
         $this->memo = [];
     }
 
-    protected function cut(int $position)
+    protected function cut(int $position): void
     {
         $this->cutStack->pop();
         $this->cutStack->push(true);

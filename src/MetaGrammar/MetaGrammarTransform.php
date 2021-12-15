@@ -1,12 +1,4 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * (c) 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\MetaGrammar;
 
@@ -31,12 +23,11 @@ use ju1ius\Pegasus\Expression\Decorator\Token;
 use ju1ius\Pegasus\Expression\Decorator\ZeroOrMore;
 use ju1ius\Pegasus\Expression\Terminal\Any;
 use ju1ius\Pegasus\Expression\Terminal\BackReference;
+use ju1ius\Pegasus\Expression\Terminal\CapturingRegExp;
 use ju1ius\Pegasus\Expression\Terminal\EOF;
 use ju1ius\Pegasus\Expression\Terminal\Epsilon;
 use ju1ius\Pegasus\Expression\Terminal\Fail;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
-use ju1ius\Pegasus\Expression\Terminal\Match;
-use ju1ius\Pegasus\Expression\Terminal\PCREPattern;
 use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Expression\Terminal\Word;
 use ju1ius\Pegasus\Grammar;
@@ -50,40 +41,13 @@ class MetaGrammarTransform extends Transform
         '+' => OneOrMore::class,
     ];
 
-    /**
-     * @var Grammar
-     */
-    private $grammar;
-
-    /**
-     * @var string
-     */
-    private $currentRule;
-
-    /**
-     * @var string
-     */
-    private $startRule;
-
-    /**
-     * @var string
-     */
-    private $parentGrammar;
-
-    /**
-     * @var array
-     */
-    private $imports;
-
-    /**
-     * @var bool
-     */
-    private $inlining;
-
-    /**
-     * @var bool
-     */
-    private $lexical;
+    private Grammar $grammar;
+    private ?string $currentRule;
+    private ?string $startRule;
+    private ?string $parentGrammar;
+    private array $imports;
+    private bool $inlining;
+    private bool $lexical;
 
     public function getImports(): array
     {
@@ -95,9 +59,6 @@ class MetaGrammarTransform extends Transform
         return $this->parentGrammar;
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function beforeTraverse(Node $node)
     {
         $this->grammar = new Grammar();
@@ -110,11 +71,9 @@ class MetaGrammarTransform extends Transform
     }
 
     /**
-     * @param $node
-     * @return Grammar
      * @throws Grammar\Exception\RuleNotFound
      */
-    protected function afterTraverse($node)
+    protected function afterTraverse(mixed $node): Grammar
     {
         if ($this->startRule) {
             $this->grammar->setStartRule($this->startRule);
@@ -126,7 +85,6 @@ class MetaGrammarTransform extends Transform
     //
     // Directives
     // --------------------------------------------------------------------------------------------------------------
-
 
     private function leave_import_directive(Node $node, string $alias, array $path)
     {
@@ -227,7 +185,7 @@ class MetaGrammarTransform extends Transform
 
     private function leave_labeled(Node $node, $label, Expression $labelable): Label
     {
-        return new Label($labelable, $label);
+        return new Label($label, $labelable);
     }
 
     private function leave_assert(Node $node, Expression $prefixable): Assert
@@ -311,17 +269,17 @@ class MetaGrammarTransform extends Transform
         return new Word($word);
     }
 
-    private function leave_regexp(Node $node, Node $regexp): PCREPattern
+    private function leave_regexp(Node $node, Node $regexp): RegExp
     {
         [, $pattern, $flags] = $regexp->attributes['groups'];
         // str_split returns [0 => ''] for the empty string !
         $flags = $flags ? str_split($flags) : [];
 
         if (PCREGroupInfo::captureCount($pattern) > 0) {
-            return new RegExp($pattern, $flags);
+            return new CapturingRegExp($pattern, $flags);
         }
 
-        return new Match($pattern, $flags);
+        return new CapturingRegExp($pattern, $flags);
     }
 
     private function leave_reference(Node $node, string $identifier): Reference

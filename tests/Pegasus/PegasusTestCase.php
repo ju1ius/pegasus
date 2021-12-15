@@ -7,8 +7,8 @@ use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\Terminal\GroupMatch;
 use ju1ius\Pegasus\Grammar;
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-
 
 /**
  * Class PegasusTestCase
@@ -18,13 +18,10 @@ class PegasusTestCase extends TestCase
 {
 	/**
 	 * Compares two nodes.
-     *
-     * @param Node $expected
-     * @param Node $actual
 	 */
-	public function assertNodeEquals(Node $expected, Node $actual)
+	public function assertNodeEquals(Node $expected, Node $actual, string $message = '')
 	{
-		$this->assertEquals($expected, $actual);
+		Assert::assertEquals($expected, $actual, $message);
 	}
 
     /**
@@ -38,7 +35,7 @@ class PegasusTestCase extends TestCase
     {
         $this->cleanupExpr($expected);
         $this->cleanupExpr($actual);
-        $this->assertEquals($expected, $actual, $msg);
+        Assert::assertEquals($expected, $actual, $msg);
     }
 
     /**
@@ -48,7 +45,7 @@ class PegasusTestCase extends TestCase
     public function assertGrammarEquals(Grammar $expected, Grammar $actual)
     {
         foreach ($expected as $name => $expr) {
-            $this->assertArrayHasKey($name, $actual);
+            Assert::assertArrayHasKey($name, $actual);
             $this->assertExpressionEquals($expr, $actual[$name]);
         }
     }

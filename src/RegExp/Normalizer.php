@@ -49,7 +49,7 @@ REGEXP;
 
         // 2. remove whitespace and block comments
         $pos = 0;
-        $end = strlen($pattern);
+        $end = \strlen($pattern);
         $output = '';
         $insideClass = false;
         while ($pos < $end) {
@@ -70,7 +70,7 @@ REGEXP;
                 case '[':
                     if ($insideClass && preg_match(self::POSIX_CLASS_RX, $pattern, $matches, 0, $pos)) {
                         $output .= $matches[0];
-                        $pos += strlen($matches[0]);
+                        $pos += \strlen($matches[0]);
                         continue 2;
                     }
                     $insideClass = true;
@@ -81,13 +81,13 @@ REGEXP;
                 case '#':
                     if (!$insideClass) {
                         preg_match('/\G#.*/', $pattern, $matches, 0, $pos);
-                        $pos += strlen($matches[0]);
+                        $pos += \strlen($matches[0]);
                         continue 2;
                     }
                     break;
                 default:
                     if (!$insideClass && preg_match('/\G\s+/', $pattern, $matches, 0, $pos)) {
-                        $pos += strlen($matches[0]);
+                        $pos += \strlen($matches[0]);
                         continue 2;
                     }
                     break;

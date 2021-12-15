@@ -1,70 +1,26 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * © 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Compiler\Extension\Php\Runtime;
 
 use ju1ius\Pegasus\CST\Node;
-use ju1ius\Pegasus\Parser\Exception\IncompleteParseError;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
+use SplStack;
 
-/**
- * @author ju1ius <ju1ius@laposte.net>
- */
 abstract class Parser
 {
-    /**
-     * @var string
-     */
-    protected $source;
-
-    /**
-     * @var int
-     */
-    protected $pos = 0;
-
-    /**
-     * @var bool
-     */
-    protected $isCapturing = true;
-
-    /**
-     * @var string
-     */
-    protected $startRule;
-
-    /**
-     * @var int
-     */
-    protected $rightmostFailurePosition = 0;
-
-    /**
-     * @var array
-     */
-    protected $rightmostFailures = [];
-
-    /**
-     * @var \SplStack
-     */
-    protected $cutStack;
+    protected string $source;
+    protected int $pos = 0;
+    protected bool $isCapturing = true;
+    protected string $startRule;
+    protected int $rightmostFailurePosition = 0;
+    protected array $rightmostFailures = [];
+    protected SplStack $cutStack;
 
     /**
      * Parse the entire text, using given start rule or the grammar's one,
      * requiring the entire input to match the grammar.
-     *
-     * @api
-     * @param string $source
-     * @param string|null $startRule
-     *
-     * @return Node|true|null
      */
-    final public function parse(string $source, ?string $startRule = null)
+    final public function parse(string $source, ?string $startRule = null): Node|bool
     {
         $this->isCapturing = true;
         return $this->doParse($source, 0, $startRule, false);
@@ -73,15 +29,8 @@ abstract class Parser
     /**
      * Parse text starting from given position, using given start rule or the grammar's one,
      * but does not require the entire input to match the grammar.
-     *
-     * @api
-     * @param string $source
-     * @param int $pos
-     * @param string $startRule
-     *
-     * @return Node|bool
      */
-    final public function partialParse(string $source, int $pos = 0, ?string $startRule = null)
+    final public function partialParse(string $source, int $pos = 0, ?string $startRule = null): Node|bool
     {
         $this->isCapturing = true;
         return $this->doParse($source, $pos, $startRule, true);
@@ -92,43 +41,33 @@ abstract class Parser
         int $startPos,
         ?string $startRule = null,
         bool $allowPartial = false
-    ) {
+    ): Node|bool {
         $this->source = $source;
         $this->pos = $startPos;
         $this->rightmostFailurePosition = 0;
         $startRule = $startRule ?: $this->startRule;
 
         $this->beforeParse();
-        gc_disable();
 
         $result = $this->apply($startRule);
-        $parsedFully = $this->pos === strlen($source);
+        $parsedFully = $this->pos === \strlen($source);
 
         if (!$result || (!$parsedFully && !$allowPartial)) {
             $this->afterParse($result);
-            gc_enable();
             throw new ParseError();
         }
 
         $this->afterParse($result);
-        gc_enable();
 
         return $result;
     }
 
-    protected function apply(string $rule)
+    protected function apply(string $rule): Node|bool
     {
-        $matcher = "match_{$rule}";
-
-        return $this->$matcher();
+        return $this->{"match_{$rule}"}();
     }
 
-    /**
-     * @param string $rule
-     * @param string $expr
-     * @param int $pos
-     */
-    protected function registerFailure(string $rule, $expr, int $pos)
+    protected function registerFailure(string $rule, string $expr, int $pos)
     {
         if ($pos >= $this->rightmostFailurePosition) {
             $this->rightmostFailurePosition = $pos;
@@ -142,16 +81,19 @@ abstract class Parser
         }
     }
 
-    protected function cut(int $position)
+    protected function cut(int $position): void
     {
         $this->cutStack->pop();
         $this->cutStack->push(true);
     }
 
-    protected function beforeParse() {
-        $this->cutStack = new \SplStack();
+    protected function beforeParse(): void
+    {
+        $this->cutStack = new SplStack();
         $this->cutStack->push(false);
     }
 
-    protected function afterParse($result) {}
+    protected function afterParse($result): void
+    {
+    }
 }

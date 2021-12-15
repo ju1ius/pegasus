@@ -1,24 +1,14 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * (c) 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 
 namespace ju1ius\Pegasus\Expression\Terminal;
 
-use ju1ius\Pegasus\Expression\Terminal;
+use ju1ius\Pegasus\Expression\TerminalExpression;
 use ju1ius\Pegasus\Parser\Parser;
-
 
 /**
  * Matches if there's nothing left to consume (end of input).
  */
-final class EOF extends Terminal
+final class EOF extends TerminalExpression
 {
     public function __construct()
     {
@@ -30,10 +20,9 @@ final class EOF extends Terminal
         return false;
     }
 
-    public function match(string $text, Parser $parser)
+    public function matches(string $text, Parser $parser): bool
     {
-        $start = $parser->pos;
-        return !isset($text[$start]);
+        return !isset($text[$parser->pos]);
     }
 
     public function __toString(): string

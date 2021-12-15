@@ -1,19 +1,9 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * (c) 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus;
 
 /**
  * This class provides a fluent interface for building grammars.
- *
- * @author ju1ius <ju1ius@laposte.net>
  */
 class GrammarBuilder extends ExpressionBuilder
 {
@@ -22,20 +12,13 @@ class GrammarBuilder extends ExpressionBuilder
      */
     protected string $currentRule;
 
-    protected Grammar $grammar;
-
-    /**
-     * GrammarBuilder constructor.
-     *
-     * @param Grammar $grammar
-     */
-    protected function __construct(Grammar $grammar)
-    {
-        $this->grammar = $grammar;
+    protected function __construct(
+        protected Grammar $grammar
+    ) {
         parent::__construct();
     }
 
-    public static function create(string $name = ''): self
+    public static function create(string $name = ''): static
     {
         $grammar = new Grammar();
         if ($name) {
@@ -45,17 +28,16 @@ class GrammarBuilder extends ExpressionBuilder
         return new self($grammar);
     }
 
-    public static function of(Grammar $grammar): self
+    public static function of(Grammar $grammar): static
     {
         return new self($grammar);
     }
 
     /**
      * Ends the current rule and adds it to the grammar.
-     *
      * @return $this
      */
-    public function endRule()
+    public function endRule(): static
     {
         $this->endAll();
         if ($this->rootExpr && $this->compositeStack->isEmpty()) {
@@ -74,11 +56,9 @@ class GrammarBuilder extends ExpressionBuilder
     }
 
     /**
-     * @param string $name
-     *
      * @return $this
      */
-    public function rule(string $name)
+    public function rule(string $name): static
     {
         $this->endRule();
         $this->currentRule = $name;
@@ -88,10 +68,9 @@ class GrammarBuilder extends ExpressionBuilder
 
     /**
      * @param string $identifier Defaults to the current rule.
-     *
      * @return $this
      */
-    public function super(string $identifier = '')
+    public function super(string $identifier = ''): static
     {
         parent::super($identifier ?: $this->currentRule);
 

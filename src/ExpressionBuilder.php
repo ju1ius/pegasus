@@ -1,12 +1,4 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * © 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus;
 
@@ -28,47 +20,38 @@ use ju1ius\Pegasus\Expression\Decorator\Optional;
 use ju1ius\Pegasus\Expression\Decorator\Quantifier;
 use ju1ius\Pegasus\Expression\Decorator\Token;
 use ju1ius\Pegasus\Expression\Decorator\ZeroOrMore;
-use ju1ius\Pegasus\Expression\Exception\CapturingGroupInMatchPattern;
+use ju1ius\Pegasus\Expression\Exception\CapturingGroupInNonCapturingPattern;
 use ju1ius\Pegasus\Expression\Terminal\Any;
 use ju1ius\Pegasus\Expression\Terminal\BackReference;
+use ju1ius\Pegasus\Expression\Terminal\CapturingRegExp;
 use ju1ius\Pegasus\Expression\Terminal\EOF;
 use ju1ius\Pegasus\Expression\Terminal\Epsilon;
 use ju1ius\Pegasus\Expression\Terminal\Fail;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
-use ju1ius\Pegasus\Expression\Terminal\Match;
-use ju1ius\Pegasus\Expression\Terminal\RegExp;
+use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
 use ju1ius\Pegasus\Expression\Terminal\Word;
 use ju1ius\Pegasus\RegExp\PCREGroupInfo;
+use SplStack;
 
-
-/**
- * @author ju1ius <ju1ius@laposte.net>
- */
 class ExpressionBuilder
 {
     /**
      * Stack of added composite expressions.
-     *
-     * @var \SplStack.<Composite>
+     * @var SplStack<Composite>
      */
-    protected $compositeStack;
+    protected SplStack $compositeStack;
 
     /**
      * The root expression of the tree we're building.
-     *
-     * @var Expression
      */
-    protected $rootExpr;
+    protected ?Expression $rootExpr = null;
 
     protected function __construct()
     {
-        $this->compositeStack = new \SplStack();
+        $this->compositeStack = new SplStack();
     }
 
-    /**
-     * @return ExpressionBuilder
-     */
-    public static function create()
+    public static function create(): static
     {
         return new self();
     }
@@ -82,10 +65,9 @@ class ExpressionBuilder
 
     /**
      * @param Expression $expr
-     *
      * @return $this
      */
-    public function add(Expression $expr)
+    public function add(Expression $expr): static
     {
         // stack is empty, we're at root
         if ($this->compositeStack->isEmpty()) {
@@ -106,7 +88,7 @@ class ExpressionBuilder
         $top = $this->compositeStack->top();
         // if top expression is a `Decorator` and it has already one child, end the top expression,
         // rinse and repeat for all parent decorators.
-        while ($top instanceof Decorator && count($top) > 0) {
+        while ($top instanceof Decorator && \count($top) > 0) {
             $this->end();
             if ($this->compositeStack->isEmpty()) {
                 break;
@@ -129,10 +111,9 @@ class ExpressionBuilder
 
     /**
      * Ends the current composite expression.
-     *
      * @return $this
      */
-    public function end()
+    public function end(): static
     {
         if (!$this->compositeStack->isEmpty()) {
             $this->compositeStack->pop();
@@ -142,11 +123,10 @@ class ExpressionBuilder
     }
 
     /**
-     * Ends all current composite expressions.
      *
      * @return $this
      */
-    public function endAll()
+    public function endAll(): static
     {
         while (!$this->compositeStack->isEmpty()) {
             $this->compositeStack->pop();
@@ -161,59 +141,55 @@ class ExpressionBuilder
 
     /**
      * @param string $literal
-     *
      * @return $this
      */
-    public function literal(string $literal)
+    public function literal(string $literal): static
     {
         return $this->add(new Literal($literal));
     }
 
-    public function any()
+    public function any(): static
     {
         return $this->add(new Any());
     }
 
     /**
      * @param string $word
-     *
      * @return $this
      */
-    public function word(string $word)
+    public function word(string $word): static
     {
         return $this->add(new Word($word));
     }
 
     /**
      * @param string $pattern
-     * @param array  $flags
-     *
+     * @param string[]  $flags
      * @return $this
      */
-    public function match(string $pattern, array $flags = [])
+    public function match(string $pattern, array $flags = []): static
     {
         $captureCount = PCREGroupInfo::captureCount($pattern);
         if ($captureCount > 0) {
-            throw new CapturingGroupInMatchPattern($pattern, $captureCount);
+            throw new CapturingGroupInNonCapturingPattern($pattern, $captureCount);
         }
-        return $this->add(new Match($pattern, $flags));
+        return $this->add(new NonCapturingRegExp($pattern, $flags));
     }
 
     /**
      * @param string $pattern
-     * @param array  $flags
-     *
+     * @param string[]  $flags
      * @return $this
      */
-    public function regexp(string $pattern, array $flags = [])
+    public function regexp(string $pattern, array $flags = []): static
     {
-        return $this->add(new RegExp($pattern, $flags));
+        return $this->add(new CapturingRegExp($pattern, $flags));
     }
 
     /**
      * @return $this
      */
-    public function eof()
+    public function eof(): static
     {
         return $this->add(new EOF());
     }
@@ -221,18 +197,17 @@ class ExpressionBuilder
     /**
      * @return $this
      */
-    public function epsilon()
+    public function epsilon(): static
     {
         return $this->add(new Epsilon());
     }
 
     /**
      * Alias of `epsilon`.
-     *
      * @return $this
      * @codeCoverageIgnore
      */
-    public function e()
+    public function e(): static
     {
         return $this->epsilon();
     }
@@ -240,73 +215,59 @@ class ExpressionBuilder
     /**
      * @return $this
      */
-    public function fail()
+    public function fail(): static
     {
         return $this->add(new Fail());
     }
 
     /**
-     * @param string $name
-     *
      * @return $this
      */
-    public function reference(string $name)
+    public function reference(string $name): static
     {
         return $this->add(new Reference($name));
     }
 
     /**
      * Alias of `reference`.
-     *
-     * @param string $name
-     *
      * @return $this
      * @codeCoverageIgnore
      */
-    public function ref(string $name)
+    public function ref(string $name): static
     {
         return $this->reference($name);
     }
 
     /**
-     * @param string $identifier
-     *
      * @return $this
      */
-    public function super(string $identifier)
+    public function super(string $identifier): static
     {
         return $this->add(new Super($identifier));
     }
 
     /**
-     * @param string $namespace
-     * @param string $identifier
      * @return $this
      */
-    public function call(string $namespace, string $identifier)
+    public function call(string $namespace, string $identifier): static
     {
         return $this->add(new Call($namespace, $identifier));
     }
 
     /**
-     * @param $ref
-     *
      * @return $this
      */
-    public function backReference(string $ref)
+    public function backReference(string $ref): static
     {
         return $this->add(new BackReference($ref));
     }
 
     /**
      * Alias of `backReference`
-     *
-     * @param $ref
-     *
      * @return $this
      * @codeCoverageIgnore
      */
-    public function backref(string $ref)
+    public function backref(string $ref): static
     {
         return $this->backReference($ref);
     }
@@ -318,18 +279,17 @@ class ExpressionBuilder
     /**
      * @return $this
      */
-    public function sequence()
+    public function sequence(): static
     {
         return $this->add(new Sequence());
     }
 
     /**
      * Alias of `sequence`
-     *
      * @return $this
      * @codeCoverageIgnore
      */
-    public function seq()
+    public function seq(): static
     {
         return $this->sequence();
     }
@@ -337,18 +297,17 @@ class ExpressionBuilder
     /**
      * @return $this
      */
-    public function oneOf()
+    public function oneOf(): static
     {
         return $this->add(new OneOf());
     }
 
     /**
      * Alias of `oneOf`.
-     *
      * @return $this
      * @codeCoverageIgnore
      */
-    public function alt()
+    public function alt(): static
     {
         return $this->oneOf();
     }
@@ -360,62 +319,45 @@ class ExpressionBuilder
     /**
      * Adds a Quantifier matching between $min and $max terms ({min,max}).
      * Passing null to $max makes the quantifier unbounded.
-     *
-     * @param int $min
-     * @param int|null $max
-     *
      * @return $this
      */
-    public function between(int $min = 0, ?int $max = null)
+    public function between(int $min = 0, ?int $max = null): static
     {
         return $this->add(new Quantifier(null, $min, $max));
     }
 
     /**
      * Alias of `between`.
-     *
-     * @param int $min
-     * @param int|null $max
-     *
      * @return $this
      */
-    public function q(int $min = 0, ?int $max = null)
+    public function q(int $min = 0, ?int $max = null): static
     {
         return $this->between($min, $max);
     }
 
     /**
      * Adds a Quantifier matching exactly $n terms ({n,n})
-     *
-     * @param int $n
-     *
      * @return $this
      */
-    public function exactly(int $n)
+    public function exactly(int $n): static
     {
         return $this->add(new Quantifier(null, $n, $n));
     }
 
     /**
      * Adds a Quantifier matching at least $n terms ({n,})
-     *
-     * @param int $n
-     *
      * @return $this
      */
-    public function atLeast(int $n)
+    public function atLeast(int $n): static
     {
         return $this->add(new Quantifier(null, $n));
     }
 
     /**
      * Adds a Quantifier matching at most $n terms ({0,n})
-     *
-     * @param int $n
-     *
      * @return $this
      */
-    public function atMost(int $n)
+    public function atMost(int $n): static
     {
         return $this->add(new Quantifier(null, 0, $n));
     }
@@ -423,18 +365,17 @@ class ExpressionBuilder
     /**
      * @return $this
      */
-    public function optional()
+    public function optional(): static
     {
         return $this->add(new Optional());
     }
 
     /**
      * Alias of `optional`.
-     *
      * @return $this
      * @codeCoverageIgnore
      */
-    public function opt()
+    public function opt(): static
     {
         return $this->optional();
     }
@@ -442,7 +383,7 @@ class ExpressionBuilder
     /**
      * @return $this
      */
-    public function zeroOrMore()
+    public function zeroOrMore(): static
     {
         return $this->add(new ZeroOrMore());
     }
@@ -450,7 +391,7 @@ class ExpressionBuilder
     /**
      * @return $this
      */
-    public function oneOrMore()
+    public function oneOrMore(): static
     {
         return $this->add(new OneOrMore());
     }
@@ -462,7 +403,7 @@ class ExpressionBuilder
     /**
      * @return $this
      */
-    public function not()
+    public function not(): static
     {
         return $this->add(new Not());
     }
@@ -470,7 +411,7 @@ class ExpressionBuilder
     /**
      * @return $this
      */
-    public function assert()
+    public function assert(): static
     {
         return $this->add(new Assert());
     }
@@ -482,7 +423,7 @@ class ExpressionBuilder
     /**
      * @return $this
      */
-    public function ignore()
+    public function ignore(): static
     {
         return $this->add(new Ignore());
     }
@@ -490,7 +431,7 @@ class ExpressionBuilder
     /**
      * @return $this
      */
-    public function token()
+    public function token(): static
     {
         return $this->add(new Token());
     }
@@ -500,17 +441,15 @@ class ExpressionBuilder
      *
      * @return $this
      */
-    public function label(string $label)
+    public function label(string $label): static
     {
-        return $this->add(new Label(null, $label));
+        return $this->add(new Label($label, null));
     }
 
     /**
-     * @param $name
-     *
      * @return $this
      */
-    public function named(string $name)
+    public function named(string $name): static
     {
         return $this->add(new NodeAction(null, $name));
     }
@@ -519,7 +458,7 @@ class ExpressionBuilder
     // Special Expressions
     // --------------------------------------------------------------------------------------------------------------
 
-    public function cut()
+    public function cut(): static
     {
         return $this->add(new Cut());
     }

@@ -10,7 +10,6 @@ use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
-use PHPUnit\Framework\Assert;
 
 class OneOfTest extends ExpressionTestCase
 {

@@ -1,12 +1,4 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * (c) 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Compiler\Twig\Extension;
 
@@ -14,46 +6,45 @@ use ju1ius\Pegasus\Compiler\CompilationContext;
 use ju1ius\Pegasus\Compiler\CompilerInterface;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Decorator\Quantifier;
-use ju1ius\Pegasus\Expression\Terminal\Match;
+use ju1ius\Pegasus\Expression\Terminal\CapturingRegExp;
 use ju1ius\Pegasus\Utils\Str;
 use Twig\Environment;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
+use Twig\TwigFunction;
 
 class PegasusTwigExtension extends AbstractExtension
 {
-    private CompilerInterface $compiler;
-
-    public function __construct(CompilerInterface $compiler)
-    {
-        $this->compiler = $compiler;
+    public function __construct(
+        private CompilerInterface $compiler
+    ) {
     }
 
-    public function getName()
+    public function getName(): string
     {
         return 'pegasus';
     }
 
-    public function getTokenParsers()
+    public function getTokenParsers(): array
     {
         return [];
     }
 
-    public function getFunctions()
+    public function getFunctions(): array
     {
         return [
-            new \Twig_Function('render_expr', [$this, 'renderExpression'], [
+            new TwigFunction('render_expr', [$this, 'renderExpression'], [
                 'needs_environment' => true,
                 'needs_context' => true,
             ]),
-            new \Twig_Function('render_rule', [$this, 'renderRule'], [
+            new TwigFunction('render_rule', [$this, 'renderRule'], [
                 'needs_environment' => true,
                 'needs_context' => true,
             ]),
         ];
     }
 
-    public function getFilters()
+    public function getFilters(): array
     {
         return [
             new TwigFilter('indent', [$this, 'indent']),
@@ -123,7 +114,7 @@ class PegasusTwigExtension extends AbstractExtension
             }
             return 'expression/Quantifier.twig';
         }
-        if ($expr instanceof Match) {
+        if ($expr instanceof CapturingRegExp) {
             return 'expression/Match.twig';
         }
 

@@ -4,8 +4,10 @@
 namespace ju1ius\Pegasus\Expression\Application;
 
 
+use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\CST\Node\ExternalReference;
 use ju1ius\Pegasus\Expression\Application;
+use ju1ius\Pegasus\Grammar\Exception\TraitNotFound;
 use ju1ius\Pegasus\Parser\Parser;
 
 
@@ -14,21 +16,12 @@ use ju1ius\Pegasus\Parser\Parser;
  */
 class Call extends Application
 {
-    /**
-     * @var string
-     */
-    private $namespace;
-
-    /**
-     * @var string
-     */
-    private $identifier;
-
-    public function __construct(string $namespace, string $identifier, string $name = '')
-    {
+    public function __construct(
+        private string $namespace,
+        private string $identifier,
+        string $name = ''
+    ) {
         parent::__construct($name);
-        $this->namespace = $namespace;
-        $this->identifier = $identifier;
     }
 
     public function getNamespace(): string
@@ -41,7 +34,10 @@ class Call extends Application
         return $this->identifier;
     }
 
-    public function match(string $text, Parser $parser)
+    /**
+     * @throws TraitNotFound
+     */
+    public function matches(string $text, Parser $parser): Node|bool
     {
         // backup state
         $start = $parser->pos;

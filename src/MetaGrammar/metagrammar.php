@@ -2,7 +2,6 @@
 
 use ju1ius\Pegasus\GrammarBuilder;
 
-
 $QUANTIFIER_PATTERN = <<<'EOS'
 (?>
     (?<symbol>[*+?])                        # short quantifier

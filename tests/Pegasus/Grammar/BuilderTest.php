@@ -72,7 +72,7 @@ class BuilderTest extends PegasusTestCase
                 ->literal('bar')
                 ->getGrammar(),
             ['test' => new Sequence([
-                new Ignore(new Label(new OneOrMore(new Literal('foo')), 'a')),
+                new Ignore(new Label('a', new OneOrMore(new Literal('foo')))),
                 new Literal('bar')
             ], 'test')]
         ];

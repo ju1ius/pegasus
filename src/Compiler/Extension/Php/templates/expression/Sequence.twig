@@ -68,7 +68,7 @@ else if ($this->isCapturing) {
 
 
 {% block capturing_default_success %}
-    switch(count({{ children_var }})) {
+    switch(\count({{ children_var }})) {
         case 0: {{ result_var }} = true; break;
 {% if not expr.name %}
         case 1: {{ result_var }} = {{ children_var }}[0]; break;

@@ -2,7 +2,7 @@
 {{ expr_comment(expr) }}
 {{ result_var }} = null;
 $backref = $scope['{{ expr.identifier }}'];
-$length = strlen($backref);
+$length = \strlen($backref);
 if ($backref === substr($this->source, $this->pos, $length)) {
     $start = $this->pos;
     $end = $this->pos += $length;

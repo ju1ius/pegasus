@@ -1,61 +1,43 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * (c) 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Compiler;
 
 use ju1ius\Pegasus\Compiler\Twig\Extension\PegasusTwigExtension;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimizer;
-
+use Twig\Environment;
+use Twig\Error\Error as TwigError;
+use Twig\Extension\AbstractExtension;
+use Twig\Extension\DebugExtension;
+use Twig\Loader\FilesystemLoader;
 
 abstract class Compiler implements CompilerInterface
 {
     const PARSER_RECURSIVE_DESCENT = 'recursive_descent';
-
     const PARSER_PACKRAT = 'packrat';
-
     const PARSER_EXTENDED_PACKRAT = 'extended_packrat';
 
-    /**
-     * @var \Twig_Environment
-     */
-    protected $twig = null;
+    protected ?Environment $twig = null;
 
     public function __construct()
     {
         $this->setupTwigEnvironment();
     }
 
-    /**
-     * @param array $args
-     *
-     * @return string
-     */
     abstract protected function renderParser(array $args = []): string;
 
     /**
      * Override this to add optimizations
-     *
-     * @param Grammar $grammar
-     * @param int $optimizationLevel
-     * @return Grammar
      */
     abstract protected function optimizeGrammar(Grammar $grammar, int $optimizationLevel): Grammar;
 
-    public function getTwigEnvironment(): \Twig_Environment
+    public function getTwigEnvironment(): Environment
     {
         return $this->twig;
     }
 
     /**
-     * @return \Twig_Extension[]
+     * @return AbstractExtension[]
      */
     public function getTwigExtensions(): array
     {
@@ -63,12 +45,10 @@ abstract class Compiler implements CompilerInterface
     }
 
     /**
-     * @param string $path
-     * @param array $args
-     * @return string
      * @throws Grammar\Exception\MissingTraitAlias
      */
-    public function compileFile(string $path, array $args = []): string {
+    public function compileFile(string $path, array $args = []): string
+    {
         if (empty($args['name'])) {
             $args['name'] = ucfirst(explode('.', basename($path))[0]);
         }
@@ -78,9 +58,6 @@ abstract class Compiler implements CompilerInterface
     }
 
     /**
-     * @param string $syntax
-     * @param array $args
-     * @return string
      * @throws Grammar\Exception\MissingTraitAlias
      */
     public function compileSyntax(string $syntax, array $args = []): string
@@ -105,8 +82,6 @@ abstract class Compiler implements CompilerInterface
     }
 
     /**
-     * @param Grammar $grammar
-     * @param array $args
      * @return string
      */
     public function compileGrammar(Grammar $grammar, array $args = []): string
@@ -130,6 +105,9 @@ abstract class Compiler implements CompilerInterface
         ]);
     }
 
+    /**
+     * @throws TwigError
+     */
     public function renderTemplate(string $tpl, array $args = []): string
     {
         return $this->twig->render($tpl, $args);
@@ -137,14 +115,14 @@ abstract class Compiler implements CompilerInterface
 
     protected function setupTwigEnvironment(): void
     {
-        $loader = new \Twig_Loader_Filesystem($this->getTemplateDirectories());
-        $this->twig = new \Twig_Environment($loader, [
+        $loader = new FilesystemLoader($this->getTemplateDirectories());
+        $this->twig = new Environment($loader, [
             'autoescape' => false,
             'debug' => true,
             'strict_variables' => true,
         ]);
         $extensions = [
-            new \Twig_Extension_Debug,
+            new DebugExtension(),
             new PegasusTwigExtension($this),
         ];
         $extensions = array_merge($extensions, $this->getTwigExtensions());
@@ -153,7 +131,7 @@ abstract class Compiler implements CompilerInterface
         }
     }
 
-    protected function guessParserType(CompilationContext $context, array $args)
+    protected function guessParserType(CompilationContext $context, array $args): string
     {
         $grammar = $context->getGrammar();
         $analysis = $context->getAnalysis();

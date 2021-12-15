@@ -1,40 +1,28 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * (c) 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Expression;
 
 use ju1ius\Pegasus\Expression;
+use SplObjectStorage;
 
 class ExpressionTraverser implements ExpressionTraverserInterface
 {
     /**
-     * @var \SplObjectStorage.<ExpressionVisitor>
+     * @var SplObjectStorage<ExpressionVisitor>
      */
-    protected $visitors;
+    protected SplObjectStorage $visitors;
 
     /**
      * Keeps track of the traversed expressions to avoid infinite recursion with recursive rules.
-     *
-     * @var array
      */
-    protected $visited = [];
+    protected array $visited = [];
 
     public function __construct()
     {
-        $this->visitors = new \SplObjectStorage();
+        $this->visitors = new SplObjectStorage();
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function addVisitor(ExpressionVisitorInterface ...$visitors)
+    public function addVisitor(ExpressionVisitorInterface ...$visitors): static
     {
         foreach ($visitors as $visitor) {
             $this->visitors->attach($visitor);
@@ -43,10 +31,7 @@ class ExpressionTraverser implements ExpressionTraverserInterface
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function removeVisitor(ExpressionVisitorInterface ...$visitors)
+    public function removeVisitor(ExpressionVisitorInterface ...$visitors): static
     {
         foreach ($visitors as $visitor) {
             $this->visitors->detach($visitor);
@@ -55,10 +40,7 @@ class ExpressionTraverser implements ExpressionTraverserInterface
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function traverse(Expression $expr)
+    public function traverse(Expression $expr): mixed
     {
         $this->visited = [];
 
@@ -81,7 +63,7 @@ class ExpressionTraverser implements ExpressionTraverserInterface
         return $expr;
     }
 
-    protected function traverseExpression(Expression $expr, $index = null, $isLast = false)
+    protected function traverseExpression(Expression $expr, $index = null, $isLast = false): Expression
     {
         foreach ($this->visitors as $visitor) {
             if (null !== $result = $visitor->enterExpression($expr, $index, $isLast)) {
@@ -90,7 +72,7 @@ class ExpressionTraverser implements ExpressionTraverserInterface
         }
 
         if ($expr instanceof Composite) {
-            $childCount = count($expr);
+            $childCount = \count($expr);
             foreach ($expr as $i => $child) {
                 // protect against recursive rules
                 if (isset($this->visited[$child->id])) {

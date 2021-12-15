@@ -1,12 +1,4 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * © 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Debug;
 
@@ -29,18 +21,13 @@ use ju1ius\Pegasus\Expression\Decorator\Token;
 use ju1ius\Pegasus\Expression\Decorator\Trace;
 use ju1ius\Pegasus\Expression\ExpressionTraverser;
 use ju1ius\Pegasus\Expression\ExpressionVisitor;
-use ju1ius\Pegasus\Expression\Terminal;
+use ju1ius\Pegasus\Expression\Terminal\CapturingRegExp;
 use ju1ius\Pegasus\Expression\Terminal\GroupMatch;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
-use ju1ius\Pegasus\Expression\Terminal\Match;
-use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Expression\Terminal\Word;
+use ju1ius\Pegasus\Expression\TerminalExpression;
 use Symfony\Component\Console\Output\OutputInterface;
 
-
-/**
- * @author ju1ius <ju1ius@laposte.net>
- */
 final class ExpressionHighlighter extends ExpressionVisitor
 {
     /**
@@ -113,7 +100,7 @@ final class ExpressionHighlighter extends ExpressionVisitor
                 $this->output->write('<d>::</d>');
                 $this->output->write(sprintf('<ref>%s</ref>', $id));
             }
-        } elseif ($expr instanceof Terminal) {
+        } elseif ($expr instanceof TerminalExpression) {
             if ($expr instanceof Literal) {
                 $this->output->write(sprintf(
                     '<d>%1$s</d><term>%2$s</term><d>%1$s</d>',
@@ -125,7 +112,7 @@ final class ExpressionHighlighter extends ExpressionVisitor
                     '<d>`</d><term>%s</term><d>`</d>',
                     $expr->getWord()
                 ));
-            } elseif ($expr instanceof Match || $expr instanceof RegExp) {
+            } elseif ($expr instanceof CapturingRegExp || $expr instanceof CapturingRegExp) {
                 $this->output->write(sprintf(
                     '<d>/</d><term>%s</term><d>/</d><term>%s</term>',
                     $expr->getPattern(),

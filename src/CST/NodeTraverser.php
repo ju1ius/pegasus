@@ -1,21 +1,10 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * © 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\CST;
 
 use ju1ius\Pegasus\CST\Node\Composite;
 use ju1ius\Pegasus\CST\Node\Invalid;
 
-/**
- * @author ju1ius <ju1ius@laposte.net>
- */
 class NodeTraverser implements NodeTraverserInterface
 {
     /**
@@ -85,7 +74,7 @@ class NodeTraverser implements NodeTraverserInterface
         }
 
         if ($node instanceof Composite) {
-            $childCount = count($node->children);
+            $childCount = \count($node->children);
             foreach ($node->children as $i => $child) {
                 if (!$child instanceof Node) {
                     $child = new Invalid($child);

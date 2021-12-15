@@ -1,27 +1,22 @@
 <?php declare(strict_types=1);
 
-
 namespace ju1ius\Pegasus\Grammar\Optimization;
-
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Decorator\Quantifier;
 use ju1ius\Pegasus\Expression\Terminal\EOF;
 use ju1ius\Pegasus\Expression\Terminal\GroupMatch;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
-use ju1ius\Pegasus\Expression\Terminal\PCREPattern;
+use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Utils\Str;
-
 
 class PCREManipulator implements RegExpManipulator
 {
     protected const MERGEABLE_FLAGS = ['i', 'm', 's', 'x', 'U', 'X', 'J'];
 
-    protected $delimiter;
-
-    public function __construct(string $delimiter = '/')
-    {
-        $this->delimiter = $delimiter;
+    public function __construct(
+        protected string $delimiter = '/'
+    ) {
     }
 
     public function atomic(string $pattern): string
@@ -48,7 +43,7 @@ class PCREManipulator implements RegExpManipulator
         if ($expr instanceof EOF) {
             return '\z';
         }
-        if ($expr instanceof PCREPattern || $expr instanceof GroupMatch) {
+        if ($expr instanceof RegExp || $expr instanceof GroupMatch) {
             return $this->patternForMatch($expr);
         }
         if ($expr instanceof Quantifier) {
@@ -58,7 +53,7 @@ class PCREManipulator implements RegExpManipulator
         throw new \LogicException(sprintf('Cannot compile %s to PCRE pattern.', Str::className($expr)));
     }
 
-    public function hasUnmergeableFlags(PCREPattern $expr): bool
+    public function hasUnmergeableFlags(RegExp $expr): bool
     {
         foreach ($expr->getFlags() as $flag) {
             if (!in_array($flag, self::MERGEABLE_FLAGS, true)) {
@@ -92,7 +87,7 @@ class PCREManipulator implements RegExpManipulator
     }
 
     /**
-     * @param PCREPattern|GroupMatch $expr
+     * @param RegExp|GroupMatch $expr
      * @return string
      */
     protected function patternForMatch($expr): string

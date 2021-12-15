@@ -1,12 +1,4 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * (c) 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Expression\Combinator;
 
@@ -18,14 +10,10 @@ use ju1ius\Pegasus\Parser\Parser;
 
 /**
  * A series of expressions that must match contiguous, ordered pieces of the text.
- *
  * In other words, it's a concatenation operator: each piece has to match, one after another.
  */
 final class Sequence extends Combinator
 {
-    /**
-     * @return int
-     */
     public function getCaptureCount(): int
     {
         $n = 0;
@@ -36,14 +24,14 @@ final class Sequence extends Combinator
         return $n;
     }
 
-    public function match(string $text, Parser $parser)
+    public function matches(string $text, Parser $parser): Node|bool
     {
         $startPos = $parser->pos;
         $capturing = $parser->isCapturing;
         $children = $capturing ? [] : null;
         $captureCount = 0;
         foreach ($this->children as $child) {
-            $result = $child->match($text, $parser);
+            $result = $child->matches($text, $parser);
             if (!$result) {
                 $parser->pos = $startPos;
                 return false;
@@ -80,10 +68,7 @@ final class Sequence extends Combinator
         }
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function stringChildren()
+    protected function stringChildren(): array
     {
         return array_map(function (Expression $child) {
             if ($child instanceof OneOf || $child instanceof NodeAction) {

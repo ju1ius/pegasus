@@ -1,54 +1,22 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * © 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Compiler;
 
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Analysis;
 
-/**
- * @author ju1ius <ju1ius@laposte.net>
- */
 final class CompilationContext
 {
     const TYPE_MATCHING = 1;
     const TYPE_CAPTURING = 2;
 
-    /**
-     * @var Grammar
-     */
-    private $grammar;
+    private Analysis $analysis;
+    private string $ruleName;
 
-    /**
-     * @var int
-     */
-    private $type;
-
-    /**
-     * @var Analysis
-     */
-    private $analysis;
-
-    /**
-     * @var string
-     */
-    private $ruleName;
-
-    /**
-     * @param Grammar $grammar
-     * @param int     $type
-     */
-    private function __construct(Grammar $grammar, int $type = self::TYPE_CAPTURING)
-    {
-        $this->grammar = $grammar;
-        $this->type = $type;
+    private function __construct(
+        private Grammar $grammar,
+        private int $type = self::TYPE_CAPTURING
+    ) {
         $this->analysis = new Analysis($grammar);
     }
 

@@ -1,60 +1,32 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * (c) 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Grammar;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar;
+use ju1ius\Pegasus\Grammar\Exception\MissingStartRule;
 
 /**
  * Provides contextual information to optimizations.
- *
- * @author ju1ius <ju1ius@laposte.net>
  */
 final class OptimizationContext
 {
     const TYPE_MATCHING = 1;
     const TYPE_CAPTURING = 2;
 
-    /**
-     * @var Grammar
-     */
-    private $grammar;
-
-    /**
-     * @var int
-     */
-    private $type;
-
-    /**
-     * @var Analysis
-     */
-    private $analysis;
+    private Analysis $analysis;
 
     /**
      * @param Grammar $grammar
      * @param int     $type
      */
-    private function __construct(Grammar $grammar, int $type = self::TYPE_CAPTURING)
-    {
-        $this->grammar = $grammar;
-        $this->type = $type;
+    private function __construct(
+        private Grammar $grammar,
+        private int $type = self::TYPE_CAPTURING
+    ) {
         $this->analysis = new Analysis($grammar);
     }
 
-    /**
-     * @param Grammar $grammar
-     * @param int     $type
-     *
-     * @return OptimizationContext
-     */
     public static function of(Grammar $grammar, int $type = self::TYPE_CAPTURING): self
     {
         return new self($grammar, $type);
@@ -62,8 +34,6 @@ final class OptimizationContext
 
     /**
      * Returns a new matching context for the grammar.
-     *
-     * @return OptimizationContext
      */
     public function matching(): self
     {
@@ -72,8 +42,6 @@ final class OptimizationContext
 
     /**
      * Returns a new capturing context for the grammar.
-     *
-     * @return OptimizationContext
      */
     public function capturing(): self
     {
@@ -95,19 +63,13 @@ final class OptimizationContext
         return $this->analysis;
     }
 
-    /**
-     * @param string $ruleName
-     *
-     * @return Expression
-     */
     public function getRule(string $ruleName): Expression
     {
         return $this->grammar[$ruleName];
     }
 
     /**
-     * @return string
-     * @throws \ju1ius\Pegasus\Grammar\Exception\MissingStartRule
+     * @throws MissingStartRule
      */
     public function getStartRule(): string
     {
@@ -116,7 +78,7 @@ final class OptimizationContext
 
     /**
      * @return string[]
-     * @throws Exception\MissingStartRule
+     * @throws MissingStartRule
      */
     public function getReferencedRules(): array
     {

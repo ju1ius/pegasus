@@ -1,16 +1,7 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * (c) 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\CST;
 use ju1ius\Pegasus\Utils\Str;
-
 
 /**
  * Base class for Concrete-Syntax-Tree nodes.
@@ -24,48 +15,36 @@ abstract class Node
 {
     /**
      * The name of this node.
-     *
-     * @var string
      */
-    public $name;
+    public string $name;
 
     /**
      * The position in the text where the expression started matching.
-     *
-     * @var int
      */
-    public $start;
+    public int $start;
 
     /**
      * The position after start where the expression first didn't match.
      *
      * It represents the offset _after_ the match so it's typically equal to
      * `$this->start + strlen($this->value)`.
-     *
-     * @var int
      */
-    public $end;
+    public int $end;
 
     /**
      * The value matched by this node (only for terminals).
-     *
-     * @var string|null
      */
     public ?string $value = null;
 
     /**
      * Optional attributes map.
-     *
-     * @var array
      */
-    public $attributes;
+    public array $attributes = [];
 
     /**
      * Returns the text this node matched
      *
      * @param string $input The original input string
-     *
-     * @return string
      */
     final public function getText(string $input): string
     {
@@ -83,7 +62,7 @@ abstract class Node
             $this->name,
             $this->start,
             $this->end,
-            (string)$this->value
+            $this->value,
         );
     }
 }

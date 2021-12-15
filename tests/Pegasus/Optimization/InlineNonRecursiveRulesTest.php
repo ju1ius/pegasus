@@ -1,12 +1,4 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * © 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Tests\Optimization;
 
@@ -16,24 +8,18 @@ use ju1ius\Pegasus\Expression\Combinator\Sequence;
 use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Expression\Decorator\ZeroOrMore;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
-use ju1ius\Pegasus\Expression\Terminal\Match;
+use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization\InlineNonRecursiveRules;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\GrammarBuilder;
 
-/**
- * @author ju1ius <ju1ius@laposte.net>
- */
 class InlineNonRecursiveRulesTest extends OptimizationTestCase
 {
     /**
      * @dataProvider provideTestApply
-     * @param Grammar    $grammar
-     * @param            $rule
-     * @param Expression $expected
      */
-    public function testApply(Grammar $grammar, $rule, Expression $expected)
+    public function testApply(Grammar $grammar, string $rule, Expression $expected)
     {
         $result = $this->applyOptimization(
             new InlineNonRecursiveRules(),
@@ -43,7 +29,7 @@ class InlineNonRecursiveRulesTest extends OptimizationTestCase
         $this->assertExpressionEquals($expected, $result);
     }
 
-    public function provideTestApply()
+    public function provideTestApply(): iterable
     {
         yield [
             GrammarBuilder::create()
@@ -58,19 +44,15 @@ class InlineNonRecursiveRulesTest extends OptimizationTestCase
 
     /**
      * @dataProvider provideTestAppliesTo
-     *
-     * @param Grammar $grammar
-     * @param         $rule
-     * @param         $expected
      */
-    public function testAppliesTo(Grammar $grammar, $rule, $expected)
+    public function testAppliesTo(Grammar $grammar, string $rule, bool $expected)
     {
         $result = (new InlineNonRecursiveRules)
             ->willPreProcessExpression($grammar[$rule], OptimizationContext::of($grammar));
         $this->assertSame($expected, $result);
     }
 
-    public function provideTestAppliesTo()
+    public function provideTestAppliesTo(): iterable
     {
         yield 'Reference to a non-recursive rule' => [
             GrammarBuilder::create()
@@ -102,47 +84,41 @@ class InlineNonRecursiveRulesTest extends OptimizationTestCase
 
     /**
      * @dataProvider provideTestApplyOnWholeGrammar
-     *
-     * @param Grammar $grammar
-     * @param         $ruleToTest
-     * @param         $expected
      */
-    public function testApplyOnWholeGrammar(Grammar $grammar, $ruleToTest, $expected)
+    public function testApplyOnWholeGrammar(Grammar $grammar, string $ruleToTest, Expression $expected)
     {
         $optimized = $this->optimizeGrammar($grammar, new InlineNonRecursiveRules());
         $actual = $optimized[$ruleToTest];
         $this->assertExpressionEquals($expected, $actual);
     }
 
-    public function provideTestApplyOnWholeGrammar()
+    public function provideTestApplyOnWholeGrammar(): iterable
     {
-        return [
-            [
-                GrammarBuilder::create()
-                    ->rule('test')->sequence()
-                        ->ref('junk')
-                        ->literal('foo')
-                        ->ref('junk')
-                    ->rule('junk')->ignore()->zeroOrMore()->oneOf()
-                        ->ref('whitespace')
-                        ->ref('comment')
-                    ->rule('whitespace')->match('\s+')
-                    ->rule('comment')->match('\#[^\n]*')
-                    ->getGrammar()
-                    ->inline('comment', 'whitespace', 'junk'),
-                'test',
-                new Sequence([
-                    new Ignore(new ZeroOrMore(new OneOf([
-                        new Match('\s+'),
-                        new Match('\#[^\n]*'),
-                    ]))),
-                    new Literal('foo'),
-                    new Ignore(new ZeroOrMore(new OneOf([
-                        new Match('\s+'),
-                        new Match('\#[^\n]*'),
-                    ])))
-                ], 'test')
-            ]
+        yield [
+            GrammarBuilder::create()
+                ->rule('test')->sequence()
+                    ->ref('junk')
+                    ->literal('foo')
+                    ->ref('junk')
+                ->rule('junk')->ignore()->zeroOrMore()->oneOf()
+                    ->ref('whitespace')
+                    ->ref('comment')
+                ->rule('whitespace')->match('\s+')
+                ->rule('comment')->match('\#[^\n]*')
+                ->getGrammar()
+                ->inline('comment', 'whitespace', 'junk'),
+            'test',
+            new Sequence([
+                new Ignore(new ZeroOrMore(new OneOf([
+                    new NonCapturingRegExp('\s+'),
+                    new NonCapturingRegExp('\#[^\n]*'),
+                ]))),
+                new Literal('foo'),
+                new Ignore(new ZeroOrMore(new OneOf([
+                    new NonCapturingRegExp('\s+'),
+                    new NonCapturingRegExp('\#[^\n]*'),
+                ])))
+            ], 'test')
         ];
     }
 }

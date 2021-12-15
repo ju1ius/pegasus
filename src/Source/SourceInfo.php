@@ -1,19 +1,14 @@
 <?php declare(strict_types=1);
 
-
 namespace ju1ius\Pegasus\Source;
-
 
 use ju1ius\Pegasus\Source\Exception\OffsetNotFound;
 use ju1ius\Pegasus\Source\Exception\PositionNotFound;
 use ju1ius\Pegasus\Utils\Str;
 
-
 final class SourceInfo
 {
-    private string $source;
     private int $sourceLength;
-    private int $tabSize = 4;
     /**
      * The line info array (0-based offsets)
      * [
@@ -24,11 +19,11 @@ final class SourceInfo
     private array $lines = [];
     private int $numLines = 0;
 
-    public function __construct(string $text, int $tabSize = 4)
-    {
-        $this->source = $text;
-        $this->sourceLength = strlen($this->source);
-        $this->tabSize = 4;
+    public function __construct(
+        private string $source,
+        private int $tabSize = 4
+    ) {
+        $this->sourceLength = \strlen($this->source);
     }
 
     /**
@@ -41,10 +36,10 @@ final class SourceInfo
         if (!$this->lines) {
             $lines = preg_split('/\R/', $this->source, -1, PREG_SPLIT_OFFSET_CAPTURE);
             foreach ($lines as $i => [$line, $offset]) {
-                $length = strlen($line);
+                $length = \strlen($line);
                 $this->lines[$i] = [$offset, $offset + $length, $length, $line];
             }
-            $this->numLines = count($lines);
+            $this->numLines = \count($lines);
         }
 
         return $this->lines;
@@ -68,7 +63,6 @@ final class SourceInfo
     }
 
     /**
-     * @param int $offset
      * @return int[]
      */
     public function positionFromOffset(int $offset): array
@@ -108,7 +102,7 @@ final class SourceInfo
         $firstLineNo = $line;
         $linesBefore = [];
         $linesAfter = [];
-        $gutterWidth = strlen((string)$this->numLines);
+        $gutterWidth = \strlen((string)$this->numLines);
         $gutterSeparator = '│ ';
         $lineFormat = "%{$gutterWidth}d{$gutterSeparator}%s";
         $maxLineLength = $width - $gutterWidth - mb_strlen($gutterSeparator, 'utf-8');
@@ -160,9 +154,6 @@ final class SourceInfo
 
     /**
      * Performs a binary search on the line info array to find the line of the given position.
-     *
-     * @param int $offset
-     * @return int
      */
     private function lineFromOffset(int $offset): int
     {

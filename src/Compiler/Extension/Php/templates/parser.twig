@@ -25,10 +25,8 @@ class {{ class }} extends {{ base_class }}
 {
     /**
      * The default start rule from the grammar.
-     *
-     * @var string
      */
-    protected $startRule = '{{ context.grammar.startRule }}';
+    protected string $startRule = '{{ context.grammar.startRule }}';
 
 {% for ruleName, expr in context.grammar %}
     {{ render_rule(ruleName, expr, context)|indent }}

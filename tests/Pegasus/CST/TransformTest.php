@@ -1,12 +1,4 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * © 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Tests\CST;
 
@@ -19,10 +11,6 @@ use ju1ius\Pegasus\CST\Node\Terminal;
 use ju1ius\Pegasus\CST\Transform;
 use PHPUnit\Framework\TestCase;
 
-
-/**
- * @author ju1ius <ju1ius@laposte.net>
- */
 class TransformTest extends TestCase
 {
     public function testDefaultBeforeAndAfterTraverse()

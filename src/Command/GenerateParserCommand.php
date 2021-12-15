@@ -1,12 +1,4 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * (c) 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Command;
 
@@ -23,20 +15,13 @@ class GenerateParserCommand extends Command
     use InteractiveGrammarBuilderTrait;
     use StandardInputReaderTrait;
 
-    /**
-     * @var ExtensionRegistry
-     */
-    private $registry;
-
-    public function __construct(ExtensionRegistry $registry, ?string $name = null)
-    {
+    public function __construct(
+        private ExtensionRegistry $registry,
+        ?string $name = null
+    ) {
         parent::__construct($name);
-        $this->registry = $registry;
     }
 
-    /**
-     * @inheritdoc
-     */
     protected function configure()
     {
         $this->setName('generate:parser')
@@ -78,7 +63,6 @@ class GenerateParserCommand extends Command
                 null,
                 InputOption::VALUE_NONE,
                 'Disables the Packrat cache if the grammar is not left-recursive.',
-                false
             )
             ->addOption(
                 'extension-dir',
@@ -98,9 +82,6 @@ class GenerateParserCommand extends Command
         $this->registry->addDirectory(...$extension_dirs);
     }
 
-    /**
-     * @inheritdoc
-     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $language = $input->getOption('language');
@@ -125,7 +106,7 @@ class GenerateParserCommand extends Command
         echo $code . PHP_EOL;
     }
 
-    protected function getCompilerOptions(InputInterface $input)
+    protected function getCompilerOptions(InputInterface $input): array
     {
         $options = $input->getOptions();
         $excluded = [
@@ -134,8 +115,6 @@ class GenerateParserCommand extends Command
             'ansi', 'no-ansi', 'no-interaction',
         ];
 
-        return array_filter($options, function ($name) use ($excluded) {
-            return !in_array($name, $excluded);
-        }, ARRAY_FILTER_USE_KEY);
+        return array_filter($options, fn($name) => !in_array($name, $excluded), ARRAY_FILTER_USE_KEY);
     }
 }

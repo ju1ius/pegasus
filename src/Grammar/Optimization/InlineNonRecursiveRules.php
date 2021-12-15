@@ -1,12 +1,4 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * © 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Grammar\Optimization;
 
@@ -20,22 +12,14 @@ use ju1ius\Pegasus\Grammar\OptimizationContext;
  * assuming the referenced rule does not change.
  *
  * This optimization is only applied if the referenced rule is non-recursive and explicitly marked for inlining.
- *
- * @author ju1ius <ju1ius@laposte.net>
  */
 class InlineNonRecursiveRules extends Optimization
 {
-    /**
-     * @inheritDoc
-     */
     public function willPreProcessExpression(Expression $expr, OptimizationContext $context): bool
     {
         return $expr instanceof Reference && $context->isInlineableRule($expr->getIdentifier());
     }
 
-    /**
-     * @inheritDoc
-     */
     public function preProcessExpression(Expression $expr, OptimizationContext $context): ?Expression
     {
         /** @var Reference $expr */

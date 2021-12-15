@@ -1,40 +1,12 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * © 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Utils;
 
-/**
- * @author ju1ius <ju1ius@laposte.net>
- */
 final class Str
 {
-    /**
-     * Returns the type of the given value as a string.
-     *
-     * @param mixed $value
-     * @return string
-     */
-    public static function getType($value): string
+    public static function className(object|string $value, int $namespaces = 0): string
     {
-        return is_object($value) ? get_class($value) : gettype($value);
-    }
-
-    /**
-     * @param object|string $value
-     * @param int $namespaces
-     *
-     * @return string
-     */
-    public static function className($value, int $namespaces = 0): string
-    {
-        if (is_object($value)) {
+        if (\is_object($value)) {
             $value = get_class($value);
         }
         $components = explode('\\', $value);

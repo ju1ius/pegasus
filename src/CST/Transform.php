@@ -1,44 +1,32 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * (c) 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\CST;
 
+use Closure;
 use ju1ius\Pegasus\CST\Exception\TransformException;
 use ju1ius\Pegasus\CST\Node\Terminal;
 
 /**
  * Performs a depth-first traversal of a parse tree.
- *
- * @author ju1ius <ju1ius@laposte.net>
  */
 class Transform
 {
     /**
-     * @var \Closure[]
+     * @var Closure[]
      */
-    private $enterVisitors;
+    private array $enterVisitors;
 
     /**
-     * @var \Closure[]
+     * @var Closure[]
      */
-    private $leaveVisitors;
+    private ?array $leaveVisitors = null;
 
-    /**
-     * @var Node
-     */
-    private $rootNode;
+    private ?Node $rootNode = null;
 
     /**
      * @var Transform[]
      */
-    private $traits;
+    private array $traits;
 
     final public function transform(Node $node)
     {
@@ -117,7 +105,7 @@ class Transform
             return $children[0];
         }
 
-        return count($children) === 1 ? $children[0] : $children;
+        return \count($children) === 1 ? $children[0] : $children;
     }
 
     /**
@@ -155,7 +143,7 @@ class Transform
             $value = $this->leaveTerminal($node);
 
             if ($name && isset($this->leaveVisitors[$name])) {
-                $args = is_array($value) ? $value : [$value];
+                $args = \is_array($value) ? $value : [$value];
 
                 return $this->leaveVisitors[$name]($node, ...$args);
             }

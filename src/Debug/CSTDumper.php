@@ -1,12 +1,4 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * © 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Debug;
 
@@ -16,9 +8,6 @@ use ju1ius\Pegasus\CST\NodeVisitor;
 use ju1ius\Pegasus\Utils\Str;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * @author ju1ius <ju1ius@laposte.net>
- */
 final class CSTDumper extends NodeVisitor
 {
     /**
@@ -104,7 +93,7 @@ final class CSTDumper extends NodeVisitor
         if ($this->errorNode === $node) {
             $this->output->writeln(sprintf(
                 "<error>%s╌╌┘ Error was here. </error>",
-                str_repeat('╌╌', count($this->indentStack))
+                str_repeat('╌╌', \count($this->indentStack))
             ));
         }
         if ($node instanceof Node\Composite && $node->children && $hasParent) {

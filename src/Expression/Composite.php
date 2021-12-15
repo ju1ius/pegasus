@@ -1,12 +1,4 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * (c) 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Expression;
 
@@ -14,11 +6,8 @@ use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Exception\ChildNotFound;
 use ju1ius\Pegasus\Expression\Exception\InvalidChildType;
 
-
 /**
  * An expression which contains several other expressions.
- *
- * @author ju1ius <ju1ius@laposte.net>
  */
 abstract class Composite extends Expression implements \ArrayAccess, \Countable, \IteratorAggregate
 {
@@ -27,13 +16,13 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
      *
      * @var Expression[]
      */
-    protected $children = [];
+    protected array $children = [];
 
     /**
      * Composite constructor.
      *
      * @param Expression[] $children
-     * @param string       $name
+     * @param string $name
      */
     public function __construct(array $children = [], string $name = '')
     {
@@ -41,9 +30,6 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
         $this->push(...$children);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function isCapturing(): bool
     {
         return $this->some(function (Expression $child) {
@@ -51,9 +37,6 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
         });
     }
 
-    /**
-     * @inheritdoc
-     */
     public function isCapturingDecidable(): bool
     {
         return $this->every(function (Expression $child) {
@@ -63,12 +46,8 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
 
     /**
      * Returns a cloned instance with the given children.
-     *
-     * @param Expression[] ...$children
-     *
-     * @return static
      */
-    public function withChildren(Expression ...$children)
+    public function withChildren(Expression ...$children): static
     {
         $cloned = clone $this;
         $cloned->children = [];
@@ -79,10 +58,8 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
     //
     // Collection
     // --------------------------------------------------------------------------------------------------------------
-    /**
-     * @inheritDoc
-     */
-    public function iterate(?bool $depthFirst = false): \Generator
+
+    public function iterate(?bool $depthFirst = false): iterable
     {
         if (!$depthFirst) yield $this;
         foreach ($this->children as $child) {
@@ -94,13 +71,11 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
     }
 
     /**
-     * @param Expression[] ...$children
-     *
      * @return $this
      */
-    public function push(Expression ...$children)
+    public function push(Expression ...$children): static
     {
-        $i = count($this->children);
+        $i = \count($this->children);
         foreach ($children as $child) {
             $this->offsetSet($i++, $child);
         }
@@ -108,12 +83,7 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
         return $this;
     }
 
-    /**
-     * @param callable $f
-     *
-     * @return static
-     */
-    public function map(callable $f)
+    public function map(callable $f): static
     {
         $cloned = clone $this;
         foreach ($cloned->children as $i => $child) {
@@ -123,11 +93,6 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
         return $cloned;
     }
 
-    /**
-     * @param callable $predicate
-     *
-     * @return bool
-     */
     public function every(callable $predicate): bool
     {
         foreach ($this->children as $i => $child) {
@@ -139,11 +104,6 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
         return true;
     }
 
-    /**
-     * @param callable $predicate
-     *
-     * @return bool
-     */
     public function some(callable $predicate): bool
     {
         foreach ($this->children as $i => $child) {
@@ -159,22 +119,12 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
     // ArrayAccess
     // --------------------------------------------------------------------------------------------------------------
 
-    /**
-     * @param int $offset
-     *
-     * @return bool
-     */
-    public function offsetExists($offset)
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->children[$offset]);
     }
 
-    /**
-     * @param int $offset
-     *
-     * @return Expression
-     */
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): Expression
     {
         if (!isset($this->children[$offset])) {
             throw new ChildNotFound($offset);
@@ -184,19 +134,17 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
     }
 
     /**
-     * @param int        $offset
+     * @param int $offset
      * @param Expression $value
-     *
-     * @return Expression|void
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         if (!$value instanceof Expression) {
             throw new InvalidChildType($value);
         }
         // handle $expr[] = $child;
         if ($offset === null) {
-            $offset = count($this->children);
+            $offset = \count($this->children);
         }
 
         $this->children[(int)$offset] = $value;
@@ -205,7 +153,7 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
     /**
      * @param int $offset
      */
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
         unset($this->children[$offset]);
     }
@@ -214,24 +162,18 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
     // Countable
     // --------------------------------------------------------------------------------------------------------------
 
-    /**
-     * @inheritdoc
-     */
-    public function count()
+    public function count(): int
     {
-        return count($this->children);
+        return \count($this->children);
     }
 
     //
     // IteratorAggregate
     // --------------------------------------------------------------------------------------------------------------
 
-    /**
-     * @inheritdoc
-     */
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
-        return new \ArrayIterator($this->children);
+        return yield from $this->children;
     }
 
     /**
@@ -239,7 +181,7 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
      *
      * @return string[]
      */
-    protected function stringChildren()
+    protected function stringChildren(): array
     {
         return array_map('strval', $this->children);
     }

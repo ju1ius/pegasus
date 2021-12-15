@@ -1,49 +1,27 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of Pegasus
- *
- * (c) 2014 Jules Bernable
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace ju1ius\Pegasus\Expression\Terminal;
 
-use ju1ius\Pegasus\CST\Node;
-use ju1ius\Pegasus\Expression\Terminal;
+use ju1ius\Pegasus\CST\Node\Terminal;
+use ju1ius\Pegasus\Expression\TerminalExpression;
 use ju1ius\Pegasus\Parser\Parser;
-
 
 /**
  * A string literal
  *
  * Use these if you can; they're the fastest.
  */
-final class Literal extends Terminal
+final class Literal extends TerminalExpression
 {
-    /**
-     * @var string
-     */
-    private $literal;
+    private int $length;
 
-    /**
-     * @var string
-     */
-    private $quoteCharacter = '"';
-
-    /**
-     * @var int
-     */
-    private $length = 0;
-
-    public function __construct(string $literal, string $name = '', string $quoteCharacter = '"')
-    {
+    public function __construct(
+        private string $literal,
+        string $name = '',
+        private string $quoteCharacter = '"'
+    ) {
         parent::__construct($name);
-        $this->literal = $literal;
-        $this->quoteCharacter = $quoteCharacter;
-
-        $this->length = strlen($this->literal);
+        $this->length = \strlen($this->literal);
     }
 
     public function getLiteral(): string
@@ -70,13 +48,13 @@ final class Literal extends Terminal
         );
     }
 
-    public function match(string $text, Parser $parser)
+    public function matches(string $text, Parser $parser): Terminal|bool
     {
         $start = $parser->pos;
         if (substr($text, $start, $this->length) === $this->literal) {
             $end = $parser->pos += $this->length;
             return $parser->isCapturing
-                ? new Node\Terminal($this->name, $start, $end, $this->literal)
+                ? new Terminal($this->name, $start, $end, $this->literal)
                 : true;
         }
         return false;
