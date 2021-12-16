@@ -2,8 +2,7 @@
 
 
 {% block matching %}
-{{ result_var }} = !isset($this->source[$this->pos]);
-if (!{{ result_var }}) {
+if (!{{ result_var }} = !isset($this->source[$this->pos])) {
     {{ failure(context.rule, expr)|indent }}
 }
 {%- endblock matching %}

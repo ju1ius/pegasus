@@ -12,12 +12,8 @@ class EOFTest extends ExpressionTestCase
 {
     /**
      * @dataProvider provideTestMatch
-     *
-     * @param string $input
-     * @param int    $pos
-     * @param bool   $expected
      */
-    public function testMatch($input, $pos, $expected)
+    public function testMatch(string $input, int $pos, bool $expected)
     {
         $parser = new RecursiveDescent(Grammar::fromArray([
             'test' => new EOF()
@@ -30,7 +26,7 @@ class EOFTest extends ExpressionTestCase
         $this->assertSame($pos, $parser->pos, 'Does not consume any input.');
     }
 
-    public function provideTestMatch()
+    public function provideTestMatch(): iterable
     {
         yield 'Matches when input is empty.' => [
             '', 0, true,

@@ -4,9 +4,9 @@
 
 {% block matching %}
 {% if use_apply -%}
-    {{ result_var }} = $this->apply('{{ expr.name }}');
+    {{ result_var }} = $this->apply('{{ expr.identifier }}');
 {%- else %}
-    {{ result_var }} = $this->match_{{ expr.name }}();
+    {{ result_var }} = $this->match_{{ expr.identifier }}();
 {%- endif %}
 {%- endblock matching %}
 

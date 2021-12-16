@@ -5,16 +5,16 @@
 #}
 {% set literal = repr(expr.literal) %}
 
-{% block matching %}
-if ({{ result_var }} = substr($this->source, $this->pos, {{ expr.length }}) === {{ literal }}) {
+{% block matching -%}
+if ({{ result_var }} = 0 === substr_compare($this->source, {{ literal }}, $this->pos, {{ expr.length }})) {
     $this->pos += {{ expr.length }};
 } else {
     {{ failure(context.rule, expr)|indent }}
 }
 {%- endblock matching %}
 
-{% block capturing %}
-if ({{ result_var }} = substr($this->source, $this->pos, {{ expr.length }}) === {{ literal }}) {
+{% block capturing -%}
+if ({{ result_var }} = 0 === substr_compare($this->source, {{ literal }}, $this->pos, {{ expr.length }})) {
     $start = $this->pos;
     $end = $this->pos += {{ expr.length }};
     if ($this->isCapturing) {{ result_var }} = new Terminal('{{ expr.name }}', $start, $end, {{ literal }});

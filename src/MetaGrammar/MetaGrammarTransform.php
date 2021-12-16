@@ -28,6 +28,7 @@ use ju1ius\Pegasus\Expression\Terminal\EOF;
 use ju1ius\Pegasus\Expression\Terminal\Epsilon;
 use ju1ius\Pegasus\Expression\Terminal\Fail;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
+use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
 use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Expression\Terminal\Word;
 use ju1ius\Pegasus\Grammar;
@@ -279,7 +280,7 @@ class MetaGrammarTransform extends Transform
             return new CapturingRegExp($pattern, $flags);
         }
 
-        return new CapturingRegExp($pattern, $flags);
+        return new NonCapturingRegExp($pattern, $flags);
     }
 
     private function leave_reference(Node $node, string $identifier): Reference

@@ -27,7 +27,7 @@ class LeftRecursivePackrat extends Packrat
     /**
      * @var callable[]
      */
-    private array $matchers;
+    private array $matchers = [];
 
     protected function beforeParse(): void
     {

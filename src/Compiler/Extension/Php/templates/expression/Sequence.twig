@@ -68,11 +68,15 @@ else if ($this->isCapturing) {
 
 
 {% block capturing_default_success %}
+{%~ if not expr.name %}
+    {{ result_var }} = match (\count({{ children_var }})) {
+        0 => true,
+        1 => {{ children_var }}[0],
+        default => new Composite('{{ expr.name }}', {{ pos_var }}, $this->pos, {{ children_var }}),
+    };
+{% else %}
     switch(\count({{ children_var }})) {
         case 0: {{ result_var }} = true; break;
-{% if not expr.name %}
-        case 1: {{ result_var }} = {{ children_var }}[0]; break;
-{% else %}
         case 1:
             if ({{ children_var }}[0]->name) {
                 {{ result_var }} = new Decorator('{{ expr.name }}', {{ pos_var }}, $this->pos, {{ children_var }}[0]);
@@ -81,9 +85,9 @@ else if ($this->isCapturing) {
                 {{ result_var }}->name = '{{ expr.name }}';
             }
             break;
-{% endif %}
         default:
             {{ result_var }} = new Composite('{{ expr.name }}', {{ pos_var }}, $this->pos, {{ children_var }});
             break;
     }
+{% endif ~%}
 {%- endblock capturing_default_success %}

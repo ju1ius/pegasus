@@ -17,12 +17,10 @@ public function match_{{ expr.name }}(): Node|bool
     $bindings = [];
 {% endif %}
     {{ render_expr(expr, context)|indent }}
-
 {% if use_cache %}
     $memo[0] = $this->pos;
     $memo[1] = {{ result_var }};
-    $this->cache[$this->isCapturing][$this->pos]['{{ expr.name }}'] = $memo;
+    $this->memo[$this->isCapturing][$this->pos]['{{ expr.name }}'] = $memo;
 {% endif %}
-
     return {{ result_var }} ?? false;
 }

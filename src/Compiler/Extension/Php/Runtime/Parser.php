@@ -54,7 +54,7 @@ abstract class Parser
 
         if (!$result || (!$parsedFully && !$allowPartial)) {
             $this->afterParse($result);
-            throw new ParseError();
+            throw $this->createParseError();
         }
 
         $this->afterParse($result);
@@ -95,5 +95,15 @@ abstract class Parser
 
     protected function afterParse($result): void
     {
+    }
+
+    protected function createParseError(): ParseError
+    {
+        $rules = array_map(fn($f) => $f['rule'], $this->rightmostFailures);
+        return new ParseError(sprintf(
+            'Failed to parse at position %d in rules: %s',
+            $this->rightmostFailurePosition,
+            implode(', ', $rules),
+        ));
     }
 }

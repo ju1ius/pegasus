@@ -86,7 +86,7 @@ abstract class Compiler implements CompilerInterface
      */
     public function compileGrammar(Grammar $grammar, array $args = []): string
     {
-        $optimizationLevel = $args['optimization-level'] ?? Optimizer::LEVEL_1;
+        $optimizationLevel = intval($args['optimization-level'] ?? Optimizer::LEVEL_1);
         $grammar = $this->optimizeGrammar($grammar, $optimizationLevel);
         $context = CompilationContext::of($grammar);
 

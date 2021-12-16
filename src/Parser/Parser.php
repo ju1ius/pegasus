@@ -88,13 +88,8 @@ abstract class Parser
      * but does not require the entire input to match the grammar.
      *
      * @api
-     * @param string $text
-     * @param int $pos
-     * @param string $startRule
-     *
-     * @return Node|bool
      */
-    final public function partialParse(string $text, int $pos = 0, ?string $startRule = null)
+    final public function partialParse(string $text, int $pos = 0, ?string $startRule = null): Node|bool
     {
         $this->isCapturing = true;
 
@@ -106,13 +101,12 @@ abstract class Parser
         int $startPos,
         ?string $startRule = null,
         bool $allowPartial = false
-    ) {
+    ): Node|bool {
         $this->source = $text;
         $this->pos = $startPos;
         $startRule = $startRule ?: $this->grammar->getStartRule();
 
         $this->beforeParse();
-        gc_disable();
 
         $result = $this->apply($this->grammar[$startRule]);
         $parsedFully = $this->pos === \strlen($text);
@@ -120,12 +114,10 @@ abstract class Parser
         if (!$result || (!$parsedFully && !$allowPartial)) {
             $this->trace($startPos, $startRule);
             $this->afterParse($result);
-            gc_enable();
             throw $this->trace->createParseError();
         }
 
         $this->afterParse($result);
-        gc_enable();
 
         return $result;
     }
