@@ -12,7 +12,6 @@ abstract class Parser
 {
     /**
      * The grammar used to parse the input string.
-     *
      * @internal
      */
     public Grammar $grammar;
@@ -24,22 +23,18 @@ abstract class Parser
 
     /**
      * The current position into the input string.
-     *
      * @internal
      */
     public int $pos = 0;
 
+    /** @internal */
+    public SplStack $cutStack;
     /**
      * Stores named bindings produced by `Label` expressions.
-     *
+     * @var SplStack<Scope>
      * @internal
      */
-    public array $bindings = [];
-
-    /**
-     * @internal
-     */
-    public SplStack $cutStack;
+    public SplStack $scopes;
 
     /**
      * Flag that can be set by expressions to signal whether their children
@@ -183,18 +178,54 @@ abstract class Parser
         $this->cutStack->push(true);
     }
 
+    /**
+     * @internal
+     */
+    public function pushScope(): void
+    {
+        $current = $this->scopes->top();
+        $this->scopes->push(clone $current);
+    }
+
+    /**
+     * @internal
+     */
+    public function popScope(): void
+    {
+        $this->scopes->pop();
+    }
+
+    /**
+     * @internal
+     */
+    public function bind(string $name, string $value): void
+    {
+        $scope = $this->scopes->top();
+        $scope->bindings[$name] = $value;
+    }
+
+    /**
+     * @internal
+     */
+    public function getBinding(string $name): ?string
+    {
+        $scope = $this->scopes->top();
+        return $scope->bindings[$name] ?? null;
+    }
+
     protected function beforeParse(): void
     {
-        $this->bindings = [];
         $this->trace = new Trace($this->source);
         $this->cutStack = new SplStack();
         $this->cutStack->push(false);
+        $this->scopes = new SplStack();
+        $this->scopes->push(new Scope());
     }
 
     protected function afterParse($result): void
     {
-        $this->bindings = [];
-        //$this->cutStack = null;
+        while (!$this->scopes->isEmpty()) $this->scopes->pop();
+        while (!$this->cutStack->isEmpty()) $this->cutStack->pop();
     }
 
     protected function trace(int $pos, ?string $startRule): void
@@ -204,9 +235,6 @@ abstract class Parser
         $this->grammar->tracing();
         $this->pos = $pos;
         $this->isCapturing = false;
-        $this->bindings = [];
-        $this->cutStack = new SplStack();
-        $this->cutStack->push(false);
 
         $this->beforeTrace();
         $this->apply($this->grammar[$startRule]);
@@ -215,7 +243,17 @@ abstract class Parser
         $this->grammar->tracing(false);
     }
 
-    protected function beforeTrace(): void {}
+    protected function beforeTrace(): void
+    {
+        $this->cutStack = new SplStack();
+        $this->cutStack->push(false);
+        $this->scopes = new SplStack();
+        $this->scopes->push(new Scope());
+    }
 
-    protected function afterTrace(): void {}
+    protected function afterTrace(): void
+    {
+        while (!$this->scopes->isEmpty()) $this->scopes->pop();
+        while (!$this->cutStack->isEmpty()) $this->cutStack->pop();
+    }
 }

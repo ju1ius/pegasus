@@ -5,6 +5,7 @@ namespace ju1ius\Pegasus\Tests\Expression\Terminal;
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\CST\Node\Composite;
 use ju1ius\Pegasus\CST\Node\Terminal;
+use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Parser\Exception\UndefinedBinding;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
@@ -16,18 +17,14 @@ class BackReferenceTest extends ExpressionTestCase
 {
     /**
      * @dataProvider provideTestMatch
-     *
-     * @param       $grammar
-     * @param array $params
-     * @param Node  $expected
      */
-    public function testMatch($grammar, array $params, Node $expected)
+    public function testMatch(Grammar $grammar, array $params, Node $expected)
     {
         $result = $this->parse($grammar, ...$params);
         $this->assertNodeEquals($expected, $result);
     }
 
-    public function provideTestMatch()
+    public function provideTestMatch(): iterable
     {
         yield 'BackReference to a label in scope' => [
             GrammarBuilder::create()
@@ -68,18 +65,15 @@ class BackReferenceTest extends ExpressionTestCase
     }
 
     /**
-     * @param       $grammar
-     * @param array $params
-     *
      * @dataProvider provideTestOutOfScopeReference
      */
-    public function testOutOfScopeReference($grammar, array $params)
+    public function testOutOfScopeReference(Grammar $grammar, array $params)
     {
         $this->expectException(UndefinedBinding::class);
         $this->parse($grammar, ...$params);
     }
 
-    public function provideTestOutOfScopeReference()
+    public function provideTestOutOfScopeReference(): iterable
     {
         yield 'reference in another rule' => [
             GrammarBuilder::create()

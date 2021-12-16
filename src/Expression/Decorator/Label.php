@@ -33,8 +33,7 @@ final class Label extends Decorator
     {
         $start = $parser->pos;
         if ($result = $this->children[0]->matches($text, $parser)) {
-            $parser->bindings[$this->label] = substr($text, $start, $parser->pos - $start);
-
+            $parser->bind($this->label, substr($text, $start, $parser->pos - $start));
             return $result;
         }
         return false;

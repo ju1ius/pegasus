@@ -26,15 +26,14 @@ final class BackReference extends TerminalExpression
      */
     public function matches(string $text, Parser $parser): Terminal|bool
     {
-        if (!isset($parser->bindings[$this->identifier])) {
-            throw new UndefinedBinding($this->identifier, $parser->bindings);
+        if (null === $pattern = $parser->getBinding($this->identifier)) {
+            throw new UndefinedBinding($this->identifier, $parser->scopes->top());
         }
 
         $start = $parser->pos;
-        $pattern = $parser->bindings[$this->identifier];
         $length = \strlen($pattern);
 
-        if ($pattern === substr($text, $start, $length)) {
+        if (substr_compare($text, $pattern, $start, $length) === 0) {
             $end = $parser->pos += $length;
             return match ($parser->isCapturing) {
                 true => new Terminal($this->name, $start, $end, $pattern),

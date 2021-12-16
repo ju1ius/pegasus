@@ -33,14 +33,10 @@ final class Reference extends Application
 
     public function matches(string $text, Parser $parser): Node|bool
     {
-        $bindings = $parser->bindings;
-        $parser->bindings = [];
-
         $expr = $parser->grammar[$this->identifier];
+        $parser->pushScope();
         $result = $parser->apply($expr);
-
-        $parser->bindings = $bindings;
-
+        $parser->popScope();
         return $result;
     }
 }

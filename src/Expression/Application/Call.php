@@ -39,16 +39,20 @@ class Call extends Application
         // backup state
         $start = $parser->pos;
         $grammar = $parser->grammar;
-        $bindings = $parser->bindings;
         $capturing = $parser->isCapturing;
         // update state
         $trait = $grammar->getTrait($this->namespace);
         $parser->grammar = $trait;
-        $parser->bindings = [];
+        $parser->pushScope();
 
         $result = $parser->apply($trait[$this->identifier]);
+
+        // restore state
+        $parser->popScope();
+        $parser->grammar = $grammar;
+
         if ($capturing && $result && $result !== true) {
-            $result = new ExternalReference(
+            return new ExternalReference(
                 $this->namespace,
                 $this->name,
                 $start,
@@ -56,10 +60,6 @@ class Call extends Application
                 $result
             );
         }
-
-        // restore state
-        $parser->grammar = $grammar;
-        $parser->bindings = $bindings;
 
         return $result;
     }

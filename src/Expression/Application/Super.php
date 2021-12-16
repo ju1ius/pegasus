@@ -13,9 +13,7 @@ use ju1ius\Pegasus\Parser\Parser;
 final class Super extends Application
 {
     public function __construct(
-        /**
-         * The name of the rule this expression refers to.
-         */
+        /** The name of the rule this expression refers to. */
         private string $identifier,
         string $name = ''
     ) {
@@ -32,13 +30,11 @@ final class Super extends Application
      */
     public function matches(string $text, Parser $parser): Node|bool
     {
-        $bindings = $parser->bindings;
-        $parser->bindings = [];
-
         $expr = $parser->grammar->super($this->identifier);
-        $result = $parser->apply($expr);
 
-        $parser->bindings = $bindings;
+        $parser->pushScope();
+        $result = $parser->apply($expr);
+        $parser->popScope();
 
         return $result;
     }
