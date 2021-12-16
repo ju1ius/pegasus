@@ -23,6 +23,7 @@ use ju1ius\Pegasus\Expression\Terminal\EOF;
 use ju1ius\Pegasus\Expression\Terminal\Epsilon;
 use ju1ius\Pegasus\Expression\Terminal\Fail;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
+use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
 use ju1ius\Pegasus\Expression\Terminal\Word;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimizer;
@@ -89,19 +90,19 @@ class GrammarParserTest extends PegasusTestCase
         ];
         yield 'match' => [
             'x = /x/',
-            Grammar::fromArray(['x' => new CapturingRegExp('x', [], 'x')])
+            Grammar::fromArray(['x' => new NonCapturingRegExp('x', [], 'x')])
         ];
         yield 'match with escaped delimiter' => [
             'x = /x \/ x/',
-            Grammar::fromArray(['x' => new CapturingRegExp('x \/ x', [], 'x')])
+            Grammar::fromArray(['x' => new NonCapturingRegExp('x \/ x', [], 'x')])
         ];
         yield 'match with flags' => [
             'x = /x/i',
-            Grammar::fromArray(['x' => new CapturingRegExp('x', ['i'], 'x')])
+            Grammar::fromArray(['x' => new NonCapturingRegExp('x', ['i'], 'x')])
         ];
         yield 'match non-capturing groups' => [
             'x = /(?:x)(?!y)/',
-            Grammar::fromArray(['x' => new CapturingRegExp('(?:x)(?!y)', [], 'x')])
+            Grammar::fromArray(['x' => new NonCapturingRegExp('(?:x)(?!y)', [], 'x')])
         ];
         yield 'RegExp' => [
             'x = /x(y)/',
@@ -131,11 +132,8 @@ class GrammarParserTest extends PegasusTestCase
 
     /**
      * @dataProvider provideTestItParsesCombinators
-     *
-     * @param string  $syntax
-     * @param Grammar $expected
      */
-    public function testItParsesCombinators($syntax, $expected)
+    public function testItParsesCombinators(string $syntax, Grammar $expected)
     {
         $grammar = $this->parseSyntax($syntax, Optimizer::LEVEL_1);
         $this->assertGrammarEquals($expected, $grammar);
@@ -143,50 +141,47 @@ class GrammarParserTest extends PegasusTestCase
 
     /**
      * @dataProvider provideTestItParsesCombinators
-     *
-     * @param string  $syntax
-     * @param Grammar $expected
      */
-    public function testItParsesCombinatorsWithOptimizedMeta($syntax, $expected)
+    public function testItParsesCombinatorsWithOptimizedMeta(string $syntax, Grammar $expected)
     {
         $grammar = $this->parseSyntax($syntax, Optimizer::LEVEL_1, true);
         $this->assertGrammarEquals($expected, $grammar);
     }
 
-    public function provideTestItParsesCombinators()
+    public function provideTestItParsesCombinators(): iterable
     {
         yield 'Sequence of matches' => [
             'x = /x/ /y/ /z/',
             Grammar::fromArray(['x' => new Sequence([
-                new CapturingRegExp('x'),
-                new CapturingRegExp('y'),
-                new CapturingRegExp('z'),
+                new NonCapturingRegExp('x'),
+                new NonCapturingRegExp('y'),
+                new NonCapturingRegExp('z'),
             ])])
         ];
         yield 'Choice of matches' => [
             'x = /x/ | /y/ | /z/',
             Grammar::fromArray(['x' => new OneOf([
-                new CapturingRegExp('x'),
-                new CapturingRegExp('y'),
-                new CapturingRegExp('z'),
+                new NonCapturingRegExp('x'),
+                new NonCapturingRegExp('y'),
+                new NonCapturingRegExp('z'),
             ])])
         ];
         yield 'NodeAction of matches' => [
             'x = /x/ /y/ /z/ <= XYZ',
             Grammar::fromArray([
                 'x' => new NodeAction(new Sequence([
-                    new CapturingRegExp('x'),
-                    new CapturingRegExp('y'),
-                    new CapturingRegExp('z'),
+                    new NonCapturingRegExp('x'),
+                    new NonCapturingRegExp('y'),
+                    new NonCapturingRegExp('z'),
                 ]), 'XYZ')
             ])
         ];
         yield 'Choice with named sequence' => [
             'x = /x/ | /y/ <= Y | /z/',
             Grammar::fromArray(['x' => new OneOf([
-                new CapturingRegExp('x'),
-                new NodeAction(new CapturingRegExp('y'), 'Y'),
-                new CapturingRegExp('z'),
+                new NonCapturingRegExp('x'),
+                new NodeAction(new NonCapturingRegExp('y'), 'Y'),
+                new NonCapturingRegExp('z'),
             ])])
         ];
     }
@@ -194,7 +189,7 @@ class GrammarParserTest extends PegasusTestCase
     /**
      * @dataProvider provideTestItParsesDecorators
      */
-    public function testItParsesDecorators($syntax, $expected)
+    public function testItParsesDecorators(string $syntax, Grammar $expected)
     {
         $grammar = $this->parseSyntax($syntax, 0);
         $this->assertGrammarEquals($expected, $grammar);
@@ -202,61 +197,58 @@ class GrammarParserTest extends PegasusTestCase
 
     /**
      * @dataProvider provideTestItParsesDecorators
-     *
-     * @param string  $syntax
-     * @param Grammar $expected
      */
-    public function testItParsesDecoratorsWithOptimizedMeta($syntax, $expected)
+    public function testItParsesDecoratorsWithOptimizedMeta(string $syntax, Grammar $expected)
     {
         $grammar = $this->parseSyntax($syntax, 0, true);
         $this->assertGrammarEquals($expected, $grammar);
     }
 
-    public function provideTestItParsesDecorators()
+    public function provideTestItParsesDecorators(): iterable
     {
         yield 'Assert of a match' => [
             'x = &/x/',
-            Grammar::fromArray(['x' => new Assert(new CapturingRegExp('x'))])
+            Grammar::fromArray(['x' => new Assert(new NonCapturingRegExp('x'))])
         ];
         yield 'Not of a match' => [
             'x = !/x/',
-            Grammar::fromArray(['x' => new Not(new CapturingRegExp('x'))])
+            Grammar::fromArray(['x' => new Not(new NonCapturingRegExp('x'))])
         ];
         yield 'Skip of a match' => [
             'x = ~/x/',
-            Grammar::fromArray(['x' => new Ignore(new CapturingRegExp('x'))])
+            Grammar::fromArray(['x' => new Ignore(new NonCapturingRegExp('x'))])
         ];
         yield 'Token of a match' => [
             'x = %/x/',
-            Grammar::fromArray(['x' => new Token(new CapturingRegExp('x'))])
+            Grammar::fromArray(['x' => new Token(new NonCapturingRegExp('x'))])
         ];
         yield 'Labeled match' => [
             'x = a:/x/',
-            Grammar::fromArray(['x' => new Label('a', new CapturingRegExp('x'))])
+            Grammar::fromArray(['x' => new Label('a', new NonCapturingRegExp('x'))])
         ];
         yield 'ZeroOrMore match' => [
             'x = /x/*',
-            Grammar::fromArray(['x' => new ZeroOrMore(new CapturingRegExp('x'))])
+            Grammar::fromArray(['x' => new ZeroOrMore(new NonCapturingRegExp('x'))])
         ];
         yield 'OneOrMore match' => [
             'x = /x/+',
-            Grammar::fromArray(['x' => new OneOrMore(new CapturingRegExp('x'))])
+            Grammar::fromArray(['x' => new OneOrMore(new NonCapturingRegExp('x'))])
         ];
         yield 'Optional match' => [
             'x = /x/?',
-            Grammar::fromArray(['x' => new Optional(new CapturingRegExp('x'))])
+            Grammar::fromArray(['x' => new Optional(new NonCapturingRegExp('x'))])
         ];
         yield 'Exactly 2 match' => [
             'x = /x/{2}',
-            Grammar::fromArray(['x' => new Quantifier(new CapturingRegExp('x'), 2, 2)])
+            Grammar::fromArray(['x' => new Quantifier(new NonCapturingRegExp('x'), 2, 2)])
         ];
         yield 'At least 2 match' => [
             'x = /x/{2,}',
-            Grammar::fromArray(['x' => new Quantifier(new CapturingRegExp('x'), 2)])
+            Grammar::fromArray(['x' => new Quantifier(new NonCapturingRegExp('x'), 2)])
         ];
         yield 'Between 2 and 4 match' => [
             'x = /x/{2,4}',
-            Grammar::fromArray(['x' => new Quantifier(new CapturingRegExp('x'), 2, 4)])
+            Grammar::fromArray(['x' => new Quantifier(new NonCapturingRegExp('x'), 2, 4)])
         ];
         yield 'Cut operator' => [
             'x = "["^',
@@ -270,9 +262,6 @@ class GrammarParserTest extends PegasusTestCase
 
     /**
      * @dataProvider provideTestDecoratorPrecedence
-     *
-     * @param string $syntax
-     * @param Grammar $expected
      */
     public function testDecoratorPrecedence(string $syntax, Grammar $expected)
     {
@@ -280,7 +269,7 @@ class GrammarParserTest extends PegasusTestCase
         $this->assertGrammarEquals($expected, $grammar);
     }
 
-    public function provideTestDecoratorPrecedence()
+    public function provideTestDecoratorPrecedence(): iterable
     {
         yield 'ignore and quantifier' => [
             'x = ~"foo"+',
@@ -310,11 +299,8 @@ class GrammarParserTest extends PegasusTestCase
 
     /**
      * @dataProvider provideTestItParsesReferences
-     *
-     * @param string  $syntax
-     * @param Grammar $expected
      */
-    public function testItParsesReferences($syntax, $expected)
+    public function testItParsesReferences(string $syntax, Grammar $expected)
     {
         $grammar = $this->parseSyntax($syntax);
         $this->assertGrammarEquals($expected, $grammar);
@@ -322,17 +308,14 @@ class GrammarParserTest extends PegasusTestCase
 
     /**
      * @dataProvider provideTestItParsesReferences
-     *
-     * @param string  $syntax
-     * @param Grammar $expected
      */
-    public function testItParsesReferencesWithOptimizedMeta($syntax, $expected)
+    public function testItParsesReferencesWithOptimizedMeta(string $syntax, Grammar $expected)
     {
         $grammar = $this->parseSyntax($syntax, 0, true);
         $this->assertGrammarEquals($expected, $grammar);
     }
 
-    public function provideTestItParsesReferences()
+    public function provideTestItParsesReferences(): iterable
     {
         yield 'Reference' => [
             'x = y',
@@ -378,5 +361,12 @@ class GrammarParserTest extends PegasusTestCase
 
         $grammar = $this->parseSyntax($syntax, 0, true);
         $this->assertTrue($grammar->isInlined('x'), 'With optimized meta');
+    }
+
+    public function testImportDirective(): void
+    {
+        $syntax = '@import foo from "./foo/bar.peg"';
+        $grammar = $this->parseSyntax($syntax);
+        $this->fail();
     }
 }

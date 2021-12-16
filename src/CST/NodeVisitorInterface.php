@@ -9,41 +9,21 @@ interface NodeVisitorInterface
 {
     /**
      * Called once before traversal.
-     *
-     * @param Node $node
-     *
-     * @return Node
      */
-    public function beforeTraverse(Node $node);
+    public function beforeTraverse(Node $node): ?Node;
 
     /**
      * Called when entering a node.
-     *
-     * @param Node $node
-     * @param int|null $index
-     * @param bool $isLast
-     *
-     * @return Node
      */
-    public function enterNode(Node $node, ?int $index = null, bool $isLast = false);
+    public function enterNode(Node $node, ?int $index = null, bool $isLast = false): ?Node;
 
     /**
      * Called when leaving a node.
-     *
-     * @param Node $node
-     * @param int|null $index
-     * @param bool $isLast
-     *
-     * @return Node
      */
-    public function leaveNode(Node $node, ?int $index = null, bool $isLast = false);
+    public function leaveNode(Node $node, ?int $index = null, bool $isLast = false): ?Node;
 
     /**
      * Called once after traversal.
-     *
-     * @param Node $node
-     *
-     * @return Node
      */
-    public function afterTraverse(Node $node);
+    public function afterTraverse(Node $node): ?Node;
 }

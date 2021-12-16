@@ -4,34 +4,22 @@ namespace ju1ius\Pegasus\CST;
 
 abstract class NodeVisitor implements NodeVisitorInterface
 {
-    /**
-     * @inheritDoc
-     */
-    public function beforeTraverse(Node $node)
+    public function beforeTraverse(Node $node): ?Node
     {
         return null;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function afterTraverse(Node $node)
+    public function afterTraverse(Node $node): ?Node
     {
         return null;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function enterNode(Node $node, ?int $index = null, bool $isLast = false)
+    public function enterNode(Node $node, ?int $index = null, bool $isLast = false): ?Node
     {
         return null;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function leaveNode(Node $node, ?int $index = null, bool $isLast = false)
+    public function leaveNode(Node $node, ?int $index = null, bool $isLast = false): ?Node
     {
         return null;
     }

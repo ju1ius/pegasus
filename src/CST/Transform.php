@@ -50,9 +50,6 @@ class Transform
         $this->traits[$namespace] = $trait;
     }
 
-    /**
-     * @param Node $node
-     */
     protected function beforeTraverse(Node $node)
     {
     }
@@ -89,10 +86,8 @@ class Transform
     /**
      * @param Node  $node     The node we're visiting
      * @param array $children The results of visiting the children of that node
-     *
-     * @return mixed
      */
-    protected function leaveNonTerminal(Node $node, array $children)
+    protected function leaveNonTerminal(Node $node, array $children): mixed
     {
         if ($node instanceof Node\Quantifier) {
             if ($node->isOptional) {
@@ -108,12 +103,7 @@ class Transform
         return \count($children) === 1 ? $children[0] : $children;
     }
 
-    /**
-     * @param Node $node
-     *
-     * @return mixed
-     */
-    private function visit(Node $node)
+    private function visit(Node $node): mixed
     {
         try {
 
@@ -140,6 +130,7 @@ class Transform
                 return $this->leaveNonTerminal($node, $children);
             }
 
+            assert($node instanceof Terminal);
             $value = $this->leaveTerminal($node);
 
             if ($name && isset($this->leaveVisitors[$name])) {
@@ -162,7 +153,6 @@ class Transform
         $namespace = $node->namespace;
         $name = $node->name;
         if (!isset($this->traits[$namespace])) {
-            //TODO: throw something !
             throw new \LogicException("Undefined trait: {$namespace}");
         }
         if ($name && isset($this->enterVisitors[$name])) {
@@ -188,9 +178,9 @@ class Transform
         $refClass = new \ReflectionClass($this);
         foreach ($refClass->getMethods() as $refMethod) {
             $name = $refMethod->name;
-            if (strpos($name, 'leave_') === 0) {
+            if (str_starts_with($name, 'leave_')) {
                 $this->leaveVisitors[substr($name, 6)] = $refMethod->getClosure($this);
-            } elseif (strpos($name, 'enter_') === 0) {
+            } elseif (str_starts_with($name, 'enter_')) {
                 $this->enterVisitors[substr($name, 6)] = $refMethod->getClosure($this);
             }
         }

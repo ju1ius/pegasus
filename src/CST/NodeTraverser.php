@@ -4,23 +4,21 @@ namespace ju1ius\Pegasus\CST;
 
 use ju1ius\Pegasus\CST\Node\Composite;
 use ju1ius\Pegasus\CST\Node\Invalid;
+use SplObjectStorage;
 
 class NodeTraverser implements NodeTraverserInterface
 {
     /**
-     * @var \SplObjectStorage.<NodeVisitorInterface>
+     * @var SplObjectStorage<NodeVisitorInterface>
      */
-    protected $visitors;
+    protected SplObjectStorage $visitors;
 
     public function __construct()
     {
         $this->visitors = new \SplObjectStorage();
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function addVisitor(NodeVisitorInterface ...$visitors)
+    public function addVisitor(NodeVisitorInterface ...$visitors): static
     {
         foreach ($visitors as $visitor) {
             $this->visitors->attach($visitor);
@@ -29,10 +27,7 @@ class NodeTraverser implements NodeTraverserInterface
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function removeVisitor(NodeVisitorInterface ...$visitors)
+    public function removeVisitor(NodeVisitorInterface ...$visitors): static
     {
         foreach ($visitors as $visitor) {
             $this->visitors->detach($visitor);
@@ -41,10 +36,7 @@ class NodeTraverser implements NodeTraverserInterface
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function traverse(Node $node)
+    public function traverse(Node $node): ?Node
     {
         foreach ($this->visitors as $visitor) {
             if (null !== $result = $visitor->beforeTraverse($node)) {
@@ -65,7 +57,7 @@ class NodeTraverser implements NodeTraverserInterface
         return $node;
     }
 
-    protected function traverseNode(Node $node, ?int $index = null, bool $isLast = false)
+    protected function traverseNode(Node $node, ?int $index = null, bool $isLast = false): ?Node
     {
         foreach ($this->visitors as $visitor) {
             if (null !== $result = $visitor->enterNode($node, $index, $isLast)) {

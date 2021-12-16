@@ -10,38 +10,18 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class CSTDumper extends NodeVisitor
 {
-    /**
-     * @var OutputInterface
-     */
-    private $output;
+    private OutputInterface $output;
 
-    /**
-     * @var Node
-     */
-    private $errorNode;
+    private ?Node $errorNode;
 
-    /**
-     * @var array
-     */
-    private $indentStack;
+    private array $indentStack;
 
-    /**
-     * CSTDumper constructor.
-     *
-     * @param OutputInterface   $output
-     * @param Node|null         $errorNode
-     */
     public function __construct(OutputInterface $output, ?Node $errorNode = null)
     {
         $this->output = $output;
         $this->errorNode = $errorNode;
     }
 
-    /**
-     * @param Node            $node
-     * @param OutputInterface $output
-     * @param Node|null       $errorNode
-     */
     public static function dump(Node $node, OutputInterface $output, ?Node $errorNode = null)
     {
         (new NodeTraverser())
@@ -49,18 +29,13 @@ final class CSTDumper extends NodeVisitor
             ->traverse($node);
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function beforeTraverse(Node $node)
+    public function beforeTraverse(Node $node): ?Node
     {
         $this->indentStack = [];
+        return null;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function enterNode(Node $node, ?int $index = null, bool $isLast = false)
+    public function enterNode(Node $node, ?int $index = null, bool $isLast = false): ?Node
     {
         $hasParent = $index !== null;
         if ($hasParent) {
@@ -102,16 +77,16 @@ final class CSTDumper extends NodeVisitor
         if ($node instanceof Node\Composite && $node->children && $hasParent) {
             $this->indentStack[] = $isLast ? '  ' : '│ ';
         }
+
+        return null;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function leaveNode(Node $node, ?int $index = null, bool $isLast = false)
+    public function leaveNode(Node $node, ?int $index = null, bool $isLast = false): ?Node
     {
         if ($node instanceof Node\Composite && $node->children) {
             array_pop($this->indentStack);
         }
+        return null;
     }
 
     private function escape(string $value): string

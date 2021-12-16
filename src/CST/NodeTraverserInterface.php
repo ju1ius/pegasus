@@ -9,28 +9,18 @@ interface NodeTraverserInterface
 {
     /**
      * Adds a visitor.
-     *
-     * @param \ju1ius\Pegasus\CST\NodeVisitorInterface[] ...$visitors
-     *
      * @return $this
      */
-    public function addVisitor(NodeVisitorInterface ...$visitors);
+    public function addVisitor(NodeVisitorInterface ...$visitors): static;
 
     /**
      * Removes an added visitor.
-     *
-     * @param \ju1ius\Pegasus\CST\NodeVisitorInterface[] ...$visitors
-     *
      * @return $this
      */
-    public function removeVisitor(NodeVisitorInterface ...$visitors);
+    public function removeVisitor(NodeVisitorInterface ...$visitors): static;
 
     /**
      * Traverses a node using the registered optimizations.
-     *
-     * @param mixed $node The node to traverse.
-     *
-     * @return mixed The result of the traversal.
      */
-    public function traverse(Node $node);
+    public function traverse(Node $node): ?Node;
 }
