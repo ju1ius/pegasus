@@ -13,7 +13,7 @@ use SplStack;
  *
  * @see doc/algo/packrat-lr.pdf
  */
-class LeftRecursivePackrat extends Packrat
+class LeftRecursivePackratParser extends PackratParser
 {
     /**
      * @var Head[]

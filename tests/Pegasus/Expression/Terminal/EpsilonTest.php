@@ -5,7 +5,7 @@ namespace ju1ius\Pegasus\Tests\Expression\Terminal;
 use ju1ius\Pegasus\Expression\Terminal\Epsilon;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
-use ju1ius\Pegasus\Parser\RecursiveDescent;
+use ju1ius\Pegasus\Parser\RecursiveDescentParser;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class EpsilonTest extends ExpressionTestCase
@@ -21,7 +21,7 @@ class EpsilonTest extends ExpressionTestCase
      */
     public function testMatch($input, $pos, $expected)
     {
-        $parser = new RecursiveDescent(Grammar::fromArray([
+        $parser = new RecursiveDescentParser(Grammar::fromArray([
             'test' => new Epsilon()
         ]));
         if (!$expected) {

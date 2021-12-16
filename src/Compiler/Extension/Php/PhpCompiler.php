@@ -3,9 +3,9 @@
 namespace ju1ius\Pegasus\Compiler\Extension\Php;
 
 use ju1ius\Pegasus\Compiler\Compiler;
-use ju1ius\Pegasus\Compiler\Extension\Php\Runtime\LeftRecursivePackrat;
-use ju1ius\Pegasus\Compiler\Extension\Php\Runtime\Packrat;
-use ju1ius\Pegasus\Compiler\Extension\Php\Runtime\RecursiveDescent;
+use ju1ius\Pegasus\Compiler\Extension\Php\Runtime\LeftRecursivePackratParser;
+use ju1ius\Pegasus\Compiler\Extension\Php\Runtime\PackratParser;
+use ju1ius\Pegasus\Compiler\Extension\Php\Runtime\RecursiveDescentParser;
 use ju1ius\Pegasus\CST\Transform;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimizer;
@@ -13,9 +13,9 @@ use ju1ius\Pegasus\Grammar\Optimizer;
 class PhpCompiler extends Compiler
 {
     private const PARSER_CLASSES = [
-        self::PARSER_RECURSIVE_DESCENT => RecursiveDescent::class,
-        self::PARSER_PACKRAT => Packrat::class,
-        self::PARSER_EXTENDED_PACKRAT => LeftRecursivePackrat::class,
+        self::PARSER_RECURSIVE_DESCENT => RecursiveDescentParser::class,
+        self::PARSER_PACKRAT => PackratParser::class,
+        self::PARSER_EXTENDED_PACKRAT => LeftRecursivePackratParser::class,
     ];
 
     public function getTemplateDirectories(): array

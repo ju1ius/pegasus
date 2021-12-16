@@ -5,7 +5,6 @@ namespace ju1ius\Pegasus\Compiler\Extension\Php\Runtime;
 /**
  * The Head data type contains the head rule of the left recursion,
  * and the following two sets of rules:
- *
  * - `involved`: rules involved in the left recursion
  * - `eval`: subset of the involved rules that may still be evaluated during the current growth cycle.
  */
@@ -20,19 +19,17 @@ final class Head
      * The set of rules involved in the left recursion.
      * @var string[]
      */
-    public array $involved;
+    public array $involved = [];
 
     /**
      * The subset of the involved rules that may still be evaluated during the current growth cycle.
      * @var string[]
      */
-    public array $eval;
+    public array $eval = [];
 
     public function __construct(string $ruleName)
     {
         $this->rule = $ruleName;
-        $this->involved = [];
-        $this->eval = [];
     }
 
     /**

@@ -15,7 +15,7 @@ use ju1ius\Pegasus\Parser\Memoization\PackratMemoTable;
  *
  * @see doc/algo/packrat-lr.pdf
  */
-class Packrat extends RecursiveDescent
+class PackratParser extends RecursiveDescentParser
 {
     /**
      * @var MemoTable[]

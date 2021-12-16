@@ -33,7 +33,7 @@ $stopwatch->stop('parse_syntax');
 Debug::dump($grammar);
 //$grammar = $grammar->tracing();
 
-$parser = new Parser\RecursiveDescent($grammar);
+$parser = new Parser\RecursiveDescentParser($grammar);
 //$parser = new Parser\Packrat($grammar);
 // ----- Runtime parser
 

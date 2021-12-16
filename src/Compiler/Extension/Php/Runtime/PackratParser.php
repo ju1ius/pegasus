@@ -10,7 +10,7 @@ namespace ju1ius\Pegasus\Compiler\Extension\Php\Runtime;
  *
  * @see doc/algo/packrat-lr.pdf
  */
-class Packrat extends RecursiveDescent
+class PackratParser extends RecursiveDescentParser
 {
     protected array $memo = [];
 

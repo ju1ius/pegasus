@@ -2,4 +2,4 @@
 
 namespace ju1ius\Pegasus\Compiler\Extension\Php\Runtime;
 
-class RecursiveDescent extends Parser {}
+class RecursiveDescentParser extends Parser {}

@@ -23,7 +23,7 @@ $stopwatch->stop('load_data');
 
 // ----- Pegasus parse
 //$parser = new Parser\RecursiveDescent($grammar);
-$parser = new Parser\Packrat($grammar);
+$parser = new Parser\PackratParser($grammar);
 
 $stopwatch->start('parse_json');
 $probe->enable();

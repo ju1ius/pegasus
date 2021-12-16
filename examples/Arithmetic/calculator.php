@@ -4,7 +4,7 @@ require_once __DIR__.'/../../vendor/autoload.php';
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\CST\Transform;
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
+use ju1ius\Pegasus\Parser\LeftRecursivePackratParser;
 
 final class Calculator extends Transform
 {
@@ -63,7 +63,7 @@ $grammar = Grammar::fromSyntax($syntax);
 //echo $grammar, "\n";
 //Debug::dump($grammar);
 
-$parser = new LeftRecursivePackrat($grammar);
+$parser = new LeftRecursivePackratParser($grammar);
 $input = $argv[1] ?? '3 * 12 / 24 - 7.2';
 $tree = $parser->parse($input);
 //Debug::dump($tree);

@@ -10,7 +10,7 @@ use SplStack;
  * A packrat parser implementing Wrath, Douglass & Millstein's algorithm
  * to fully support left-recursive rules.
  */
-class LeftRecursivePackrat extends Packrat
+class LeftRecursivePackratParser extends PackratParser
 {
     /**
      * @var Head[]

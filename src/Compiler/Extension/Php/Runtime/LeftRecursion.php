@@ -6,31 +6,18 @@ use ju1ius\Pegasus\CST\Node;
 
 /**
  * LeftRecursion’s `seed` field holds the initial parse found for the associated `rule`.
- *
  * The `head` field, for a left-recursive invocation, holds information pertinent to the left recursion
  * (`head` is set to NULL for non-left-recursive invocations).
  */
 final class LeftRecursion
 {
-    /**
-     * The expression we're currently matching.
-     */
-    public string $rule;
-
-    /**
-     * The initial parse tree found for the associated `rule`
-     */
-    public ?Node $seed;
-
-    /**
-     * Holds information pertinent to the left recursion (null for non-left-recursive invocations)
-     */
-    public ?Head $head;
-
-    public function __construct(string $ruleName, ?Node $seed = null, ?Head $head = null)
-    {
-        $this->rule = $ruleName;
-        $this->seed = $seed;
-        $this->head = $head;
+    public function __construct(
+        /** The rule we're currently matching. */
+        public string $rule,
+        /**  The initial parse tree found for the associated `rule` */
+        public ?Node $seed = null,
+        /** Holds information pertinent to the left recursion (null for non-left-recursive invocations) */
+        public ?Head $head = null,
+    ) {
     }
 }

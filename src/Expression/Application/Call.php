@@ -1,15 +1,12 @@
 <?php declare(strict_types=1);
 
-
 namespace ju1ius\Pegasus\Expression\Application;
-
 
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\CST\Node\ExternalReference;
 use ju1ius\Pegasus\Expression\Application;
 use ju1ius\Pegasus\Grammar\Exception\TraitNotFound;
 use ju1ius\Pegasus\Parser\Parser;
-
 
 /**
  * Calls a rule from an imported grammar.

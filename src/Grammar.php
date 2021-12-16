@@ -12,7 +12,7 @@ use ju1ius\Pegasus\Grammar\GrammarTraverser;
 use ju1ius\Pegasus\Grammar\Optimizer;
 use ju1ius\Pegasus\MetaGrammar\FileParser;
 use ju1ius\Pegasus\MetaGrammar\MetaGrammarTransform;
-use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
+use ju1ius\Pegasus\Parser\LeftRecursivePackratParser;
 use ju1ius\Pegasus\Trace\GrammarTracer;
 use Traversable;
 
@@ -114,7 +114,7 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
         int $optimizationLevel = Optimizer::LEVEL_1
     ): static {
         $metaGrammar = MetaGrammar::create();
-        $tree = (new LeftRecursivePackrat($metaGrammar))->parse($syntax);
+        $tree = (new LeftRecursivePackratParser($metaGrammar))->parse($syntax);
         $grammar = (new MetaGrammarTransform)->transform($tree);
         if ($startRule) {
             $grammar->setStartRule($startRule);

@@ -8,7 +8,7 @@ use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\MetaGrammar;
 use ju1ius\Pegasus\MetaGrammar\Exception\ImportError;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
-use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
+use ju1ius\Pegasus\Parser\LeftRecursivePackratParser;
 use Webmozart\PathUtil\Path;
 
 
@@ -25,7 +25,7 @@ class FileParser
 
         $syntax = file_get_contents($path);
         $metaGrammar = MetaGrammar::create();
-        $tree = (new LeftRecursivePackrat($metaGrammar))->parse($syntax);
+        $tree = (new LeftRecursivePackratParser($metaGrammar))->parse($syntax);
         $transform = new MetaGrammarTransform();
         /** @var Grammar $grammar */
         $grammar = $transform->transform($tree);

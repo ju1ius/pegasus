@@ -6,7 +6,7 @@ use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
-use ju1ius\Pegasus\Parser\RecursiveDescent;
+use ju1ius\Pegasus\Parser\RecursiveDescentParser;
 
 class ExpressionTestCase extends PegasusTestCase
 {
@@ -33,7 +33,7 @@ class ExpressionTestCase extends PegasusTestCase
             throw new \LogicException('Expected Grammar, Expression or array.');
         }
 
-        $result = (new RecursiveDescent($grammar))->partialParse($text, $pos);
+        $result = (new RecursiveDescentParser($grammar))->partialParse($text, $pos);
 
         return $result;
     }

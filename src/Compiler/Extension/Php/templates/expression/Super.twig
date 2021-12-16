@@ -1,6 +1,6 @@
 {% extends "expr.twig" %}
 
-{% set use_apply = parser_type is constant('ju1ius\Pegasus\Compiler\Compiler::PARSER_EXTENDED_PACKRAT') %}
+{% set use_apply = parser_type is constant('ju1ius\\Pegasus\\Compiler\\Compiler::PARSER_EXTENDED_PACKRAT') %}
 
 {% block matching %}
 {% if use_apply -%}

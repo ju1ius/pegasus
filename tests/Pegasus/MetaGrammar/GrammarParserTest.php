@@ -29,7 +29,7 @@ use ju1ius\Pegasus\Grammar\Optimizer;
 use ju1ius\Pegasus\MetaGrammar;
 use ju1ius\Pegasus\MetaGrammar\MetaGrammarTransform;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
-use ju1ius\Pegasus\Parser\LeftRecursivePackrat;
+use ju1ius\Pegasus\Parser\LeftRecursivePackratParser;
 use ju1ius\Pegasus\Tests\PegasusTestCase;
 
 class GrammarParserTest extends PegasusTestCase
@@ -37,7 +37,7 @@ class GrammarParserTest extends PegasusTestCase
     private function parseSyntax($syntax, $optimizationLevel = 0, $optimizedMeta = false)
     {
         $meta = $optimizedMeta ? MetaGrammar::create() : MetaGrammar::getGrammar();
-        $parser = new LeftRecursivePackrat($meta);
+        $parser = new LeftRecursivePackratParser($meta);
         try {
             $tree = $parser->parse($syntax);
         } catch (ParseError $err) {

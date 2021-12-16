@@ -7,7 +7,6 @@ use ju1ius\Pegasus\Expression;
 /**
  * The Head data type contains the head rule of the left recursion,
  * and the following two sets of rules:
- *
  * - `involved`, for the rules involved in the left recursion.
  * - `eval`, which holds the subset of the involved rules
  *   that may still be evaluated during the current growth cycle.
@@ -21,14 +20,12 @@ final class Head
 
     /**
      * The set of rules involved in the left recursion.
-     *
      * @var Expression[]
      */
     public array $involved = [];
 
     /**
      * The subset of the involved rules that may still be evaluated during the current growth cycle.
-     *
      * @var Expression[]
      */
     public array $eval = [];

@@ -5,14 +5,14 @@ namespace ju1ius\Pegasus\Tests\Expression\Terminal;
 use ju1ius\Pegasus\Expression\Terminal\Fail;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
-use ju1ius\Pegasus\Parser\RecursiveDescent;
+use ju1ius\Pegasus\Parser\RecursiveDescentParser;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class FailTest extends ExpressionTestCase
 {
     public function testMatch()
     {
-        $parser = new RecursiveDescent(Grammar::fromArray([
+        $parser = new RecursiveDescentParser(Grammar::fromArray([
             'test' => new Fail()
         ]));
         $this->expectException(ParseError::class);
