@@ -12,7 +12,7 @@ use ju1ius\Pegasus\Expression\Decorator;
 use ju1ius\Pegasus\Expression\Decorator\Assert;
 use ju1ius\Pegasus\Expression\Decorator\Cut;
 use ju1ius\Pegasus\Expression\Decorator\Ignore;
-use ju1ius\Pegasus\Expression\Decorator\Label;
+use ju1ius\Pegasus\Expression\Decorator\Bind;
 use ju1ius\Pegasus\Expression\Decorator\NodeAction;
 use ju1ius\Pegasus\Expression\Decorator\Not;
 use ju1ius\Pegasus\Expression\Decorator\OneOrMore;
@@ -140,7 +140,6 @@ class ExpressionBuilder
     // --------------------------------------------------------------------------------------------------------------
 
     /**
-     * @param string $literal
      * @return $this
      */
     public function literal(string $literal): static
@@ -148,13 +147,15 @@ class ExpressionBuilder
         return $this->add(new Literal($literal));
     }
 
+    /**
+     * @return $this
+     */
     public function any(): static
     {
         return $this->add(new Any());
     }
 
     /**
-     * @param string $word
      * @return $this
      */
     public function word(string $word): static
@@ -431,7 +432,7 @@ class ExpressionBuilder
     /**
      * @return $this
      */
-    public function token(): static
+    public function asToken(): static
     {
         return $this->add(new Token());
     }
@@ -441,9 +442,9 @@ class ExpressionBuilder
      *
      * @return $this
      */
-    public function label(string $label): static
+    public function bindTo(string $label): static
     {
-        return $this->add(new Label($label, null));
+        return $this->add(new Bind($label, null));
     }
 
     /**

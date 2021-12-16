@@ -13,7 +13,7 @@ use ju1ius\Pegasus\Expression\Decorator;
 use ju1ius\Pegasus\Expression\Decorator\Assert;
 use ju1ius\Pegasus\Expression\Decorator\Cut;
 use ju1ius\Pegasus\Expression\Decorator\Ignore;
-use ju1ius\Pegasus\Expression\Decorator\Label;
+use ju1ius\Pegasus\Expression\Decorator\Bind;
 use ju1ius\Pegasus\Expression\Decorator\NodeAction;
 use ju1ius\Pegasus\Expression\Decorator\Not;
 use ju1ius\Pegasus\Expression\Decorator\Quantifier;
@@ -140,7 +140,7 @@ final class ExpressionHighlighter extends ExpressionVisitor
                 case Ignore::class:
                     $this->output->write('<sym>~</sym>');
                     break;
-                case Label::class:
+                case Bind::class:
                     $this->output->write(sprintf('<label>%s</label><d>:</d>', $expr->getLabel()));
                     break;
                 case Token::class:

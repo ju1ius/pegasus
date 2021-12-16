@@ -8,7 +8,7 @@ use ju1ius\Pegasus\Expression\Application\Reference;
 use ju1ius\Pegasus\Expression\Application\Super;
 use ju1ius\Pegasus\Expression\Combinator\OneOf;
 use ju1ius\Pegasus\Expression\Composite;
-use ju1ius\Pegasus\Expression\Decorator\Label;
+use ju1ius\Pegasus\Expression\Decorator\Bind;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Utils\Iter;
 
@@ -25,7 +25,7 @@ class Analysis
     public function canModifyBindings(string $ruleName): bool
     {
         return Iter::some(
-            fn(Expression $expr) => $expr instanceof Label,
+            fn(Expression $expr) => $expr instanceof Bind,
             $this->grammar[$ruleName]->iterate(),
         );
     }

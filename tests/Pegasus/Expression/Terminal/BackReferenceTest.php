@@ -26,10 +26,10 @@ class BackReferenceTest extends ExpressionTestCase
 
     public function provideTestMatch(): iterable
     {
-        yield 'BackReference to a label in scope' => [
+        yield 'BackReference to a binding in scope' => [
             GrammarBuilder::create()
                 ->rule('start')->seq()
-                    ->label('a')->literal('foo')
+                    ->bindTo('a')->literal('foo')
                     ->literal('bar')
                     ->backref('a')
                 ->getGrammar(),
@@ -43,11 +43,11 @@ class BackReferenceTest extends ExpressionTestCase
         yield 'Scope is not overwritten by rule applications' => [
             GrammarBuilder::create()
                 ->rule('a')->sequence()
-                    ->label('a')->literal('a')
+                    ->bindTo('a')->literal('a')
                     ->ref('b')
                     ->backref('a')
                 ->rule('b')->sequence()
-                    ->label('a')->literal('b')
+                    ->bindTo('a')->literal('b')
                     ->literal('c')
                     ->backref('a')
                 ->getGrammar(),
@@ -80,7 +80,7 @@ class BackReferenceTest extends ExpressionTestCase
                 ->rule('foobarfoo')->seq()
                     ->ref('foo')->ref('bar')->backref('a')
                 ->rule('foo')
-                    ->label('a')->literal('foo')
+                    ->bindTo('a')->literal('foo')
                 ->rule('bar')
                     ->literal('bar')
                 ->getGrammar(),

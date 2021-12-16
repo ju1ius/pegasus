@@ -5,7 +5,7 @@ namespace ju1ius\Pegasus\Tests\Grammar;
 use ju1ius\Pegasus\Expression\Application\Super;
 use ju1ius\Pegasus\Expression\Combinator\Sequence;
 use ju1ius\Pegasus\Expression\Decorator\Ignore;
-use ju1ius\Pegasus\Expression\Decorator\Label;
+use ju1ius\Pegasus\Expression\Decorator\Bind;
 use ju1ius\Pegasus\Expression\Decorator\OneOrMore;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\Grammar;
@@ -68,11 +68,11 @@ class BuilderTest extends PegasusTestCase
     {
         yield 'Sequence with nested decorators' => [
             GrammarBuilder::create()->rule('test')->sequence()
-                ->ignore()->label('a')->oneOrMore()->literal('foo')
+                ->ignore()->bindTo('a')->oneOrMore()->literal('foo')
                 ->literal('bar')
                 ->getGrammar(),
             ['test' => new Sequence([
-                new Ignore(new Label('a', new OneOrMore(new Literal('foo')))),
+                new Ignore(new Bind('a', new OneOrMore(new Literal('foo')))),
                 new Literal('bar')
             ], 'test')]
         ];

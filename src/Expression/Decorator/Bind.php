@@ -8,10 +8,10 @@ use ju1ius\Pegasus\Expression\Decorator;
 use ju1ius\Pegasus\Parser\Parser;
 
 /**
- * Wraps an expression in order to give it an unique label.
+ * Wraps an expression in order to bind it to an unique name.
  * This allows for example to identify an expression in a local context.
  */
-final class Label extends Decorator
+final class Bind extends Decorator
 {
     public function __construct(
         private string $label, ?Expression $child = null)

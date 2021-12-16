@@ -63,7 +63,7 @@ $b->rule('string')->seq()
     ->ignore()->literal('"')
     ->ref('_');
 $b->rule('number')->seq()
-    ->token()
+    ->asToken()
         ->seq()
             ->ref('int')
             ->optional()->ref('frac')

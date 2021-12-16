@@ -13,7 +13,7 @@ use ju1ius\Pegasus\Expression\Decorator;
 use ju1ius\Pegasus\Expression\Decorator\Assert;
 use ju1ius\Pegasus\Expression\Decorator\Cut;
 use ju1ius\Pegasus\Expression\Decorator\Ignore;
-use ju1ius\Pegasus\Expression\Decorator\Label;
+use ju1ius\Pegasus\Expression\Decorator\Bind;
 use ju1ius\Pegasus\Expression\Decorator\NodeAction;
 use ju1ius\Pegasus\Expression\Decorator\Not;
 use ju1ius\Pegasus\Expression\Decorator\OneOrMore;
@@ -184,9 +184,9 @@ class MetaGrammarTransform extends Transform
     // Decorator Expressions
     // --------------------------------------------------------------------------------------------------------------
 
-    private function leave_labeled(Node $node, $label, Expression $labelable): Label
+    private function leave_labeled(Node $node, $label, Expression $labelable): Bind
     {
-        return new Label($label, $labelable);
+        return new Bind($label, $labelable);
     }
 
     private function leave_assert(Node $node, Expression $prefixable): Assert

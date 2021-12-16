@@ -11,36 +11,33 @@ class AnalysisTest extends PegasusTestCase
 {
     /**
      * @dataProvider provideTestCanModifyBindings
-     *
-     * @param Grammar $grammar
-     * @param bool    $expected
      */
-    public function testCanModifyBindings(Grammar $grammar, $expected)
+    public function testCanModifyBindings(Grammar $grammar, bool $expected)
     {
         $analysis = new Analysis($grammar);
         $this->assertSame($expected, $analysis->canModifyBindings('test'));
     }
 
-    public function provideTestCanModifyBindings()
+    public function provideTestCanModifyBindings(): iterable
     {
-        yield 'No label' => [
+        yield 'No binding' => [
             GrammarBuilder::create()->rule('test')->sequence()
                 ->literal('foo')
                 ->literal('bar')
                 ->getGrammar(),
             false
         ];
-        yield 'Top-level label' => [
+        yield 'Top-level binding' => [
             GrammarBuilder::create()->rule('test')->sequence()
-                ->label('foo')->literal('foo')
+                ->bindTo('foo')->literal('foo')
                 ->ignore()->match('\s*')
                 ->backReference('foo')
                 ->getGrammar(),
             true
         ];
-        yield 'Skipped label' => [
+        yield 'Skipped binding' => [
             GrammarBuilder::create()->rule('test')->sequence()
-                ->ignore()->label('foo')->literal('foo')
+                ->ignore()->bindTo('foo')->literal('foo')
                 ->backReference('foo')
                 ->getGrammar(),
             true
@@ -49,22 +46,18 @@ class AnalysisTest extends PegasusTestCase
 
     /**
      * @dataProvider provideTestIsRecursive
-     *
-     * @param Grammar $grammar
-     * @param string  $rule
-     * @param bool    $expected
      */
-    public function testIsRecursive(Grammar $grammar, $rule, $expected)
+    public function testIsRecursive(Grammar $grammar, string $rule, bool $expected)
     {
         $analysis = new Analysis($grammar);
         $this->assertSame($expected, $analysis->isRecursive($rule));
         $this->assertSame(!$expected, $analysis->isRegular($rule));
     }
 
-    public function provideTestIsRecursive()
+    public function provideTestIsRecursive(): iterable
     {
         yield 'Directly recursive rule' => [
-            \ju1ius\Pegasus\GrammarBuilder::create()->rule('a')->sequence()
+            GrammarBuilder::create()->rule('a')->sequence()
                 ->literal('a')
                 ->ref('a')
                 ->getGrammar(),
@@ -113,18 +106,14 @@ class AnalysisTest extends PegasusTestCase
 
     /**
      * @dataProvider provideTestLeftIsRecursive
-     *
-     * @param Grammar $grammar
-     * @param string  $rule
-     * @param bool    $expected
      */
-    public function testIsLeftRecursive(Grammar $grammar, $rule, $expected)
+    public function testIsLeftRecursive(Grammar $grammar, string $rule, bool $expected)
     {
         $analysis = new Analysis($grammar);
         $this->assertSame($expected, $analysis->isLeftRecursive($rule));
     }
 
-    public function provideTestLeftIsRecursive()
+    public function provideTestLeftIsRecursive(): iterable
     {
         return [
             'Directly left-recursive rule' => [

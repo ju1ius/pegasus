@@ -9,7 +9,7 @@ use ju1ius\Pegasus\Expression\Combinator\Sequence;
 use ju1ius\Pegasus\Expression\Decorator\Assert;
 use ju1ius\Pegasus\Expression\Decorator\Cut;
 use ju1ius\Pegasus\Expression\Decorator\Ignore;
-use ju1ius\Pegasus\Expression\Decorator\Label;
+use ju1ius\Pegasus\Expression\Decorator\Bind;
 use ju1ius\Pegasus\Expression\Decorator\NodeAction;
 use ju1ius\Pegasus\Expression\Decorator\Not;
 use ju1ius\Pegasus\Expression\Decorator\OneOrMore;
@@ -224,7 +224,7 @@ class GrammarParserTest extends PegasusTestCase
         ];
         yield 'Labeled match' => [
             'x = a:/x/',
-            Grammar::fromArray(['x' => new Label('a', new NonCapturingRegExp('x'))])
+            Grammar::fromArray(['x' => new Bind('a', new NonCapturingRegExp('x'))])
         ];
         yield 'ZeroOrMore match' => [
             'x = /x/*',

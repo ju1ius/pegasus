@@ -11,7 +11,7 @@ use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\Decorator;
 use ju1ius\Pegasus\Expression\Decorator\Assert;
 use ju1ius\Pegasus\Expression\Decorator\Ignore;
-use ju1ius\Pegasus\Expression\Decorator\Label;
+use ju1ius\Pegasus\Expression\Decorator\Bind;
 use ju1ius\Pegasus\Expression\Decorator\NodeAction;
 use ju1ius\Pegasus\Expression\Decorator\Not;
 use ju1ius\Pegasus\Expression\Decorator\Quantifier;
@@ -261,16 +261,16 @@ class ExpressionBuilderTest extends PegasusTestCase
                 new Quantifier(new Literal('baz'), 2, 42),
             ]),
         ];
-        yield 'Label' => [
-            Builder::create()->label('a')->literal('foo')->getExpression(),
-            new Label('a', new Literal('foo')),
+        yield 'Binding' => [
+            Builder::create()->bindTo('a')->literal('foo')->getExpression(),
+            new Bind('a', new Literal('foo')),
         ];
         yield 'Skip' => [
             Builder::create()->ignore()->literal('foo')->getExpression(),
             new Ignore(new Literal('foo')),
         ];
         yield 'Token' => [
-            Builder::create()->token()->literal('foo')->getExpression(),
+            Builder::create()->asToken()->literal('foo')->getExpression(),
             new Token(new Literal('foo')),
         ];
     }
