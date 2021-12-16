@@ -44,6 +44,11 @@ abstract class Compiler implements CompilerInterface
         return [];
     }
 
+    public function useCache(string|false $cache): void
+    {
+        $this->twig->setCache($cache);
+    }
+
     /**
      * @throws Grammar\Exception\MissingTraitAlias
      */

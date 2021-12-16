@@ -4,6 +4,7 @@ namespace ju1ius\Pegasus\Tests\Expression\Application;
 
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\CST\Node\Terminal;
+use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
@@ -11,17 +12,13 @@ class ReferenceTest extends ExpressionTestCase
 {
     /**
      * @dataProvider provideTestMatch
-     *
-     * @param string $grammar
-     * @param array  $args
-     * @param Node   $expected
      */
-    public function testMatch($grammar, $args, $expected)
+    public function testMatch(Grammar $grammar, array $args, Node $expected)
     {
         $this->assertNodeEquals($expected, $this->parse($grammar, ...$args));
     }
 
-    public function provideTestMatch()
+    public function provideTestMatch(): iterable
     {
         yield [
             GrammarBuilder::create()
