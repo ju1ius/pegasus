@@ -41,18 +41,10 @@ final class Debug
     }
 
     /**
-     * @param Grammar|Expression $value
-     * @param OutputInterface|null $output
      * @throws Grammar\Exception\SelfReferencingRule
      */
-    public static function highlight($value, OutputInterface $output = null)
+    public static function highlight(Grammar|Expression $value, OutputInterface $output = null)
     {
-        if (!$value instanceof Grammar && !$value instanceof Expression) {
-            throw new \InvalidArgumentException(sprintf(
-                'Can only highlight grammars or expressions.'
-            ));
-        }
-
         if (!$output) {
             $output = self::createConsoleOutput();
         } else {
@@ -61,7 +53,7 @@ final class Debug
 
         if ($value instanceof Grammar) {
             GrammarHighlighter::highlight($value, $output);
-        } elseif ($value instanceof Expression) {
+        } else {
             ExpressionHighlighter::highlight($value, $output);
         }
     }

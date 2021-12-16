@@ -86,7 +86,10 @@ final class CSTDumper extends NodeVisitor
                 var_export($node->value, true)
             ));
         } elseif ($node instanceof Node\Terminal) {
-            $this->output->write(sprintf('<d>: "</d><term>%s</term><d>"</d>', $node->value));
+            $this->output->write(sprintf(
+                '<d>: "</d><term>%s</term><d>"</d>',
+                $this->escape($node->value),
+            ));
         }
         $this->output->writeln('');
 
@@ -109,5 +112,10 @@ final class CSTDumper extends NodeVisitor
         if ($node instanceof Node\Composite && $node->children) {
             array_pop($this->indentStack);
         }
+    }
+
+    private function escape(string $value): string
+    {
+        return addcslashes($value, "\\\n\t\0");
     }
 }
