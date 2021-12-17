@@ -13,27 +13,17 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class TraceDumper
 {
-    /**
-     * @var OutputInterface
-     */
-    private $output;
-
-    /**
-     * GrammarDumper constructor.
-     *
-     * @param OutputInterface $output
-     */
-    public function __construct(OutputInterface $output)
-    {
-        $this->output = $output;
+    public function __construct(
+        private OutputInterface $output,
+    ) {
     }
 
-    public static function dump(Trace $trace, OutputInterface $output)
+    public static function dump(Trace $trace, OutputInterface $output): void
     {
         (new self($output))->dumpTrace($trace);
     }
 
-    public function dumpTrace(Trace $trace)
+    public function dumpTrace(Trace $trace): void
     {
         $source = $trace->getSource();
         $output = $this->output;

@@ -32,16 +32,12 @@ abstract class Composite extends Expression implements \ArrayAccess, \Countable,
 
     public function isCapturing(): bool
     {
-        return $this->some(function (Expression $child) {
-            return $child->isCapturing();
-        });
+        return $this->some(fn(Expression $child) => $child->isCapturing());
     }
 
     public function isCapturingDecidable(): bool
     {
-        return $this->every(function (Expression $child) {
-            return $child->isCapturingDecidable();
-        });
+        return $this->every(fn(Expression $child) => $child->isCapturingDecidable());
     }
 
     /**

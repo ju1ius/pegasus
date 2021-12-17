@@ -85,16 +85,7 @@ class ExpressionBuilder
             return $this;
         }
 
-        $top = $this->compositeStack->top();
-        // if top expression is a `Decorator` and it has already one child, end the top expression,
-        // rinse and repeat for all parent decorators.
-        while ($top instanceof Decorator && \count($top) > 0) {
-            $this->end();
-            if ($this->compositeStack->isEmpty()) {
-                break;
-            }
-            $top = $this->compositeStack->top();
-        }
+        $top = $this->closeDecorators();
 
         // Add given expression as a child of the current parent.
         if ($top instanceof Composite) {
@@ -115,6 +106,7 @@ class ExpressionBuilder
      */
     public function end(): static
     {
+        $this->closeDecorators();
         if (!$this->compositeStack->isEmpty()) {
             $this->compositeStack->pop();
         }
@@ -123,7 +115,6 @@ class ExpressionBuilder
     }
 
     /**
-     *
      * @return $this
      */
     public function endAll(): static
@@ -133,6 +124,22 @@ class ExpressionBuilder
         }
 
         return $this;
+    }
+
+    private function closeDecorators(): ?Expression
+    {
+        if ($this->compositeStack->isEmpty()) return null;
+        // if top expression is a `Decorator` and it has already one child,
+        // end the top expression, rinse and repeat for all parent decorators.
+        $top = $this->compositeStack->top();
+        while ($top instanceof Decorator && \count($top) > 0) {
+            $this->compositeStack->pop();
+            if ($this->compositeStack->isEmpty()) {
+                break;
+            }
+            $top = $this->compositeStack->top();
+        }
+        return $top;
     }
 
     //

@@ -7,21 +7,13 @@ use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Grammar\Optimization;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 
-/**
- * @author ju1ius
- */
 abstract class FlatteningOptimization extends Optimization
 {
     public function willPostProcessExpression(Expression $expr, OptimizationContext $context): bool
     {
-        return $expr instanceof Composite && $expr->some(function (Expression $child) {
-            return $this->isEligibleChild($child);
-        });
+        return $expr instanceof Composite && $expr->some($this->isEligibleChild(...));
     }
 
-    /**
-     * @inheritdoc
-     */
     public function postProcessExpression(Expression $expr, OptimizationContext $context): ?Expression
     {
         /** @var Composite $expr */

@@ -46,7 +46,7 @@ final class Trace implements \IteratorAggregate
             $this->source->getExcerpt($this->rightmostFailurePosition)
         );
 
-        return new ParseError($message);
+        return new ParseError($message, trace: $this);
     }
 
     public function push(Expression $expr): TraceEntry

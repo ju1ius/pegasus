@@ -89,7 +89,7 @@ class LeftRecursivePackratParser extends PackratParser
         }
     }
 
-    protected function leftRecursionAnswer(Expression $expr, int $pos, MemoEntry $memo): Node|LeftRecursion|null
+    protected function leftRecursionAnswer(Expression $expr, int $pos, MemoEntry $memo): Node|LeftRecursion|bool
     {
         $head = $memo->result->head;
         if ($head->rule->id !== $expr->id) {
@@ -97,13 +97,13 @@ class LeftRecursivePackratParser extends PackratParser
         }
         $memo->result = $memo->result->seed;
         if (!$memo->result) {
-            return null;
+            return false;
         }
 
         return $this->growSeedParse($expr, $pos, $memo, $head);
     }
 
-    protected function growSeedParse(Expression $expr, int $pos, MemoEntry $memo, Head $head): Node|LeftRecursion|null
+    protected function growSeedParse(Expression $expr, int $pos, MemoEntry $memo, Head $head): Node|LeftRecursion|bool
     {
         $this->isGrowingSeedParse = true;
         $this->heads[$pos] = $head;
@@ -128,12 +128,12 @@ class LeftRecursivePackratParser extends PackratParser
     {
         $pos = $this->pos;
         $memo = $this->memo[$this->isCapturing]->get($pos, $expr);
-        $head = $this->heads[$pos] ?? null;
+        $head = $this->heads[$pos] ?? false;
         // If not growing a seed parse, just return what is stored in the memo table.
         if (!$head) return $memo;
         // Do not evaluate any rule that is not involved in this left recursion.
         if (!$memo && !$head->involves($expr)) {
-            return new MemoEntry($pos, null);
+            return new MemoEntry($pos, false);
         }
         // Allow involved rules to be evaluated, but only once, during a seed-growing iteration.
         if (isset($head->eval[$expr->id])) {
