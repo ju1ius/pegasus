@@ -9,7 +9,7 @@ if ({{ result_var }} = (bool)preg_match({{ repr_regexp(expr.compiledPattern) }},
         {{ block('caturing_success')|indent(2) }}
     }
 } else {
-    {{ failure(context.rule, expr)|indent }}
+    {{ h.failure(context.rule, expr)|indent }}
 }
 {%- endblock capturing %}
 

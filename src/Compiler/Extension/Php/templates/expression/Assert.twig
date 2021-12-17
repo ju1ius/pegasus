@@ -1,19 +1,20 @@
 {% extends "expr.twig" %}
+{% import "macros.twig" as h %}
 
 {% block matching %}
-{{ store_position(expr) }}
+{{ h.store_position(expr) }}
 {{ render_expr(expr[0], context) }}
 {{ expr_comment(expr, 'result') }}
 {{ result_var }} = {{ result_varname(expr[0]) }};
-{{ backtrack(expr) }}
+{{ h.backtrack(expr) }}
 {%- endblock matching %}
 
 {% block caturing %}
-{{ store_position(expr) }}
-{{ start_non_capturing(expr) }}
+{{ h.store_position(expr) }}
+{{ h.start_non_capturing(expr) }}
 {{ render_expr(expr[0], context.matching()) }}
 {{ expr_comment(expr, 'result') }}
 {{ result_var }} = {{ result_varname(expr[0]) }};
-{{ end_non_capturing(expr) }}
-{{ backtrack(expr) }}
+{{ h.end_non_capturing(expr) }}
+{{ h.backtrack(expr) }}
 {%- endblock caturing %}

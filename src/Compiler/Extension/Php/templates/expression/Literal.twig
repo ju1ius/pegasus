@@ -1,4 +1,5 @@
 {% extends "expr.twig" %}
+{% import "macros.twig" as h %}
 {#
     TODO: check performance of substr_compare
     caveat: substr_compare warns if $pos is > strlen($text)
@@ -9,7 +10,7 @@
 if ({{ result_var }} = 0 === substr_compare($this->source, {{ literal }}, $this->pos, {{ expr.length }})) {
     $this->pos += {{ expr.length }};
 } else {
-    {{ failure(context.rule, expr)|indent }}
+    {{ h.failure(context.rule, expr)|indent }}
 }
 {%- endblock matching %}
 
@@ -19,6 +20,6 @@ if ({{ result_var }} = 0 === substr_compare($this->source, {{ literal }}, $this-
     $this->pos += {{ expr.length }};
     if ($this->isCapturing) {{ result_var }} = new Terminal('{{ expr.name }}', $start, $this->pos, {{ literal }});
 } else {
-    {{ failure(context.rule, expr)|indent }}
+    {{ h.failure(context.rule, expr)|indent }}
 }
 {%- endblock capturing %}

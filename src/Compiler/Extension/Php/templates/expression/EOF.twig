@@ -1,9 +1,10 @@
 {% extends "expr.twig" %}
+{% import "macros.twig" as h %}
 
 
 {% block matching %}
 if (!{{ result_var }} = !isset($this->source[$this->pos])) {
-    {{ failure(context.rule, expr)|indent }}
+    {{ h.failure(context.rule, expr)|indent }}
 }
 {%- endblock matching %}
 

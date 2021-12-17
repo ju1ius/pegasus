@@ -1,4 +1,4 @@
-{% macro error(rule, expr, pos = '$this->pos') -%}
+{% macro failure(rule, expr, pos = '$this->pos') -%}
 $this->registerFailure('{{ rule }}', {{ repr(expr) }}, {{ pos }});
 {%- endmacro %}
 

@@ -28,10 +28,6 @@ class PhpTwigExtension extends AbstractExtension
             new TwigFunction('result_varname', [$this, 'getResultVariableName']),
             new TwigFunction('position_varname', [$this, 'getPositionVariableName']),
             new TwigFunction('expr_comment', [$this, 'getExpressionComment']),
-            new TwigFunction('failure', [$this, 'renderFailure']),
-            new TwigFunction('start_non_capturing', [$this, 'renderStartNonCapturing']),
-            new TwigFunction('end_non_capturing', [$this, 'renderEndNonCapturing']),
-            new TwigFunction('store_position', [$this, 'renderStorePosition']),
         ];
     }
 
@@ -100,30 +96,5 @@ class PhpTwigExtension extends AbstractExtension
     public function getPositionVariableName(Expression $expr): string
     {
         return sprintf('$pos_%s', $expr->id);
-    }
-
-    public function renderFailure(string $rule, Expression $expr, string $pos = '$this->pos'): string
-    {
-        return $this->renderHelper('failure', [
-            'rule' => $rule,
-            'expr' => $expr,
-            'pos' => $pos,
-        ]);
-    }
-
-    public function renderStartNonCapturing(Expression $expr): string
-    {
-        return $this->renderHelper('start_non_capturing', ['expr' => $expr]);
-    }
-
-    public function renderEndNonCapturing(Expression $expr): string
-    {
-        return $this->renderHelper('end_non_capturing', ['expr' => $expr]);
-    }
-
-    private function renderHelper(string $helper, array $args): string
-    {
-        $template = sprintf('helper/%s.twig', $helper);
-        return rtrim($this->compiler->renderTemplate($template, $args));
     }
 }

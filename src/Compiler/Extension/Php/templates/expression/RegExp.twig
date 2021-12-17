@@ -1,11 +1,12 @@
 {% extends "expr.twig" %}
+{% import "macros.twig" as h %}
 
 
 {% block matching %}
 if ({{ result_var }} = (bool)preg_match({{ repr_regexp(expr.compiledPattern) }}, $this->source, $matches, 0, $this->pos)) {
     $this->pos += \strlen($matches[0]);
 } else {
-    {{ failure(context.rule, expr)|indent }}
+    {{ h.failure(context.rule, expr)|indent }}
 }
 {%- endblock matching %}
 
@@ -16,6 +17,6 @@ if ({{ result_var }} = (bool)preg_match({{ repr_regexp(expr.compiledPattern) }},
     $end = $this->pos += \strlen($matches[0]);
     if ($this->isCapturing) {{ result_var }} = new Terminal('{{ expr.name }}', $start, $end, $matches[0]);
 } else {
-    {{ failure(context.rule, expr)|indent }}
+    {{ h.failure(context.rule, expr)|indent }}
 }
 {%- endblock capturing %}

@@ -8,7 +8,7 @@ if ($backref !== null && substr_compare($this->source, $backref, $this->pos, $le
     {{ result_var }} = true;
     $this->pos += $length;
 } else {
-    {{ failure(context.rule, expr)|indent }}
+    {{ h.failure(context.rule, expr)|indent }}
 }
 {%- endblock matching %}
 
@@ -21,6 +21,6 @@ if ($backref !== null && substr_compare($this->source, $backref, $this->pos, $le
     $end = $this->pos += $length;
     {{ result_var }} = $this->isCapturing ? new Terminal('{{ expr.name }}', $start, $end, $backref) : true;
 } else {
-    {{ failure(context.rule, expr)|indent }}
+    {{ h.failure(context.rule, expr)|indent }}
 }
 {%- endblock capturing %}

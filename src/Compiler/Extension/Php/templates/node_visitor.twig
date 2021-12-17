@@ -12,16 +12,10 @@ use ju1ius\Pegasus\CST\Transform;
  */
 class {{ grammar.name }}Transform extends Transform
 {
-    /**
-     * @inheritDoc
-     */
     protected function beforeTraverse(Node $node)
     {
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function afterTraverse($result)
     {
         return $result;

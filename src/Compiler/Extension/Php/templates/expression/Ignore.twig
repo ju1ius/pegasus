@@ -1,4 +1,5 @@
 {% extends "expr.twig" %}
+{% import "macros.twig" as h %}
 
 {% set subres_var = result_varname(expr[0]) %}
 
@@ -9,9 +10,9 @@
 {%- endblock matching %}
 
 {% block capturing %}
-{{ start_non_capturing(expr) }}
+{{ h.start_non_capturing(expr) }}
 {{ render_expr(expr[0], context.matching()) }}
 {{ expr_comment(expr, 'result') }}
 {{ result_var }} = (bool){{ subres_var }};
-{{ end_non_capturing(expr) }}
+{{ h.end_non_capturing(expr) }}
 {%- endblock capturing %}
