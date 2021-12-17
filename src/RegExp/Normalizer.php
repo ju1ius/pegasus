@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-
 namespace ju1ius\Pegasus\RegExp;
-
 
 class Normalizer
 {
@@ -99,7 +97,7 @@ REGEXP;
         return $output;
     }
 
-    private static function getCurrentModifiers(int $pos, array $groups, array $initialModifiers)
+    private static function getCurrentModifiers(int $pos, array $groups, array $initialModifiers): array
     {
         $modifiers = $initialModifiers;
         foreach ($groups as $group) {
@@ -111,7 +109,7 @@ REGEXP;
         return $modifiers;
     }
 
-    private static function getInitialModifiers(array $initialFlags)
+    private static function getInitialModifiers(array $initialFlags): array
     {
         // ensure the x flag is always set
         $modifiers = ['x' => false];

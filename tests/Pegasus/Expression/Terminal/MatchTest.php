@@ -2,7 +2,9 @@
 
 namespace ju1ius\Pegasus\Tests\Expression\Terminal;
 
+use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\CST\Node\Terminal;
+use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
@@ -11,14 +13,14 @@ class MatchTest extends ExpressionTestCase
     /**
      * @dataProvider provideTestMatch
      */
-    public function testMatch($expr, $match_args, $expected)
+    public function testMatch(Grammar $expr, array $args, Node $expected)
     {
         $this->assertNodeEquals(
             $expected,
-            $this->parse($expr, ...$match_args)
+            $this->parse($expr, ...$args)
         );
     }
-    public function provideTestMatch()
+    public function provideTestMatch(): iterable
     {
         // [ [pattern(,name(,flags))], text, [name, text, start, end, children, matches] ]
         // simple literals

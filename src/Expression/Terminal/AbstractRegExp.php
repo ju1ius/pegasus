@@ -10,20 +10,14 @@ use ju1ius\Pegasus\RegExp\Normalizer;
  */
 abstract class AbstractRegExp extends TerminalExpression
 {
-    /**
-     * @var string
-     */
     protected string $pattern;
-
     /**
      * @var string[]
      */
     protected array $flags;
 
-    /**
-     * @var string
-     */
     protected string $compiledPattern;
+    protected string $compiledFlags;
 
     public function __construct(string $pattern, array $flags = [], string $name = '')
     {
@@ -31,6 +25,7 @@ abstract class AbstractRegExp extends TerminalExpression
         $this->flags = array_unique(array_filter($flags));
         $this->pattern = Normalizer::normalize($pattern, $this->compileFlags());
         $this->compiledPattern = $this->compilePattern();
+        $this->compiledFlags = implode('', $this->compileFlags());
     }
 
     final public function getPattern(): string
@@ -51,6 +46,11 @@ abstract class AbstractRegExp extends TerminalExpression
         return $this->compiledPattern;
     }
 
+    final public function getCompiledFlags(): string
+    {
+        return $this->compiledFlags;
+    }
+
     public function __toString(): string
     {
         return sprintf('/%s/%s', $this->pattern, implode('', $this->flags));
@@ -58,11 +58,7 @@ abstract class AbstractRegExp extends TerminalExpression
 
     private function compilePattern(): string
     {
-        return sprintf(
-            '/\G%s/%s',
-            $this->pattern,
-            implode('', $this->compileFlags())
-        );
+        return "\G{$this->pattern}";
     }
 
     /**
@@ -70,6 +66,6 @@ abstract class AbstractRegExp extends TerminalExpression
      */
     private function compileFlags(): array
     {
-        return array_unique(array_merge($this->flags, ['S', 'x']));
+        return array_unique(array_merge($this->flags, ['x']));
     }
 }

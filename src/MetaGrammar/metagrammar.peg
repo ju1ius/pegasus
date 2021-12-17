@@ -46,7 +46,7 @@ module_call     = IDENT ~'::' identifier
 
 literal         = STRING _
 word_literal    = ~'`' /[^`]+/ ~'`' _
-regexp          = / \/ ((?:\\.|[^\/])*) \/ ([imsUXJ]*) / _
+regexp          = / \/ ((?:\\.|[^\/])*) \/ ([imspln]*) / _
 any             = "." _
 eof             = `EOF` _
 epsilon         = `E` _

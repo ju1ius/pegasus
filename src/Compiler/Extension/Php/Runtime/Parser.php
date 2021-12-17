@@ -89,6 +89,8 @@ abstract class Parser
     {
         $this->cutStack = new SplStack();
         $this->cutStack->push(false);
+        mb_ereg_search_init($this->source);
+        mb_regex_set_options('z');
     }
 
     protected function afterParse($result): void

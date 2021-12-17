@@ -1,5 +1,7 @@
 <?php declare(strict_types=1);
 
+namespace ju1ius\Pegasus\MetaGrammar;
+
 use ju1ius\Pegasus\GrammarBuilder;
 
 $QUANTIFIER_PATTERN = <<<'EOS'
@@ -33,7 +35,7 @@ $REGEXP_PATTERN = <<<'EOS'
         [^\/]           # anything but the delimiter
     )*)
 \/                      # delimiter
-([imsUXJ]*)?            # optional flags
+([imspln]*)?            # optional flags
 EOS;
 
 $builder = GrammarBuilder::create('Pegasus');

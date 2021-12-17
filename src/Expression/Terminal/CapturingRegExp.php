@@ -9,12 +9,13 @@ class CapturingRegExp extends AbstractRegExp
 {
     public function matches(string $text, Parser $parser): Terminal|bool
     {
-        $start = $parser->pos;
-        if (preg_match($this->compiledPattern, $text, $matches, 0, $start)) {
-            $match = $matches[0];
-            $end = $parser->pos += \strlen($match);
+        if (!mb_ereg_search_setpos($parser->pos)) return false;
+        if ($pos = mb_ereg_search_pos($this->compiledPattern, $this->compiledFlags)) {
+            [$start, $length] = $pos;
+            $parser->pos += $length;
             if ($parser->isCapturing) {
-                return new Terminal($this->name, $start, $end, $match, ['groups' => $matches]);
+                $match = mb_ereg_search_getregs();
+                return new Terminal($this->name, $start, $parser->pos, $match[0], ['groups' => $match]);
             }
             return true;
         }

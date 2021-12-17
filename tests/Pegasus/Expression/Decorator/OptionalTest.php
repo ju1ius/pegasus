@@ -15,12 +15,12 @@ class OptionalTest extends ExpressionTestCase
     /**
      * @dataProvider provideTestMatch
      */
-    public function testMatch(Expression $child, array $match_args, Node $expected)
+    public function testMatch(Expression $child, array $args, Node $expected)
     {
         $expr = new Expression\Decorator\Optional($child, '?');
         $this->assertNodeEquals(
             $expected,
-            $this->parse($expr, ...$match_args),
+            $this->parse($expr, ...$args),
             (string)$expected,
         );
     }

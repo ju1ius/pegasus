@@ -2,13 +2,17 @@
 
 
 {% block capturing %}
-if ({{ result_var }} = (bool)preg_match({{ repr_regexp(expr.compiledPattern) }}, $this->source, $matches, 0, $this->pos)) {
-    $start = $this->pos;
-    $end = $this->pos += \strlen($matches[0]);
+mb_ereg_search_setpos($this->pos);
+if ($pos = mb_ereg_search_pos({{ repr_regexp(expr.compiledPattern) }}, '{{ expr.compiledFlags }}')) {
+    $this->pos += $pos[1];
     if ($this->isCapturing) {
+        $match = mb_ereg_search_getregs();
         {{ block('caturing_success')|indent(2) }}
+    } else {
+        {{ result_var }} = true;
     }
 } else {
+    {{ result_var }} = false;
     {{ h.failure(context.rule, expr)|indent }}
 }
 {%- endblock capturing %}
@@ -17,9 +21,9 @@ if ({{ result_var }} = (bool)preg_match({{ repr_regexp(expr.compiledPattern) }},
 {% block caturing_success -%}
 
 {% if expr.captureCount == 1 %}
-{{ result_var }} = new Terminal('{{ expr.name }}', $start, $end, $matches[1]);
+{{ result_var }} = new Terminal('{{ expr.name }}', $pos[0], $this->pos, $match[1]);
 {%- else %}
-{{ result_var }} = new Terminal('{{ expr.name }}', $start, $end, $matches[0], ['captures' => array_slice($matches, 1)]);
+{{ result_var }} = new Terminal('{{ expr.name }}', $pos[0], $this->pos, $match[0], ['captures' => array_slice($match, 1)]);
 {%- endif %}
 
 {%- endblock caturing_success %}

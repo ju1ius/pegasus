@@ -18,6 +18,7 @@ use ju1ius\Pegasus\Parser\Parser;
 final class GroupMatch extends TerminalExpression
 {
     private string $compiledPattern;
+    private string $compiledFlags;
 
     public function __construct(
         private RegExp $matcher,
@@ -25,6 +26,7 @@ final class GroupMatch extends TerminalExpression
         string $name = ''
     ) {
         $this->compiledPattern = $matcher->getCompiledPattern();
+        $this->compiledFlags = $matcher->getCompiledFlags();
         parent::__construct($name);
     }
 
@@ -58,20 +60,20 @@ final class GroupMatch extends TerminalExpression
 
     public function matches(string $text, Parser $parser): TerminalNode|bool
     {
-        $start = $parser->pos;
-        if (preg_match($this->compiledPattern, $text, $matches, 0, $start)) {
-            $end = $parser->pos += \strlen($matches[0]);
-            if (!$parser->isCapturing) {
-                return true;
+        if (!mb_ereg_search_setpos($parser->pos)) return false;
+        if ($pos = mb_ereg_search_pos($this->compiledPattern, $this->compiledFlags)) {
+            [$start, $length] = $pos;
+            $parser->pos += $length;
+            if ($parser->isCapturing) {
+                $match = mb_ereg_search_getregs();
+                if ($this->groupCount === 1) {
+                    return new TerminalNode($this->name, $start, $parser->pos, $match[1]);
+                }
+                return new TerminalNode($this->name, $start, $parser->pos, $match[0], [
+                    'captures' => array_slice($match, 1)
+                ]);
             }
-
-            if ($this->groupCount === 1) {
-                return new TerminalNode($this->name, $start, $end, $matches[1]);
-            }
-
-            return new TerminalNode($this->name, $start, $end, $matches[0], [
-                'captures' => array_slice($matches, 1)
-            ]);
+            return true;
         }
         return false;
     }
