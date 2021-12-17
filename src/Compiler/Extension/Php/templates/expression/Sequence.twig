@@ -14,14 +14,14 @@
 
 
 {% block matching %}
-{{ result_var }} = null;
+{{ result_var }} = false;
 {{ pos_var }} = $this->pos;
 do {
 {% for child in expr %}
     {{ render_expr(child, context)|indent }}
-    if (!{{ result_varname(child) }}) break;
+    if (!{{ result_varname(child) }}) break; // sequence failed
 {% endfor %}
-    {{ result_var }} = true;
+    {{ result_var }} = true; // sequence matched
 } while(0);
 if (!{{ result_var }}) $this->pos = {{ pos_var }};
 {%- endblock matching %}
@@ -29,20 +29,21 @@ if (!{{ result_var }}) $this->pos = {{ pos_var }};
 
 {% block capturing %}
 {% set children_var = '$children_' ~ expr.id %}
-{{ result_var }} = null;
+{{ result_var }} = false;
 {{ pos_var }} = $this->pos;
-{{ children_var }} = $this->isCapturing ? [] : null;
+{{ children_var }} = $this->isCapturing ? [] : false;
 do {
 {% for child in expr %}
     {% set subres_var = result_varname(child) -%}
     {{ render_expr(child, context)|indent }}
-    if (!{{ subres_var }}) break;
+    if (!{{ subres_var }}) break; // sequence failed
     if ($this->isCapturing && {{ subres_var }} !== true) {{ children_var }}[] = {{ subres_var }};
 {% endfor %}
-    {{ result_var }} = true;
+    {{ result_var }} = true; // sequence matched
 } while(0);
-if (!{{ result_var }}) $this->pos = {{ pos_var }};
+if (!{{ result_var }}) $this->pos = {{ pos_var }}; // sequence failed: backtrack
 else if ($this->isCapturing) {
+    // sequence matched
 {{ capturing_decidable
     ? block('capturing_decidable_success')
     : block('capturing_default_success')

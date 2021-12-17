@@ -7,7 +7,7 @@ use ju1ius\Pegasus\Expression\Decorator\Quantifier;
 use ju1ius\Pegasus\Expression\Terminal\EOF;
 use ju1ius\Pegasus\Expression\Terminal\GroupMatch;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
-use ju1ius\Pegasus\Expression\Terminal\RegExp;
+use ju1ius\Pegasus\Expression\Terminal\AbstractRegExp;
 use ju1ius\Pegasus\Utils\Str;
 
 class PCREManipulator implements RegExpManipulator
@@ -43,7 +43,7 @@ class PCREManipulator implements RegExpManipulator
         if ($expr instanceof EOF) {
             return '\z';
         }
-        if ($expr instanceof RegExp || $expr instanceof GroupMatch) {
+        if ($expr instanceof AbstractRegExp || $expr instanceof GroupMatch) {
             return $this->patternForMatch($expr);
         }
         if ($expr instanceof Quantifier) {
@@ -53,7 +53,7 @@ class PCREManipulator implements RegExpManipulator
         throw new \LogicException(sprintf('Cannot compile %s to PCRE pattern.', Str::className($expr)));
     }
 
-    public function hasUnmergeableFlags(RegExp $expr): bool
+    public function hasUnmergeableFlags(AbstractRegExp $expr): bool
     {
         foreach ($expr->getFlags() as $flag) {
             if (!in_array($flag, self::MERGEABLE_FLAGS, true)) {
@@ -87,7 +87,7 @@ class PCREManipulator implements RegExpManipulator
     }
 
     /**
-     * @param RegExp|GroupMatch $expr
+     * @param AbstractRegExp|GroupMatch $expr
      * @return string
      */
     protected function patternForMatch($expr): string

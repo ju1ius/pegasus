@@ -1,11 +1,21 @@
-{% extends "expression/Match.twig" %}
+{% extends "expr.twig" %}
+
+
+{% block matching %}
+if ({{ result_var }} = (bool)preg_match({{ repr_regexp(expr.compiledPattern) }}, $this->source, $matches, 0, $this->pos)) {
+    $this->pos += \strlen($matches[0]);
+} else {
+    {{ failure(context.rule, expr)|indent }}
+}
+{%- endblock matching %}
+
 
 {% block capturing %}
 if ({{ result_var }} = (bool)preg_match({{ repr_regexp(expr.compiledPattern) }}, $this->source, $matches, 0, $this->pos)) {
     $start = $this->pos;
     $end = $this->pos += \strlen($matches[0]);
-    if ($this->isCapturing) {{ result_var }} = new Terminal('{{ expr.name }}', $start, $end, $matches[0], ['groups' => $matches]);
+    if ($this->isCapturing) {{ result_var }} = new Terminal('{{ expr.name }}', $start, $end, $matches[0]);
 } else {
     {{ failure(context.rule, expr)|indent }}
 }
-{% endblock capturing %}
+{%- endblock capturing %}

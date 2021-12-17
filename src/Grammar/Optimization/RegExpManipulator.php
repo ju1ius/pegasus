@@ -3,7 +3,7 @@
 namespace ju1ius\Pegasus\Grammar\Optimization;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Terminal\RegExp;
+use ju1ius\Pegasus\Expression\Terminal\AbstractRegExp;
 use LogicException;
 
 
@@ -14,7 +14,7 @@ interface RegExpManipulator
      */
     public function patternFor(Expression $expr): string;
 
-    public function hasUnmergeableFlags(RegExp $expr): bool;
+    public function hasUnmergeableFlags(AbstractRegExp $expr): bool;
 
     public function atomic(string $pattern): string;
 

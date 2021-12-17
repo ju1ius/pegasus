@@ -91,6 +91,6 @@ final class CSTDumper extends NodeVisitor
 
     private function escape(string $value): string
     {
-        return addcslashes($value, "\\\n\t\0");
+        return $value;//addcslashes($value, "\\\n\t\0");
     }
 }

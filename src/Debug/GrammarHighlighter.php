@@ -11,32 +11,21 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class GrammarHighlighter extends GrammarVisitor
 {
-    /**
-     * @var OutputInterface
-     */
-    private $output;
+    private ExpressionHighlighter $expressionHighlighter;
 
-    /**
-     * @var ExpressionHighlighter
-     */
-    private $expressionHighlighter;
-
-    public function __construct(OutputInterface $output)
-    {
-        $this->output = $output;
+    public function __construct(
+        private OutputInterface $output,
+    ) {
         $this->expressionHighlighter = new ExpressionHighlighter($output);
     }
 
     /**
-     * @param Grammar $grammar
-     * @param OutputInterface $output
-     *
      * @throws Grammar\Exception\SelfReferencingRule
      */
     public static function highlight(Grammar $grammar, OutputInterface $output): void
     {
         (new GrammarTraverser(false))
-            ->addVisitor($highlighter = new self($output))
+            ->addVisitor(new self($output))
             ->traverse($grammar);
     }
 
@@ -77,17 +66,11 @@ final class GrammarHighlighter extends GrammarVisitor
         $this->output->writeln(['', '']);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function enterExpression(Expression $expr, ?int $index = null, bool $isLast = false)
     {
         $this->expressionHighlighter->enterExpression($expr, $index, $isLast);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function leaveExpression(Expression $expr, ?int $index = null, bool $isLast = false)
     {
         $this->expressionHighlighter->leaveExpression($expr, $index, $isLast);

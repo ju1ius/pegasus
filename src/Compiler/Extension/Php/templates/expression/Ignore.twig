@@ -1,16 +1,17 @@
 {% extends "expr.twig" %}
 
+{% set subres_var = result_varname(expr[0]) %}
 
 {% block matching %}
 {{ render_expr(expr[0], context) }}
 {{ expr_comment(expr, 'result') }}
-{{ result_var }} = {{ result_varname(expr[0]) }};
+{{ result_var }} = {{ subres_var }};
 {%- endblock matching %}
 
 {% block capturing %}
 {{ start_non_capturing(expr) }}
 {{ render_expr(expr[0], context.matching()) }}
 {{ expr_comment(expr, 'result') }}
-{{ result_var }} = (bool){{ result_varname(expr[0]) }};
+{{ result_var }} = (bool){{ subres_var }};
 {{ end_non_capturing(expr) }}
 {%- endblock capturing %}

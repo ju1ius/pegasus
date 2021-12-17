@@ -6,7 +6,7 @@ use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Application\Reference;
 use ju1ius\Pegasus\Expression\Combinator\Sequence;
 use ju1ius\Pegasus\Expression\Decorator\Ignore;
-use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
+use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinPredicateNestedMatch;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
@@ -40,7 +40,7 @@ class JoinPredicateNestedMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new Sequence([
                 new Reference('a'),
-                new Ignore(new NonCapturingRegExp('(?>b)(?=c)')),
+                new Ignore(new RegExp('(?>b)(?=c)')),
                 new Reference('d'),
             ], 'test')
         ];
@@ -53,7 +53,7 @@ class JoinPredicateNestedMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new Sequence([
                 new Reference('a'),
-                new Ignore(new NonCapturingRegExp('(?>b)(?!c)')),
+                new Ignore(new RegExp('(?>b)(?!c)')),
                 new Reference('d'),
             ], 'test')
         ];
@@ -66,7 +66,7 @@ class JoinPredicateNestedMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new Sequence([
                 new Reference('a'),
-                new Ignore(new NonCapturingRegExp('(?>b)\z')),
+                new Ignore(new RegExp('(?>b)\z')),
                 new Reference('d'),
             ], 'test')
         ];
@@ -79,7 +79,7 @@ class JoinPredicateNestedMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new Sequence([
                 new Reference('a'),
-                new Ignore(new NonCapturingRegExp('(?=b)(?>c)')),
+                new Ignore(new RegExp('(?=b)(?>c)')),
                 new Reference('d'),
             ], 'test')
         ];
@@ -92,7 +92,7 @@ class JoinPredicateNestedMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new Sequence([
                 new Reference('a'),
-                new Ignore(new NonCapturingRegExp('(?!b)(?>c)')),
+                new Ignore(new RegExp('(?!b)(?>c)')),
                 new Reference('d'),
             ], 'test')
         ];

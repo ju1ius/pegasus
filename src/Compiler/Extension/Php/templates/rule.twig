@@ -3,18 +3,14 @@
 /**
  * Matching rule: {{ expr.name }} = {{ expr|escape_comment }}
  */
-public function match_{{ expr.name }}(): Node|bool
+public function match_{{ expr.name }}(array $bindings): Node|bool
 {
 {% if use_cache %}
-    $memo = $this->memo[$this->isCapturing][$this->pos]['{{ expr.name }}'] ?? null;
-    if ($memo) {
+    if ($memo = $this->memo[$this->isCapturing][$this->pos]['{{ expr.name }}'] ?? null) {
         $this->pos = $memo[0];
         return $memo[1];
     }
-    $memo = [$this->pos, null];
-{% endif %}
-{% if context.needsBindings(expr.name) %}
-    $bindings = [];
+    $memo = [$this->pos, false];
 {% endif %}
     {{ render_expr(expr, context)|indent }}
 {% if use_cache %}

@@ -16,8 +16,8 @@ if ({{ result_var }} = 0 === substr_compare($this->source, {{ literal }}, $this-
 {% block capturing -%}
 if ({{ result_var }} = 0 === substr_compare($this->source, {{ literal }}, $this->pos, {{ expr.length }})) {
     $start = $this->pos;
-    $end = $this->pos += {{ expr.length }};
-    if ($this->isCapturing) {{ result_var }} = new Terminal('{{ expr.name }}', $start, $end, {{ literal }});
+    $this->pos += {{ expr.length }};
+    if ($this->isCapturing) {{ result_var }} = new Terminal('{{ expr.name }}', $start, $this->pos, {{ literal }});
 } else {
     {{ failure(context.rule, expr)|indent }}
 }

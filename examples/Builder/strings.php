@@ -4,8 +4,10 @@ namespace ju1ius\Pegasus\Examples\Builder;
 
 use ju1ius\Pegasus\CST\Transform;
 use ju1ius\Pegasus\Debug\Debug;
+use ju1ius\Pegasus\Grammar\Optimizer;
 use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Parser\RecursiveDescentParser;
+use Symfony\Component\VarDumper\VarDumper;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
@@ -27,7 +29,7 @@ $grammar = GrammarBuilder::create('strings')
         ->bindTo('q')->reference('quote_char')
         ->reference('content')
         ->backReference('q')
-    ->rule('content')->zeroOrMore()->oneOf()
+    ->rule('content')->asToken()->zeroOrMore()->oneOf()
         ->reference('escaped_char')
         ->sequence()
             ->not()->backReference('q')
@@ -40,12 +42,14 @@ $grammar = GrammarBuilder::create('strings')
         ->any()
     ->getGrammar();
 
+Debug::dump($grammar);
+
 $parser = new RecursiveDescentParser($grammar);
 $cst = $parser->parse($argv[1] ?? EXAMPLE);
 $transform = new class extends Transform {
-    public function leave_string($node, $openQuote, $chars, $closeQuote): string
+    public function leave_string($node, $openQuote, $content, $closeQuote): string
     {
-        return implode('', $chars);
+        return $content;
     }
     public function leave_escaped_char($node, $escape, $char): string
     {
@@ -55,3 +59,4 @@ $transform = new class extends Transform {
 $string = $transform->transform($cst);
 Debug::dump($string);
 Debug::dump($cst);
+VarDumper::dump('\\');

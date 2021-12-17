@@ -23,7 +23,7 @@ use ju1ius\Pegasus\Expression\Terminal\EOF;
 use ju1ius\Pegasus\Expression\Terminal\Epsilon;
 use ju1ius\Pegasus\Expression\Terminal\Fail;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
-use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
+use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Expression\Terminal\Word;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimizer;
@@ -90,19 +90,19 @@ class GrammarParserTest extends PegasusTestCase
         ];
         yield 'match' => [
             'x = /x/',
-            Grammar::fromArray(['x' => new NonCapturingRegExp('x', [], 'x')])
+            Grammar::fromArray(['x' => new RegExp('x', [], 'x')])
         ];
         yield 'match with escaped delimiter' => [
             'x = /x \/ x/',
-            Grammar::fromArray(['x' => new NonCapturingRegExp('x \/ x', [], 'x')])
+            Grammar::fromArray(['x' => new RegExp('x \/ x', [], 'x')])
         ];
         yield 'match with flags' => [
             'x = /x/i',
-            Grammar::fromArray(['x' => new NonCapturingRegExp('x', ['i'], 'x')])
+            Grammar::fromArray(['x' => new RegExp('x', ['i'], 'x')])
         ];
         yield 'match non-capturing groups' => [
             'x = /(?:x)(?!y)/',
-            Grammar::fromArray(['x' => new NonCapturingRegExp('(?:x)(?!y)', [], 'x')])
+            Grammar::fromArray(['x' => new RegExp('(?:x)(?!y)', [], 'x')])
         ];
         yield 'RegExp' => [
             'x = /x(y)/',
@@ -153,35 +153,35 @@ class GrammarParserTest extends PegasusTestCase
         yield 'Sequence of matches' => [
             'x = /x/ /y/ /z/',
             Grammar::fromArray(['x' => new Sequence([
-                new NonCapturingRegExp('x'),
-                new NonCapturingRegExp('y'),
-                new NonCapturingRegExp('z'),
+                new RegExp('x'),
+                new RegExp('y'),
+                new RegExp('z'),
             ])])
         ];
         yield 'Choice of matches' => [
             'x = /x/ | /y/ | /z/',
             Grammar::fromArray(['x' => new OneOf([
-                new NonCapturingRegExp('x'),
-                new NonCapturingRegExp('y'),
-                new NonCapturingRegExp('z'),
+                new RegExp('x'),
+                new RegExp('y'),
+                new RegExp('z'),
             ])])
         ];
         yield 'NodeAction of matches' => [
             'x = /x/ /y/ /z/ <= XYZ',
             Grammar::fromArray([
                 'x' => new NodeAction(new Sequence([
-                    new NonCapturingRegExp('x'),
-                    new NonCapturingRegExp('y'),
-                    new NonCapturingRegExp('z'),
+                    new RegExp('x'),
+                    new RegExp('y'),
+                    new RegExp('z'),
                 ]), 'XYZ')
             ])
         ];
         yield 'Choice with named sequence' => [
             'x = /x/ | /y/ <= Y | /z/',
             Grammar::fromArray(['x' => new OneOf([
-                new NonCapturingRegExp('x'),
-                new NodeAction(new NonCapturingRegExp('y'), 'Y'),
-                new NonCapturingRegExp('z'),
+                new RegExp('x'),
+                new NodeAction(new RegExp('y'), 'Y'),
+                new RegExp('z'),
             ])])
         ];
     }
@@ -208,47 +208,47 @@ class GrammarParserTest extends PegasusTestCase
     {
         yield 'Assert of a match' => [
             'x = &/x/',
-            Grammar::fromArray(['x' => new Assert(new NonCapturingRegExp('x'))])
+            Grammar::fromArray(['x' => new Assert(new RegExp('x'))])
         ];
         yield 'Not of a match' => [
             'x = !/x/',
-            Grammar::fromArray(['x' => new Not(new NonCapturingRegExp('x'))])
+            Grammar::fromArray(['x' => new Not(new RegExp('x'))])
         ];
         yield 'Skip of a match' => [
             'x = ~/x/',
-            Grammar::fromArray(['x' => new Ignore(new NonCapturingRegExp('x'))])
+            Grammar::fromArray(['x' => new Ignore(new RegExp('x'))])
         ];
         yield 'Token of a match' => [
             'x = %/x/',
-            Grammar::fromArray(['x' => new Token(new NonCapturingRegExp('x'))])
+            Grammar::fromArray(['x' => new Token(new RegExp('x'))])
         ];
         yield 'Labeled match' => [
             'x = a:/x/',
-            Grammar::fromArray(['x' => new Bind('a', new NonCapturingRegExp('x'))])
+            Grammar::fromArray(['x' => new Bind('a', new RegExp('x'))])
         ];
         yield 'ZeroOrMore match' => [
             'x = /x/*',
-            Grammar::fromArray(['x' => new ZeroOrMore(new NonCapturingRegExp('x'))])
+            Grammar::fromArray(['x' => new ZeroOrMore(new RegExp('x'))])
         ];
         yield 'OneOrMore match' => [
             'x = /x/+',
-            Grammar::fromArray(['x' => new OneOrMore(new NonCapturingRegExp('x'))])
+            Grammar::fromArray(['x' => new OneOrMore(new RegExp('x'))])
         ];
         yield 'Optional match' => [
             'x = /x/?',
-            Grammar::fromArray(['x' => new Optional(new NonCapturingRegExp('x'))])
+            Grammar::fromArray(['x' => new Optional(new RegExp('x'))])
         ];
         yield 'Exactly 2 match' => [
             'x = /x/{2}',
-            Grammar::fromArray(['x' => new Quantifier(new NonCapturingRegExp('x'), 2, 2)])
+            Grammar::fromArray(['x' => new Quantifier(new RegExp('x'), 2, 2)])
         ];
         yield 'At least 2 match' => [
             'x = /x/{2,}',
-            Grammar::fromArray(['x' => new Quantifier(new NonCapturingRegExp('x'), 2)])
+            Grammar::fromArray(['x' => new Quantifier(new RegExp('x'), 2)])
         ];
         yield 'Between 2 and 4 match' => [
             'x = /x/{2,4}',
-            Grammar::fromArray(['x' => new Quantifier(new NonCapturingRegExp('x'), 2, 4)])
+            Grammar::fromArray(['x' => new Quantifier(new RegExp('x'), 2, 4)])
         ];
         yield 'Cut operator' => [
             'x = "["^',
@@ -367,6 +367,6 @@ class GrammarParserTest extends PegasusTestCase
     {
         $syntax = '@import foo from "./foo/bar.peg"';
         $grammar = $this->parseSyntax($syntax);
-        $this->fail();
+        $this->markTestSkipped('Not implemented yet');
     }
 }

@@ -31,6 +31,7 @@ class PhpTwigExtension extends AbstractExtension
             new TwigFunction('failure', [$this, 'renderFailure']),
             new TwigFunction('start_non_capturing', [$this, 'renderStartNonCapturing']),
             new TwigFunction('end_non_capturing', [$this, 'renderEndNonCapturing']),
+            new TwigFunction('store_position', [$this, 'renderStorePosition']),
         ];
     }
 

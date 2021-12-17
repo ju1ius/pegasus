@@ -6,7 +6,7 @@ use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Application\Reference;
 use ju1ius\Pegasus\Expression\Combinator\OneOf;
 use ju1ius\Pegasus\Expression\Decorator\Ignore;
-use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
+use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinPredicateOrNestedMatch;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
@@ -39,7 +39,7 @@ class JoinPredicateOrNestedMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new OneOf([
                 new Reference('a'),
-                new Ignore(new NonCapturingRegExp('b|(?=c)'))
+                new Ignore(new RegExp('b|(?=c)'))
             ], 'test')
         ];
         yield 'Choice with Skipped Match before a Not of a Match' => [
@@ -50,7 +50,7 @@ class JoinPredicateOrNestedMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new OneOf([
                 new Reference('a'),
-                new Ignore(new NonCapturingRegExp('b|(?!c)'))
+                new Ignore(new RegExp('b|(?!c)'))
             ], 'test')
         ];
         yield 'Choice with Skipped Match before a EOF' => [
@@ -61,7 +61,7 @@ class JoinPredicateOrNestedMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new OneOf([
                 new Reference('a'),
-                new Ignore(new NonCapturingRegExp('b|\z'))
+                new Ignore(new RegExp('b|\z'))
             ], 'test')
         ];
         yield 'Choice with Skipped Match after an Assert of a Match' => [
@@ -72,7 +72,7 @@ class JoinPredicateOrNestedMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new OneOf([
                 new Reference('a'),
-                new Ignore(new NonCapturingRegExp('(?=b)|c'))
+                new Ignore(new RegExp('(?=b)|c'))
             ], 'test')
         ];
         yield 'Choice with Skipped Match after a Not of a Match' => [
@@ -83,7 +83,7 @@ class JoinPredicateOrNestedMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new OneOf([
                 new Reference('a'),
-                new Ignore(new NonCapturingRegExp('(?!b)|c'))
+                new Ignore(new RegExp('(?!b)|c'))
             ], 'test')
         ];
         yield 'Choice with Skipped Match after EOF' => [
@@ -94,7 +94,7 @@ class JoinPredicateOrNestedMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new OneOf([
                 new Reference('a'),
-                new Ignore(new NonCapturingRegExp('\z|c'))
+                new Ignore(new RegExp('\z|c'))
             ], 'test')
         ];
     }

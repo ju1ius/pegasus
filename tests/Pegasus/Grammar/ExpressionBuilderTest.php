@@ -22,7 +22,7 @@ use ju1ius\Pegasus\Expression\Terminal\EOF;
 use ju1ius\Pegasus\Expression\Terminal\Epsilon;
 use ju1ius\Pegasus\Expression\Terminal\Fail;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
-use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
+use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Expression\TerminalExpression;
 use ju1ius\Pegasus\ExpressionBuilder as Builder;
 use ju1ius\Pegasus\Tests\PegasusTestCase;
@@ -163,7 +163,7 @@ class ExpressionBuilderTest extends PegasusTestCase
         ];
         yield 'Match' => [
             Builder::create()->match('foo', ['i'])->getExpression(),
-            new NonCapturingRegExp('foo', ['i']),
+            new RegExp('foo', ['i']),
         ];
         yield 'RegExp' => [
             Builder::create()->regexp('foo(bar)', ['i'])->getExpression(),

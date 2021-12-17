@@ -16,7 +16,6 @@ final class Debug
 {
     /**
      * @param mixed $value
-     * @param OutputInterface $output
      * @throws Grammar\Exception\SelfReferencingRule
      */
     public static function dump($value, OutputInterface $output = null)

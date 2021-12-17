@@ -4,7 +4,7 @@
 
 
 {% block body %}
-{{ result_var }} = null;
+{{ result_var }} = false;
 $this->cutStack->push(false);
 do {
     {{ pos_var }} = $this->pos;
@@ -13,9 +13,9 @@ do {
     {{ render_expr(child, context)|indent }}
     if ({{ subres_var }}) {
         {{ result_var }} = {{ context.isMatching ? 'true' : subres_var }};
-        break;
+        break; // choice matched
     }
-    $this->pos = {{ pos_var }};
+    $this->pos = {{ pos_var }}; // choice failed: backtrack
 {% endfor %}
 } while (0);
 $this->cutStack->pop();

@@ -3,7 +3,7 @@
 namespace ju1ius\Pegasus\Tests\Optimization\Match;
 
 use ju1ius\Pegasus\Expression;
-use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
+use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\ExpressionBuilder;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization\CombineQuantifiedMatch;
@@ -75,37 +75,37 @@ class CombineQuantifiedMatchTest extends RegExpOptimizationTestCase
             GrammarBuilder::create()->rule('test')
                 ->between(2, 4)->match('a')
                 ->getGrammar(),
-            new NonCapturingRegExp('(?>a){2,4}', [], 'test')
+            new RegExp('(?>a){2,4}', [], 'test')
         ];
         yield 'Quantified match with no upper bound' => [
             GrammarBuilder::create()->rule('test')
                 ->atLeast(2)->match('a')
                 ->getGrammar(),
-            new NonCapturingRegExp('(?>a){2,}', [], 'test')
+            new RegExp('(?>a){2,}', [], 'test')
         ];
         yield 'Exact quantified match' => [
             GrammarBuilder::create()->rule('test')
                 ->exactly(2)->match('a')
                 ->getGrammar(),
-            new NonCapturingRegExp('(?>a){2}', [], 'test')
+            new RegExp('(?>a){2}', [], 'test')
         ];
         yield 'zero-or-more quantified match' => [
             GrammarBuilder::create()->rule('test')
                 ->zeroOrMore()->match('a')
                 ->getGrammar(),
-            new NonCapturingRegExp('(?>a)*', [], 'test')
+            new RegExp('(?>a)*', [], 'test')
         ];
         yield 'one-or-more quantified match' => [
             GrammarBuilder::create()->rule('test')
                 ->oneOrMore()->match('a')
                 ->getGrammar(),
-            new NonCapturingRegExp('(?>a)+', [], 'test')
+            new RegExp('(?>a)+', [], 'test')
         ];
         yield 'optional match' => [
             GrammarBuilder::create()->rule('test')
                 ->optional()->match('a')
                 ->getGrammar(),
-            new NonCapturingRegExp('(?>a)?', [], 'test')
+            new RegExp('(?>a)?', [], 'test')
         ];
     }
 }

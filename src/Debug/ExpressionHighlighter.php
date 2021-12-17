@@ -24,50 +24,32 @@ use ju1ius\Pegasus\Expression\ExpressionVisitor;
 use ju1ius\Pegasus\Expression\Terminal\CapturingRegExp;
 use ju1ius\Pegasus\Expression\Terminal\GroupMatch;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
+use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Expression\Terminal\Word;
 use ju1ius\Pegasus\Expression\TerminalExpression;
+use SplStack;
 use Symfony\Component\Console\Output\OutputInterface;
 
 final class ExpressionHighlighter extends ExpressionVisitor
 {
-    /**
-     * @var string
-     */
-    private $output;
+    private SplStack $combinatorStack;
+    private string $ruleName = '';
 
-    /**
-     * @var \SplStack
-     */
-    private $combinatorStack;
-
-    /**
-     * @var string
-     */
-    private $ruleName = '';
-
-    /**
-     * ExpressionHighlighter constructor.
-     *
-     * @param OutputInterface $output
-     */
-    public function __construct(OutputInterface $output)
-    {
-        $this->output = $output;
+    public function __construct(
+        private OutputInterface $output,
+    ) {
     }
 
     public static function highlight(Expression $expr, OutputInterface $output): void
     {
         (new ExpressionTraverser())
-            ->addVisitor($highlighter = new self($output))
+            ->addVisitor(new self($output))
             ->traverse($expr);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function beforeTraverse(Expression $expr)
+    public function beforeTraverse(Expression $expr): ?Expression
     {
-        $this->combinatorStack = new \SplStack();
+        $this->combinatorStack = new SplStack();
         if ($expr instanceof Trace) $expr = $expr[0];
 
         $this->ruleName = $expr->getName();
@@ -75,9 +57,6 @@ final class ExpressionHighlighter extends ExpressionVisitor
         return $expr;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function enterExpression(Expression $expr, ?int $index = null, bool $isLast = false)
     {
         if ($index && !$this->combinatorStack->isEmpty()) {
@@ -112,7 +91,7 @@ final class ExpressionHighlighter extends ExpressionVisitor
                     '<d>`</d><term>%s</term><d>`</d>',
                     $expr->getWord()
                 ));
-            } elseif ($expr instanceof CapturingRegExp || $expr instanceof CapturingRegExp) {
+            } elseif ($expr instanceof CapturingRegExp || $expr instanceof RegExp) {
                 $this->output->write(sprintf(
                     '<d>/</d><term>%s</term><d>/</d><term>%s</term>',
                     $expr->getPattern(),
@@ -130,7 +109,7 @@ final class ExpressionHighlighter extends ExpressionVisitor
                 $this->output->write(sprintf('<kw>%s</kw>', $expr));
             }
         } elseif ($expr instanceof Decorator) {
-            switch (get_class($expr)) {
+            switch ($expr::class) {
                 case Assert::class:
                     $this->output->write('<sym>&</sym>');
                     break;
@@ -160,9 +139,6 @@ final class ExpressionHighlighter extends ExpressionVisitor
         }
     }
 
-    /**
-     * @inheritdoc
-     */
     public function leaveExpression(Expression $expr, ?int $index = null, bool $isLast = false)
     {
         if ($expr instanceof Trace) return;
@@ -229,6 +205,7 @@ final class ExpressionHighlighter extends ExpressionVisitor
             "\r" => '<esc>\r</esc>',
             "\t" => '<esc>\t</esc>',
             "\f" => '<esc>\f</esc>',
+            "\\" => '<esc>\\\\</esc>',
         ]);
     }
 }

@@ -8,7 +8,7 @@ use ju1ius\Pegasus\Expression\Combinator\Sequence;
 use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Expression\Decorator\ZeroOrMore;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
-use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
+use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization\InlineNonRecursiveRules;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
@@ -110,13 +110,13 @@ class InlineNonRecursiveRulesTest extends OptimizationTestCase
             'test',
             new Sequence([
                 new Ignore(new ZeroOrMore(new OneOf([
-                    new NonCapturingRegExp('\s+'),
-                    new NonCapturingRegExp('\#[^\n]*'),
+                    new RegExp('\s+'),
+                    new RegExp('\#[^\n]*'),
                 ]))),
                 new Literal('foo'),
                 new Ignore(new ZeroOrMore(new OneOf([
-                    new NonCapturingRegExp('\s+'),
-                    new NonCapturingRegExp('\#[^\n]*'),
+                    new RegExp('\s+'),
+                    new RegExp('\#[^\n]*'),
                 ])))
             ], 'test')
         ];

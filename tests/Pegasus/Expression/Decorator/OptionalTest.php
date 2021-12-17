@@ -7,7 +7,7 @@ use ju1ius\Pegasus\CST\Node\Quantifier;
 use ju1ius\Pegasus\CST\Node\Terminal;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
-use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
+use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
 
 class OptionalTest extends ExpressionTestCase
@@ -38,17 +38,17 @@ class OptionalTest extends ExpressionTestCase
             new Quantifier('?', 0, 0, [], true),
         ];
         yield [
-            new NonCapturingRegExp('[\w-]+'),
+            new RegExp('[\w-]+'),
             ['d-o_0-b'],
             new Quantifier('?', 0, 7, [new Terminal('', 0, 7, 'd-o_0-b')], true),
         ];
         yield [
-            new NonCapturingRegExp('[\w-]+'),
+            new RegExp('[\w-]+'),
             ['$_o_$'],
             new Quantifier('?', 0, 0, [], true),
         ];
         yield [
-            new NonCapturingRegExp('[\w-]+'),
+            new RegExp('[\w-]+'),
             ['micro$oft'],
             new Quantifier('?', 0, 5, [new Terminal('', 0, 5, 'micro')], true),
         ];

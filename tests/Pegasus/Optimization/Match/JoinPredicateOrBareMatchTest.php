@@ -5,7 +5,7 @@ namespace ju1ius\Pegasus\Tests\Optimization\Match;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Application\Reference;
 use ju1ius\Pegasus\Expression\Combinator\OneOf;
-use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
+use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinPredicateOrBareMatch;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
@@ -38,7 +38,7 @@ class JoinPredicateOrBareMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new OneOf([
                 new Reference('a'),
-                new NonCapturingRegExp('b|(?=c)')
+                new RegExp('b|(?=c)')
             ], 'test')
         ];
         yield 'Choice with Match before a Not of a Match' => [
@@ -49,7 +49,7 @@ class JoinPredicateOrBareMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new OneOf([
                 new Reference('a'),
-                new NonCapturingRegExp('b|(?!c)')
+                new RegExp('b|(?!c)')
             ], 'test')
         ];
         yield 'Choice with Match before EOF' => [
@@ -60,7 +60,7 @@ class JoinPredicateOrBareMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new OneOf([
                 new Reference('a'),
-                new NonCapturingRegExp('b|\z')
+                new RegExp('b|\z')
             ], 'test')
         ];
         yield 'Choice with Match after an Assert of a Match' => [
@@ -71,7 +71,7 @@ class JoinPredicateOrBareMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new OneOf([
                 new Reference('a'),
-                new NonCapturingRegExp('(?=b)|c')
+                new RegExp('(?=b)|c')
             ], 'test')
         ];
         yield 'Choice with Match after a Not of a Match' => [
@@ -82,7 +82,7 @@ class JoinPredicateOrBareMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new OneOf([
                 new Reference('a'),
-                new NonCapturingRegExp('(?!b)|c')
+                new RegExp('(?!b)|c')
             ], 'test')
         ];
         yield 'Choice with Match after EOF' => [
@@ -93,7 +93,7 @@ class JoinPredicateOrBareMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new OneOf([
                 new Reference('a'),
-                new NonCapturingRegExp('\z|c')
+                new RegExp('\z|c')
             ], 'test')
         ];
     }

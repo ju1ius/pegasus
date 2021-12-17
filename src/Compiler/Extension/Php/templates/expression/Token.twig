@@ -11,14 +11,17 @@
 
 
 {% block capturing %}
-{{ result_var }} = null;
+{{ result_var }} = false;
 {{ pos_var }} = $this->pos;
 {{ start_non_capturing(expr) }}
 {{ render_expr(expr[0], context.matching()) }}
 {{ end_non_capturing(expr) }}
 {{ expr_comment(expr, 'result') }}
 if ({{ subres_var }}) {
-    {{ result_var }} = $this->isCapturing ? new Terminal('{{ expr.name }}', {{ pos_var }}, $this->pos, substr($this->source, {{ pos_var }}, $this->pos - {{ pos_var }})) : true;
+    {{ result_var }} = match ($this->isCapturing) {
+        true => new Terminal('{{ expr.name }}', {{ pos_var }}, $this->pos, substr($this->source, {{ pos_var }}, $this->pos - {{ pos_var }})),
+        false => true,
+    };
 }
 {%- endblock capturing %}
 

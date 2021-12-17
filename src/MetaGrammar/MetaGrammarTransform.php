@@ -28,8 +28,8 @@ use ju1ius\Pegasus\Expression\Terminal\EOF;
 use ju1ius\Pegasus\Expression\Terminal\Epsilon;
 use ju1ius\Pegasus\Expression\Terminal\Fail;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
-use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
 use ju1ius\Pegasus\Expression\Terminal\RegExp;
+use ju1ius\Pegasus\Expression\Terminal\AbstractRegExp;
 use ju1ius\Pegasus\Expression\Terminal\Word;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\RegExp\PCREGroupInfo;
@@ -270,7 +270,7 @@ class MetaGrammarTransform extends Transform
         return new Word($word);
     }
 
-    private function leave_regexp(Node $node, Node $regexp): RegExp
+    private function leave_regexp(Node $node, Node $regexp): AbstractRegExp
     {
         [, $pattern, $flags] = $regexp->attributes['groups'];
         // str_split returns [0 => ''] for the empty string !
@@ -280,7 +280,7 @@ class MetaGrammarTransform extends Transform
             return new CapturingRegExp($pattern, $flags);
         }
 
-        return new NonCapturingRegExp($pattern, $flags);
+        return new RegExp($pattern, $flags);
     }
 
     private function leave_reference(Node $node, string $identifier): Reference

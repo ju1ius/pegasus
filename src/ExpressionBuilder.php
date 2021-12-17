@@ -28,7 +28,7 @@ use ju1ius\Pegasus\Expression\Terminal\EOF;
 use ju1ius\Pegasus\Expression\Terminal\Epsilon;
 use ju1ius\Pegasus\Expression\Terminal\Fail;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
-use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
+use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Expression\Terminal\Word;
 use ju1ius\Pegasus\RegExp\PCREGroupInfo;
 use SplStack;
@@ -174,7 +174,7 @@ class ExpressionBuilder
         if ($captureCount > 0) {
             throw new CapturingGroupInNonCapturingPattern($pattern, $captureCount);
         }
-        return $this->add(new NonCapturingRegExp($pattern, $flags));
+        return $this->add(new RegExp($pattern, $flags));
     }
 
     /**

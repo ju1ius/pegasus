@@ -38,14 +38,14 @@
     "php": ">=8.1",
     "ext-mbstring": "*",
     "ext-intl": "*",
-    "symfony/console": "^4.0.2",
-    "twig/twig": "^2.4.4",
-    "symfony/event-dispatcher": "^4.0",
+    "symfony/console": "^6.0",
+    "twig/twig": "^3.0",
+    "symfony/event-dispatcher": "^6.0",
     "webmozart/path-util": "^2.3"
   },
   "require-dev": {
-    "symfony/var-dumper": "^4.0.2",
-    "symfony/stopwatch": "^4.0.2",
+    "symfony/var-dumper": "^6.0",
+    "symfony/stopwatch": "^6.0",
     "symfony/debug": "^4.0.2",
     "blackfire/php-sdk": "^1.5"
   }

@@ -33,10 +33,7 @@ class DumpGrammarCommand extends Command
         ;
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $optimizationLevel = $input->getOption('optimize');
         $grammarPath = $input->getArgument('path');
@@ -62,5 +59,7 @@ class DumpGrammarCommand extends Command
         } else {
             Debug::dump($grammar, $output);
         }
+
+        return Command::SUCCESS;
     }
 }

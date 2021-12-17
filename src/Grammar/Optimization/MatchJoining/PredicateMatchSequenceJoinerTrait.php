@@ -9,7 +9,7 @@ use ju1ius\Pegasus\Expression\Decorator\Assert;
 use ju1ius\Pegasus\Expression\Decorator\Not;
 use ju1ius\Pegasus\Expression\Terminal\EOF;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
-use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
+use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 
 trait PredicateMatchSequenceJoinerTrait
@@ -31,7 +31,7 @@ trait PredicateMatchSequenceJoinerTrait
 
     protected function prepareBarePattern(Expression $child): string
     {
-        if ($child instanceof NonCapturingRegExp || $child instanceof Literal) {
+        if ($child instanceof RegExp || $child instanceof Literal) {
             $pattern = $this->manipulator->patternFor($child);
 
             return $this->manipulator->atomic($pattern);

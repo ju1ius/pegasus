@@ -2,6 +2,7 @@
 
 namespace ju1ius\Pegasus\Tests\Compiler\Extension\Php;
 
+use Composer\InstalledVersions;
 use ju1ius\Pegasus\Compiler\Extension\Php\PhpCompiler;
 use ju1ius\Pegasus\Compiler\Extension\Php\Runtime\Parser;
 use ju1ius\Pegasus\Grammar;
@@ -28,15 +29,25 @@ class PhpCompilerTestCase extends PegasusTestCase
         ];
 
         $compiler = new PhpCompiler();
+        $root = InstalledVersions::getRootPackage()['install_path'];
+        $cacheDir = "{$root}/tmp/cache";
+        //$compiler->useCache("{$cacheDir}/twig");
         $code = $compiler->compileGrammar($grammar, $args);
-        $this->evaluateCode($code);
+        $file = sprintf('%s/generated-parser.php', $cacheDir);
+        file_put_contents($file, $code);
+
+        try {
+            include $file;
+        } catch (\Throwable $err) {
+            throw new \RuntimeException(
+                "Error evaluating generated code:\n\n"
+                . $code
+                . "\n\n",
+                $err->getCode(),
+                $err,
+            );
+        }
 
         return new $class();
-    }
-
-    private function evaluateCode(string $code): void
-    {
-        $code = preg_replace('/^<\?php/', '', $code);
-        eval($code);
     }
 }

@@ -8,7 +8,7 @@ use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Expression\Terminal\GroupMatch;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
-use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
+use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\Utils\Iter;
 
@@ -36,7 +36,7 @@ final class JoinMatchCapturingSequence extends MatchJoiningOptimization
     {
         $groupCount = 0;
         $patterns = array_map(function ($expr) use(&$groupCount) {
-            if ($expr instanceof NonCapturingRegExp || $expr instanceof Literal) {
+            if ($expr instanceof RegExp || $expr instanceof Literal) {
                 $groupCount++;
                 return sprintf('(%s)', $this->manipulator->patternFor($expr));
             }
@@ -65,7 +65,7 @@ final class JoinMatchCapturingSequence extends MatchJoiningOptimization
 
     protected function createMatch($matchInfo): GroupMatch|Ignore
     {
-        $match = new NonCapturingRegExp($matchInfo['pattern']);
+        $match = new RegExp($matchInfo['pattern']);
         if (!$matchInfo['group_count']) {
             return new Ignore($match);
         }

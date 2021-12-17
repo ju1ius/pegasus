@@ -82,7 +82,7 @@ class GenerateParserCommand extends Command
         $this->registry->addDirectory(...$extension_dirs);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $language = $input->getOption('language');
         $extension = $this->registry->getExtension($language);
@@ -104,6 +104,8 @@ class GenerateParserCommand extends Command
 
         // TODO: write to files !
         echo $code . PHP_EOL;
+
+        return Command::SUCCESS;
     }
 
     protected function getCompilerOptions(InputInterface $input): array

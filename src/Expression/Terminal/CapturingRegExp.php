@@ -5,7 +5,7 @@ namespace ju1ius\Pegasus\Expression\Terminal;
 use ju1ius\Pegasus\CST\Node\Terminal;
 use ju1ius\Pegasus\Parser\Parser;
 
-class CapturingRegExp extends RegExp
+class CapturingRegExp extends AbstractRegExp
 {
     public function matches(string $text, Parser $parser): Terminal|bool
     {

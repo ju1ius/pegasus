@@ -1,12 +1,26 @@
+{% extends 'expr.twig' %}
 {% set result_var = result_varname(expr) %}
-{{ expr_comment(expr) }}
-{{ result_var }} = null;
-$backref = $scope['{{ expr.identifier }}'];
-$length = \strlen($backref);
-if ($backref === substr($this->source, $this->pos, $length)) {
+
+{% block matching %}
+{{ result_var }} = false;
+$backref = $bindings['{{ expr.identifier }}'] ?? null;
+if ($backref !== null && substr_compare($this->source, $backref, $this->pos, $length = \strlen($backref)) === 0) {
+    {{ result_var }} = true;
+    $this->pos += $length;
+} else {
+    {{ failure(context.rule, expr)|indent }}
+}
+{%- endblock matching %}
+
+
+{% block capturing %}
+{{ result_var }} = false;
+$backref = $bindings['{{ expr.identifier }}'] ?? null;
+if ($backref !== null && substr_compare($this->source, $backref, $this->pos, $length = \strlen($backref)) === 0) {
     $start = $this->pos;
     $end = $this->pos += $length;
     {{ result_var }} = $this->isCapturing ? new Terminal('{{ expr.name }}', $start, $end, $backref) : true;
 } else {
     {{ failure(context.rule, expr)|indent }}
 }
+{%- endblock capturing %}

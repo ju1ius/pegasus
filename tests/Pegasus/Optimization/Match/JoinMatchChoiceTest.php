@@ -5,7 +5,7 @@ namespace ju1ius\Pegasus\Tests\Optimization\Match;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Application\Reference;
 use ju1ius\Pegasus\Expression\Combinator\OneOf;
-use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
+use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinMatchChoice;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
@@ -36,7 +36,7 @@ class JoinMatchChoiceTest extends RegExpOptimizationTestCase
                 ->match('b')
                 ->match('c')
                 ->getGrammar(),
-            new NonCapturingRegExp('a|b|c', [], 'test'),
+            new RegExp('a|b|c', [], 'test'),
         ];
         yield 'Choice of matches before something else' => [
             GrammarBuilder::create()->rule('test')->oneOf()
@@ -45,7 +45,7 @@ class JoinMatchChoiceTest extends RegExpOptimizationTestCase
                 ->ref('c')
                 ->getGrammar(),
             new OneOf([
-                new NonCapturingRegExp('a|b'),
+                new RegExp('a|b'),
                 new Reference('c'),
             ], 'test'),
         ];
@@ -57,7 +57,7 @@ class JoinMatchChoiceTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new OneOf([
                 new Reference('a'),
-                new NonCapturingRegExp('b|c'),
+                new RegExp('b|c'),
             ], 'test'),
         ];
     }

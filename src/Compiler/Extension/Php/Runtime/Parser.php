@@ -62,22 +62,20 @@ abstract class Parser
         return $result;
     }
 
-    protected function apply(string $rule): Node|bool
+    protected function apply(string $rule, array $bindings = []): Node|bool
     {
-        return $this->{"match_{$rule}"}();
+        return $this->{"match_{$rule}"}($bindings);
     }
 
     protected function registerFailure(string $rule, string $expr, int $pos)
     {
-        if ($pos >= $this->rightmostFailurePosition) {
+        if ($pos < $this->rightmostFailurePosition) return;
+        $failure = ['rule' => $rule, 'expr' => $expr];
+        if ($pos === $this->rightmostFailurePosition) {
+            $this->rightmostFailures[] = $failure;
+        } else {
             $this->rightmostFailurePosition = $pos;
-            $rightmostFailures = $this->rightmostFailures[$pos] ?? [];
-            $rightmostFailures[] = [
-                'rule' => $rule,
-                'expr' => $expr,
-                'pos' => $pos,
-            ];
-            $this->rightmostFailures = $rightmostFailures;
+            $this->rightmostFailures = [$failure];
         }
     }
 

@@ -15,30 +15,14 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 final class GrammarDumper extends GrammarVisitor
 {
-    /**
-     * @var array
-     */
-    private $indentStack;
+    private array $indentStack;
 
-    /**
-     * @var OutputInterface
-     */
-    private $output;
-
-    /**
-     * GrammarDumper constructor.
-     *
-     * @param OutputInterface $output
-     */
-    public function __construct(OutputInterface $output)
-    {
-        $this->output = $output;
+    public function __construct(
+        private OutputInterface $output,
+    ) {
     }
 
     /**
-     * @param Grammar         $grammar
-     * @param OutputInterface $output
-     *
      * @throws Grammar\Exception\SelfReferencingRule
      */
     public static function dump(Grammar $grammar, OutputInterface $output): void
@@ -48,9 +32,6 @@ final class GrammarDumper extends GrammarVisitor
             ->traverse($grammar);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function enterRule(Grammar $grammar, Expression $expr)
     {
         $this->indentStack = [];
@@ -64,9 +45,6 @@ final class GrammarDumper extends GrammarVisitor
         $this->output->writeln('');
     }
 
-    /**
-     * @inheritdoc
-     */
     public function enterExpression(Expression $expr, ?int $index = null, bool $isLast = false)
     {
         $hasParent = $index !== null;
@@ -89,9 +67,6 @@ final class GrammarDumper extends GrammarVisitor
         }
     }
 
-    /**
-     * @inheritdoc
-     */
     public function leaveExpression(Expression $expr, ?int $index = null, bool $isLast = false)
     {
         if ($expr instanceof Composite) {

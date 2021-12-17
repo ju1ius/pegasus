@@ -6,7 +6,7 @@ use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Decorator\Quantifier;
 use ju1ius\Pegasus\Expression\Terminal\CapturingRegExp;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
-use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
+use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 
 /**
@@ -19,7 +19,7 @@ class CombineQuantifiedMatch extends RegExpOptimization
         return $context->isMatching()
             && $expr instanceof Quantifier
             && ($expr[0] instanceof Literal
-                || $expr[0] instanceof NonCapturingRegExp
+                || $expr[0] instanceof RegExp
                 || $expr[0] instanceof CapturingRegExp);
     }
 
@@ -29,6 +29,6 @@ class CombineQuantifiedMatch extends RegExpOptimization
         $quantifier = $this->manipulator->patternFor($expr);
         $pattern = $this->manipulator->atomic($this->manipulator->patternFor($expr[0]));
 
-        return new NonCapturingRegExp(sprintf('%s%s', $pattern, $quantifier));
+        return new RegExp(sprintf('%s%s', $pattern, $quantifier));
     }
 }

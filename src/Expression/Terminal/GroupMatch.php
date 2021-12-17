@@ -20,7 +20,7 @@ final class GroupMatch extends TerminalExpression
     private string $compiledPattern;
 
     public function __construct(
-        private NonCapturingRegExp $matcher,
+        private RegExp $matcher,
         private int $groupCount,
         string $name = ''
     ) {
@@ -28,7 +28,7 @@ final class GroupMatch extends TerminalExpression
         parent::__construct($name);
     }
 
-    public function getMatcher(): NonCapturingRegExp
+    public function getMatcher(): RegExp
     {
         return $this->matcher;
     }

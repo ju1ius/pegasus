@@ -5,7 +5,7 @@ namespace ju1ius\Pegasus\Tests\Optimization\Match;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Application\Reference;
 use ju1ius\Pegasus\Expression\Combinator\Sequence;
-use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
+use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinPredicateBareMatch;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
@@ -39,7 +39,7 @@ class JoinPredicateBareMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new Sequence([
                 new Reference('a'),
-                new NonCapturingRegExp('(?>b)(?=c)'),
+                new RegExp('(?>b)(?=c)'),
                 new Reference('d'),
             ], 'test')
         ];
@@ -52,7 +52,7 @@ class JoinPredicateBareMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new Sequence([
                 new Reference('a'),
-                new NonCapturingRegExp('(?>b)(?!c)'),
+                new RegExp('(?>b)(?!c)'),
                 new Reference('d'),
             ], 'test')
         ];
@@ -65,7 +65,7 @@ class JoinPredicateBareMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new Sequence([
                 new Reference('a'),
-                new NonCapturingRegExp('(?>b)\z'),
+                new RegExp('(?>b)\z'),
                 new Reference('c'),
             ], 'test')
         ];
@@ -78,7 +78,7 @@ class JoinPredicateBareMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new Sequence([
                 new Reference('a'),
-                new NonCapturingRegExp('(?=b)(?>c)'),
+                new RegExp('(?=b)(?>c)'),
                 new Reference('d'),
             ], 'test')
         ];
@@ -91,7 +91,7 @@ class JoinPredicateBareMatchTest extends RegExpOptimizationTestCase
                 ->getGrammar(),
             new Sequence([
                 new Reference('a'),
-                new NonCapturingRegExp('(?!b)(?>c)'),
+                new RegExp('(?!b)(?>c)'),
                 new Reference('d'),
             ], 'test')
         ];

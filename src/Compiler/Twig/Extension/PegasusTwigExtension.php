@@ -7,7 +7,7 @@ use ju1ius\Pegasus\Compiler\CompilerInterface;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Decorator\Quantifier;
 use ju1ius\Pegasus\Expression\Terminal\CapturingRegExp;
-use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
+use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Utils\Str;
 use Twig\Environment;
 use Twig\Extension\AbstractExtension;
@@ -114,9 +114,6 @@ class PegasusTwigExtension extends AbstractExtension
                 return 'expression/Optional.twig';
             }
             return 'expression/Quantifier.twig';
-        }
-        if ($expr instanceof NonCapturingRegExp) {
-            return 'expression/Match.twig';
         }
 
         return sprintf('expression/%s.twig', Str::className($expr));

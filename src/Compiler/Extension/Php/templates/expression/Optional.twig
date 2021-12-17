@@ -1,7 +1,5 @@
 {% extends "expr.twig" %}
 
-{% set result_var = result_varname(expr) %}
-{% set pos_var = position_varname(expr) %}
 {% set children_var = '$children_' ~ expr.id %}
 {% set subres_var = result_varname(expr[0]) %}
 

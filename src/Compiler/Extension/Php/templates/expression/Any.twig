@@ -1,0 +1,20 @@
+{% extends "expr.twig" %}
+
+
+{% block matching %}
+if ({{ result_var }} = $this->pos < \strlen($this->source)) {
+    $this->pos++;
+} else {
+    {{ failure(context.rule, expr)|indent }}
+}
+{%- endblock matching %}
+
+
+{% block capturing %}
+if ({{ result_var }} = $this->pos < \strlen($this->source)) {
+    $start = $this->pos++;
+    if ($this->isCapturing) {{ result_var }} = new Terminal('{{ expr.name }}', $start, $this->pos, $this->source[$this->pos]);
+} else {
+    {{ failure(context.rule, expr)|indent }}
+}
+{%- endblock capturing %}

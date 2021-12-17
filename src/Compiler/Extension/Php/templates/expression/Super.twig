@@ -4,9 +4,9 @@
 
 {% block matching %}
 {% if use_apply -%}
-    {{ result_var }} = parent::apply('{{ expr.name }}');
+    {{ result_var }} = parent::apply('{{ expr.name }}', $bindings);
 {%- else %}
-    {{ result_var }} = parent::match_{{ expr.name }}();
+    {{ result_var }} = parent::match_{{ expr.name }}($bindings);
 {%- endif %}
 {%- endblock matching %}
 

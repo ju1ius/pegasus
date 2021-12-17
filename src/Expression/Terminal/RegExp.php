@@ -2,74 +2,22 @@
 
 namespace ju1ius\Pegasus\Expression\Terminal;
 
-use ju1ius\Pegasus\Expression\TerminalExpression;
-use ju1ius\Pegasus\RegExp\Normalizer;
+use ju1ius\Pegasus\CST\Node\Terminal;
+use ju1ius\Pegasus\Parser\Parser;
 
-/**
- * Base class for the Match and RegExp terminal expressions.
- */
-abstract class RegExp extends TerminalExpression
+class RegExp extends AbstractRegExp
 {
-    /**
-     * @var string
-     */
-    protected string $pattern;
-
-    /**
-     * @var string[]
-     */
-    protected array $flags;
-
-    /**
-     * @var string
-     */
-    protected string $compiledPattern;
-
-    public function __construct(string $pattern, array $flags = [], string $name = '')
+    public function matches(string $text, Parser $parser): Terminal|bool
     {
-        parent::__construct($name);
-        $this->flags = array_unique(array_filter($flags));
-        $this->pattern = Normalizer::normalize($pattern, $this->compileFlags());
-        $this->compiledPattern = $this->compilePattern();
-    }
-
-    final public function getPattern(): string
-    {
-        return $this->pattern;
-    }
-
-    /**
-     * @return string[]
-     */
-    final public function getFlags(): array
-    {
-        return $this->flags;
-    }
-
-    final public function getCompiledPattern(): string
-    {
-        return $this->compiledPattern;
-    }
-
-    public function __toString(): string
-    {
-        return sprintf('/%s/%s', $this->pattern, implode('', $this->flags));
-    }
-
-    private function compilePattern(): string
-    {
-        return sprintf(
-            '/\G%s/%s',
-            $this->pattern,
-            implode('', $this->compileFlags())
-        );
-    }
-
-    /**
-     * @return string[]
-     */
-    private function compileFlags(): array
-    {
-        return array_unique(array_merge($this->flags, ['S', 'x']));
+        $start = $parser->pos;
+        if (preg_match($this->compiledPattern, $text, $matches, 0, $start)) {
+            $match = $matches[0];
+            $end = $parser->pos += \strlen($match);
+            if ($parser->isCapturing) {
+                return new Terminal($this->name, $start, $end, $match);
+            }
+            return true;
+        }
+        return false;
     }
 }

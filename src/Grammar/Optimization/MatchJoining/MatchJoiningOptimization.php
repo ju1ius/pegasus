@@ -7,7 +7,7 @@ use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Expression\Terminal\GroupMatch;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
-use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
+use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Grammar\Optimization\CompositeReducerTrait;
 use ju1ius\Pegasus\Grammar\Optimization\RegExpOptimization;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
@@ -51,13 +51,13 @@ abstract class MatchJoiningOptimization extends RegExpOptimization
      */
     protected function isEligibleChild(Expression $child): bool
     {
-        return $child instanceof NonCapturingRegExp || $child instanceof Literal;
+        return $child instanceof RegExp || $child instanceof Literal;
     }
 
     /**
-     * @param NonCapturingRegExp[] $matches
+     * @param RegExp[] $matches
      */
-    protected function joinMatches(array $matches): GroupMatch|NonCapturingRegExp|Ignore
+    protected function joinMatches(array $matches): GroupMatch|RegExp|Ignore
     {
         $patterns = $this->createPatterns($matches);
         $pattern = $this->joinPatterns($patterns);
@@ -66,7 +66,7 @@ abstract class MatchJoiningOptimization extends RegExpOptimization
     }
 
     /**
-     * @param NonCapturingRegExp[] $matches
+     * @param RegExp[] $matches
      * @return string[]
      */
     protected function createPatterns(array $matches): array
@@ -87,8 +87,8 @@ abstract class MatchJoiningOptimization extends RegExpOptimization
         return $this->manipulator->patternFor($expr);
     }
 
-    protected function createMatch(string $pattern): GroupMatch|NonCapturingRegExp|Ignore
+    protected function createMatch(string $pattern): GroupMatch|RegExp|Ignore
     {
-        return new NonCapturingRegExp($pattern);
+        return new RegExp($pattern);
     }
 }

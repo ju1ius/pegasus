@@ -208,12 +208,9 @@ class Analysis
 
     /**
      * Generator yielding all left references in an expression.
-     *
-     * @param Expression $expr
-     *
      * @return iterable<string, Expression>
-     *
-     * @todo handle Super calls
+     * @throws Exception\RuleNotFound
+     * @throws Exception\TraitNotFound
      */
     protected function iterateDirectLeftReferences(Expression $expr): iterable
     {
@@ -225,7 +222,14 @@ class Analysis
             }
         } elseif ($expr instanceof Composite) {
             yield from $this->iterateDirectLeftReferences($expr[0]);
+        } elseif ($expr instanceof Super) {
+            $analysis = new self($this->grammar->getParent());
+            $super = $this->grammar->super($expr->getIdentifier());
+            yield from $analysis->iterateDirectLeftReferences($super);
+        } elseif ($expr instanceof Call) {
+            $trait = $this->grammar->getTrait($expr->getNamespace());
+            $analysis = new self($trait);
+            yield from $analysis->iterateDirectLeftReferences($trait[$expr->getIdentifier()]);
         }
     }
-
 }

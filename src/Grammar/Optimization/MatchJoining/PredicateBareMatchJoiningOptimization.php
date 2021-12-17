@@ -4,7 +4,7 @@ namespace ju1ius\Pegasus\Grammar\Optimization\MatchJoining;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
-use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
+use ju1ius\Pegasus\Expression\Terminal\RegExp;
 
 abstract class PredicateBareMatchJoiningOptimization extends PredicateMatchJoiningOptimization
 {
@@ -17,6 +17,6 @@ abstract class PredicateBareMatchJoiningOptimization extends PredicateMatchJoini
 
     protected function isEligibleMatch(Expression $expr): bool
     {
-        return $expr instanceof NonCapturingRegExp || $expr instanceof Literal;
+        return $expr instanceof RegExp || $expr instanceof Literal;
     }
 }

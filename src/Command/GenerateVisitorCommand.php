@@ -10,6 +10,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
 class GenerateVisitorCommand extends Command
 {
@@ -56,7 +58,7 @@ class GenerateVisitorCommand extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $syntax_path = $input->getArgument('grammar');
         $language = $input->getOption('language');
@@ -69,16 +71,17 @@ class GenerateVisitorCommand extends Command
         $syntax = file_get_contents($syntax_path);
         $grammar = Grammar::fromSyntax($syntax);
 
-        $loader = new Twig_Loader_Filesystem([$tpl_dir]);
-        $twig = new Twig_Environment($loader, ['autoescape' => false]);
-        $twig->addExtension(new PegasusTwigExtension);
+        $loader = new FilesystemLoader([$tpl_dir]);
+        $twig = new Environment($loader, ['autoescape' => false]);
+        $twig->addExtension(new PegasusTwigExtension());
 
-        $visitor_tpl = $twig->loadTemplate('node_visitor.twig');
-        $visitor_code = $visitor_tpl->render(['grammar' => $grammar]);
+        $visitor_code = $twig->render('node_visitor.twig', ['grammar' => $grammar]);
         file_put_contents(
             "{$output_dir}/{$name}.{$language}",
             $visitor_code
         );
+
+        return Command::SUCCESS;
     }
     
 }

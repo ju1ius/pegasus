@@ -8,7 +8,7 @@ use ju1ius\Pegasus\Expression\Decorator\Assert;
 use ju1ius\Pegasus\Expression\Decorator\Not;
 use ju1ius\Pegasus\Expression\Terminal\EOF;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
-use ju1ius\Pegasus\Expression\Terminal\NonCapturingRegExp;
+use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Grammar\Optimization\CompositeReducerTrait;
 use ju1ius\Pegasus\Grammar\Optimization\RegExpOptimization;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
@@ -35,14 +35,14 @@ abstract class PredicateMatchJoiningOptimization extends RegExpOptimization
     }
 
     /**
-     * @return NonCapturingRegExp
+     * @return RegExp
      */
     protected function reduce(Expression ...$pair): Expression
     {
         $patterns = array_map($this->preparePattern(...), $pair);
         $pattern = $this->joinPatterns($patterns);
 
-        return new NonCapturingRegExp($pattern);
+        return new RegExp($pattern);
     }
 
     abstract protected function preparePattern(Expression $child): ?string;
@@ -54,7 +54,7 @@ abstract class PredicateMatchJoiningOptimization extends RegExpOptimization
 
     protected function isEligibleMatch(Expression $expr): bool
     {
-        return $expr instanceof NonCapturingRegExp || $expr instanceof Literal;
+        return $expr instanceof RegExp || $expr instanceof Literal;
     }
 
     protected function isEligiblePredicate(Expression $expr): bool
@@ -63,7 +63,7 @@ abstract class PredicateMatchJoiningOptimization extends RegExpOptimization
             return true;
         }
         if ($expr instanceof Assert || $expr instanceof Not) {
-            return $expr[0] instanceof NonCapturingRegExp || $expr[0] instanceof Literal;
+            return $expr[0] instanceof RegExp || $expr[0] instanceof Literal;
         }
 
         return false;
