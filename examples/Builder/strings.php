@@ -4,17 +4,15 @@ namespace ju1ius\Pegasus\Examples\Builder;
 
 use ju1ius\Pegasus\CST\Transform;
 use ju1ius\Pegasus\Debug\Debug;
-use ju1ius\Pegasus\Grammar\Optimizer;
 use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Parser\RecursiveDescentParser;
-use Symfony\Component\VarDumper\VarDumper;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 const GRAMMAR = <<<'PEG'
 @grammar Strings
 string          = q:quote_char content $q
-content         = ~(escaped_char | !($q) .)*
+content         = %(escaped_char | !($q) .)*
 quote_char      = "'" | '"'
 escaped_char    = "\" .
 PEG;
@@ -59,4 +57,3 @@ $transform = new class extends Transform {
 $string = $transform->transform($cst);
 Debug::dump($string);
 Debug::dump($cst);
-VarDumper::dump('\\');

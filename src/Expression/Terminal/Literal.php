@@ -51,7 +51,7 @@ final class Literal extends TerminalExpression
     public function matches(string $text, Parser $parser): Terminal|bool
     {
         $start = $parser->pos;
-        if (substr($text, $start, $this->length) === $this->literal) {
+        if (substr_compare($text, $this->literal, $start, $this->length) === 0) {
             $end = $parser->pos += $this->length;
             return $parser->isCapturing
                 ? new Terminal($this->name, $start, $end, $this->literal)

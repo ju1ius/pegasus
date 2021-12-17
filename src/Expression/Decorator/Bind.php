@@ -33,7 +33,11 @@ final class Bind extends Decorator
     {
         $start = $parser->pos;
         if ($result = $this->children[0]->matches($text, $parser)) {
-            $parser->bind($this->label, substr($text, $start, $parser->pos - $start));
+            $value = match ($result) {
+                true => substr($text, $start, $parser->pos - $start),
+                default => substr($text, $result->start, $result->end - $result->start),
+            };
+            $parser->bind($this->label, $value);
             return $result;
         }
         return false;
