@@ -9,6 +9,8 @@ use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization\CombineQuantifiedMatch;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\GrammarBuilder as GrammarBuilder;
+use ju1ius\Pegasus\Tests\PegasusAssert;
+use PHPUnit\Framework\Assert;
 
 class CombineQuantifiedMatchTest extends RegExpOptimizationTestCase
 {
@@ -21,7 +23,7 @@ class CombineQuantifiedMatchTest extends RegExpOptimizationTestCase
         $ctx = OptimizationContext::of($grammar, $contextType);
         $optim = $this->createOptimization(CombineQuantifiedMatch::class);
         $result = $optim->willPostProcessExpression($expr, $ctx);
-        $this->assertSame($expected, $result);
+        Assert::assertSame($expected, $result);
     }
 
     public function provideTestAcceptsExpression(): iterable
@@ -66,7 +68,7 @@ class CombineQuantifiedMatchTest extends RegExpOptimizationTestCase
         $ctx = OptimizationContext::of($grammar, OptimizationContext::TYPE_MATCHING);
         $optim = $this->createOptimization(CombineQuantifiedMatch::class);
         $result = $this->applyOptimization($optim, $grammar, $ctx);
-        $this->assertExpressionEquals($expected, $result);
+        PegasusAssert::ExpressionEquals($expected, $result);
     }
 
     public function provideTestApply(): iterable

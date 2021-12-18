@@ -12,17 +12,13 @@ class TokenTest extends ExpressionTestCase
 {
     /**
      * @dataProvider provideTestMatch
-     *
-     * @param Grammar $grammar
-     * @param array   $params
-     * @param Node    $expected
      */
-    public function testMatch($grammar, array $params, $expected)
+    public function testMatch(Grammar $grammar, array $params, Node|bool $expected)
     {
         $this->assertParseResult($expected, $grammar, ...$params);
     }
 
-    public function provideTestMatch()
+    public function provideTestMatch(): \Traversable
     {
         yield "Returns the entire string match by it's child" => [
             GrammarBuilder::create()->rule('test')->asToken()
@@ -46,7 +42,7 @@ class TokenTest extends ExpressionTestCase
                 ->match('[a-z]+')
                 ->getGrammar(),
             ['666'],
-            null
+            false,
         ];
     }
 }

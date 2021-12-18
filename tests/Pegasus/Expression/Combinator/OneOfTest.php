@@ -10,6 +10,8 @@ use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
+use ju1ius\Pegasus\Tests\PegasusAssert;
+use PHPUnit\Framework\Assert;
 
 class OneOfTest extends ExpressionTestCase
 {
@@ -18,11 +20,11 @@ class OneOfTest extends ExpressionTestCase
      */
     public function testMatch($expr, $args, $expected)
     {
-        $result = $this->parse($expr, ...$args);
+        $result = self::parse($expr, ...$args);
         if ($expected instanceof Node) {
-            $this->assertNodeEquals($expected, $result);
+            PegasusAssert::nodeEquals($expected, $result);
         } else {
-            $this->assertSame($expected, $result);
+            Assert::assertSame($expected, $result);
         }
     }
     public function provideTestMatch()
@@ -62,7 +64,7 @@ class OneOfTest extends ExpressionTestCase
     {
         $expr = new OneOf($children, 'choice');
         $this->expectException(ParseError::class);
-        $this->parse($expr, ...$match_args);
+        self::parse($expr, ...$match_args);
     }
     public function provideTestMatchError()
     {

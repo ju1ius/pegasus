@@ -8,19 +8,14 @@ use ju1ius\Pegasus\GrammarFactory;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Parser\RecursiveDescentParser;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
+use PHPUnit\Framework\Assert;
 
 class EpsilonTest extends ExpressionTestCase
 {
     /**
      * @dataProvider provideTestMatch
-     *
-     * @param string $input
-     * @param int    $pos
-     * @param bool   $expected
-     *
-     * @throws Grammar\Exception\AnonymousTopLevelExpression
      */
-    public function testMatch($input, $pos, $expected)
+    public function testMatch(string $input, int $pos, bool $expected)
     {
         $parser = new RecursiveDescentParser(GrammarFactory::fromArray([
             'test' => new Epsilon()
@@ -29,11 +24,11 @@ class EpsilonTest extends ExpressionTestCase
             $this->expectException(ParseError::class);
         }
         $result = $parser->partialParse($input, $pos);
-        $this->assertSame($expected, $result);
-        $this->assertSame($pos, $parser->pos, 'Does not consume any input.');
+        Assert::assertSame($expected, $result);
+        Assert::assertSame($pos, $parser->pos, 'Does not consume any input.');
     }
 
-    public function provideTestMatch()
+    public function provideTestMatch(): \Traversable
     {
         yield 'Matches when input is empty.' => [
             '', 0, true,
@@ -46,7 +41,7 @@ class EpsilonTest extends ExpressionTestCase
     public function testMetadata()
     {
         $expr = new Epsilon();
-        $this->assertTrue($expr->isCapturingDecidable());
-        $this->assertFalse($expr->isCapturing());
+        Assert::assertTrue($expr->isCapturingDecidable());
+        Assert::assertFalse($expr->isCapturing());
     }
 }

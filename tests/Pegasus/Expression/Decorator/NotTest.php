@@ -13,12 +13,12 @@ class NotTest extends ExpressionTestCase
     /**
      * @dataProvider provideTestMatch
      */
-    public function testMatch(Expression $child, $args, $expected)
+    public function testMatch(Expression $child, array $args, bool $expected)
     {
         $expr = new Not($child, 'not');
         $this->assertParseResult($expected, $expr, ...$args);
     }
-    public function provideTestMatch()
+    public function provideTestMatch(): \Traversable
     {
         yield [
             new Literal('foo'),
@@ -40,13 +40,13 @@ class NotTest extends ExpressionTestCase
     /**
      * @dataProvider provideTestMatchError
      */
-    public function testMatchError(Expression $child, $args)
+    public function testMatchError(Expression $child, array $args)
     {
         $expr = new Not($child, 'not');
         $this->expectException(ParseError::class);
-        $this->parse($expr, ...$args);
+        self::parse($expr, ...$args);
     }
-    public function provideTestMatchError()
+    public function provideTestMatchError(): \Traversable
     {
         yield [
             new Literal('bar'),

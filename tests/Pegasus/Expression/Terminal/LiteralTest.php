@@ -6,29 +6,24 @@ use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\CST\Node\Terminal;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
+use ju1ius\Pegasus\Tests\PegasusAssert;
 
 class LiteralTest extends ExpressionTestCase
 {
     /**
      * @dataProvider provideTestMatch
-     *
-     * @param string $literal
-     * @param array  $params
-     * @param Node   $expected
      */
-    public function testMatch($literal, array $params, Node $expected)
+    public function testMatch(string $literal, array $params, Node $expected)
     {
         $expr = new Literal($literal, 'test');
-        $this->assertNodeEquals($expected, $this->parse($expr, ...$params));
+        PegasusAssert::nodeEquals($expected, self::parse($expr, ...$params));
     }
 
-    public function provideTestMatch()
+    public function provideTestMatch(): \Traversable
     {
-        return [
-            ['foo', ['foo'], new Terminal('test', 0, 3, 'foo')],
-            ['foo', ['foobar'], new Terminal('test', 0, 3, 'foo')],
-            ['foo', ['barfoo', 3], new Terminal('test', 3, 6, 'foo')],
-            ['bar', ['foobarbaz', 3], new Terminal('test', 3, 6, 'bar')],
-        ];
+        yield ['foo', ['foo'], new Terminal('test', 0, 3, 'foo')];
+        yield ['foo', ['foobar'], new Terminal('test', 0, 3, 'foo')];
+        yield ['foo', ['barfoo', 3], new Terminal('test', 3, 6, 'foo')];
+        yield ['bar', ['foobarbaz', 3], new Terminal('test', 3, 6, 'bar')];
     }
 }

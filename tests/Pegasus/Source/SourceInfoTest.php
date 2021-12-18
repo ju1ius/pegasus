@@ -1,13 +1,12 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ju1ius\Pegasus\Tests\Source;
-
 
 use ju1ius\Pegasus\Source\Exception\OffsetNotFound;
 use ju1ius\Pegasus\Source\Exception\PositionNotFound;
 use ju1ius\Pegasus\Source\SourceInfo;
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-
 
 class SourceInfoTest extends TestCase
 {
@@ -27,17 +26,14 @@ class SourceInfoTest extends TestCase
 
     /**
      * @dataProvider positionFromOffsetProvider
-     * @param string $source
-     * @param int $offset
-     * @param array $expected
      */
     public function testPositionFromOffset(string $source, int $offset, array $expected)
     {
         $map = new SourceInfo($source);
-        $this->assertSame($expected, $map->positionFromOffset($offset));
+        Assert::assertSame($expected, $map->positionFromOffset($offset));
     }
 
-    public function positionFromOffsetProvider()
+    public function positionFromOffsetProvider(): \Traversable
     {
         yield ["foo\nbar", 0, [0, 0]];
         yield ["foo\nbar", 3, [0, 3]];
@@ -57,10 +53,10 @@ class SourceInfoTest extends TestCase
     {
         $map = new SourceInfo($source);
         [$line, $col] = $pos;
-        $this->assertSame($offset, $map->offsetFromPosition($line, $col));
+        Assert::assertSame($offset, $map->offsetFromPosition($line, $col));
     }
 
-    public function offsetFromPositionProvider()
+    public function offsetFromPositionProvider(): \Traversable
     {
         yield ["foo\nbar", [0, 0], 0];
         yield ["foo\nbar", [0, 3], 3];
@@ -72,21 +68,21 @@ class SourceInfoTest extends TestCase
         $info = new SourceInfo($source);
         $result = $info->getExcerpt(strpos($source, '1'));
         $expected = <<<'EOS'
-Line 1, column 1:
-1│ 123
-─┴╌┘
-EOS;
-        $this->assertSame($expected, $result);
+        Line 1, column 1:
+        1│ 123
+        ─┴╌┘
+        EOS;
+        Assert::assertSame($expected, $result);
 
         $result = $info->getExcerpt(strpos($source, 'C'));
         $expected = <<<'EOS'
-Line 4, column 3:
-…│ …
-3│ 789
-4│ ABC
-─┴╌╌╌┘
-EOS;
-        $this->assertSame($expected, $result);
+        Line 4, column 3:
+        …│ …
+        3│ 789
+        4│ ABC
+        ─┴╌╌╌┘
+        EOS;
+        Assert::assertSame($expected, $result);
     }
 
     public function testExcerptWithLongLines()
@@ -96,20 +92,20 @@ EOS;
         $maxCols = 11;
         $result = $info->getExcerpt(strpos($source, 'E'), 1, 0, $maxCols);
         $expected = <<<'EOS'
-Line 2, column 5:
-1│ 123456 …
-2│ ABCDEF …
-─┴╌╌╌╌╌┘
-EOS;
-        $this->assertSame($expected, $result);
+        Line 2, column 5:
+        1│ 123456 …
+        2│ ABCDEF …
+        ─┴╌╌╌╌╌┘
+        EOS;
+        Assert::assertSame($expected, $result);
 
         $result = $info->getExcerpt(strlen($source) - 1, 1, 0, $maxCols);
         $expected = <<<'EOS'
-Line 2, column 9:
-1│ 123456 …
-2│ … CDEF123
-─┴╌╌╌╌╌╌╌╌╌┘
-EOS;
-        $this->assertSame($expected, $result);
+        Line 2, column 9:
+        1│ 123456 …
+        2│ … CDEF123
+        ─┴╌╌╌╌╌╌╌╌╌┘
+        EOS;
+        Assert::assertSame($expected, $result);
     }
 }

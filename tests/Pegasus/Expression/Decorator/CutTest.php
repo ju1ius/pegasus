@@ -8,6 +8,7 @@ use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Parser\Parser;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
+use PHPUnit\Framework\Assert;
 
 /**
  * @coversDefaultClass \ju1ius\Pegasus\Expression\Decorator\Cut
@@ -60,7 +61,7 @@ class CutTest extends ExpressionTestCase
             ->getGrammar();
 
         $this->expectException(ParseError::class);
-        $this->parse($grammar, '!bar');
+        self::parse($grammar, '!bar');
     }
 
     /**
@@ -76,6 +77,6 @@ class CutTest extends ExpressionTestCase
             ->willReturn('foo');
 
         $cut = new Cut($child);
-        $this->assertSame('foo^', (string)$cut);
+        Assert::assertSame('foo^', (string)$cut);
     }
 }

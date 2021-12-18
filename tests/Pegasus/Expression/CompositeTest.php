@@ -7,6 +7,7 @@ use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\Exception\ChildNotFound;
 use ju1ius\Pegasus\Expression\Exception\InvalidChildType;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
+use PHPUnit\Framework\Assert;
 
 class CompositeTest extends ExpressionTestCase
 {
@@ -16,7 +17,7 @@ class CompositeTest extends ExpressionTestCase
             $this->createMock(Expression::class),
             $this->createMock(Expression::class),
         ]]);
-        $this->assertSame(2, count($comp));
+        Assert::assertSame(2, count($comp));
     }
 
     public function testOffsetExists()
@@ -24,8 +25,8 @@ class CompositeTest extends ExpressionTestCase
         $comp = $this->getMockForAbstractClass(Composite::class, [[
             $this->createMock(Expression::class),
         ]]);
-        $this->assertTrue(isset($comp[0]));
-        $this->assertFalse(isset($comp[1]));
+        Assert::assertTrue(isset($comp[0]));
+        Assert::assertFalse(isset($comp[1]));
     }
 
     public function testOffsetGet()
@@ -34,7 +35,7 @@ class CompositeTest extends ExpressionTestCase
         $comp = $this->getMockForAbstractClass(Composite::class, [[
             $child,
         ]]);
-        $this->assertSame($child, $comp[0]);
+        Assert::assertSame($child, $comp[0]);
 
         $this->expectException(ChildNotFound::class);
         $foo = $comp[1];
@@ -47,7 +48,7 @@ class CompositeTest extends ExpressionTestCase
         ]]);
         unset($comp[0]);
 
-        $this->assertFalse(isset($comp[0]));
+        Assert::assertFalse(isset($comp[0]));
     }
 
     public function testOffsetSet()
@@ -59,8 +60,8 @@ class CompositeTest extends ExpressionTestCase
         $comp[0] = $child;
         $comp[] = $child2;
 
-        $this->assertSame($child, $comp[0]);
-        $this->assertSame($child2, $comp[1]);
+        Assert::assertSame($child, $comp[0]);
+        Assert::assertSame($child2, $comp[1]);
 
         $this->expectException(InvalidChildType::class);
         $comp[] = new \stdClass();
@@ -78,13 +79,13 @@ class CompositeTest extends ExpressionTestCase
         $comp[0] = $t1;
         $comp[1] = $t2;
 
-        $this->assertTrue($comp->isCapturing());
+        Assert::assertTrue($comp->isCapturing());
 
         $t3 = $this->createMock(Expression::class);
         $t3->method('isCapturing')->willReturn(false);
         $comp[0] = $t3;
 
-        $this->assertFalse($comp->isCapturing());
+        Assert::assertFalse($comp->isCapturing());
     }
 
     public function testIsCapturingDecidableReturnsTrueIfAllChildrenAreDecidable()
@@ -99,13 +100,13 @@ class CompositeTest extends ExpressionTestCase
         $comp[0] = $t1;
         $comp[1] = $t2;
 
-        $this->assertFalse($comp->isCapturingDecidable());
+        Assert::assertFalse($comp->isCapturingDecidable());
 
         $t3 = $this->createMock(Expression::class);
         $t3->method('isCapturingDecidable')->willReturn(true);
         $comp[1] = $t3;
 
-        $this->assertTrue($comp->isCapturingDecidable());
+        Assert::assertTrue($comp->isCapturingDecidable());
     }
 
     public function testMap()
@@ -117,14 +118,14 @@ class CompositeTest extends ExpressionTestCase
         $newChild = $this->createMock(Expression::class);
 
         $newComp = $comp->map(function ($child, $i, $newComp) use ($comp, $newChild) {
-            $this->assertInstanceOf(Composite::class, $newComp);
-            $this->assertNotSame($comp, $newComp);
+            Assert::assertInstanceOf(Composite::class, $newComp);
+            Assert::assertNotSame($comp, $newComp);
             return $newChild;
         });
-        $this->assertInstanceOf(Composite::class, $newComp);
-        $this->assertNotSame($comp, $newComp);
-        $this->assertSame($newChild, $newComp[0]);
-        $this->assertSame($newChild, $newComp[1]);
+        Assert::assertInstanceOf(Composite::class, $newComp);
+        Assert::assertNotSame($comp, $newComp);
+        Assert::assertSame($newChild, $newComp[0]);
+        Assert::assertSame($newChild, $newComp[1]);
     }
 
     public function testIterate()
@@ -136,7 +137,7 @@ class CompositeTest extends ExpressionTestCase
             $child2,
         ]]);
 
-        $this->assertEquals([$comp, $child1, $child2], iterator_to_array($comp->iterate()));
-        $this->assertEquals([$child1, $child2, $comp], iterator_to_array($comp->iterate(true)));
+        Assert::assertEquals([$comp, $child1, $child2], iterator_to_array($comp->iterate()));
+        Assert::assertEquals([$child1, $child2, $comp], iterator_to_array($comp->iterate(true)));
     }
 }

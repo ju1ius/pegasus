@@ -8,13 +8,15 @@ use ju1ius\Pegasus\Expression\Application\Super;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
+use ju1ius\Pegasus\Tests\PegasusAssert;
+use PHPUnit\Framework\Assert;
 
 class SuperTest extends ExpressionTestCase
 {
     public function testMetadata()
     {
         $super = new Super('super');
-        $this->assertFalse($super->isCapturingDecidable());
+        Assert::assertFalse($super->isCapturingDecidable());
     }
 
     /**
@@ -31,7 +33,7 @@ class SuperTest extends ExpressionTestCase
             ->rule('bar')->literal('bar')
             ->getGrammar();
         $grammar->extends($parent);
-        $this->assertNodeEquals($expected, $this->parse($grammar, ...$args));
+        PegasusAssert::nodeEquals($expected, self::parse($grammar, ...$args));
     }
 
     public function provideTestMatch()

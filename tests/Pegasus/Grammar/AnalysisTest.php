@@ -6,6 +6,7 @@ use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Analysis;
 use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Tests\PegasusTestCase;
+use PHPUnit\Framework\Assert;
 
 class AnalysisTest extends PegasusTestCase
 {
@@ -15,7 +16,7 @@ class AnalysisTest extends PegasusTestCase
     public function testCanModifyBindings(Grammar $grammar, bool $expected)
     {
         $analysis = new Analysis($grammar);
-        $this->assertSame($expected, $analysis->canModifyBindings('test'));
+        Assert::assertSame($expected, $analysis->canModifyBindings('test'));
     }
 
     public function provideTestCanModifyBindings(): iterable
@@ -50,8 +51,8 @@ class AnalysisTest extends PegasusTestCase
     public function testIsRecursive(Grammar $grammar, string $rule, bool $expected)
     {
         $analysis = new Analysis($grammar);
-        $this->assertSame($expected, $analysis->isRecursive($rule));
-        $this->assertSame(!$expected, $analysis->isRegular($rule));
+        Assert::assertSame($expected, $analysis->isRecursive($rule));
+        Assert::assertSame(!$expected, $analysis->isRegular($rule));
     }
 
     public function provideTestIsRecursive(): iterable
@@ -110,7 +111,7 @@ class AnalysisTest extends PegasusTestCase
     public function testIsLeftRecursive(Grammar $grammar, string $rule, bool $expected)
     {
         $analysis = new Analysis($grammar);
-        $this->assertSame($expected, $analysis->isLeftRecursive($rule));
+        Assert::assertSame($expected, $analysis->isLeftRecursive($rule));
     }
 
     public function provideTestLeftIsRecursive(): iterable
@@ -170,8 +171,8 @@ class AnalysisTest extends PegasusTestCase
             ->getGrammar();
         $analysis = new Analysis($grammar);
 
-        $this->assertFalse($analysis->isReferenced('lonely'));
-        $this->assertTrue($analysis->isReferenced('bar'));
+        Assert::assertFalse($analysis->isReferenced('lonely'));
+        Assert::assertTrue($analysis->isReferenced('bar'));
     }
 
     public function testGetReferencesFrom()
@@ -191,12 +192,12 @@ class AnalysisTest extends PegasusTestCase
         $analysis = new Analysis($grammar);
 
         $expected = ['foobarbaz', 'foobar', 'foo', 'bar', 'baz'];
-        $this->assertEquals($expected, $analysis->getReferencesFrom('foobarbaz'));
+        Assert::assertEquals($expected, $analysis->getReferencesFrom('foobarbaz'));
 
         $expected = ['foo', 'bar'];
-        $this->assertEquals($expected, $analysis->getReferencesFrom('foobar'));
+        Assert::assertEquals($expected, $analysis->getReferencesFrom('foobar'));
 
-        $this->assertEquals([], $analysis->getReferencesFrom('foo'));
+        Assert::assertEquals([], $analysis->getReferencesFrom('foo'));
     }
 
     public function testGetLeftReferencesFrom()
@@ -213,6 +214,6 @@ class AnalysisTest extends PegasusTestCase
         $analysis = new Analysis($grammar);
 
         $expected = ['xs', 'x'];
-        $this->assertEquals($expected, $analysis->getLeftReferencesFrom('xs'));
+        Assert::assertEquals($expected, $analysis->getLeftReferencesFrom('xs'));
     }
 }

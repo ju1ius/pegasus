@@ -8,34 +8,35 @@ use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarFactory;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Parser\RecursiveDescentParser;
+use PHPUnit\Framework\Assert;
 
 class ExpressionTestCase extends PegasusTestCase
 {
-    protected function assertParseResult($expected, $grammar, $input, $pos = 0)
-    {
+    protected function assertParseResult(
+        mixed $expected,
+        Grammar|Expression|array $grammar,
+        string $input,
+        int $pos = 0
+    ) {
         if (!$expected) {
             $this->expectException(ParseError::class);
         }
-        $result = $this->parse($grammar, $input, $pos);
+        $result = self::parse($grammar, $input, $pos);
         if ($expected instanceof Node) {
-            $this->assertNodeEquals($expected, $result);
+            PegasusAssert::nodeEquals($expected, $result);
         } else {
-            $this->assertSame($expected, $result);
+            Assert::assertSame($expected, $result);
         }
     }
 
-    protected function parse($grammar, $text, $pos = 0)
+    protected static function parse(Grammar|Expression|array $grammar, string $text, int $pos = 0): Node|bool
     {
         if ($grammar instanceof Expression) {
             $grammar = GrammarFactory::fromExpression($grammar);
-        } elseif (is_array($grammar)) {
+        } else if (is_array($grammar)) {
             $grammar = GrammarFactory::fromArray($grammar);
-        } elseif (!$grammar instanceof Grammar) {
-            throw new \LogicException('Expected Grammar, Expression or array.');
         }
 
-        $result = (new RecursiveDescentParser($grammar))->partialParse($text, $pos);
-
-        return $result;
+        return (new RecursiveDescentParser($grammar))->partialParse($text, $pos);
     }
 }

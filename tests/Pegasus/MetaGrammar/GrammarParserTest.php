@@ -6,7 +6,7 @@ use ju1ius\Pegasus\Expression\Application\Reference;
 use ju1ius\Pegasus\Expression\Application\Super;
 use ju1ius\Pegasus\Expression\Combinator\OneOf;
 use ju1ius\Pegasus\Expression\Combinator\Sequence;
-use ju1ius\Pegasus\Expression\Decorator\Assert;
+use ju1ius\Pegasus\Expression\Decorator\Assert as AssertExpr;
 use ju1ius\Pegasus\Expression\Decorator\Bind;
 use ju1ius\Pegasus\Expression\Decorator\Cut;
 use ju1ius\Pegasus\Expression\Decorator\Ignore;
@@ -34,6 +34,8 @@ use ju1ius\Pegasus\MetaGrammar\MetaGrammarTransform;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Parser\LeftRecursivePackratParser;
 use ju1ius\Pegasus\Tests\PegasusTestCase;
+use ju1ius\Pegasus\Tests\PegasusAssert;
+use PHPUnit\Framework\Assert;
 
 class GrammarParserTest extends PegasusTestCase
 {
@@ -63,7 +65,7 @@ class GrammarParserTest extends PegasusTestCase
     public function testItParsesTerminalRules(string $syntax, Grammar $expected)
     {
         $grammar = $this->parseSyntax($syntax);
-        $this->assertGrammarEquals($expected, $grammar);
+        PegasusAssert::grammarEquals($expected, $grammar);
     }
 
     /**
@@ -72,7 +74,7 @@ class GrammarParserTest extends PegasusTestCase
     public function testItParsesTerminalRulesWithOptimizedMeta(string $syntax, Grammar $expected)
     {
         $grammar = $this->parseSyntax($syntax, OptimizationLevel::NONE, true);
-        $this->assertGrammarEquals($expected, $grammar);
+        PegasusAssert::grammarEquals($expected, $grammar);
     }
 
     public function provideTestItParsesTerminalRules(): iterable
@@ -141,7 +143,7 @@ class GrammarParserTest extends PegasusTestCase
     public function testItParsesCombinators(string $syntax, Grammar $expected)
     {
         $grammar = $this->parseSyntax($syntax, OptimizationLevel::LEVEL_1);
-        $this->assertGrammarEquals($expected, $grammar);
+        PegasusAssert::grammarEquals($expected, $grammar);
     }
 
     /**
@@ -150,7 +152,7 @@ class GrammarParserTest extends PegasusTestCase
     public function testItParsesCombinatorsWithOptimizedMeta(string $syntax, Grammar $expected)
     {
         $grammar = $this->parseSyntax($syntax, OptimizationLevel::LEVEL_1, true);
-        $this->assertGrammarEquals($expected, $grammar);
+        PegasusAssert::grammarEquals($expected, $grammar);
     }
 
     public function provideTestItParsesCombinators(): iterable
@@ -203,7 +205,7 @@ class GrammarParserTest extends PegasusTestCase
     public function testItParsesDecorators(string $syntax, Grammar $expected)
     {
         $grammar = $this->parseSyntax($syntax);
-        $this->assertGrammarEquals($expected, $grammar);
+        PegasusAssert::grammarEquals($expected, $grammar);
     }
 
     /**
@@ -212,14 +214,14 @@ class GrammarParserTest extends PegasusTestCase
     public function testItParsesDecoratorsWithOptimizedMeta(string $syntax, Grammar $expected)
     {
         $grammar = $this->parseSyntax($syntax, OptimizationLevel::NONE, true);
-        $this->assertGrammarEquals($expected, $grammar);
+        PegasusAssert::grammarEquals($expected, $grammar);
     }
 
     public function provideTestItParsesDecorators(): iterable
     {
         yield 'Assert of a match' => [
             'x = &/x/',
-            GrammarFactory::fromArray(['x' => new Assert(new RegExp('x'))]),
+            GrammarFactory::fromArray(['x' => new AssertExpr(new RegExp('x'))]),
         ];
         yield 'Not of a match' => [
             'x = !/x/',
@@ -277,7 +279,7 @@ class GrammarParserTest extends PegasusTestCase
     public function testDecoratorPrecedence(string $syntax, Grammar $expected)
     {
         $grammar = $this->parseSyntax($syntax);
-        $this->assertGrammarEquals($expected, $grammar);
+        PegasusAssert::grammarEquals($expected, $grammar);
     }
 
     public function provideTestDecoratorPrecedence(): iterable
@@ -314,7 +316,7 @@ class GrammarParserTest extends PegasusTestCase
     public function testItParsesReferences(string $syntax, Grammar $expected)
     {
         $grammar = $this->parseSyntax($syntax);
-        $this->assertGrammarEquals($expected, $grammar);
+        PegasusAssert::grammarEquals($expected, $grammar);
     }
 
     /**
@@ -323,7 +325,7 @@ class GrammarParserTest extends PegasusTestCase
     public function testItParsesReferencesWithOptimizedMeta(string $syntax, Grammar $expected)
     {
         $grammar = $this->parseSyntax($syntax, OptimizationLevel::NONE, true);
-        $this->assertGrammarEquals($expected, $grammar);
+        PegasusAssert::grammarEquals($expected, $grammar);
     }
 
     public function provideTestItParsesReferences(): iterable
@@ -344,10 +346,10 @@ class GrammarParserTest extends PegasusTestCase
         $expected = 'Foo';
 
         $grammar = $this->parseSyntax($syntax);
-        $this->assertSame($expected, $grammar->getName());
+        Assert::assertSame($expected, $grammar->getName());
 
         $grammar = $this->parseSyntax($syntax, OptimizationLevel::NONE, true);
-        $this->assertSame($expected, $grammar->getName(), 'With optimized meta');
+        Assert::assertSame($expected, $grammar->getName(), 'With optimized meta');
     }
 
     public function testStartDirective()
@@ -356,10 +358,10 @@ class GrammarParserTest extends PegasusTestCase
         $start = 'y';
 
         $grammar = $this->parseSyntax($syntax);
-        $this->assertSame($start, $grammar->getStartRule());
+        Assert::assertSame($start, $grammar->getStartRule());
 
         $grammar = $this->parseSyntax($syntax, OptimizationLevel::NONE, true);
-        $this->assertSame($start, $grammar->getStartRule(), 'With optimized meta');
+        Assert::assertSame($start, $grammar->getStartRule(), 'With optimized meta');
     }
 
     public function testInlineDirective()
@@ -368,10 +370,10 @@ class GrammarParserTest extends PegasusTestCase
         $start = 'y';
 
         $grammar = $this->parseSyntax($syntax);
-        $this->assertTrue($grammar->isInlined('x'));
+        Assert::assertTrue($grammar->isInlined('x'));
 
         $grammar = $this->parseSyntax($syntax, OptimizationLevel::NONE, true);
-        $this->assertTrue($grammar->isInlined('x'), 'With optimized meta');
+        Assert::assertTrue($grammar->isInlined('x'), 'With optimized meta');
     }
 
     public function testImportDirective(): void

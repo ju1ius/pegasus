@@ -13,6 +13,8 @@ use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization\InlineNonRecursiveRules;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\GrammarBuilder;
+use ju1ius\Pegasus\Tests\PegasusAssert;
+use PHPUnit\Framework\Assert;
 
 class InlineNonRecursiveRulesTest extends OptimizationTestCase
 {
@@ -26,7 +28,7 @@ class InlineNonRecursiveRulesTest extends OptimizationTestCase
             $grammar[$rule],
             OptimizationContext::of($grammar)
         );
-        $this->assertExpressionEquals($expected, $result);
+        PegasusAssert::ExpressionEquals($expected, $result);
     }
 
     public function provideTestApply(): iterable
@@ -49,7 +51,7 @@ class InlineNonRecursiveRulesTest extends OptimizationTestCase
     {
         $result = (new InlineNonRecursiveRules)
             ->willPreProcessExpression($grammar[$rule], OptimizationContext::of($grammar));
-        $this->assertSame($expected, $result);
+        Assert::assertSame($expected, $result);
     }
 
     public function provideTestAppliesTo(): iterable
@@ -89,7 +91,7 @@ class InlineNonRecursiveRulesTest extends OptimizationTestCase
     {
         $optimized = $this->optimizeGrammar($grammar, new InlineNonRecursiveRules());
         $actual = $optimized[$ruleToTest];
-        $this->assertExpressionEquals($expected, $actual);
+        PegasusAssert::ExpressionEquals($expected, $actual);
     }
 
     public function provideTestApplyOnWholeGrammar(): iterable

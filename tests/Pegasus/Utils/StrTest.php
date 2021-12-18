@@ -4,23 +4,20 @@ namespace ju1ius\Pegasus\Tests\Utils;
 
 use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\Utils\Str;
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-
 
 class StrTest extends TestCase
 {
     /**
      * @dataProvider provideTestClassName
-     *
-     * @param object|string $input
-     * @param string        $expected
      */
-    public function testClassName($input, $expected)
+    public function testClassName(mixed $input, string $expected)
     {
-        $this->assertSame($expected, Str::className($input));
+        Assert::assertSame($expected, Str::className($input));
     }
 
-    public function provideTestClassName()
+    public function provideTestClassName(): \Traversable
     {
         yield 'A FQCN as a string' => [
             'Acme\Demo\FooBar',
@@ -46,16 +43,13 @@ class StrTest extends TestCase
 
     /**
      * @dataProvider provideTestTruncate
-     *
-     * @param array  $args
-     * @param string $expected
      */
-    public function testTruncate(array $args, $expected)
+    public function testTruncate(array $args, string $expected)
     {
-        $this->assertSame($expected, Str::truncate(...$args));
+        Assert::assertSame($expected, Str::truncate(...$args));
     }
 
-    public function provideTestTruncate()
+    public function provideTestTruncate(): \Traversable
     {
         yield 'No truncation' => [
             ['foobar bazqux', 1000],

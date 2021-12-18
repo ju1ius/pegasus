@@ -7,6 +7,7 @@ use ju1ius\Pegasus\CST\Node\Terminal;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Tests\Compiler\Extension\Php\PhpCompilerTestCase;
+use ju1ius\Pegasus\Tests\PegasusAssert;
 
 final class SuperTest extends PhpCompilerTestCase
 {
@@ -23,9 +24,9 @@ final class SuperTest extends PhpCompilerTestCase
             ->getGrammar();
         $grammar->extends($parent);
 
-        $parser = $this->compile($grammar);
+        $parser = self::compile($grammar);
         $result = $parser->parse($input);
-        $this->assertNodeEquals($expected, $result);
+        PegasusAssert::nodeEquals($expected, $result);
     }
 
     public function parseProvider(): iterable

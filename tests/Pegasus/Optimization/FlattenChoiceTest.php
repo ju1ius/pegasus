@@ -8,6 +8,8 @@ use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization\Flattening\FlattenChoice;
 use ju1ius\Pegasus\GrammarBuilder;
+use ju1ius\Pegasus\Tests\PegasusAssert;
+use PHPUnit\Framework\Assert;
 
 class FlattenChoiceTest extends OptimizationTestCase
 {
@@ -20,8 +22,8 @@ class FlattenChoiceTest extends OptimizationTestCase
     public function testApply(Grammar $grammar, Expression $expected)
     {
         $result = $this->applyOptimization(new FlattenChoice(), $grammar);
-        $this->assertExpressionEquals($expected, $result);
-        $this->assertEquals((string)$expected, (string)$result);
+        PegasusAssert::ExpressionEquals($expected, $result);
+        Assert::assertEquals((string)$expected, (string)$result);
     }
 
     public function provideTestApply()

@@ -7,6 +7,7 @@ use ju1ius\Pegasus\GrammarFactory;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Parser\RecursiveDescentParser;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
+use PHPUnit\Framework\Assert;
 
 class EOFTest extends ExpressionTestCase
 {
@@ -22,8 +23,8 @@ class EOFTest extends ExpressionTestCase
             $this->expectException(ParseError::class);
         }
         $result = $parser->partialParse($input, $pos);
-        $this->assertSame($expected, $result);
-        $this->assertSame($pos, $parser->pos, 'Does not consume any input.');
+        Assert::assertSame($expected, $result);
+        Assert::assertSame($pos, $parser->pos, 'Does not consume any input.');
     }
 
     public function provideTestMatch(): iterable
@@ -42,7 +43,7 @@ class EOFTest extends ExpressionTestCase
     public function testMetadata()
     {
         $expr = new EOF();
-        $this->assertTrue($expr->isCapturingDecidable());
-        $this->assertFalse($expr->isCapturing());
+        Assert::assertTrue($expr->isCapturingDecidable());
+        Assert::assertFalse($expr->isCapturing());
     }
 }

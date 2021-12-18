@@ -15,7 +15,7 @@ class PhpCompilerTestCase extends PegasusTestCase
     /**
      * @throws Grammar\Exception\MissingTraitAlias
      */
-    protected function compile(Grammar|string $syntaxOrGrammar): Parser
+    protected static function compile(Grammar|string $syntaxOrGrammar): Parser
     {
         if (\is_string($syntaxOrGrammar)) {
             $grammar = GrammarFactory::fromSyntax($syntaxOrGrammar, null, OptimizationLevel::NONE);

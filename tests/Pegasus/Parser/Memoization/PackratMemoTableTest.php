@@ -5,11 +5,11 @@ namespace ju1ius\Pegasus\Tests\Parser\Memoization;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Parser\Memoization\MemoEntry;
 use ju1ius\Pegasus\Parser\Memoization\PackratMemoTable;
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 
-
 /**
- * @coversDefaultClass ju1ius\Pegasus\Parser\Memoization\PackratMemoTable
+ * @coversDefaultClass \ju1ius\Pegasus\Parser\Memoization\PackratMemoTable
  */
 class PackratMemoTableTest extends TestCase
 {
@@ -23,9 +23,9 @@ class PackratMemoTableTest extends TestCase
         $pos = 42;
         $result = 666;
         $entry = $memo->set($pos, $expr, $result);
-        $this->assertInstanceOf(MemoEntry::class, $entry);
-        $this->assertSame($pos, $entry->end);
-        $this->assertSame($result, $entry->result);
+        Assert::assertInstanceOf(MemoEntry::class, $entry);
+        Assert::assertSame($pos, $entry->end);
+        Assert::assertSame($result, $entry->result);
 
         return [$memo, $pos, $expr, $entry, $result];
     }
@@ -37,8 +37,8 @@ class PackratMemoTableTest extends TestCase
     public function testHas(array $args)
     {
         [$memo, $pos, $expr] = $args;
-        $this->assertTrue($memo->has($pos, $expr));
-        $this->assertFalse($memo->has($pos - 1, $expr));
+        Assert::assertTrue($memo->has($pos, $expr));
+        Assert::assertFalse($memo->has($pos - 1, $expr));
     }
 
     /**
@@ -50,11 +50,11 @@ class PackratMemoTableTest extends TestCase
         [$memo, $pos, $expr, $entry] = $args;
 
         $resultEntry = $memo->get($pos, $expr);
-        $this->assertSame($entry, $resultEntry);
-        $this->assertSame($entry->end, $resultEntry->end);
-        $this->assertSame($entry->result, $resultEntry->result);
+        Assert::assertSame($entry, $resultEntry);
+        Assert::assertSame($entry->end, $resultEntry->end);
+        Assert::assertSame($entry->result, $resultEntry->result);
 
-        $this->assertNull($memo->get($pos - 1, $expr));
+        Assert::assertNull($memo->get($pos - 1, $expr));
     }
 
     /**
@@ -65,8 +65,8 @@ class PackratMemoTableTest extends TestCase
     {
         [$memo, $pos, $expr, $entry, $result] = $args;
         $memo->cut($pos);
-        $this->assertTrue($memo->has($pos, $expr));
+        Assert::assertTrue($memo->has($pos, $expr));
         $memo->cut($pos + 1);
-        $this->assertFalse($memo->has($pos, $expr));
+        Assert::assertFalse($memo->has($pos, $expr));
     }
 }

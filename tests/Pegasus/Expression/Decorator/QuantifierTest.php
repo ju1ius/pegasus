@@ -4,23 +4,25 @@ namespace ju1ius\Pegasus\Tests\Expression\Decorator;
 
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\CST\Node\Terminal;
+use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
+use ju1ius\Pegasus\Tests\PegasusAssert;
 
 class QuantifierTest extends ExpressionTestCase
 {
     /**
      * @dataProvider provideTestMatch
      */
-    public function testMatch($expr, $match_args, $expected)
+    public function testMatch(Grammar $expr, array $args, Node $expected)
     {
-        $this->assertNodeEquals(
+        PegasusAssert::nodeEquals(
             $expected,
-            $this->parse($expr, ...$match_args)
+            self::parse($expr, ...$args)
         );
     }
-    public function provideTestMatch()
+    public function provideTestMatch(): \Traversable
     {
         // exact number of occurences
         yield 'exactly one "x" with "x"' => [
@@ -87,22 +89,20 @@ class QuantifierTest extends ExpressionTestCase
     /**
      * @dataProvider provideTestMatchError
      */
-    public function testMatchError($expr, $match_args)
+    public function testMatchError(Grammar $expr, array $args)
     {
         $this->expectException(ParseError::class);
-        $this->parse($expr, ...$match_args);
+        self::parse($expr, ...$args);
     }
-    public function provideTestMatchError()
+    public function provideTestMatchError(): \Traversable
     {
-        return [
-            'exactly one "x" with "foo"' => [
-                GrammarBuilder::create()->rule('one')->exactly(1)->literal('x')->getGrammar(),
-                ['foo']
-            ],
-            '2 or more "x" with "x_x"' => [
-                GrammarBuilder::create()->rule('two')->atLeast(2)->literal('x')->getGrammar(),
-                ['x_x']
-            ]
+        yield 'exactly one "x" with "foo"' => [
+            GrammarBuilder::create()->rule('one')->exactly(1)->literal('x')->getGrammar(),
+            ['foo']
+        ];
+        yield '2 or more "x" with "x_x"' => [
+            GrammarBuilder::create()->rule('two')->atLeast(2)->literal('x')->getGrammar(),
+            ['x_x']
         ];
     }
 

@@ -7,6 +7,7 @@ use ju1ius\Pegasus\CST\Node\Terminal;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
+use ju1ius\Pegasus\Tests\PegasusAssert;
 
 class ReferenceTest extends ExpressionTestCase
 {
@@ -15,7 +16,7 @@ class ReferenceTest extends ExpressionTestCase
      */
     public function testMatch(Grammar $grammar, array $args, Node $expected)
     {
-        $this->assertNodeEquals($expected, $this->parse($grammar, ...$args));
+        PegasusAssert::nodeEquals($expected, self::parse($grammar, ...$args));
     }
 
     public function provideTestMatch(): iterable

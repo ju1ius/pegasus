@@ -1,12 +1,9 @@
 <?php declare(strict_types=1);
 
-
 namespace ju1ius\Pegasus\Parser\Memoization;
-
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar;
-
 
 /**
  * MemoTable implementing the sliding-window algorithm by Kimio Kuramitsu.

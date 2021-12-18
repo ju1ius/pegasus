@@ -10,6 +10,8 @@ use ju1ius\Pegasus\Grammar\Optimization\Flattening\FlattenCapturingSequence;
 use ju1ius\Pegasus\Grammar\Optimization\Flattening\FlattenMatchingSequence;
 use ju1ius\Pegasus\Grammar\Optimization\FlattenSequence;
 use ju1ius\Pegasus\GrammarBuilder;
+use ju1ius\Pegasus\Tests\PegasusAssert;
+use PHPUnit\Framework\Assert;
 
 class FlattenSequenceTest extends OptimizationTestCase
 {
@@ -26,8 +28,8 @@ class FlattenSequenceTest extends OptimizationTestCase
             new FlattenCapturingSequence()
         ];
         $result = $this->applyOptimization($optim, $grammar);
-        $this->assertExpressionEquals($expected, $result);
-        $this->assertEquals((string)$expected, (string)$result);
+        PegasusAssert::ExpressionEquals($expected, $result);
+        Assert::assertEquals((string)$expected, (string)$result);
     }
     public function provideTestApply()
     {

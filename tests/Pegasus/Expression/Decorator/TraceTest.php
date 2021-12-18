@@ -5,8 +5,8 @@ namespace ju1ius\Pegasus\Tests\Expression\Decorator;
 use ju1ius\Pegasus\Expression\Decorator\Trace;
 use ju1ius\Pegasus\Expression\TerminalExpression;
 use ju1ius\Pegasus\Parser\Parser;
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-
 
 /**
  * @coversDefaultClass \ju1ius\Pegasus\Expression\Decorator\Trace
@@ -54,6 +54,6 @@ class TraceTest extends TestCase
             ->getMockForAbstractClass();
         $child->method('__toString')->willReturn('foo');
         $trace = new Trace($child);
-        $this->assertSame('foo', (string)$trace);
+        Assert::assertSame('foo', (string)$trace);
     }
 }

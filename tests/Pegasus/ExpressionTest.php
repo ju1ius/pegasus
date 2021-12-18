@@ -3,6 +3,7 @@
 namespace ju1ius\Pegasus\Tests;
 
 use ju1ius\Pegasus\Expression;
+use PHPUnit\Framework\Assert;
 
 class ExpressionTest extends PegasusTestCase
 {
@@ -10,29 +11,29 @@ class ExpressionTest extends PegasusTestCase
     {
         $expr = $this->getMockForAbstractClass(Expression::class);
         $clone = clone $expr;
-        $this->assertNotSame($expr->id, $clone->id);
+        Assert::assertNotSame($expr->id, $clone->id);
     }
 
     public function testWakeUp()
     {
         $expr = $this->getMockForAbstractClass(Expression::class);
         $new = unserialize(serialize($expr));
-        $this->assertNotSame($expr->id, $new->id);
+        Assert::assertNotSame($expr->id, $new->id);
     }
 
     public function testIterate()
     {
         $expr = $this->getMockForAbstractClass(Expression::class);
         $a = iterator_to_array($expr->iterate());
-        $this->assertSame(1, count($a));
-        $this->assertSame($expr, $a[0]);
+        Assert::assertSame(1, count($a));
+        Assert::assertSame($expr, $a[0]);
     }
 
     public function testDefaultMetadata()
     {
         $expr = $this->getMockForAbstractClass(Expression::class);
-        $this->assertTrue($expr->isCapturing());
-        $this->assertTrue($expr->isCapturingDecidable());
-        $this->assertFalse($expr->hasVariableCaptureCount());
+        Assert::assertTrue($expr->isCapturing());
+        Assert::assertTrue($expr->isCapturingDecidable());
+        Assert::assertFalse($expr->hasVariableCaptureCount());
     }
 }

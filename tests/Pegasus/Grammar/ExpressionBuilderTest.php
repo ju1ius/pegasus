@@ -9,9 +9,9 @@ use ju1ius\Pegasus\Expression\Combinator\Sequence;
 use ju1ius\Pegasus\Expression\Combinator\Sequence as Seq;
 use ju1ius\Pegasus\Expression\Composite;
 use ju1ius\Pegasus\Expression\Decorator;
-use ju1ius\Pegasus\Expression\Decorator\Assert;
-use ju1ius\Pegasus\Expression\Decorator\Ignore;
+use ju1ius\Pegasus\Expression\Decorator\Assert as AssertExpr;
 use ju1ius\Pegasus\Expression\Decorator\Bind;
+use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Expression\Decorator\NodeAction;
 use ju1ius\Pegasus\Expression\Decorator\Not;
 use ju1ius\Pegasus\Expression\Decorator\Quantifier;
@@ -26,6 +26,8 @@ use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Expression\TerminalExpression;
 use ju1ius\Pegasus\ExpressionBuilder as Builder;
 use ju1ius\Pegasus\Tests\PegasusTestCase;
+use ju1ius\Pegasus\Tests\PegasusAssert;
+use PHPUnit\Framework\Assert;
 
 /**
  * @coversDefaultClass \ju1ius\Pegasus\ExpressionBuilder
@@ -36,14 +38,14 @@ class ExpressionBuilderTest extends PegasusTestCase
     {
         $expr = $this->getMockForAbstractClass(TerminalExpression::class);
         $builder = Builder::create();
-        $this->assertSame($builder, $builder->add($expr));
+        Assert::assertSame($builder, $builder->add($expr));
     }
 
     public function testAddSingleTerminal()
     {
         $expr = $this->getMockForAbstractClass(TerminalExpression::class);
         $result = Builder::create()->add($expr)->getExpression();
-        $this->assertSame($expr, $result);
+        Assert::assertSame($expr, $result);
     }
 
     public function testTerminalCannotHaveChildren()
@@ -77,7 +79,7 @@ class ExpressionBuilderTest extends PegasusTestCase
         $result = Builder::create()
             ->add($comp)
             ->getExpression();
-        $this->assertSame($comp, $result);
+        Assert::assertSame($comp, $result);
     }
 
     public function testAddChildToComposite()
@@ -90,8 +92,8 @@ class ExpressionBuilderTest extends PegasusTestCase
                 ->add($term)
             ->end()
             ->getExpression();
-        $this->assertSame($comp, $result);
-        $this->assertSame($comp[0], $term);
+        Assert::assertSame($comp, $result);
+        Assert::assertSame($comp[0], $term);
     }
 
     public function testDecoratorsHaveSingleChild()
@@ -119,8 +121,8 @@ class ExpressionBuilderTest extends PegasusTestCase
             ->add($deco1)->add($deco2)->add($term1)
             //->add($term2)
             ->getExpression();
-        $this->assertSame($deco1[0], $deco2);
-        $this->assertSame($deco2[0], $term1);
+        Assert::assertSame($deco1[0], $deco2);
+        Assert::assertSame($deco2[0], $term1);
     }
 
     public function testNestingDecoratorsAndComposites()
@@ -138,19 +140,19 @@ class ExpressionBuilderTest extends PegasusTestCase
                 ->end()
             ->add($term2)
             ->getExpression();
-        $this->assertCount(2, $topSeq);
-        $this->assertSame($topSeq[0], $deco);
-        $this->assertSame($topSeq[1], $term2);
-        $this->assertCount(1, $deco);
-        $this->assertSame($deco[0], $innerSeq);
-        $this->assertCount(1, $innerSeq);
-        $this->assertSame($innerSeq[0], $term1);
+        Assert::assertCount(2, $topSeq);
+        Assert::assertSame($topSeq[0], $deco);
+        Assert::assertSame($topSeq[1], $term2);
+        Assert::assertCount(1, $deco);
+        Assert::assertSame($deco[0], $innerSeq);
+        Assert::assertCount(1, $innerSeq);
+        Assert::assertSame($innerSeq[0], $term1);
     }
 
     public function testItCanBuildExpressions()
     {
         foreach ($this->provideTestItCanBuildExpressions() as $msg => [$input, $expected]) {
-            $this->assertExpressionEquals($expected, $input, $msg);
+            PegasusAssert::expressionEquals($expected, $input, $msg);
         }
     }
 
@@ -192,7 +194,7 @@ class ExpressionBuilderTest extends PegasusTestCase
         // Predicates
         yield 'Assert' => [
             Builder::create()->assert()->literal('foo')->getExpression(),
-            new Assert(new Literal('foo')),
+            new AssertExpr(new Literal('foo')),
         ];
         yield 'Not' => [
             Builder::create()->not()->literal('foo')->getExpression(),

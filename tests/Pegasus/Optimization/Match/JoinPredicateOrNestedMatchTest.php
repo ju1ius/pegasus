@@ -11,6 +11,8 @@ use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinPredicateOrNestedMatch;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\GrammarBuilder;
+use ju1ius\Pegasus\Tests\PegasusAssert;
+use PHPUnit\Framework\Assert;
 
 class JoinPredicateOrNestedMatchTest extends RegExpOptimizationTestCase
 {
@@ -23,10 +25,10 @@ class JoinPredicateOrNestedMatchTest extends RegExpOptimizationTestCase
         $ctx = OptimizationContext::of($input);
 
         $result = $this->applyOptimization($optim, $input, $ctx);
-        $this->assertExpressionEquals($expected, $result, 'In capturing context');
+        PegasusAssert::ExpressionEquals($expected, $result, 'In capturing context');
 
         $result = $this->applyOptimization($optim, $input, $ctx->matching());
-        $this->assertExpressionEquals($expected, $result, 'In matching context');
+        PegasusAssert::ExpressionEquals($expected, $result, 'In matching context');
     }
 
     public function provideTestApply(): iterable
@@ -109,10 +111,10 @@ class JoinPredicateOrNestedMatchTest extends RegExpOptimizationTestCase
         $ctx = OptimizationContext::of($input);
 
         $result = $optim->willPostProcessExpression($expr, $ctx);
-        $this->assertSame($applies, $result, 'In capturing context');
+        Assert::assertSame($applies, $result, 'In capturing context');
 
         $result = $optim->willPostProcessExpression($expr, $ctx->matching());
-        $this->assertSame($applies, $result, 'In matching context');
+        Assert::assertSame($applies, $result, 'In matching context');
     }
 
     public function provideTestAppliesTo(): iterable

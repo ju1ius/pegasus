@@ -12,32 +12,34 @@ use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\GrammarFactory;
 use ju1ius\Pegasus\Tests\PegasusTestCase;
+use ju1ius\Pegasus\Tests\PegasusAssert;
+use PHPUnit\Framework\Assert;
 
 class BuilderTest extends PegasusTestCase
 {
     public function testCreate()
     {
         $grammar = GrammarBuilder::create('foo')->getGrammar();
-        $this->assertInstanceOf(Grammar::class, $grammar);
-        $this->assertSame('foo', $grammar->getName());
+        Assert::assertInstanceOf(Grammar::class, $grammar);
+        Assert::assertSame('foo', $grammar->getName());
     }
 
     public function testOf()
     {
         $grammar = new Grammar();
-        $this->assertSame($grammar, GrammarBuilder::of($grammar)->getGrammar());
+        Assert::assertSame($grammar, GrammarBuilder::of($grammar)->getGrammar());
     }
 
     public function testSuperWithIdentifier()
     {
         $grammar = GrammarBuilder::create()->rule('test')->super('foo')->getGrammar();
-        $this->assertExpressionEquals(new Super('foo', 'test'), $grammar['test']);
+        PegasusAssert::expressionEquals(new Super('foo', 'test'), $grammar['test']);
     }
 
     public function testSuperWithoutIdentifier()
     {
         $grammar = GrammarBuilder::create()->rule('test')->super()->getGrammar();
-        $this->assertExpressionEquals(new Super('test', 'test'), $grammar['test']);
+        PegasusAssert::expressionEquals(new Super('test', 'test'), $grammar['test']);
     }
 
     public function testItCanAddSeveralRules()
@@ -50,22 +52,19 @@ class BuilderTest extends PegasusTestCase
             'foo' => new Literal('foo'),
             'bar' => new Literal('bar')
         ]);
-        $this->assertGrammarEquals($expected, $result);
+        PegasusAssert::grammarEquals($expected, $result);
     }
 
     /**
      * @dataProvider provideTestBuildingComplexRules
-     *
-     * @param Grammar $grammar
-     * @param array   $expected
      */
     public function testBuildingComplexRules(Grammar $grammar, array $expected)
     {
         $expected = GrammarFactory::fromArray($expected);
-        $this->assertGrammarEquals($expected, $grammar);
+        PegasusAssert::grammarEquals($expected, $grammar);
     }
 
-    public function provideTestBuildingComplexRules()
+    public function provideTestBuildingComplexRules(): \Traversable
     {
         yield 'Sequence with nested decorators' => [
             GrammarBuilder::create()->rule('test')->sequence()

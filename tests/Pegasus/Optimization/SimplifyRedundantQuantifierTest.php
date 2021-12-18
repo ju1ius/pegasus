@@ -12,6 +12,8 @@ use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization\SimplifyRedundantQuantifier;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\GrammarBuilder;
+use ju1ius\Pegasus\Tests\PegasusAssert;
+use PHPUnit\Framework\Assert;
 
 class SimplifyRedundantQuantifierTest extends OptimizationTestCase
 {
@@ -24,8 +26,8 @@ class SimplifyRedundantQuantifierTest extends OptimizationTestCase
     {
         $ctx = OptimizationContext::of($grammar, OptimizationContext::TYPE_MATCHING);
         $result = $this->applyOptimization(new SimplifyRedundantQuantifier(), $grammar, $ctx);
-        $this->assertExpressionEquals($expected, $result);
-        $this->assertEquals((string)$expected, (string)$result);
+        PegasusAssert::ExpressionEquals($expected, $result);
+        Assert::assertEquals((string)$expected, (string)$result);
     }
 
     public function provideTestApply()

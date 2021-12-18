@@ -5,8 +5,8 @@ namespace ju1ius\Pegasus\Tests\Parser\Memoization;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Parser\Memoization\MemoEntry;
 use ju1ius\Pegasus\Parser\Memoization\NullMemoTable;
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-
 
 /**
  * @coversDefaultClass \ju1ius\Pegasus\Parser\Memoization\NullMemoTable
@@ -20,7 +20,7 @@ class NullMemoTableTest extends TestCase
     {
         $expr = $this->getMockForAbstractClass(Expression::class);
         $memo = new NullMemoTable();
-        $this->assertFalse($memo->has(42, $expr));
+        Assert::assertFalse($memo->has(42, $expr));
     }
 
     /**
@@ -30,7 +30,7 @@ class NullMemoTableTest extends TestCase
     {
         $expr = $this->getMockForAbstractClass(Expression::class);
         $memo = new NullMemoTable();
-        $this->assertNull($memo->get(42, $expr));
+        Assert::assertNull($memo->get(42, $expr));
     }
 
     /**
@@ -41,8 +41,8 @@ class NullMemoTableTest extends TestCase
         $expr = $this->getMockForAbstractClass(Expression::class);
         $memo = new NullMemoTable();
         $entry = $memo->set(42, $expr, 666);
-        $this->assertInstanceOf(MemoEntry::class, $entry);
-        $this->assertSame(42, $entry->end);
-        $this->assertSame(666, $entry->result);
+        Assert::assertInstanceOf(MemoEntry::class, $entry);
+        Assert::assertSame(42, $entry->end);
+        Assert::assertSame(666, $entry->result);
     }
 }

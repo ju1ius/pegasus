@@ -2,36 +2,32 @@
 
 namespace ju1ius\Pegasus\Tests\Expression\Decorator;
 
-use ju1ius\Pegasus\Expression\Decorator\Assert;
+use ju1ius\Pegasus\Expression\Decorator\Assert as AssertExpr;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
+use PHPUnit\Framework\Assert;
 
 class AssertTest extends ExpressionTestCase
 {
     public function testMetadata()
     {
-        $expr = new Assert();
-
-        $this->assertTrue($expr->isCapturingDecidable());
-        $this->assertFalse($expr->isCapturing());
-        $this->assertFalse($expr->hasVariableCaptureCount());
+        $expr = new AssertExpr();
+        Assert::assertTrue($expr->isCapturingDecidable());
+        Assert::assertFalse($expr->isCapturing());
+        Assert::assertFalse($expr->hasVariableCaptureCount());
     }
 
     /**
      * @dataProvider provideTestMatch
-     *
-     * @param Grammar $expr
-     * @param array   $args
-     * @param bool    $expected
      */
-    public function testMatch(Grammar $expr, array $args, $expected)
+    public function testMatch(Grammar $expr, array $args, bool $expected)
     {
-        $this->assertSame($expected, $this->parse($expr, ...$args));
+        Assert::assertSame($expected, self::parse($expr, ...$args));
     }
 
-    public function provideTestMatch()
+    public function provideTestMatch(): \Traversable
     {
         yield [
             GrammarBuilder::create()->rule('assert')
@@ -51,17 +47,14 @@ class AssertTest extends ExpressionTestCase
 
     /**
      * @dataProvider provideTestMatchError
-     *
-     * @param Grammar $expr
-     * @param array   $args
      */
     public function testMatchError(Grammar $expr, array $args)
     {
         $this->expectException(ParseError::class);
-        $this->parse($expr, ...$args);
+        self::parse($expr, ...$args);
     }
 
-    public function provideTestMatchError()
+    public function provideTestMatchError(): \Traversable
     {
         yield [
             GrammarBuilder::create()->rule('assert')

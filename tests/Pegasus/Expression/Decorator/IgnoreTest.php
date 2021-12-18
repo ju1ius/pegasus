@@ -7,27 +7,25 @@ use ju1ius\Pegasus\CST\Node\Terminal;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
+use ju1ius\Pegasus\Tests\PegasusAssert;
+use PHPUnit\Framework\Assert;
 
 class IgnoreTest extends ExpressionTestCase
 {
     /**
      * @dataProvider provideTestMatch
-     *
-     * @param Grammar   $grammar
-     * @param array     $args
-     * @param Node|bool $expected
      */
-    public function testMatch(Grammar $grammar, array $args, $expected)
+    public function testMatch(Grammar $grammar, array $args, Node|bool $expected)
     {
-        $result = $this->parse($grammar, ...$args);
+        $result = self::parse($grammar, ...$args);
         if ($expected instanceof Node) {
-            $this->assertNodeEquals($expected, $result);
+            PegasusAssert::nodeEquals($expected, $result);
         } else {
-            $this->assertSame($expected, $result);
+            Assert::assertSame($expected, $result);
         }
     }
 
-    public function provideTestMatch()
+    public function provideTestMatch(): \Traversable
     {
         yield 'returns true' => [
             GrammarBuilder::create()->rule('nope')->ignore()->literal('nope')->getGrammar(),

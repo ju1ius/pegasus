@@ -13,7 +13,7 @@ final class EOFTest extends PhpCompilerTestCase
      */
     public function testParse(string $syntax, string $input, int $pos, bool $expected)
     {
-        $parser = $this->compile($syntax);
+        $parser = self::compile($syntax);
         if (!$expected) {
             $this->expectException(ParseError::class);
         }

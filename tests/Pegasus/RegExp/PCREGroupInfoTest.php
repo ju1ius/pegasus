@@ -6,21 +6,19 @@ use ju1ius\Pegasus\RegExp\Exception\MissingClosingParenthesis;
 use ju1ius\Pegasus\RegExp\Exception\UnmatchedClosingParenthesis;
 use ju1ius\Pegasus\RegExp\PCREGroupInfo;
 use ju1ius\Pegasus\Tests\PegasusTestCase;
+use PHPUnit\Framework\Assert;
 
 class PCREGroupInfoTest extends PegasusTestCase
 {
     /**
      * @dataProvider provideTestCaptureCount
-     *
-     * @param string $pattern
-     * @param int    $expected
      */
-    public function testCaptureCount($pattern, $expected)
+    public function testCaptureCount(string $pattern, int $expected)
     {
-        $this->assertSame($expected, PCREGroupInfo::captureCount($pattern));
+        Assert::assertSame($expected, PCREGroupInfo::captureCount($pattern));
     }
 
-    public function provideTestCaptureCount()
+    public function provideTestCaptureCount(): array
     {
         return [
             ['foo(ba([rz]))', 2],
@@ -32,16 +30,13 @@ class PCREGroupInfoTest extends PegasusTestCase
 
     /**
      * @dataProvider provideTestGroupCount
-     *
-     * @param string $pattern
-     * @param int    $expected
      */
-    public function testGroupCount($pattern, $expected)
+    public function testGroupCount(string $pattern, int $expected)
     {
-        $this->assertSame($expected, PCREGroupInfo::groupCount($pattern));
+        Assert::assertSame($expected, PCREGroupInfo::groupCount($pattern));
     }
 
-    public function provideTestGroupCount()
+    public function provideTestGroupCount(): array
     {
         return [
             ['foo(ba([rz]))', 2],
@@ -53,17 +48,15 @@ class PCREGroupInfoTest extends PegasusTestCase
 
     /**
      * @dataProvider provideTestParseThrowsOnMissingClosingParenthesis
-     *
-     * @param string $pattern
      */
-    public function testParseThrowsOnMissingClosingParenthesis($pattern)
+    public function testParseThrowsOnMissingClosingParenthesis(string $pattern)
     {
         $this->expectException(MissingClosingParenthesis::class);
         $info = new PCREGroupInfo();
         $info->parse($pattern);
     }
 
-    public function provideTestParseThrowsOnMissingClosingParenthesis()
+    public function provideTestParseThrowsOnMissingClosingParenthesis(): array
     {
         return [
             ['foo(bar'],
@@ -75,17 +68,15 @@ class PCREGroupInfoTest extends PegasusTestCase
 
     /**
      * @dataProvider provideTestParseThrowsOnUnmatchedClosingParenthesis
-     *
-     * @param string $pattern
      */
-    public function testParseThrowsOnUnmatchedClosingParenthesis($pattern)
+    public function testParseThrowsOnUnmatchedClosingParenthesis(string $pattern)
     {
         $this->expectException(UnmatchedClosingParenthesis::class);
         $info = new PCREGroupInfo();
         $info->parse($pattern);
     }
 
-    public function provideTestParseThrowsOnUnmatchedClosingParenthesis()
+    public function provideTestParseThrowsOnUnmatchedClosingParenthesis(): array
     {
         return [
             ['foo)'],
@@ -97,17 +88,14 @@ class PCREGroupInfoTest extends PegasusTestCase
 
     /**
      * @dataProvider provideTestParse
-     *
-     * @param string $pattern
-     * @param array  $expected
      */
-    public function testParse($pattern, $expected)
+    public function testParse(string $pattern, array $expected)
     {
         $info = new PCREGroupInfo();
-        $this->assertEquals($expected, $info->parse($pattern));
+        Assert::assertEquals($expected, $info->parse($pattern));
     }
 
-    public function provideTestParse()
+    public function provideTestParse(): \Traversable
     {
         yield 'Skips escaped parentheses' => [
             'foo\(ba\(r|z\)\)',

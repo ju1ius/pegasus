@@ -7,6 +7,7 @@ use ju1ius\Pegasus\GrammarFactory;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Parser\RecursiveDescentParser;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
+use PHPUnit\Framework\Assert;
 
 class FailTest extends ExpressionTestCase
 {
@@ -17,14 +18,14 @@ class FailTest extends ExpressionTestCase
         ]));
         $this->expectException(ParseError::class);
         $result = $parser->partialParse('anything', 0);
-        $this->assertSame(null, $result);
-        $this->assertSame(0, $parser->pos, 'Does not consume any input.');
+        Assert::assertSame(null, $result);
+        Assert::assertSame(0, $parser->pos, 'Does not consume any input.');
     }
 
     public function testMetadata()
     {
         $expr = new Fail();
-        $this->assertTrue($expr->isCapturingDecidable());
-        $this->assertFalse($expr->isCapturing());
+        Assert::assertTrue($expr->isCapturingDecidable());
+        Assert::assertFalse($expr->isCapturing());
     }
 }

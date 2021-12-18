@@ -7,6 +7,7 @@ use ju1ius\Pegasus\CST\Node\Quantifier;
 use ju1ius\Pegasus\CST\Node\Terminal;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Tests\Compiler\Extension\Php\PhpCompilerTestCase;
+use ju1ius\Pegasus\Tests\PegasusAssert;
 
 class QuantifierTest extends PhpCompilerTestCase
 {
@@ -15,9 +16,9 @@ class QuantifierTest extends PhpCompilerTestCase
      */
     public function testParse(string $syntax, string $input, Node $expected)
     {
-        $parser = $this->compile($syntax);
+        $parser = self::compile($syntax);
         $result = $parser->parse($input);
-        $this->assertNodeEquals($expected, $result);
+        PegasusAssert::nodeEquals($expected, $result);
     }
 
     public function parseProvider(): iterable
@@ -114,7 +115,7 @@ class QuantifierTest extends PhpCompilerTestCase
     public function testParseFailure(string $syntax, string $input)
     {
         $this->expectException(ParseError::class);
-        $parser = $this->compile($syntax);
+        $parser = self::compile($syntax);
         $parser->parse($input);
     }
 

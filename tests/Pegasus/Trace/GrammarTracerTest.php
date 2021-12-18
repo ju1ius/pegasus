@@ -7,6 +7,7 @@ use ju1ius\Pegasus\Expression\Decorator\Trace;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Tests\PegasusTestCase;
+use ju1ius\Pegasus\Tests\PegasusAssert;
 
 
 class GrammarTracerTest extends PegasusTestCase
@@ -28,7 +29,7 @@ class GrammarTracerTest extends PegasusTestCase
             'start'
         );
 
-        $this->assertExpressionEquals($expected, $grammar['start']);
+        PegasusAssert::expressionEquals($expected, $grammar['start']);
     }
 
     public function testItRemovesTraces()
@@ -45,7 +46,7 @@ class GrammarTracerTest extends PegasusTestCase
             new Literal('bar'),
         ], 'start');
 
-        $this->assertExpressionEquals($expected, $grammar['start']);
+        PegasusAssert::expressionEquals($expected, $grammar['start']);
     }
 
     public function testItPreventsDoubleTracing()
@@ -65,7 +66,7 @@ class GrammarTracerTest extends PegasusTestCase
             'start'
         );
 
-        $this->assertExpressionEquals($expected, $grammar['start']);
+        PegasusAssert::expressionEquals($expected, $grammar['start']);
     }
 
     public function testItTracesParents()
@@ -85,7 +86,7 @@ class GrammarTracerTest extends PegasusTestCase
 
         $expected = new Trace(new Literal('foo', 'parent'), 'parent');
 
-        $this->assertExpressionEquals($expected, $parent['parent']);
+        PegasusAssert::expressionEquals($expected, $parent['parent']);
     }
 
     public function testItTracesTraits()
@@ -105,6 +106,6 @@ class GrammarTracerTest extends PegasusTestCase
 
         $expected = new Trace(new Literal('baz', 'g3'), 'g3');
 
-        $this->assertExpressionEquals($expected, $g3['g3']);
+        PegasusAssert::expressionEquals($expected, $g3['g3']);
     }
 }

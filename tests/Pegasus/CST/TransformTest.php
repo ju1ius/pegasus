@@ -9,48 +9,53 @@ use ju1ius\Pegasus\CST\Node\Decorator;
 use ju1ius\Pegasus\CST\Node\Quantifier;
 use ju1ius\Pegasus\CST\Node\Terminal;
 use ju1ius\Pegasus\CST\Transform;
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 
 class TransformTest extends TestCase
 {
     public function testDefaultBeforeAndAfterTraverse()
     {
-        $traverser = $this->getMockBuilder(Transform::class)
-            ->setMethods(['beforeTraverse', 'afterTraverse'])
-            ->getMock();
+        $mock = new class extends Transform {
+            public bool $beforeCalled = false;
+            public bool $afterCalled = false;
+            protected function beforeTraverse(Node $node)
+            {
+                $this->beforeCalled = true;
+                $default = parent::beforeTraverse($node);
+                Assert::assertNull($default);
+                return $default;
+            }
+            protected function afterTraverse($node)
+            {
+                $this->afterCalled = true;
+                $default = parent::afterTraverse($node);
+                Assert::assertSame($node, $default);
+                return $default;
+            }
+        };
         $node = new Terminal('', 0, 0);
-
-        $traverser->expects($this->once())
-            ->method('beforeTraverse')
-            ->with($node)
-            ->willReturn(null);
-
-        $traverser->expects($this->once())
-            ->method('afterTraverse')
-            ->willReturnArgument(0);
-
-        $traverser->transform($node);
+        $mock->transform($node);
+        Assert::assertTrue($mock->beforeCalled, 'Transform::beforeTraverse was called');
+        Assert::assertTrue($mock->afterCalled, 'Transform::afterTraverse was called');
     }
 
     /**
      * @dataProvider provideTestDefaultVisitationBehavior
-     *
-     * @param Node  $node
-     * @param mixed $expected
      */
-    public function testDefaultVisitationBehavior(Node $node, $expected)
+    public function testDefaultVisitationBehavior(Node $node, mixed $expected)
     {
         $traverser = new Transform();
         $result = $traverser->transform($node);
-        $this->assertEquals($expected, $result);
+        Assert::assertEquals($expected, $result);
     }
 
-    public function provideTestDefaultVisitationBehavior()
+    public function provideTestDefaultVisitationBehavior(): \Traversable
     {
         yield 'Returns the value of a terminal node' => [
             new Terminal('foo', 0, 3, 'foo'),
             'foo'
-            ];
+        ];
         yield 'Returns the node if a terminal node has a groups attribute.' => [
             new Terminal('foo', 0, 3, 'foo', ['groups' => ['bar', 'baz']]),
             new Terminal('foo', 0, 3, 'foo', ['groups' => ['bar', 'baz']]),
@@ -114,7 +119,7 @@ class TransformTest extends TestCase
             ->willReturn('foo');
 
         $result = $traverser->transform($node);
-        $this->assertSame('foo', $result);
+        Assert::assertSame('foo', $result);
     }
 
     public function testItConvertsExceptionsToVisitationError()

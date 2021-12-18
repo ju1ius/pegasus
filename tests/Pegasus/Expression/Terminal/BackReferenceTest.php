@@ -9,10 +9,8 @@ use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Parser\Exception\UndefinedBinding;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
+use ju1ius\Pegasus\Tests\PegasusAssert;
 
-/**
- * @author ju1ius
- */
 class BackReferenceTest extends ExpressionTestCase
 {
     /**
@@ -20,8 +18,8 @@ class BackReferenceTest extends ExpressionTestCase
      */
     public function testMatch(Grammar $grammar, array $params, Node $expected)
     {
-        $result = $this->parse($grammar, ...$params);
-        $this->assertNodeEquals($expected, $result);
+        $result = self::parse($grammar, ...$params);
+        PegasusAssert::nodeEquals($expected, $result);
     }
 
     public function provideTestMatch(): iterable
@@ -70,7 +68,7 @@ class BackReferenceTest extends ExpressionTestCase
     public function testOutOfScopeReference(Grammar $grammar, array $params)
     {
         $this->expectException(UndefinedBinding::class);
-        $this->parse($grammar, ...$params);
+        self::parse($grammar, ...$params);
     }
 
     public function provideTestOutOfScopeReference(): iterable

@@ -5,6 +5,7 @@ namespace ju1ius\Pegasus\Tests\Expression\Terminal;
 use ju1ius\Pegasus\CST\Node\Terminal;
 use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
+use ju1ius\Pegasus\Tests\PegasusAssert;
 
 class RegExpTest extends ExpressionTestCase
 {
@@ -13,12 +14,12 @@ class RegExpTest extends ExpressionTestCase
      */
     public function testMatch($expr, $match_args, $expected)
     {
-        $this->assertNodeEquals(
+        PegasusAssert::nodeEquals(
             $expected,
-            $this->parse($expr, ...$match_args)
+            self::parse($expr, ...$match_args)
         );
     }
-    public function provideTestMatch()
+    public function provideTestMatch(): \Traversable
     {
         // simple literals
         yield '/foo/ with "foo"' => [

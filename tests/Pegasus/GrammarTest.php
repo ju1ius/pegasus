@@ -7,6 +7,7 @@ use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Exception\InvalidRuleType;
 use ju1ius\Pegasus\Grammar\Exception\MissingStartRule;
 use ju1ius\Pegasus\Grammar\Exception\RuleNotFound;
+use PHPUnit\Framework\Assert;
 
 class GrammarTest extends PegasusTestCase
 {
@@ -19,7 +20,7 @@ class GrammarTest extends PegasusTestCase
         $g['first'] = $first;
         $g['last'] = $last;
 
-        $this->assertEquals([
+        Assert::assertEquals([
             'first' => $first,
             'last' => $last,
         ], $g->getRules());
@@ -33,13 +34,13 @@ class GrammarTest extends PegasusTestCase
         $g['foo'] = $startExpr;
         $g['bar'] = $otherExpr;
 
-        $this->assertSame('foo', $g->getStartRule());
-        $this->assertSame($startExpr, $g->getStartExpression());
+        Assert::assertSame('foo', $g->getStartRule());
+        Assert::assertSame($startExpr, $g->getStartExpression());
 
         $g->setStartRule('bar');
 
-        $this->assertSame('bar', $g->getStartRule());
-        $this->assertSame($otherExpr, $g->getStartExpression());
+        Assert::assertSame('bar', $g->getStartRule());
+        Assert::assertSame($otherExpr, $g->getStartExpression());
 
         $this->expectException(RuleNotFound::class);
         $g->setStartRule('404NotFound');
@@ -62,7 +63,7 @@ class GrammarTest extends PegasusTestCase
     public function testItThrowsWhenRuleIsNotFound()
     {
         $g = new Grammar();
-        $this->assertFalse(isset($g['foo']));
+        Assert::assertFalse(isset($g['foo']));
         $this->expectException(RuleNotFound::class);
         $rule = $g['foo'];
     }
@@ -72,7 +73,7 @@ class GrammarTest extends PegasusTestCase
         $child = new Grammar();
         $parent = new Grammar();
         $child->extends($parent);
-        $this->assertSame($parent, $child->getParent());
+        Assert::assertSame($parent, $child->getParent());
     }
 
     public function testItFallsBackToParentRule()
@@ -83,8 +84,8 @@ class GrammarTest extends PegasusTestCase
         $parent['foo'] = $expr;
         $child->extends($parent);
 
-        $this->assertTrue(isset($child['foo']));
-        $this->assertSame($expr, $child['foo']);
+        Assert::assertTrue(isset($child['foo']));
+        Assert::assertSame($expr, $child['foo']);
     }
 
     public function testChildRulesOverrideParent()
@@ -99,8 +100,8 @@ class GrammarTest extends PegasusTestCase
 
         $child->extends($parent);
 
-        $this->assertSame($childFoo, $child['foo']);
-        $this->assertSame($parentFoo, $parent['foo']);
+        Assert::assertSame($childFoo, $child['foo']);
+        Assert::assertSame($parentFoo, $parent['foo']);
     }
 
     public function testSuper()
@@ -115,15 +116,15 @@ class GrammarTest extends PegasusTestCase
 
         $child->extends($parent);
 
-        $this->assertSame($parentFoo, $child->super('foo'));
+        Assert::assertSame($parentFoo, $child->super('foo'));
     }
 
     public function testInline()
     {
         $g = new Grammar();
         $g->inline('foo');
-        $this->assertTrue($g->isInlined('foo'));
-        $this->assertFalse($g->isInlined('bar'));
+        Assert::assertTrue($g->isInlined('foo'));
+        Assert::assertFalse($g->isInlined('bar'));
     }
 
     public function testCountReturnsTheNumberOfRules()
@@ -134,7 +135,7 @@ class GrammarTest extends PegasusTestCase
         $g['last'] = $this->getMockForAbstractClass(Expression::class);
         unset($g['second']);
 
-        $this->assertSame(2, count($g));
+        Assert::assertSame(2, count($g));
     }
 
     public function testShallowCopy()
@@ -145,10 +146,10 @@ class GrammarTest extends PegasusTestCase
         $g1['first'] = $expr;
 
         $g2 = $g1->copy();
-        $this->assertInstanceOf(Grammar::class, $g2);
-        $this->assertNotSame($g1, $g2);
-        $this->assertSame('Foo', $g2->getName());
-        $this->assertSame($expr, $g2['first']);
+        Assert::assertInstanceOf(Grammar::class, $g2);
+        Assert::assertNotSame($g1, $g2);
+        Assert::assertSame('Foo', $g2->getName());
+        Assert::assertSame($expr, $g2['first']);
     }
 
     public function testDeepCopy()
@@ -159,10 +160,10 @@ class GrammarTest extends PegasusTestCase
         $g1['first'] = $expr;
 
         $g2 = $g1->copy(true);
-        $this->assertInstanceOf(Grammar::class, $g2);
-        $this->assertNotSame($g1, $g2);
-        $this->assertSame('Foo', $g2->getName());
-        $this->assertNotSame($expr, $g2['first']);
+        Assert::assertInstanceOf(Grammar::class, $g2);
+        Assert::assertNotSame($g1, $g2);
+        Assert::assertSame('Foo', $g2->getName());
+        Assert::assertNotSame($expr, $g2['first']);
     }
 
     public function testMerge()
@@ -177,15 +178,15 @@ class GrammarTest extends PegasusTestCase
 
         $g3 = $g1->merge($g2);
 
-        $this->assertInstanceOf(Grammar::class, $g3);
-        $this->assertNotSame($g1, $g3);
-        $this->assertNotSame($g2, $g3);
-        $this->assertSame('Foo', $g1->getName());
+        Assert::assertInstanceOf(Grammar::class, $g3);
+        Assert::assertNotSame($g1, $g3);
+        Assert::assertNotSame($g2, $g3);
+        Assert::assertSame('Foo', $g1->getName());
 
-        $this->assertNotSame($g1['foo'], $g3['foo']);
-        $this->assertSame('foo', $g3['foo']->getName());
-        $this->assertNotSame($g2['bar'], $g3['bar']);
-        $this->assertSame('bar', $g3['bar']->getName());
+        Assert::assertNotSame($g1['foo'], $g3['foo']);
+        Assert::assertSame('foo', $g3['foo']->getName());
+        Assert::assertNotSame($g2['bar'], $g3['bar']);
+        Assert::assertSame('bar', $g3['bar']->getName());
     }
 
     public function testFilter()
@@ -197,18 +198,18 @@ class GrammarTest extends PegasusTestCase
         $g['last'] = $this->getMockForAbstractClass(Expression::class);
 
         $g2 = $g->filter(function ($expr, $ruleName, $g) {
-            $this->assertInstanceOf(Expression::class, $expr);
-            $this->assertInstanceOf(Grammar::class, $g);
+            Assert::assertInstanceOf(Expression::class, $expr);
+            Assert::assertInstanceOf(Grammar::class, $g);
 
             return $ruleName !== 'second';
         });
-        $this->assertInstanceOf(Grammar::class, $g2);
-        $this->assertNotSame($g, $g2);
-        $this->assertSame('Foo', $g2->getName());
-        $this->assertSame(2, count($g2));
-        $this->assertInstanceOf(Expression::class, $g2['first']);
-        $this->assertInstanceOf(Expression::class, $g2['last']);
-        $this->assertFalse(isset($g2['second']));
+        Assert::assertInstanceOf(Grammar::class, $g2);
+        Assert::assertNotSame($g, $g2);
+        Assert::assertSame('Foo', $g2->getName());
+        Assert::assertSame(2, count($g2));
+        Assert::assertInstanceOf(Expression::class, $g2['first']);
+        Assert::assertInstanceOf(Expression::class, $g2['last']);
+        Assert::assertFalse(isset($g2['second']));
     }
 
     public function testMap()
@@ -219,20 +220,20 @@ class GrammarTest extends PegasusTestCase
         $g['last'] = $this->getMockForAbstractClass(Expression::class);
 
         $g2 = $g->map(function ($expr, $ruleName, $grammar) {
-            $this->assertInstanceOf(Expression::class, $expr);
-            $this->assertInstanceOf(Grammar::class, $grammar);
+            Assert::assertInstanceOf(Expression::class, $expr);
+            Assert::assertInstanceOf(Grammar::class, $grammar);
             // stupid but at some point we have to test something...
             $expr->id = 666;
 
             return $expr;
         });
-        $this->assertInstanceOf(Grammar::class, $g2);
-        $this->assertNotSame($g, $g2);
-        $this->assertSame('Foo', $g2->getName());
-        $this->assertSame(2, count($g2));
-        $this->assertInstanceOf(Expression::class, $g2['first']);
-        $this->assertSame(666, $g2['first']->id);
-        $this->assertInstanceOf(Expression::class, $g2['last']);
-        $this->assertSame(666, $g2['last']->id);
+        Assert::assertInstanceOf(Grammar::class, $g2);
+        Assert::assertNotSame($g, $g2);
+        Assert::assertSame('Foo', $g2->getName());
+        Assert::assertSame(2, count($g2));
+        Assert::assertInstanceOf(Expression::class, $g2['first']);
+        Assert::assertSame(666, $g2['first']->id);
+        Assert::assertInstanceOf(Expression::class, $g2['last']);
+        Assert::assertSame(666, $g2['last']->id);
     }
 }

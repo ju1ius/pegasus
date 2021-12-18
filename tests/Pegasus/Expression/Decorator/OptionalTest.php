@@ -9,6 +9,7 @@ use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
+use ju1ius\Pegasus\Tests\PegasusAssert;
 
 class OptionalTest extends ExpressionTestCase
 {
@@ -18,9 +19,9 @@ class OptionalTest extends ExpressionTestCase
     public function testMatch(Expression $child, array $args, Node $expected)
     {
         $expr = new Expression\Decorator\Optional($child, '?');
-        $this->assertNodeEquals(
+        PegasusAssert::nodeEquals(
             $expected,
-            $this->parse($expr, ...$args),
+            self::parse($expr, ...$args),
             (string)$expected,
         );
     }

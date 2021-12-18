@@ -13,6 +13,8 @@ use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinMatchCapturingSequence;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\GrammarFactory;
+use ju1ius\Pegasus\Tests\PegasusAssert;
+use PHPUnit\Framework\Assert;
 
 class JoinMatchCapturingSequenceTest extends RegExpOptimizationTestCase
 {
@@ -23,7 +25,7 @@ class JoinMatchCapturingSequenceTest extends RegExpOptimizationTestCase
     {
         $optim = $this->createOptimization(JoinMatchCapturingSequence::class);
         $result = $this->applyOptimization($optim, $input);
-        $this->assertExpressionEquals($expected, $result);
+        PegasusAssert::ExpressionEquals($expected, $result);
     }
 
     public function provideTestApply(): iterable
@@ -96,7 +98,7 @@ class JoinMatchCapturingSequenceTest extends RegExpOptimizationTestCase
         $ctx = OptimizationContext::of($input);
         $optim = $this->createOptimization(JoinMatchCapturingSequence::class);
         $result = $optim->willPostProcessExpression($input->getStartExpression(), $ctx);
-        $this->assertSame($applies, $result);
+        Assert::assertSame($applies, $result);
     }
 
     public function provideTestAppliesTo(): iterable

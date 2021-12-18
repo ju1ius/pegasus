@@ -6,11 +6,11 @@ use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Parser\Memoization\MemoEntry;
 use ju1ius\Pegasus\Parser\Memoization\SlidingMemoTable;
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 
-
 /**
- * @coversDefaultClass ju1ius\Pegasus\Parser\Memoization\SlidingMemoTable
+ * @coversDefaultClass \ju1ius\Pegasus\Parser\Memoization\SlidingMemoTable
  */
 class SlidingMemoTableTest extends TestCase
 {
@@ -21,7 +21,7 @@ class SlidingMemoTableTest extends TestCase
         $g['two'] = $this->getMockForAbstractClass(Expression::class);
         $memo = new SlidingMemoTable($g, 2);
 
-        $this->assertSame(2 * 2 + 1, $memo->getWindowSize());
+        Assert::assertSame(2 * 2 + 1, $memo->getWindowSize());
     }
 
     public function testGetWindowSizeWithInheritance()
@@ -37,7 +37,7 @@ class SlidingMemoTableTest extends TestCase
 
         $memo = new SlidingMemoTable($grandChild, 2);
 
-        $this->assertSame(3 * 2 + 1, $memo->getWindowSize());
+        Assert::assertSame(3 * 2 + 1, $memo->getWindowSize());
     }
 
     public function testGetWindowSizeWithComposition()
@@ -54,7 +54,7 @@ class SlidingMemoTableTest extends TestCase
 
         $memo = new SlidingMemoTable($grammar, 2);
 
-        $this->assertSame(3 * 2 + 1, $memo->getWindowSize());
+        Assert::assertSame(3 * 2 + 1, $memo->getWindowSize());
     }
 
     /**
@@ -69,14 +69,14 @@ class SlidingMemoTableTest extends TestCase
         // Make window size === 1, so second entry should overwrite the first
         $memo = new SlidingMemoTable($grammar, 0);
         $entry = $memo->set(0, $expr, 666);
-        $this->assertInstanceOf(MemoEntry::class, $entry);
-        $this->assertSame(0, $entry->end);
-        $this->assertSame(666, $entry->result);
+        Assert::assertInstanceOf(MemoEntry::class, $entry);
+        Assert::assertSame(0, $entry->end);
+        Assert::assertSame(666, $entry->result);
 
         $entry = $memo->set(1, $expr, 999);
-        $this->assertInstanceOf(MemoEntry::class, $entry);
-        $this->assertSame(1, $entry->end);
-        $this->assertSame(999, $entry->result);
+        Assert::assertInstanceOf(MemoEntry::class, $entry);
+        Assert::assertSame(1, $entry->end);
+        Assert::assertSame(999, $entry->result);
 
         return [$memo, $expr];
     }
@@ -88,8 +88,8 @@ class SlidingMemoTableTest extends TestCase
     public function testHas(array $args)
     {
         [$memo, $expr] = $args;
-        $this->assertFalse($memo->has(0, $expr));
-        $this->assertTrue($memo->has(1, $expr));
+        Assert::assertFalse($memo->has(0, $expr));
+        Assert::assertTrue($memo->has(1, $expr));
     }
 
     /**
@@ -99,11 +99,11 @@ class SlidingMemoTableTest extends TestCase
     public function testGet(array $args)
     {
         [$memo, $expr] = $args;
-        $this->assertNull($memo->get(0, $expr));
+        Assert::assertNull($memo->get(0, $expr));
 
         $entry = $memo->get(1, $expr);
-        $this->assertSame(1, $entry->end);
-        $this->assertSame(999, $entry->result);
+        Assert::assertSame(1, $entry->end);
+        Assert::assertSame(999, $entry->result);
     }
 
     /**
@@ -120,7 +120,7 @@ class SlidingMemoTableTest extends TestCase
         $memo->set(21, $expr, 666);
         $memo->set(42, $expr, 999);
         $memo->cut(32);
-        $this->assertFalse($memo->has(21, $expr));
-        $this->assertTrue($memo->has(42, $expr));
+        Assert::assertFalse($memo->has(21, $expr));
+        Assert::assertTrue($memo->has(42, $expr));
     }
 }

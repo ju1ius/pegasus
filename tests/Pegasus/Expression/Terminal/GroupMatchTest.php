@@ -7,6 +7,7 @@ use ju1ius\Pegasus\CST\Node\Terminal;
 use ju1ius\Pegasus\Expression\Terminal\GroupMatch;
 use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
+use ju1ius\Pegasus\Tests\PegasusAssert;
 
 class GroupMatchTest extends ExpressionTestCase
 {
@@ -15,9 +16,9 @@ class GroupMatchTest extends ExpressionTestCase
      */
     public function testMatch(array $expr, array $matchArgs, Node $expected)
     {
-        $this->assertNodeEquals(
+        PegasusAssert::nodeEquals(
             $expected,
-            $this->parse($expr, ...$matchArgs)
+            self::parse($expr, ...$matchArgs)
         );
     }
 

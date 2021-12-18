@@ -10,21 +10,22 @@ use ju1ius\Pegasus\Expression\Decorator\OneOrMore;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
+use ju1ius\Pegasus\Tests\PegasusAssert;
 
 class OneOrMoreTest extends ExpressionTestCase
 {
     /**
      * @dataProvider provideTestMatch
      */
-    public function testMatch(Expression $child, array $match_args, Node $expected)
+    public function testMatch(Expression $child, array $args, Node $expected)
     {
         $expr = new OneOrMore($child, '+');
-        $this->assertNodeEquals(
+        PegasusAssert::nodeEquals(
             $expected,
-            $this->parse($expr, ...$match_args)
+            self::parse($expr, ...$args)
         );
     }
-    public function provideTestMatch()
+    public function provideTestMatch(): \Traversable
     {
         yield [
             new Literal('x'),
@@ -40,13 +41,13 @@ class OneOrMoreTest extends ExpressionTestCase
     /**
      * @dataProvider provideTestMatchError
      */
-    public function testMatchError(Expression $child, array $match_args)
+    public function testMatchError(Expression $child, array $args)
     {
         $expr = new OneOrMore($child, '+');
         $this->expectException(ParseError::class);
-        $this->parse($expr, ...$match_args);
+        self::parse($expr, ...$args);
     }
-    public function provideTestMatchError()
+    public function provideTestMatchError(): \Traversable
     {
         yield [
             new Literal('foo'),

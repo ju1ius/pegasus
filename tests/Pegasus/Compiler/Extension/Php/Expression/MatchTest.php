@@ -5,6 +5,7 @@ namespace ju1ius\Pegasus\Tests\Compiler\Extension\Php\Expression;
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Tests\Compiler\Extension\Php\PhpCompilerTestCase;
+use ju1ius\Pegasus\Tests\PegasusAssert;
 
 class MatchTest extends PhpCompilerTestCase
 {
@@ -13,9 +14,9 @@ class MatchTest extends PhpCompilerTestCase
      */
     public function testParse(string $syntax, string $input, Node $expected)
     {
-        $parser = $this->compile($syntax);
+        $parser = self::compile($syntax);
         $result = $parser->parse($input);
-        $this->assertNodeEquals($expected, $result);
+        PegasusAssert::nodeEquals($expected, $result);
     }
 
     public function parseProvider(): iterable
@@ -38,7 +39,7 @@ class MatchTest extends PhpCompilerTestCase
     public function testParseFailure(string $syntax, string $input)
     {
         $this->expectException(ParseError::class);
-        $parser = $this->compile($syntax);
+        $parser = self::compile($syntax);
         $parser->parse($input);
     }
 

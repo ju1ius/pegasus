@@ -3,11 +3,11 @@
 namespace ju1ius\Pegasus\Tests\RegExp;
 
 use ju1ius\Pegasus\RegExp\Normalizer;
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 
-
 /**
- * @coversDefaultClass ju1ius\Pegasus\RegExp\Formatter
+ * @coversDefaultClass \ju1ius\Pegasus\RegExp\Normalizer
  */
 class NormalizerTest extends TestCase
 {
@@ -19,10 +19,10 @@ class NormalizerTest extends TestCase
      */
     public function testNormalize(string $pattern, string $expected, array $flags = ['x'])
     {
-        $this->assertSame($expected, Normalizer::normalize($pattern, $flags));
+        Assert::assertSame($expected, Normalizer::normalize($pattern, $flags));
     }
 
-    public function normalizeProvider()
+    public function normalizeProvider(): \Traversable
     {
         yield 'removes whitespace' => [
             '( [a-z] | (?! [0-9] ) )*',

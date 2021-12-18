@@ -10,6 +10,8 @@ use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
+use ju1ius\Pegasus\Tests\PegasusAssert;
+use PHPUnit\Framework\Assert;
 
 class SequenceTest extends ExpressionTestCase
 {
@@ -23,11 +25,11 @@ class SequenceTest extends ExpressionTestCase
     public function testMatch(Grammar $expr, array $match_args, $expected)
     {
         if ($expected === true) {
-            $this->assertTrue($this->parse($expr, ...$match_args));
+            Assert::assertTrue(self::parse($expr, ...$match_args));
         } else {
-            $this->assertNodeEquals(
+            PegasusAssert::nodeEquals(
                 $expected,
-                $this->parse($expr, ...$match_args)
+                self::parse($expr, ...$match_args)
             );
         }
     }
@@ -107,7 +109,7 @@ class SequenceTest extends ExpressionTestCase
     public function testMatchError(Grammar $expr, array $match_args)
     {
         $this->expectException(ParseError::class);
-        $this->parse($expr, ...$match_args);
+        self::parse($expr, ...$match_args);
     }
     public function provideTestMatchError()
     {

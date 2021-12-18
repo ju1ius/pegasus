@@ -5,6 +5,7 @@ namespace Pegasus\Compiler\Extension\Php\Expression;
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\CST\Node\Terminal;
 use ju1ius\Pegasus\Tests\Compiler\Extension\Php\PhpCompilerTestCase;
+use ju1ius\Pegasus\Tests\PegasusAssert;
 
 final class ReferenceTest extends PhpCompilerTestCase
 {
@@ -13,9 +14,9 @@ final class ReferenceTest extends PhpCompilerTestCase
      */
     public function testParse(string $syntax, string $input, Node $expected)
     {
-        $parser = $this->compile($syntax);
+        $parser = self::compile($syntax);
         $result = $parser->parse($input);
-        $this->assertNodeEquals($expected, $result);
+        PegasusAssert::nodeEquals($expected, $result);
     }
 
     public function parseProvider(): iterable
