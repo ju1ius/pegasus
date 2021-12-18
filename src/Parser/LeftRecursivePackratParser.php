@@ -52,7 +52,9 @@ class LeftRecursivePackratParser extends PackratParser
             // Memoize $lr
             $memo = $this->memo[$this->isCapturing]->set($pos, $expr, $lr);
             // evaluate expression
-            $result = $this->evaluate($expr);
+            $result1 = $expr->matches($this->source, $this);
+
+            $result = $result1;
             // Pop $lr off the invocation stack
             $this->lrStack->pop();
             $memo->end = $this->pos;
@@ -110,7 +112,7 @@ class LeftRecursivePackratParser extends PackratParser
         while (true) {
             $this->pos = $pos;
             $head->eval = $head->involved;
-            $result = $this->evaluate($expr);
+            $result = $expr->matches($this->source, $this);
             if (!$result || $this->pos <= $memo->end) {
                 break;
             }
@@ -138,7 +140,9 @@ class LeftRecursivePackratParser extends PackratParser
         // Allow involved rules to be evaluated, but only once, during a seed-growing iteration.
         if (isset($head->eval[$expr->id])) {
             unset($head->eval[$expr->id]);
-            $result = $this->evaluate($expr);
+            $result1 = $expr->matches($this->source, $this);
+
+            $result = $result1;
             /** @var MemoEntry $memo */
             $memo->result = $result;
             $memo->end = $this->pos;

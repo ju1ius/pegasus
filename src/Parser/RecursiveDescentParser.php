@@ -9,6 +9,6 @@ class RecursiveDescentParser extends Parser
 {
     public function apply(Expression $expr): Node|bool
     {
-        return $this->evaluate($expr);
+        return $expr->matches($this->source, $this);
     }
 }

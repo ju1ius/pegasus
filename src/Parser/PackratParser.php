@@ -67,7 +67,7 @@ class PackratParser extends RecursiveDescentParser
         // This has the effect of making all left-recursive applications (both direct and indirect) fail.
         $memo = $this->memo[$this->isCapturing]->set($pos, $expr, null);
         // evaluate expression
-        $result = $this->evaluate($expr);
+        $result = $expr->matches($this->source, $this);
         // update the result in the memo table
         $memo->result = $result;
         $memo->end = $this->pos;

@@ -64,14 +64,9 @@ abstract class Parser
     /**
      * Parse the entire text, using given start rule or the grammar's one,
      * requiring the entire input to match the grammar.
-     *
      * @api
-     * @param string $source
-     * @param string|null $startRule
-     *
-     * @return Node|true|null
      */
-    final public function parse(string $source, ?string $startRule = null)
+    final public function parse(string $source, ?string $startRule = null): Node|bool
     {
         $this->isCapturing = true;
 
@@ -81,7 +76,6 @@ abstract class Parser
     /**
      * Parse text starting from given position, using given start rule or the grammar's one,
      * but does not require the entire input to match the grammar.
-     *
      * @api
      */
     final public function partialParse(string $text, int $pos = 0, ?string $startRule = null): Node|bool
@@ -132,16 +126,6 @@ abstract class Parser
      * @internal
      */
     abstract public function apply(Expression $expr): Node|bool;
-
-    /**
-     * Evaluates an expression.
-     */
-    final public function evaluate(Expression $expr): Node|bool
-    {
-        $result = $expr->matches($this->source, $this);
-
-        return $result;
-    }
 
     /**
      * Called by Trace expressions before their child rule is evaluated
