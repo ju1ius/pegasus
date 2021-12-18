@@ -11,7 +11,7 @@
 namespace ju1ius\Pegasus\Examples\Json;
 
 use ju1ius\Pegasus\Debug\Debug;
-use ju1ius\Pegasus\Grammar;
+use ju1ius\Pegasus\GrammarFactory;
 use ju1ius\Pegasus\Parser;
 use Symfony\Component\Stopwatch\Stopwatch;
 
@@ -20,7 +20,6 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 $inputFile = $argv[1] ?? __DIR__ . '/test.json5';
 $grammarFile = __DIR__ . '/json5.peg';
 
-\Symfony\Component\Debug\Debug::enable();
 $stopwatch = new Stopwatch();
 $probe = \BlackfireProbe::getMainInstance();
 $stopwatch->openSection();
@@ -28,7 +27,7 @@ $stopwatch->openSection();
 // ----- Runtime parser
 
 $stopwatch->start('parse_syntax');
-$grammar = Grammar::fromFile($grammarFile, 2);
+$grammar = GrammarFactory::fromFile($grammarFile, 2);
 $stopwatch->stop('parse_syntax');
 Debug::dump($grammar);
 //$grammar = $grammar->tracing();

@@ -3,7 +3,7 @@ require_once __DIR__.'/../../vendor/autoload.php';
 
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\CST\Transform;
-use ju1ius\Pegasus\Grammar;
+use ju1ius\Pegasus\GrammarFactory;
 use ju1ius\Pegasus\Parser\LeftRecursivePackratParser;
 
 final class Calculator extends Transform
@@ -59,7 +59,7 @@ final class Calculator extends Transform
 //$t = new MetaGrammarTransform();
 //$grammar = $t->traverse($tree);
 $syntax = file_get_contents(__DIR__ . '/arithmetic.peg');
-$grammar = Grammar::fromSyntax($syntax);
+$grammar = GrammarFactory::fromSyntax($syntax);
 //echo $grammar, "\n";
 //Debug::dump($grammar);
 

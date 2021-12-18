@@ -3,8 +3,9 @@
 namespace ju1ius\Pegasus\Command;
 
 use ju1ius\Pegasus\Debug\Debug;
-use ju1ius\Pegasus\Grammar;
+use ju1ius\Pegasus\Grammar\OptimizationLevel;
 use ju1ius\Pegasus\Grammar\Optimizer;
+use ju1ius\Pegasus\GrammarFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -29,18 +30,17 @@ class DumpGrammarCommand extends Command
                 'Path to a grammar file. Pass - to read from STDIN or ommit for interactive grammar input.'
             )
             ->addOption('highlight', 'H', InputOption::VALUE_NONE, 'Show a syntax-highlighted version of the grammar')
-            ->addOption('optimize', 'O', InputOption::VALUE_REQUIRED, 'Optimization level to apply.', Optimizer::LEVEL_1)
-        ;
+            ->addOption('optimize', 'O', InputOption::VALUE_REQUIRED, 'Optimization level to apply.', 1);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $optimizationLevel = $input->getOption('optimize');
         $grammarPath = $input->getArgument('path');
+        $optimizationLevel = OptimizationLevel::from((int)$input->getOption('optimize'));
 
         if (!$grammarPath) {
             $syntax = $this->askForGrammar($input, $output);
-        } elseif ($grammarPath === '-') {
+        } else if ($grammarPath === '-') {
             $syntax = $this->readStandardInput();
         } else {
             $syntax = file_get_contents($grammarPath);
@@ -52,7 +52,8 @@ class DumpGrammarCommand extends Command
             $output->writeln($formatter->formatBlock(['No grammar given.'], 'error'));
             return 1;
         }
-        $grammar = Grammar::fromSyntax($syntax, null, (int)$optimizationLevel);
+
+        $grammar = GrammarFactory::fromSyntax($syntax, null, $optimizationLevel);
 
         if ($input->getOption('highlight')) {
             Debug::highlight($grammar, $output);

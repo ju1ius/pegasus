@@ -8,6 +8,7 @@ use ju1ius\Pegasus\Compiler\Extension\Php\Runtime\PackratParser;
 use ju1ius\Pegasus\Compiler\Extension\Php\Runtime\RecursiveDescentParser;
 use ju1ius\Pegasus\CST\Transform;
 use ju1ius\Pegasus\Grammar;
+use ju1ius\Pegasus\Grammar\OptimizationLevel;
 use ju1ius\Pegasus\Grammar\Optimizer;
 
 class PhpCompiler extends Compiler
@@ -47,8 +48,8 @@ class PhpCompiler extends Compiler
         return $this->renderTemplate('parser.twig', $args);
     }
 
-    protected function optimizeGrammar(Grammar $grammar, int $optimizationLevel): Grammar
+    protected function optimizeGrammar(Grammar $grammar, OptimizationLevel $level): Grammar
     {
-        return Optimizer::optimize($grammar, $optimizationLevel);
+        return Optimizer::optimize($grammar, $level);
     }
 }

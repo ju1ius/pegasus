@@ -6,6 +6,8 @@ use Composer\InstalledVersions;
 use ju1ius\Pegasus\Compiler\Extension\Php\PhpCompiler;
 use ju1ius\Pegasus\Compiler\Extension\Php\Runtime\Parser;
 use ju1ius\Pegasus\Grammar;
+use ju1ius\Pegasus\Grammar\OptimizationLevel;
+use ju1ius\Pegasus\GrammarFactory;
 use ju1ius\Pegasus\Tests\PegasusTestCase;
 
 class PhpCompilerTestCase extends PegasusTestCase
@@ -16,7 +18,7 @@ class PhpCompilerTestCase extends PegasusTestCase
     protected function compile(Grammar|string $syntaxOrGrammar): Parser
     {
         if (\is_string($syntaxOrGrammar)) {
-            $grammar = Grammar::fromSyntax($syntaxOrGrammar, null, 0);
+            $grammar = GrammarFactory::fromSyntax($syntaxOrGrammar, null, OptimizationLevel::NONE);
             $hash = spl_object_hash($grammar) . '_' . sha1($syntaxOrGrammar);
         } else {
             $grammar = $syntaxOrGrammar;

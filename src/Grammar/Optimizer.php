@@ -24,6 +24,7 @@ use SplObjectStorage;
 
 final class Optimizer
 {
+    const LEVEL_0 = 0;
     /**
      * Optimization level 1.
      *
@@ -37,17 +38,12 @@ final class Optimizer
      */
     const LEVEL_2 = 2;
 
-    private const LEVELS = [
-        self::LEVEL_1,
-        self::LEVEL_2,
-    ];
-
     /**
      * @var array<int, Optimization[]>
      */
     private static array $OPTIMIZATIONS = [
-        self::LEVEL_1 => null,
-        self::LEVEL_2 => null,
+        1 => null,
+        2 => null,
     ];
 
     private SplObjectStorage $passes;
@@ -58,19 +54,14 @@ final class Optimizer
     }
 
     /**
-     * @return int[]
-     */
-    public static function getLevels(): array
-    {
-        return self::LEVELS;
-    }
-
-    /**
      * Optimizes a grammar using the built-in optimization sets.
      * @throws Exception\MissingTraitAlias
      */
-    public static function optimize(Grammar $grammar, int $level = self::LEVEL_1, bool $deep = false): Grammar
+    public static function optimize(Grammar $grammar, OptimizationLevel $level, bool $deep = false): Grammar
     {
+        if ($level === OptimizationLevel::NONE) {
+            return $grammar;
+        }
         $optimizer = new self();
         $optimizations = self::getOptimizations($level);
         $optimizer->addPasses(
@@ -131,15 +122,16 @@ final class Optimizer
     /**
      * @return Optimization[]
      */
-    private static function getOptimizations(int $level): array
+    private static function getOptimizations(OptimizationLevel $level): array
     {
-        return self::$OPTIMIZATIONS[$level] ??= match ($level) {
-            self::LEVEL_1 => [
+        return self::$OPTIMIZATIONS[$level->value] ??= match ($level) {
+            OptimizationLevel::NONE => [],
+            OptimizationLevel::LEVEL_1 => [
                 new FlattenMatchingSequence(),
                 new FlattenCapturingSequence(),
                 new FlattenChoice(),
             ],
-            self::LEVEL_2 => [
+            OptimizationLevel::LEVEL_2 => [
                 new InlineNonRecursiveRules(),
                 new SimplifyRedundantQuantifier(),
                 new RemoveMeaninglessDecorator(),
@@ -164,7 +156,6 @@ final class Optimizer
                 new JoinMatchChoice($manipulator),
                 //new RemoveUnusedRules(),
             ],
-            default => throw new UnknownOptimizationLevel($level, self::getLevels()),
         };
     }
 }

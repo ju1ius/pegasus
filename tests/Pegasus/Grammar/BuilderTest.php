@@ -4,12 +4,13 @@ namespace ju1ius\Pegasus\Tests\Grammar;
 
 use ju1ius\Pegasus\Expression\Application\Super;
 use ju1ius\Pegasus\Expression\Combinator\Sequence;
-use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Expression\Decorator\Bind;
+use ju1ius\Pegasus\Expression\Decorator\Ignore;
 use ju1ius\Pegasus\Expression\Decorator\OneOrMore;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarBuilder;
+use ju1ius\Pegasus\GrammarFactory;
 use ju1ius\Pegasus\Tests\PegasusTestCase;
 
 class BuilderTest extends PegasusTestCase
@@ -45,7 +46,7 @@ class BuilderTest extends PegasusTestCase
             ->rule('foo')->literal('foo')
             ->rule('bar')->literal('bar')
             ->getGrammar();
-        $expected = Grammar::fromArray([
+        $expected = GrammarFactory::fromArray([
             'foo' => new Literal('foo'),
             'bar' => new Literal('bar')
         ]);
@@ -60,7 +61,7 @@ class BuilderTest extends PegasusTestCase
      */
     public function testBuildingComplexRules(Grammar $grammar, array $expected)
     {
-        $expected = Grammar::fromArray($expected);
+        $expected = GrammarFactory::fromArray($expected);
         $this->assertGrammarEquals($expected, $grammar);
     }
 

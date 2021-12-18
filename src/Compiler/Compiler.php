@@ -4,7 +4,9 @@ namespace ju1ius\Pegasus\Compiler;
 
 use ju1ius\Pegasus\Compiler\Twig\Extension\PegasusTwigExtension;
 use ju1ius\Pegasus\Grammar;
+use ju1ius\Pegasus\Grammar\OptimizationLevel;
 use ju1ius\Pegasus\Grammar\Optimizer;
+use ju1ius\Pegasus\GrammarFactory;
 use Twig\Environment;
 use Twig\Error\Error as TwigError;
 use Twig\Extension\AbstractExtension;
@@ -29,7 +31,7 @@ abstract class Compiler implements CompilerInterface
     /**
      * Override this to add optimizations
      */
-    abstract protected function optimizeGrammar(Grammar $grammar, int $optimizationLevel): Grammar;
+    abstract protected function optimizeGrammar(Grammar $grammar, OptimizationLevel $level): Grammar;
 
     public function getTwigEnvironment(): Environment
     {
@@ -67,7 +69,7 @@ abstract class Compiler implements CompilerInterface
      */
     public function compileSyntax(string $syntax, array $args = []): string
     {
-        $grammar = Grammar::fromSyntax($syntax, null, 0);
+        $grammar = GrammarFactory::fromSyntax($syntax, null, OptimizationLevel::NONE);
         if (empty($args['class'])) {
             if ($name = $grammar->getName()) {
                 $args['class'] = sprintf('%sParser', ucfirst($name));
@@ -91,7 +93,7 @@ abstract class Compiler implements CompilerInterface
      */
     public function compileGrammar(Grammar $grammar, array $args = []): string
     {
-        $optimizationLevel = intval($args['optimization-level'] ?? Optimizer::LEVEL_1);
+        $optimizationLevel = $args['optimization-level'] ?? OptimizationLevel::LEVEL_1;
         $grammar = $this->optimizeGrammar($grammar, $optimizationLevel);
         $context = CompilationContext::of($grammar);
 

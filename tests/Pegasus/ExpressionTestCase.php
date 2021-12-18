@@ -5,6 +5,7 @@ namespace ju1ius\Pegasus\Tests;
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Grammar;
+use ju1ius\Pegasus\GrammarFactory;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Parser\RecursiveDescentParser;
 
@@ -26,9 +27,9 @@ class ExpressionTestCase extends PegasusTestCase
     protected function parse($grammar, $text, $pos = 0)
     {
         if ($grammar instanceof Expression) {
-            $grammar = Grammar::fromExpression($grammar);
+            $grammar = GrammarFactory::fromExpression($grammar);
         } elseif (is_array($grammar)) {
-            $grammar = Grammar::fromArray($grammar);
+            $grammar = GrammarFactory::fromArray($grammar);
         } elseif (!$grammar instanceof Grammar) {
             throw new \LogicException('Expected Grammar, Expression or array.');
         }

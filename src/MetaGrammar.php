@@ -2,6 +2,7 @@
 
 namespace ju1ius\Pegasus;
 
+use ju1ius\Pegasus\Grammar\OptimizationLevel;
 use ju1ius\Pegasus\Grammar\Optimizer;
 
 /**
@@ -26,12 +27,11 @@ final class MetaGrammar
      */
     public static function create(): Grammar
     {
-        return self::$instance ??= Optimizer::optimize(self::getGrammar(), Optimizer::LEVEL_2);
+        return self::$instance ??= Optimizer::optimize(self::getGrammar(), OptimizationLevel::LEVEL_2);
     }
 
     /**
      * Returns the unique instance of the (unoptimized) MetaGrammar.
-     *
      * Useful for debugging.
      */
     public static function getGrammar(): Grammar

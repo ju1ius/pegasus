@@ -3,7 +3,7 @@
 namespace ju1ius\Pegasus\Tests\Expression\Terminal;
 
 use ju1ius\Pegasus\Expression\Terminal\EOF;
-use ju1ius\Pegasus\Grammar;
+use ju1ius\Pegasus\GrammarFactory;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Parser\RecursiveDescentParser;
 use ju1ius\Pegasus\Tests\ExpressionTestCase;
@@ -15,7 +15,7 @@ class EOFTest extends ExpressionTestCase
      */
     public function testMatch(string $input, int $pos, bool $expected)
     {
-        $parser = new RecursiveDescentParser(Grammar::fromArray([
+        $parser = new RecursiveDescentParser(GrammarFactory::fromArray([
             'test' => new EOF()
         ]));
         if (!$expected) {

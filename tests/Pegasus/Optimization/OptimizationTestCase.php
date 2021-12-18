@@ -7,6 +7,7 @@ use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\Grammar\OptimizationPass;
+use ju1ius\Pegasus\GrammarFactory;
 use ju1ius\Pegasus\Tests\PegasusTestCase;
 
 class OptimizationTestCase extends PegasusTestCase
@@ -15,7 +16,7 @@ class OptimizationTestCase extends PegasusTestCase
     {
         if ($grammar instanceof Expression) {
             $rule = $grammar->getName() ?: 'start';
-            $grammar = Grammar::fromArray([$rule => $grammar]);
+            $grammar = GrammarFactory::fromArray([$rule => $grammar]);
         }
         $traverser = new OptimizationPass(true);
         if (is_array($optim)) {

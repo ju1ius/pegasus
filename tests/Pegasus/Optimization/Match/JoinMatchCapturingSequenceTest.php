@@ -12,6 +12,7 @@ use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinMatchCapturingSequence;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\GrammarBuilder;
+use ju1ius\Pegasus\GrammarFactory;
 
 class JoinMatchCapturingSequenceTest extends RegExpOptimizationTestCase
 {
@@ -66,7 +67,7 @@ class JoinMatchCapturingSequenceTest extends RegExpOptimizationTestCase
             new GroupMatch(new RegExp('(a)(b)(c)'), 3, 'test')
         ];
         yield 'A sequence of only group matches' => [
-            Grammar::fromArray([
+            GrammarFactory::fromArray([
                 'test' => new Sequence([
                     new GroupMatch(new RegExp('\s*(a)'), 1),
                     new GroupMatch(new RegExp('\s*(b)'), 1),
@@ -76,7 +77,7 @@ class JoinMatchCapturingSequenceTest extends RegExpOptimizationTestCase
             new GroupMatch(new RegExp('(?>\s*(a))(?>\s*(b))(?>\s*(c))'), 3, 'test')
         ];
         yield 'A mix of matches and single-group group matches' => [
-            Grammar::fromArray([
+            GrammarFactory::fromArray([
                 'test' => new Sequence([
                     new GroupMatch(new RegExp('\s*(a)'), 1),
                     new RegExp('[+-]'),
@@ -149,7 +150,7 @@ class JoinMatchCapturingSequenceTest extends RegExpOptimizationTestCase
             true
         ];
         yield 'Sequence of single-group group matches before sthg non-capturing' => [
-            Grammar::fromArray([
+            GrammarFactory::fromArray([
                 'test' => new Sequence([
                     new GroupMatch(new RegExp('a'), 1),
                     new GroupMatch(new RegExp('b'), 1),
@@ -159,7 +160,7 @@ class JoinMatchCapturingSequenceTest extends RegExpOptimizationTestCase
             true
         ];
         yield 'Sequence of single-group group matches before sthg capturing' => [
-            Grammar::fromArray([
+            GrammarFactory::fromArray([
                 'test' => new Sequence([
                     new GroupMatch(new RegExp('a'), 1),
                     new GroupMatch(new RegExp('b'), 1),
@@ -169,7 +170,7 @@ class JoinMatchCapturingSequenceTest extends RegExpOptimizationTestCase
             false
         ];
         yield 'Sequence of single-group group matches after sthg non-capturing' => [
-            Grammar::fromArray([
+            GrammarFactory::fromArray([
                 'test' => new Sequence([
                     new Ignore(new Reference('a')),
                     new GroupMatch(new RegExp('b'), 1),
@@ -179,7 +180,7 @@ class JoinMatchCapturingSequenceTest extends RegExpOptimizationTestCase
             true
         ];
         yield 'Sequence of single-group group matches after sthg capturing' => [
-            Grammar::fromArray([
+            GrammarFactory::fromArray([
                 'test' => new Sequence([
                     new Reference('a'),
                     new GroupMatch(new RegExp('b'), 1),
@@ -189,7 +190,7 @@ class JoinMatchCapturingSequenceTest extends RegExpOptimizationTestCase
             false
         ];
         yield 'Sequence of multi-group group matches before sthg else' => [
-            Grammar::fromArray([
+            GrammarFactory::fromArray([
                 'test' => new Sequence([
                     new GroupMatch(new RegExp('(a)(b)'), 2),
                     new GroupMatch(new RegExp('(c)(d)'), 2),
@@ -199,7 +200,7 @@ class JoinMatchCapturingSequenceTest extends RegExpOptimizationTestCase
             false
         ];
         yield 'Sequence of multi-group group matches after sthg else' => [
-            Grammar::fromArray([
+            GrammarFactory::fromArray([
                 'test' => new Sequence([
                     new Reference('a'),
                     new GroupMatch(new RegExp('(b)(c)'), 2),

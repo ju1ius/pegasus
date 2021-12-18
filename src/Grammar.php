@@ -2,17 +2,12 @@
 
 namespace ju1ius\Pegasus;
 
-use ju1ius\Pegasus\Grammar\Exception\AnonymousTopLevelExpression;
 use ju1ius\Pegasus\Grammar\Exception\InvalidRuleType;
 use ju1ius\Pegasus\Grammar\Exception\MissingStartRule;
 use ju1ius\Pegasus\Grammar\Exception\MissingTraitAlias;
 use ju1ius\Pegasus\Grammar\Exception\RuleNotFound;
 use ju1ius\Pegasus\Grammar\Exception\TraitNotFound;
 use ju1ius\Pegasus\Grammar\GrammarTraverser;
-use ju1ius\Pegasus\Grammar\Optimizer;
-use ju1ius\Pegasus\MetaGrammar\FileParser;
-use ju1ius\Pegasus\MetaGrammar\MetaGrammarTransform;
-use ju1ius\Pegasus\Parser\LeftRecursivePackratParser;
 use ju1ius\Pegasus\Trace\GrammarTracer;
 use Traversable;
 
@@ -56,105 +51,6 @@ class Grammar implements \ArrayAccess, \Countable, \IteratorAggregate
      * @var string[]
      */
     protected array $inlineRules = [];
-
-    //
-    // Factory methods
-    // --------------------------------------------------------------------------------------------------------------
-
-    /**
-     * Factory method that constructs a Grammar object from a grammar file.
-     * @throws MissingTraitAlias
-     */
-    public static function fromFile(string $path, int $optimizationLevel = 0): static
-    {
-        $grammar = (new FileParser())->parse($path);
-
-        return $optimizationLevel
-            ? Optimizer::optimize($grammar, $optimizationLevel)
-            : $grammar;
-    }
-
-    /**
-     * Factory method that constructs a Grammar object from an associative array of rules.
-     *
-     * @param Expression[] $rules An array of ['rule_name' => $expression].
-     * @param ?string $startRule The top level expression of this grammar.
-     * @param int $optimizationLevel
-     * @throws MissingTraitAlias
-     * @throws RuleNotFound
-     */
-    public static function fromArray(array $rules, ?string $startRule = null, int $optimizationLevel = 0): static
-    {
-        $grammar = new static();
-        foreach ($rules as $name => $rule) {
-            $grammar[$name] = $rule;
-        }
-        if ($startRule) {
-            $grammar->setStartRule($startRule);
-        }
-
-        return $optimizationLevel
-            ? Optimizer::optimize($grammar, $optimizationLevel)
-            : $grammar;
-    }
-
-    /**
-     * Factory method that constructs a Grammar object from a syntax string.
-     *
-     * @param string $syntax
-     * @param ?string $startRule Optional start rule name for the grammar.
-     * @param int $optimizationLevel Optional optimization level.
-     *
-     * @return Grammar
-     * @throws MissingTraitAlias
-     */
-    public static function fromSyntax(
-        string $syntax,
-        ?string $startRule = null,
-        int $optimizationLevel = Optimizer::LEVEL_1
-    ): static {
-        $metaGrammar = MetaGrammar::create();
-        $tree = (new LeftRecursivePackratParser($metaGrammar))->parse($syntax);
-        $grammar = (new MetaGrammarTransform)->transform($tree);
-        if ($startRule) {
-            $grammar->setStartRule($startRule);
-        }
-
-        return $optimizationLevel
-            ? Optimizer::optimize($grammar, $optimizationLevel)
-            : $grammar;
-    }
-
-    /**
-     * Factory method that constructs a Grammar object from an Expression.
-     *
-     * @param Expression $expr The expression to build the grammar from.
-     * @param ?string $startRule Optional start rule name for the grammar.
-     * @param int $optimizationLevel
-     *
-     * @return Grammar
-     * @throws AnonymousTopLevelExpression If no named start rule could be determined.
-     * @throws MissingTraitAlias
-     */
-    public static function fromExpression(
-        Expression $expr,
-        ?string $startRule = null,
-        int $optimizationLevel = 0
-    ): static {
-        if (!$startRule) {
-            if (!$expr->getName()) {
-                throw new AnonymousTopLevelExpression($expr);
-            }
-            $startRule = $expr->getName();
-        }
-
-        $grammar = new static();
-        $grammar[$startRule] = $expr;
-
-        return $optimizationLevel
-            ? Optimizer::optimize($grammar, $optimizationLevel)
-            : $grammar;
-    }
 
     /**
      * @return $this

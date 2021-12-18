@@ -4,7 +4,7 @@ namespace ju1ius\Pegasus\Command;
 
 use ju1ius\Pegasus\Compiler\ExtensionRegistry;
 use ju1ius\Pegasus\Compiler\Twig\Extension\PegasusTwigExtension;
-use ju1ius\Pegasus\Grammar;
+use ju1ius\Pegasus\GrammarFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -69,10 +69,11 @@ class GenerateVisitorCommand extends Command
         $tpl_dir = __DIR__ . '/../Compiler/templates/' . $language;
 
         $syntax = file_get_contents($syntax_path);
-        $grammar = Grammar::fromSyntax($syntax);
+        $grammar = GrammarFactory::fromSyntax($syntax);
 
         $loader = new FilesystemLoader([$tpl_dir]);
         $twig = new Environment($loader, ['autoescape' => false]);
+        // FIXME: this does not work
         $twig->addExtension(new PegasusTwigExtension());
 
         $visitor_code = $twig->render('node_visitor.twig', ['grammar' => $grammar]);

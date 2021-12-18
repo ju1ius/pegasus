@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-
 namespace ju1ius\Pegasus\MetaGrammar;
-
 
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\MetaGrammar;
@@ -11,13 +9,12 @@ use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Parser\LeftRecursivePackratParser;
 use Webmozart\PathUtil\Path;
 
-
 class FileParser
 {
     /**
      * @var Grammar[]
      */
-    private $cache = [];
+    private array $cache = [];
 
     public function parse(string $path): Grammar
     {
@@ -51,8 +48,6 @@ class FileParser
     }
 
     /**
-     * @param string $basePath
-     * @param string[] $imports
      * @return Grammar[]
      */
     private function resolveImports(string $basePath, array $imports): array
@@ -70,24 +65,25 @@ class FileParser
         if (!Path::isAbsolute($path)) {
             $path = Path::join($basePath, $path);
         }
+
+        return $this->cache[$path] ??= $this->parseImport($path);
+    }
+
+    private function parseImport(string $path): Grammar
+    {
         if (!is_file($path)) {
             throw new ImportError(sprintf('Not a file: %s', $path));
         }
         if (!is_readable($path)) {
             throw new ImportError(sprintf('File not readable: %s', $path));
         }
-
-        if (empty($this->cache[$path])) {
-            try {
-                $this->cache[$path] = $this->parse($path);
-            } catch (ParseError $error) {
-                throw new ImportError(sprintf(
-                    'Invalid grammar in "%s"',
-                    $path
-                ), $error);
-            }
+        try {
+            return $this->parse($path);
+        } catch (ParseError $error) {
+            throw new ImportError(sprintf(
+                'Invalid grammar in "%s"',
+                $path
+            ), $error);
         }
-
-        return $this->cache[$path];
     }
 }
