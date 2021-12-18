@@ -43,12 +43,13 @@ class Call extends Application
         // update state
         $trait = $grammar->getTrait($this->namespace);
         $parser->grammar = $trait;
-        $parser->pushScope();
+        $scope = $parser->scope;
+        $parser->scope = clone $scope;
 
         $result = $parser->apply($trait[$this->identifier]);
 
         // restore state
-        $parser->popScope();
+        $parser->scope = $scope;
         $parser->grammar = $grammar;
 
         if ($capturing && $result && $result !== true) {

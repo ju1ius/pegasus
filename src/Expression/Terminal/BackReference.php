@@ -22,12 +22,13 @@ final class BackReference extends TerminalExpression
     }
 
     /**
-     * @todo What if the binding is equal to the empty string ?
+     * @todo This will always match if the bound value is the empty string.
+     * We should check if that's expected behaviour.
      */
     public function matches(string $text, Parser $parser): Terminal|bool
     {
-        if (null === $pattern = $parser->getBinding($this->identifier)) {
-            throw new UndefinedBinding($this->identifier, $parser->scopes->top());
+        if (null === $pattern = $parser->scope->bindings[$this->identifier] ?? null) {
+            throw new UndefinedBinding($this->identifier, $parser->scope);
         }
 
         $start = $parser->pos;

@@ -29,12 +29,8 @@ abstract class Parser
 
     /** @internal */
     public SplStack $cutStack;
-    /**
-     * Stores named bindings produced by `Label` expressions.
-     * @var SplStack<Scope>
-     * @internal
-     */
-    public SplStack $scopes;
+
+    public Scope $scope;
 
     /**
      * Flag that can be set by expressions to signal whether their children
@@ -162,55 +158,18 @@ abstract class Parser
         $this->cutStack->push(true);
     }
 
-    /**
-     * @internal
-     */
-    public function pushScope(): void
-    {
-        $current = $this->scopes->top();
-        $this->scopes->push(clone $current);
-    }
-
-    /**
-     * @internal
-     */
-    public function popScope(): void
-    {
-        $this->scopes->pop();
-    }
-
-    /**
-     * @internal
-     */
-    public function bind(string $name, string $value): void
-    {
-        $scope = $this->scopes->top();
-        $scope->bindings[$name] = $value;
-    }
-
-    /**
-     * @internal
-     */
-    public function getBinding(string $name): ?string
-    {
-        $scope = $this->scopes->top();
-        return $scope->bindings[$name] ?? null;
-    }
-
     protected function beforeParse(): void
     {
         mb_ereg_search_init($this->source);
         mb_regex_set_options('z');
+        $this->scope = new Scope();
         $this->trace = new Trace($this->source);
         $this->cutStack = new SplStack();
         $this->cutStack->push(false);
-        $this->scopes = new SplStack();
-        $this->scopes->push(new Scope());
     }
 
     protected function afterParse($result): void
     {
-        while (!$this->scopes->isEmpty()) $this->scopes->pop();
         while (!$this->cutStack->isEmpty()) $this->cutStack->pop();
     }
 
@@ -231,15 +190,13 @@ abstract class Parser
 
     protected function beforeTrace(): void
     {
+        $this->scope = new Scope();
         $this->cutStack = new SplStack();
         $this->cutStack->push(false);
-        $this->scopes = new SplStack();
-        $this->scopes->push(new Scope());
     }
 
     protected function afterTrace(): void
     {
-        while (!$this->scopes->isEmpty()) $this->scopes->pop();
         while (!$this->cutStack->isEmpty()) $this->cutStack->pop();
     }
 }

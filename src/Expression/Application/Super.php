@@ -31,10 +31,11 @@ final class Super extends Application
     public function matches(string $text, Parser $parser): Node|bool
     {
         $expr = $parser->grammar->super($this->identifier);
+        $scope = $parser->scope;
+        $parser->scope = clone $scope;
 
-        $parser->pushScope();
         $result = $parser->apply($expr);
-        $parser->popScope();
+        $parser->scope = $scope;
 
         return $result;
     }

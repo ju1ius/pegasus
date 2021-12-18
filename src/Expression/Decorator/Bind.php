@@ -37,7 +37,7 @@ final class Bind extends Decorator
                 true => substr($text, $start, $parser->pos - $start),
                 default => substr($text, $result->start, $result->end - $result->start),
             };
-            $parser->bind($this->label, $value);
+            $parser->scope->bindings[$this->label] = $value;
             return $result;
         }
         return false;
