@@ -7,7 +7,7 @@ use ju1ius\Pegasus\Grammar\Exception\MissingTraitAlias;
 use ju1ius\Pegasus\Grammar\Exception\RuleNotFound;
 use ju1ius\Pegasus\Grammar\OptimizationLevel;
 use ju1ius\Pegasus\Grammar\Optimizer;
-use ju1ius\Pegasus\MetaGrammar\FileParser;
+use ju1ius\Pegasus\MetaGrammar\FilesystemModuleLoader;
 use ju1ius\Pegasus\MetaGrammar\MetaGrammarTransform;
 use ju1ius\Pegasus\Parser\LeftRecursivePackratParser;
 
@@ -69,7 +69,7 @@ final class GrammarFactory
         string $path,
         OptimizationLevel $optimizationLevel = OptimizationLevel::LEVEL_1,
     ): Grammar {
-        $grammar = (new FileParser())->parse($path);
+        $grammar = (new FilesystemModuleLoader())->load($path);
 
         return Optimizer::optimize($grammar, $optimizationLevel);
     }
