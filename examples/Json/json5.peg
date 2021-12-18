@@ -31,7 +31,7 @@ infinity    = / [+-]? Infinity /
 @inline COMMA = ~"," _
 @inline COLON = ~":" _
 
-@inline STRING  = / (["']) ( (?: \\. | (?!\1)[^\n] )* ) \1 /s
+@inline STRING  = / (["']) ( (?: \\. | (?!\1)[^\n] )* ) \1 /m
 @inline IDENT   = / [a-zA-Z_$] [\w$]* /
 
 _ = ~(WS | COMMENT | LINE_COMMENT)*

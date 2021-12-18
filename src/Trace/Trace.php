@@ -5,7 +5,9 @@ namespace ju1ius\Pegasus\Trace;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Source\SourceInfo;
+use ju1ius\Pegasus\Utils\Iter;
 use SplStack;
+use Traversable;
 
 
 final class Trace implements \IteratorAggregate
@@ -76,7 +78,7 @@ final class Trace implements \IteratorAggregate
         return $this->stack->pop();
     }
 
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         foreach ($this->entries as $entry) {
             yield $entry;
@@ -85,33 +87,25 @@ final class Trace implements \IteratorAggregate
     }
 
     /**
-     * @return TraceEntry[]
+     * @return Traversable<TraceEntry>
      */
-    public function getErrorCandidates(): array
+    public function getErrorCandidates(): Traversable
     {
-        $candidates = [];
-        /** @var TraceEntry $entry */
-        foreach ($this->getIterator() as $entry) {
-            if ($entry->isErrorCandidate($this->rightmostFailurePosition)) {
-                $candidates[] = $entry;
-            }
-        }
-
-        return $candidates;
-    }
-
-    public function isErrorCandidate(TraceEntry $entry): bool
-    {
-        return $entry->isErrorCandidate($this->rightmostFailurePosition);
+        return Iter::filter(
+            fn(TraceEntry $entry) => $entry->isErrorCandidate($this->rightmostFailurePosition),
+            $this,
+        );
     }
 
     private function getExpectedTerminalsMessage(): string
     {
-        $candidates = $this->getErrorCandidates();
         $expected = [];
-        foreach ($candidates as $candidate) {
+        $invocations = [];
+        foreach ($this->getErrorCandidates() as $candidate) {
             $expr = $candidate->expression;
             $expected[] = $expr->getName() ?: (string)$expr;
+            $invocation = Iter::map(fn($e) => $e->expression->getName(), $candidate->parentRules());
+            $invocations[] = implode(' < ', iterator_to_array($invocation, false));
         }
 
         $length = \count($expected);
@@ -126,9 +120,10 @@ final class Trace implements \IteratorAggregate
         $tail = array_slice($expected, -1);
 
         return sprintf(
-            "Expected one of: %s or %s\n",
+            "Expected one of: %s or %s\n%s\n",
             implode(', ', $head),
-            $tail[0]
+            $tail[0],
+            implode("\n", $invocations),
         );
     }
 }

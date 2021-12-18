@@ -10,8 +10,10 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 
 $builder = GrammarBuilder::create('TinyXML');
 
-$builder->rule('XML')
+$builder->rule('XML')->sequence()
+    ->optional()->reference('ws')
     ->reference('element')
+    ->optional()->reference('ws')
 ;
 $builder->rule('element')->oneOf()
     ->reference('void_element')
@@ -66,7 +68,12 @@ $builder->rule('attr_value')->oneOf()
     ->match("' [^'<]* '")
 ;
 
+$builder->rule('ws')->ignore()
+    ->match('\s+')
+;
+
 $grammar = $builder->getGrammar();
+$grammar->inline('ws');
 
 $input = <<<'XML'
 <root>
@@ -79,7 +86,7 @@ $input = <<<'XML'
 XML;
 
 $parser = new RecursiveDescentParser($grammar);
-$cst = $parser->parse($input);
+$cst = $parser->parse($argv[1] ?? $input);
 Debug::dump($cst);
 
 $transform = new class extends Transform
@@ -164,6 +171,7 @@ $transform = new class extends Transform
         $this->insertNode($node);
     }
 };
+
 
 $doc = $transform->transform($cst);
 Debug::dump($doc->saveXML());

@@ -3,6 +3,7 @@
 namespace ju1ius\Pegasus\Command;
 
 use ju1ius\Pegasus\Compiler\ExtensionRegistry;
+use ju1ius\Pegasus\Grammar\OptimizationLevel;
 use ju1ius\Pegasus\Grammar\Optimizer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -56,7 +57,7 @@ class GenerateParserCommand extends Command
                 'O',
                 InputOption::VALUE_REQUIRED,
                 'Optimization level to apply.',
-                Optimizer::LEVEL_1
+                1
             )
             ->addOption(
                 'no-cache',
@@ -116,6 +117,8 @@ class GenerateParserCommand extends Command
             'help', 'quiet', 'verbose', 'version',
             'ansi', 'no-ansi', 'no-interaction',
         ];
+        $level = $input->getOption('optimization-level') ?? 1;
+        $options['optimization-level'] = OptimizationLevel::from((int)$level);
 
         return array_filter($options, fn($name) => !in_array($name, $excluded), ARRAY_FILTER_USE_KEY);
     }

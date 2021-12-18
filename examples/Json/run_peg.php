@@ -10,7 +10,6 @@
 
 namespace ju1ius\Pegasus\Examples\Json;
 
-use ju1ius\Pegasus\Debug\Debug;
 use ju1ius\Pegasus\GrammarFactory;
 use ju1ius\Pegasus\Parser;
 use Symfony\Component\Stopwatch\Stopwatch;
@@ -29,7 +28,7 @@ $stopwatch->openSection();
 $stopwatch->start('parse_syntax');
 $grammar = GrammarFactory::fromFile($grammarFile, 2);
 $stopwatch->stop('parse_syntax');
-Debug::dump($grammar);
+//Debug::dump($grammar);
 //$grammar = $grammar->tracing();
 
 $parser = new Parser\RecursiveDescentParser($grammar);
@@ -63,8 +62,8 @@ $probe->enable();
 try {
     $tree = $parser->parse($input);
 } catch (Parser\Exception\ParseError $err) {
-    Debug::dump($parser->getTrace());
-    printf("\n%s\n%s", $err->getMessage(), $err->getTraceAsString());
+    printf("\n%s\n%s\n", $err->getMessage(), $err->getTraceAsString());
+    //Debug::dump($parser->getTrace());
     exit(1);
 }
 $probe->disable();

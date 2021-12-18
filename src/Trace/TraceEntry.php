@@ -1,14 +1,13 @@
 <?php declare(strict_types=1);
 
-
 namespace ju1ius\Pegasus\Trace;
-
 
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Decorator\Not;
 use ju1ius\Pegasus\Expression\TerminalExpression;
-
+use ju1ius\Pegasus\Utils\Iter;
+use Traversable;
 
 final class TraceEntry implements \IteratorAggregate
 {
@@ -29,10 +28,7 @@ final class TraceEntry implements \IteratorAggregate
 
     public int $end;
 
-    /**
-     * @var Node|bool
-     */
-    public $result;
+    public Node|bool $result;
 
     public function __construct(Expression $expr, int $depth)
     {
@@ -40,7 +36,10 @@ final class TraceEntry implements \IteratorAggregate
         $this->depth = $depth;
     }
 
-    public function getIterator()
+    /**
+     * @return Traversable<TraceEntry>
+     */
+    public function getIterator(): Traversable
     {
         foreach ($this->children as $child) {
             yield $child;
@@ -48,28 +47,34 @@ final class TraceEntry implements \IteratorAggregate
         }
     }
 
-    public function parents(): \Generator
+    /**
+     * @return iterable<TraceEntry>
+     */
+    public function ancestors(): iterable
     {
-        $iterator = $this->parent;
-        while ($iterator) {
-            yield $iterator;
-            $iterator = $iterator->parent;
+        for ($entry = $this->parent; $entry; $entry = $entry->parent) {
+            yield $entry;
         }
+    }
+
+    public function parentRules(): iterable
+    {
+        yield from Iter::filter(
+            fn($entry) => !!$entry->expression->getName(),
+            $this->ancestors(),
+        );
     }
 
     /**
      * We collect all failing terminal expressions at the point the parser made the most progress.
      * The inclusion of the `Not` predicate has two reasons:
      *   1. we don't want to fix code which is intended to fail
-     *   2. otherwise we're not able to distinguish syntax errors from an intended disambiguation
-     *
-     * @param int $rightMostFailurePosition
-     * @return bool
+     *   2. otherwise, we're not able to distinguish syntax errors from an intended disambiguation
      */
     public function isErrorCandidate(int $rightMostFailurePosition): bool
     {
         return $this->end === $rightMostFailurePosition
-            && $this->result === null
+            && !$this->result
             && (
                 $this->expression instanceof TerminalExpression
                 || $this->expression instanceof Not

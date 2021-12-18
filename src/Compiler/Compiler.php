@@ -7,6 +7,7 @@ use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\Grammar\OptimizationLevel;
 use ju1ius\Pegasus\Grammar\Optimizer;
 use ju1ius\Pegasus\GrammarFactory;
+use Symfony\Component\Filesystem\Path;
 use Twig\Environment;
 use Twig\Error\Error as TwigError;
 use Twig\Extension\AbstractExtension;
@@ -56,12 +57,14 @@ abstract class Compiler implements CompilerInterface
      */
     public function compileFile(string $path, array $args = []): string
     {
-        if (empty($args['name'])) {
-            $args['name'] = ucfirst(explode('.', basename($path))[0]);
+        $grammar = GrammarFactory::fromFile($path, OptimizationLevel::NONE);
+        if (empty($args['class'])) {
+            $name = $grammar->getName() ?? $args['name'] ?? ucfirst(explode('.', basename($path))[0]);
+            $args['class'] = sprintf('%sParser', ucfirst($name));
+            $args['name'] = $name;
         }
-        $syntax = file_get_contents($path);
 
-        return $this->compileSyntax($syntax, $args);
+        return $this->compileGrammar($grammar, $args);
     }
 
     /**
@@ -70,19 +73,16 @@ abstract class Compiler implements CompilerInterface
     public function compileSyntax(string $syntax, array $args = []): string
     {
         $grammar = GrammarFactory::fromSyntax($syntax, null, OptimizationLevel::NONE);
+        $name = $grammar->getName() ?? $args['name'] ?? null;
         if (empty($args['class'])) {
-            if ($name = $grammar->getName()) {
-                $args['class'] = sprintf('%sParser', ucfirst($name));
-            } else {
-                if (empty($args['name'])) {
-                    throw new \InvalidArgumentException(
-                        'You must provide a name for the grammar'
-                        . ', either with the %name directive or by passing a "name" parameter to the arguments array.'
-                    );
-                }
-                $args['class'] = $args['name'];
-                unset($args['name']);
+            if (!$name) {
+                throw new \InvalidArgumentException(
+                    'You must provide a name for the grammar'
+                    . ', either with the @grammar directive or by passing a "name" parameter to the arguments array.'
+                );
             }
+            $args['class'] = sprintf('%sParser', ucfirst($name));
+            unset($args['name']);
         }
 
         return $this->compileGrammar($grammar, $args);
@@ -96,8 +96,8 @@ abstract class Compiler implements CompilerInterface
         $optimizationLevel = $args['optimization-level'] ?? OptimizationLevel::LEVEL_1;
         $grammar = $this->optimizeGrammar($grammar, $optimizationLevel);
         $context = CompilationContext::of($grammar);
-
         $parserType = $this->guessParserType($context, $args);
+
         if ($parent = $grammar->getParent()) {
             $parserClass = sprintf('%sParser', $parent->getName());
         } else {
@@ -109,6 +109,8 @@ abstract class Compiler implements CompilerInterface
             'base_class' => $parserClass,
             'parser_type' => $parserType,
             'context' => $context,
+            'use_cache' => $parserType === self::PARSER_PACKRAT,
+            'use_apply' => $parserType === self::PARSER_EXTENDED_PACKRAT,
         ]);
     }
 
@@ -147,8 +149,7 @@ abstract class Compiler implements CompilerInterface
         // find the appropriate parser class
         foreach ($grammar as $ruleName => $expr) {
             if ($analysis->isLeftRecursive($ruleName)) {
-                $parserType = self::PARSER_EXTENDED_PACKRAT;
-                break;
+                return self::PARSER_EXTENDED_PACKRAT;
             }
         }
 

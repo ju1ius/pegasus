@@ -53,6 +53,11 @@ final class GroupMatch extends TerminalExpression
         return $this->compiledPattern;
     }
 
+    public function getCompiledFlags(): string
+    {
+        return $this->compiledFlags;
+    }
+
     public function getCaptureCount(): int
     {
         return $this->groupCount;

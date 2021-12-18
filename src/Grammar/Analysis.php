@@ -146,7 +146,7 @@ class Analysis
      * Yields all references in the grammar, starting from the given rule.
      *
      * @param string $ruleName The rule to traverse
-     * @param array  $visited  Set of already visited rules (recursion guard)
+     * @param array $visited Set of already visited rules (recursion guard)
      *
      * @return iterable<string, Expression>
      */
@@ -168,7 +168,7 @@ class Analysis
      * Yields all left-references in the grammar, starting from the given rule.
      *
      * @param string $ruleName The rule to traverse
-     * @param array  $visited  Set of already visited rules (recursion guard)
+     * @param array $visited Set of already visited rules (recursion guard)
      *
      * @return iterable<string, Expression>
      */
@@ -199,7 +199,7 @@ class Analysis
     {
         if ($expr instanceof Reference) {
             yield $expr->getIdentifier() => $expr;
-        } elseif ($expr instanceof Composite) {
+        } else if ($expr instanceof Composite) {
             foreach ($expr as $child) {
                 yield from $this->iterateDirectReferences($child);
             }
@@ -216,17 +216,19 @@ class Analysis
     {
         if ($expr instanceof Reference) {
             yield $expr->getIdentifier() => $expr;
-        } elseif ($expr instanceof OneOf) {
+        } else if ($expr instanceof OneOf) {
             foreach ($expr as $child) {
                 yield from $this->iterateDirectLeftReferences($child);
             }
-        } elseif ($expr instanceof Composite) {
+        } else if ($expr instanceof Composite) {
             yield from $this->iterateDirectLeftReferences($expr[0]);
-        } elseif ($expr instanceof Super) {
+        } else if ($expr instanceof Super) {
+            yield $expr->getIdentifier() => $expr;
             $analysis = new self($this->grammar->getParent());
             $super = $this->grammar->super($expr->getIdentifier());
             yield from $analysis->iterateDirectLeftReferences($super);
-        } elseif ($expr instanceof Call) {
+        } else if ($expr instanceof Call) {
+            yield $expr->getIdentifier() => $expr;
             $trait = $this->grammar->getTrait($expr->getNamespace());
             $analysis = new self($trait);
             yield from $analysis->iterateDirectLeftReferences($trait[$expr->getIdentifier()]);
