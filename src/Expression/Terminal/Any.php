@@ -9,7 +9,7 @@ final class Any extends RegExp
 {
     public function __construct(string $name = '')
     {
-        parent::__construct('.', ['s'], $name);
+        parent::__construct('.', ['m'], $name);
     }
 
     public function __toString(): string
