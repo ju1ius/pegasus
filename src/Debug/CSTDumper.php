@@ -48,7 +48,7 @@ final class CSTDumper extends NodeVisitor
             Str::className($node)
         ));
         if ($node->name) {
-            $this->output->write(sprintf('<d>("</d>%s<d>")</d>', $node->name));
+            $this->output->write(sprintf('<d>(</d><rule>%s</rule><d>)</d>', $node->name));
         }
         $this->output->write(sprintf(
             '<sym>@</sym><d>[</d>%d<d>..</d>%d<d>]</d>',
@@ -63,7 +63,7 @@ final class CSTDumper extends NodeVisitor
         } elseif ($node instanceof Node\Terminal) {
             $this->output->write(sprintf(
                 '<d>: "</d><term>%s</term><d>"</d>',
-                $this->escape($node->value),
+                $this->highlightStringValue($node->value),
             ));
         }
         $this->output->writeln('');
@@ -89,8 +89,13 @@ final class CSTDumper extends NodeVisitor
         return null;
     }
 
-    private function escape(string $value): string
+    private function highlightStringValue(string $value): string
     {
-        return $value;//addcslashes($value, "\\\n\t\0");
+        return strtr($value, [
+            "\n" => '<esc>\n</esc>',
+            "\r" => '<esc>\r</esc>',
+            "\t" => '<esc>\t</esc>',
+            "\f" => '<esc>\f</esc>',
+        ]);
     }
 }

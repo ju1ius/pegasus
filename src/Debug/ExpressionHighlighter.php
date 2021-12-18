@@ -205,7 +205,6 @@ final class ExpressionHighlighter extends ExpressionVisitor
             "\r" => '<esc>\r</esc>',
             "\t" => '<esc>\t</esc>',
             "\f" => '<esc>\f</esc>',
-            "\\" => '<esc>\\\\</esc>',
         ]);
     }
 }

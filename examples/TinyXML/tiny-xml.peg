@@ -1,0 +1,19 @@
+@grammar TinyXML
+
+XML = element
+element = void_element | non_void_element
+
+non_void_element = start_tag content end_tag
+void_element = ~"<" /[\w]+/ attributes? ~"/>"
+start_tag = ~"<" /[\w]+/ attributes? ~">"
+end_tag = ~"</" /[\w]+/ ~">"
+
+content = pcdata | element
+pcdata = /[^<]+/
+
+attributes = ~ws attr_list
+attr_list = attr (~ws attr)*
+attr = [\w+] ~"=" attr_value
+attr_value = /" [^<"]* "/ | /' [^<']* '/
+
+ws = /\s+/
