@@ -2,12 +2,32 @@
 
 namespace ju1ius\Pegasus\Utils;
 
+use Countable;
+use Traversable;
+
 final class Iter
 {
-    public static function map(callable $fn, iterable $col): \Generator
+    public static function of(array|Traversable $value): Traversable
+    {
+        if (\is_array($value)) {
+            return new \ArrayIterator($value);
+        }
+        return $value;
+    }
+
+    public static function map(callable $fn, iterable $col): Traversable
     {
         foreach ($col as $k => $v) {
             yield $fn($v, $k, $col);
+        }
+    }
+
+    public static function filter(callable $fn, iterable $col): Traversable
+    {
+        foreach ($col as $k => $v) {
+            if ($fn($v, $k, $col)) {
+                yield $k => $v;
+            }
         }
     }
 
@@ -35,13 +55,8 @@ final class Iter
 
     /**
      * Returns the first value in collection for which predicate returns truthy.
-     *
-     * @param callable $fn
-     * @param iterable $col
-     *
-     * @return mixed
      */
-    public static function find(callable $fn, iterable $col)
+    public static function find(callable $fn, iterable $col): mixed
     {
         foreach ($col as $k => $v) {
             if ($fn($v, $k, $col)) {
@@ -55,25 +70,21 @@ final class Iter
     /**
      * Yields items from a collection grouped in chunks (n-tuples) of the given size.
      * Iteration stops when a chunk of the given size cannot be produced.
-     *
-     * @param int $size
-     * @param iterable $col
-     *
-     * @return \Generator
+     * @return Traversable<array>
      */
-    public static function consecutive($size, iterable $col): \Generator
+    public static function consecutive(int $size, Traversable&Countable $collection): Traversable
     {
-        $max = \count($col) - 1;
+        $max = \count($collection) - 1;
         if ($size > $max + 1) {
             return;
         }
-        foreach ($col as $i => $v) {
+        foreach ($collection as $i => $v) {
             $tuple = [];
             for ($j = 0; $j < $size; $j++) {
                 if ($i + $j > $max) {
                     return;
                 }
-                $tuple[] = $col[$i + $j];
+                $tuple[] = $collection[$i + $j];
             }
             yield $tuple;
         }
@@ -82,16 +93,10 @@ final class Iter
     /**
      * Iterates over `$collection` in consecutive chunks of `$size` and returns true if,
      * for any chunk, `$predicate` returns true for all items in the chunk.
-     *
-     * @param callable $predicate
-     * @param int $size
-     * @param iterable $col
-     *
-     * @return bool
      */
-    public static function someConsecutive(callable $predicate, int $size, iterable $col): bool
+    public static function someConsecutive(callable $predicate, int $size, Traversable&Countable $collection): bool
     {
-        foreach (self::consecutive($size, $col) as $tuple) {
+        foreach (self::consecutive($size, $collection) as $tuple) {
             if (self::every($predicate, $tuple)) {
                 return true;
             }

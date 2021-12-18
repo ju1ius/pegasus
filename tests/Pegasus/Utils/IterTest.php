@@ -3,70 +3,57 @@
 namespace ju1ius\Pegasus\Tests\Utils;
 
 use ju1ius\Pegasus\Utils\Iter;
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-
 
 class IterTest extends TestCase
 {
     public function testMap()
     {
-        $mock = $this->getMockBuilder('stdClass')
-            ->setMethods(['callback'])
-            ->getMock();
-        $mock->expects($this->exactly(4))
-            ->method('callback')
-            ->willReturnArgument(0);
-
-        $input = new \ArrayIterator([1, 2, 3, 4]);
-        $result = iterator_to_array(Iter::map([$mock, 'callback'], $input));
+        $count = 0;
+        $map = static function($x) use(&$count) {
+            $count++;
+            return $x;
+        };
+        $input = Iter::of([1, 2, 3, 4]);
+        $result = iterator_to_array(Iter::map($map, $input));
+        Assert::assertSame(4, $count);
         $this->assertEquals([1, 2, 3, 4], $result);
     }
 
     public function testEvery()
     {
-        $input = new \ArrayIterator([1, 2, 3, 4, 5, 6, 7, 8, 9]);
-        $result = Iter::every(function ($value) {
-            return $value > 0;
-        }, $input);
+        $input = Iter::of([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+        $result = Iter::every(fn($value) => $value > 0, $input);
         $this->assertTrue($result);
 
-        $result = Iter::every(function ($value) {
-            return $value > 5;
-        }, $input);
+        $result = Iter::every(fn($value) => $value > 5, $input);
         $this->assertFalse($result);
     }
 
     public function testSome()
     {
-        $input = new \ArrayIterator([1, 2, 3, 4, 5, 6, 7, 8, 9]);
-        $result = Iter::some(function ($value) {
-            return $value % 2 === 0;
-        }, $input);
+        $input = Iter::of([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+        $result = Iter::some(fn($value) => $value % 2 === 0, $input);
         $this->assertTrue($result);
 
-        $result = Iter::some(function ($value) {
-            return $value > 10;
-        }, $input);
+        $result = Iter::some(fn($value) => $value > 10, $input);
         $this->assertFalse($result);
     }
 
     public function testFind()
     {
-        $input = new \ArrayIterator([1, 2, 3, 4, 5, 6, 7, 8, 9]);
-        $result = Iter::find(function ($value) {
-            return $value % 3 === 0;
-        }, $input);
+        $input = Iter::of([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+        $result = Iter::find(fn($value) => $value % 3 === 0, $input);
         $this->assertSame(3, $result);
 
-        $result = Iter::find(function ($value) {
-            return $value === 42;
-        }, $input);
+        $result = Iter::find(fn($value) => $value === 42, $input);
         $this->assertNull($result);
     }
 
     public function testConsecutive()
     {
-        $input = new \ArrayIterator([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+        $input = Iter::of([1, 2, 3, 4, 5, 6, 7, 8, 9]);
         $result = iterator_to_array(Iter::consecutive(3, $input));
         $expected = [
             [1, 2, 3],
@@ -79,21 +66,17 @@ class IterTest extends TestCase
         ];
         $this->assertEquals($expected, $result);
 
-        $this->assertEmpty(iterator_to_array(Iter::consecutive(3, [1, 2])));
+        $this->assertEmpty(iterator_to_array(Iter::consecutive(3, Iter::of([1, 2]))));
     }
 
     public function testSomeConsecutive()
     {
-        $input = new \ArrayIterator([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+        $input = Iter::of([1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
-        $result = Iter::someConsecutive(function ($value, $i, $chunk) {
-            return array_sum($chunk) === 12;
-        }, 3, $input);
+        $result = Iter::someConsecutive(fn($value, $i, $chunk) => array_sum($chunk) === 12, 3, $input);
         $this->assertTrue($result);
 
-        $result = Iter::someConsecutive(function ($value, $i, $chunk) {
-            return $value > 42;
-        }, 3, $input);
+        $result = Iter::someConsecutive(fn($value, $i, $chunk) => $value > 42, 3, $input);
         $this->assertFalse($result);
     }
 }
