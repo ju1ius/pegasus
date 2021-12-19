@@ -25,8 +25,8 @@ use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Expression\TerminalExpression;
 use ju1ius\Pegasus\ExpressionBuilder as Builder;
-use ju1ius\Pegasus\Tests\PegasusTestCase;
 use ju1ius\Pegasus\Tests\PegasusAssert;
+use ju1ius\Pegasus\Tests\PegasusTestCase;
 use PHPUnit\Framework\Assert;
 
 /**

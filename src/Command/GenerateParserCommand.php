@@ -4,7 +4,6 @@ namespace ju1ius\Pegasus\Command;
 
 use ju1ius\Pegasus\Compiler\ExtensionRegistry;
 use ju1ius\Pegasus\Grammar\OptimizationLevel;
-use ju1ius\Pegasus\Grammar\Optimizer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

@@ -6,8 +6,6 @@ use ju1ius\Pegasus\Compiler\CompilationContext;
 use ju1ius\Pegasus\Compiler\CompilerInterface;
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Decorator\Quantifier;
-use ju1ius\Pegasus\Expression\Terminal\CapturingRegExp;
-use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Utils\Str;
 use Twig\Environment;
 use Twig\Extension\AbstractExtension;

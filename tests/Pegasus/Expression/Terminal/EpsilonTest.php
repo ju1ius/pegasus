@@ -3,7 +3,6 @@
 namespace ju1ius\Pegasus\Tests\Expression\Terminal;
 
 use ju1ius\Pegasus\Expression\Terminal\Epsilon;
-use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarFactory;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Parser\RecursiveDescentParser;

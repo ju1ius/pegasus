@@ -4,10 +4,10 @@ namespace ju1ius\Pegasus\Grammar\Optimization;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Decorator\Quantifier;
+use ju1ius\Pegasus\Expression\Terminal\AbstractRegExp;
 use ju1ius\Pegasus\Expression\Terminal\EOF;
 use ju1ius\Pegasus\Expression\Terminal\GroupMatch;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
-use ju1ius\Pegasus\Expression\Terminal\AbstractRegExp;
 use ju1ius\Pegasus\Utils\Str;
 
 class PCREManipulator implements RegExpManipulator

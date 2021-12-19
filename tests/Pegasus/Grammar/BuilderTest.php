@@ -11,8 +11,8 @@ use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\Grammar;
 use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\GrammarFactory;
-use ju1ius\Pegasus\Tests\PegasusTestCase;
 use ju1ius\Pegasus\Tests\PegasusAssert;
+use ju1ius\Pegasus\Tests\PegasusTestCase;
 use PHPUnit\Framework\Assert;
 
 class BuilderTest extends PegasusTestCase

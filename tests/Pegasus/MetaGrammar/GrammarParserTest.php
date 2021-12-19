@@ -33,8 +33,8 @@ use ju1ius\Pegasus\MetaGrammar;
 use ju1ius\Pegasus\MetaGrammar\MetaGrammarTransform;
 use ju1ius\Pegasus\Parser\Exception\ParseError;
 use ju1ius\Pegasus\Parser\LeftRecursivePackratParser;
-use ju1ius\Pegasus\Tests\PegasusTestCase;
 use ju1ius\Pegasus\Tests\PegasusAssert;
+use ju1ius\Pegasus\Tests\PegasusTestCase;
 use PHPUnit\Framework\Assert;
 
 class GrammarParserTest extends PegasusTestCase
