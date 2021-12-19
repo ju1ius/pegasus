@@ -62,7 +62,7 @@ class LeftRecursivePackratParser extends PackratParser
         }
     }
 
-    protected function apply($rule): Node|bool
+    protected function apply(string $rule, array $bindings = []): Node|bool
     {
         $memo = $this->recall($rule);
 
@@ -111,7 +111,7 @@ class LeftRecursivePackratParser extends PackratParser
         }
     }
 
-    private function leftRecursionAnswer(string $ruleName, int $position, MemoEntry $memo): Node|LeftRecursion|null
+    private function leftRecursionAnswer(string $ruleName, int $position, MemoEntry $memo): Node|LeftRecursion|bool
     {
         $head = $memo->result->head;
         if ($head->rule !== $ruleName) {
@@ -119,13 +119,13 @@ class LeftRecursivePackratParser extends PackratParser
         }
         $memo->result = $memo->result->seed;
         if (!$memo->result) {
-            return null;
+            return false;
         }
 
         return $this->growSeedParse($ruleName, $position, $memo, $head);
     }
 
-    private function growSeedParse(string $ruleName, int $position, MemoEntry $memo, Head $head): Node|LeftRecursion|null
+    private function growSeedParse(string $ruleName, int $position, MemoEntry $memo, Head $head): Node|LeftRecursion|bool
     {
         $this->isGrowingSeedParse = true;
         $this->heads[$position] = $head;
@@ -156,7 +156,7 @@ class LeftRecursivePackratParser extends PackratParser
         if (!$head) return $memo;
         // Do not evaluate any rule that is not involved in this left recursion.
         if (!$memo && !$head->involves($ruleName)) {
-            return new MemoEntry(null, $pos);
+            return new MemoEntry(false, $pos);
         }
         // Allow involved rules to be evaluated, but only once, during a seed-growing iteration.
         if (isset($head->eval[$ruleName])) {

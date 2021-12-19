@@ -9,7 +9,7 @@ final class MemoEntry
     public int $end;
 
     public function __construct(
-        public Node|LeftRecursion|null $result,
+        public Node|LeftRecursion|bool $result,
         int $endPosition
     ) {
         $this->end = $endPosition;

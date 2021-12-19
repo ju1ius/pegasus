@@ -6,16 +6,15 @@ public function match_{{ expr.name }}(array $bindings): Node|bool
 {
 {% if use_cache %}
     if ($memo = $this->memo[$this->isCapturing][$this->pos]['{{ expr.name }}'] ?? null) {
-        $this->pos = $memo[0];
-        return $memo[1];
+        $this->pos = $memo->end;
+        return $memo->result;
     }
-    $memo = [$this->pos, false];
+    $memo = $this->memo[$this->isCapturing][$this->pos]['{{ expr.name }}'] = new MemoEntry(false, $this->pos);
 {% endif %}
     {{ render_expr(expr, context)|indent }}
 {% if use_cache %}
-    $memo[0] = $this->pos;
-    $memo[1] = {{ result_var }};
-    $this->memo[$this->isCapturing][$this->pos]['{{ expr.name }}'] = $memo;
+    $memo->result = {{ result_var }};
+    $memo->end = $this->pos;
 {% endif %}
     return {{ result_var }} ?? false;
 }

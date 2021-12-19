@@ -10,6 +10,9 @@
 {% if namespace|default %}
 namespace {{ namespace }};
 {% endif %}
+{% if use_cache -%}
+use ju1ius\Pegasus\Compiler\Extension\Php\Runtime\MemoEntry;
+{% endif -%}
 use ju1ius\Pegasus\CST\Node;
 use ju1ius\Pegasus\CST\Node\Composite;
 use ju1ius\Pegasus\CST\Node\Decorator;

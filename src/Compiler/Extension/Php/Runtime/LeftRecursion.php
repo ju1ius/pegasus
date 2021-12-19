@@ -15,7 +15,7 @@ final class LeftRecursion
         /** The rule we're currently matching. */
         public string $rule,
         /**  The initial parse tree found for the associated `rule` */
-        public ?Node $seed = null,
+        public Node|bool $seed = false,
         /** Holds information pertinent to the left recursion (null for non-left-recursive invocations) */
         public ?Head $head = null,
     ) {
