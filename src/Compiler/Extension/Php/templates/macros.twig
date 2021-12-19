@@ -1,5 +1,5 @@
 {% macro failure(rule, expr, pos = '$this->pos') -%}
-$this->registerFailure('{{ rule }}', {{ repr(expr) }}, {{ pos }});
+$this->registerFailure('{{ rule }}', {{ repr(expr.name ?: expr) }}, {{ pos }});
 {%- endmacro %}
 
 {% macro store_position(expr) -%}

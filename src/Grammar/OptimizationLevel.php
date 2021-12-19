@@ -15,4 +15,8 @@ enum OptimizationLevel: int
      * i.e. joining regexps, inlining rules, etc.
      */
     case LEVEL_2 = 2;
+    /**
+     * Highest level, use only with compiler.,
+     */
+    case LEVEL_3 = 3;
 }

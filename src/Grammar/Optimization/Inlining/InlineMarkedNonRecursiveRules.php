@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace ju1ius\Pegasus\Grammar\Optimization;
+namespace ju1ius\Pegasus\Grammar\Optimization\Inlining;
 
 use ju1ius\Pegasus\Expression;
 use ju1ius\Pegasus\Expression\Application\Reference;
@@ -13,7 +13,7 @@ use ju1ius\Pegasus\Grammar\OptimizationContext;
  *
  * This optimization is only applied if the referenced rule is non-recursive and explicitly marked for inlining.
  */
-class InlineNonRecursiveRules extends Optimization
+class InlineMarkedNonRecursiveRules extends Optimization
 {
     public function willPreProcessExpression(Expression $expr, OptimizationContext $context): bool
     {
@@ -27,7 +27,6 @@ class InlineNonRecursiveRules extends Optimization
         $cloned = clone $referenced;
         // In case of reference at the top-level of a rule
         $cloned->setName($expr->getName());
-
         return $cloned;
     }
 }

@@ -10,7 +10,7 @@ use ju1ius\Pegasus\Expression\Decorator\ZeroOrMore;
 use ju1ius\Pegasus\Expression\Terminal\Literal;
 use ju1ius\Pegasus\Expression\Terminal\RegExp;
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Grammar\Optimization\InlineNonRecursiveRules;
+use ju1ius\Pegasus\Grammar\Optimization\Inlining\InlineMarkedNonRecursiveRules;
 use ju1ius\Pegasus\Grammar\OptimizationContext;
 use ju1ius\Pegasus\GrammarBuilder;
 use ju1ius\Pegasus\Tests\PegasusAssert;
@@ -24,7 +24,7 @@ class InlineNonRecursiveRulesTest extends OptimizationTestCase
     public function testApply(Grammar $grammar, string $rule, Expression $expected)
     {
         $result = $this->applyOptimization(
-            new InlineNonRecursiveRules(),
+            new InlineMarkedNonRecursiveRules(),
             $grammar[$rule],
             OptimizationContext::of($grammar)
         );
@@ -49,7 +49,7 @@ class InlineNonRecursiveRulesTest extends OptimizationTestCase
      */
     public function testAppliesTo(Grammar $grammar, string $rule, bool $expected)
     {
-        $result = (new InlineNonRecursiveRules)
+        $result = (new InlineMarkedNonRecursiveRules)
             ->willPreProcessExpression($grammar[$rule], OptimizationContext::of($grammar));
         Assert::assertSame($expected, $result);
     }
@@ -89,7 +89,7 @@ class InlineNonRecursiveRulesTest extends OptimizationTestCase
      */
     public function testApplyOnWholeGrammar(Grammar $grammar, string $ruleToTest, Expression $expected)
     {
-        $optimized = $this->optimizeGrammar($grammar, new InlineNonRecursiveRules());
+        $optimized = $this->optimizeGrammar($grammar, new InlineMarkedNonRecursiveRules());
         $actual = $optimized[$ruleToTest];
         PegasusAssert::ExpressionEquals($expected, $actual);
     }

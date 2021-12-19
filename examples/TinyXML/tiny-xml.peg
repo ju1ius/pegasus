@@ -9,7 +9,7 @@ start_tag = ~"<" name attr_list ~">"
 end_tag = ~"</" name ~">"
 
 content = (pcdata | element)*
-@inline pcdata = /[^<]+/
+pcdata = /[^<]+/
 
 attr_list = (~ws attr)*
 attr = name ~"=" attr_value

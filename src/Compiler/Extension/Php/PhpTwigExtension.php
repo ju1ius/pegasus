@@ -83,9 +83,10 @@ class PhpTwigExtension extends AbstractExtension
     public function getExpressionComment(Expression $expr, string $msg = ''): string
     {
         $class = Str::className($expr);
-
+        $name = $expr->getName();
         return sprintf(
-            '/* %s#%s%s: %s */',
+            '/* %s%s#%s%s: %s */',
+            $name ? "{$name} = " : '',
             $class,
             $expr->id,
             $msg ? sprintf(' (%s)', $msg) : '',

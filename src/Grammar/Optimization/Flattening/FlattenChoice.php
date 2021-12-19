@@ -13,7 +13,7 @@ final class FlattenChoice extends FlatteningOptimization
         return $expr instanceof OneOf && parent::willPostProcessExpression($expr, $context);
     }
 
-    public function isEligibleChild(Expression $child)
+    public function isEligibleChild(Expression $child): bool
     {
         return $child instanceof OneOf;
     }

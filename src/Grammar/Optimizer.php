@@ -3,12 +3,12 @@
 namespace ju1ius\Pegasus\Grammar;
 
 use ju1ius\Pegasus\Grammar;
-use ju1ius\Pegasus\Grammar\Exception\UnknownOptimizationLevel;
 use ju1ius\Pegasus\Grammar\Optimization\CombineQuantifiedMatch;
 use ju1ius\Pegasus\Grammar\Optimization\Flattening\FlattenCapturingSequence;
 use ju1ius\Pegasus\Grammar\Optimization\Flattening\FlattenChoice;
 use ju1ius\Pegasus\Grammar\Optimization\Flattening\FlattenMatchingSequence;
-use ju1ius\Pegasus\Grammar\Optimization\InlineNonRecursiveRules;
+use ju1ius\Pegasus\Grammar\Optimization\Inlining\InlineMarkedNonRecursiveRules;
+use ju1ius\Pegasus\Grammar\Optimization\Inlining\InlineReferences;
 use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinMatchCapturingSequence;
 use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinMatchChoice;
 use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinMatchMatchingSequence;
@@ -18,32 +18,20 @@ use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinPredicateOrBareMatch;
 use ju1ius\Pegasus\Grammar\Optimization\MatchJoining\JoinPredicateOrNestedMatch;
 use ju1ius\Pegasus\Grammar\Optimization\PCREManipulator;
 use ju1ius\Pegasus\Grammar\Optimization\RemoveMeaninglessDecorator;
+use ju1ius\Pegasus\Grammar\Optimization\RemoveUnusedRules;
 use ju1ius\Pegasus\Grammar\Optimization\SimplifyRedundantQuantifier;
 use ju1ius\Pegasus\Grammar\Optimization\SimplifyTerminalToken;
 use SplObjectStorage;
 
 final class Optimizer
 {
-    const LEVEL_0 = 0;
-    /**
-     * Optimization level 1.
-     *
-     * Enables only transparent optimizations,
-     * i.e. parsing a grammar and echoing it right away should yield no visual differences.
-     */
-    const LEVEL_1 = 1;
-
-    /**
-     * Optimization level 2.
-     */
-    const LEVEL_2 = 2;
-
     /**
      * @var array<int, Optimization[]>
      */
     private static array $OPTIMIZATIONS = [
         1 => null,
         2 => null,
+        3 => null,
     ];
 
     private SplObjectStorage $passes;
@@ -63,10 +51,7 @@ final class Optimizer
             return $grammar;
         }
         $optimizer = new self();
-        $optimizations = self::getOptimizations($level);
-        $optimizer->addPasses(
-            (new OptimizationPass(true))->add(...$optimizations)
-        );
+        $optimizer->addPasses(...self::getDefaultPasses($level));
 
         return $optimizer->process($grammar, $deep);
     }
@@ -120,42 +105,54 @@ final class Optimizer
     }
 
     /**
-     * @return Optimization[]
+     * @return OptimizationPass[]
      */
-    private static function getOptimizations(OptimizationLevel $level): array
+    private static function getDefaultPasses(OptimizationLevel $level): array
     {
         return self::$OPTIMIZATIONS[$level->value] ??= match ($level) {
-            OptimizationLevel::NONE => [],
+            OptimizationLevel::NONE => [new OptimizationPass],
             OptimizationLevel::LEVEL_1 => [
-                new FlattenMatchingSequence(),
-                new FlattenCapturingSequence(),
-                new FlattenChoice(),
+                (new OptimizationPass(true))->add(
+                    new FlattenMatchingSequence(),
+                    new FlattenCapturingSequence(),
+                    new FlattenChoice(),
+                ),
             ],
             OptimizationLevel::LEVEL_2 => [
-                new InlineNonRecursiveRules(),
-                new SimplifyRedundantQuantifier(),
-                new RemoveMeaninglessDecorator(),
-                new SimplifyTerminalToken(),
-                // flatten sequences
-                new FlattenMatchingSequence(),
-                new FlattenCapturingSequence(),
-                //
-                new FlattenChoice(),
-                //
-                new CombineQuantifiedMatch($manipulator = new PCREManipulator()),
-                // join predicate matches,
-                new JoinPredicateBareMatch($manipulator),
-                new JoinPredicateNestedMatch($manipulator),
-                // join predicate match choice,
-                new JoinPredicateOrBareMatch($manipulator),
-                new JoinPredicateOrNestedMatch($manipulator),
-                // join match sequence,
-                new JoinMatchMatchingSequence($manipulator),
-                new JoinMatchCapturingSequence($manipulator),
-                // join match choice
-                new JoinMatchChoice($manipulator),
-                //new RemoveUnusedRules(),
+                (new OptimizationPass(true))->add(
+                    new InlineMarkedNonRecursiveRules(),
+                    new SimplifyRedundantQuantifier(),
+                    new RemoveMeaninglessDecorator(),
+                    new SimplifyTerminalToken(),
+                    // flatten sequences
+                    new FlattenMatchingSequence(),
+                    new FlattenCapturingSequence(),
+                    //
+                    new FlattenChoice(),
+                    //
+                    new CombineQuantifiedMatch($manipulator = new PCREManipulator()),
+                    // join predicate matches,
+                    new JoinPredicateBareMatch($manipulator),
+                    new JoinPredicateNestedMatch($manipulator),
+                    // join predicate match choice,
+                    new JoinPredicateOrBareMatch($manipulator),
+                    new JoinPredicateOrNestedMatch($manipulator),
+                    // join match sequence,
+                    new JoinMatchMatchingSequence($manipulator),
+                    new JoinMatchCapturingSequence($manipulator),
+                    // join match choice
+                    new JoinMatchChoice($manipulator),
+                ),
             ],
+            OptimizationLevel::LEVEL_3 => array_merge(
+                self::getDefaultPasses(OptimizationLevel::LEVEL_2),
+                [
+                    (new OptimizationPass)->add(
+                        new InlineReferences(),
+                        new RemoveUnusedRules(),
+                    ),
+                ],
+            ),
         };
     }
 }

@@ -16,7 +16,7 @@ final class FlattenMatchingSequence extends FlatteningOptimization
         return parent::willPostProcessExpression($expr, $context) && $expr instanceof Sequence;
     }
 
-    public function isEligibleChild(Expression $child)
+    public function isEligibleChild(Expression $child): bool
     {
         return $child instanceof Sequence;
     }

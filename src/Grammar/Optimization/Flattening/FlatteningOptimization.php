@@ -30,5 +30,5 @@ abstract class FlatteningOptimization extends Optimization
         return $expr->withChildren(...$children);
     }
 
-    abstract protected function isEligibleChild(Expression $child);
+    abstract protected function isEligibleChild(Expression $child): bool;
 }
