@@ -1,8 +1,7 @@
-{% extends "expr.twig" %}
-{% import "macros.twig" as h %}
+{% extends 'expr.twig' %}
+{% import 'macros.twig' as h %}
 
 {% set subres_var = result_varname(expr[0]) %}
-{% set capturing_var = '$capturing_' ~ expr.id %}
 
 {% block matching %}
 {{ render_expr(expr[0], context) }}

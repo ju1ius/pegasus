@@ -1,7 +1,7 @@
-{% extends "expr.twig" %}
-{% import "macros.twig" as h %}
+{% extends 'expr.twig' %}
+{% import 'macros.twig' as h %}
 
-{% set children_var = '$children_' ~ expr.id %}
+{% set children_var = expr_varname(expr, 'children') %}
 {% set subres_var = result_varname(expr[0]) %}
 
 

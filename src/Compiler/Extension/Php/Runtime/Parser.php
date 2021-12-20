@@ -64,7 +64,7 @@ abstract class Parser
 
     protected function apply(string $rule, array $bindings = []): Node|bool
     {
-        return $this->{"match_{$rule}"}($bindings);
+        return $this->{"parse_{$rule}"}($bindings);
     }
 
     protected function registerFailure(string $rule, string $expr, int $pos)

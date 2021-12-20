@@ -23,18 +23,19 @@ class PhpTwigExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('repr', [$this, 'repr']),
-            new TwigFunction('repr_regexp', [$this, 'reprRegexp']),
-            new TwigFunction('result_varname', [$this, 'getResultVariableName']),
-            new TwigFunction('position_varname', [$this, 'getPositionVariableName']),
-            new TwigFunction('expr_comment', [$this, 'getExpressionComment']),
+            new TwigFunction('repr', $this->repr(...)),
+            new TwigFunction('repr_regexp', $this->reprRegexp(...)),
+            new TwigFunction('expr_varname', $this->getExpressionVariableName(...)),
+            new TwigFunction('result_varname', $this->getResultVariableName(...)),
+            new TwigFunction('position_varname', $this->getPositionVariableName(...)),
+            new TwigFunction('expr_comment', $this->getExpressionComment(...)),
         ];
     }
 
     public function getFilters(): array
     {
         return [
-            new TwigFilter('escape_comment', [$this, 'escapeBlockComment']),
+            new TwigFilter('escape_comment', $this->escapeBlockComment(...)),
         ];
     }
 
@@ -77,7 +78,7 @@ class PhpTwigExtension extends AbstractExtension
 
     public function getResultVariableName(Expression $expr): string
     {
-        return sprintf('$result_%s', $expr->id);
+        return $this->getExpressionVariableName($expr, 'result');
     }
 
     public function getExpressionComment(Expression $expr, string $msg = ''): string
@@ -88,7 +89,7 @@ class PhpTwigExtension extends AbstractExtension
             '/* %s%s#%s%s: %s */',
             $name ? "{$name} = " : '',
             $class,
-            $expr->id,
+            self::toBase62($expr->id),
             $msg ? sprintf(' (%s)', $msg) : '',
             $this->escapeBlockComment((string)$expr)
         );
@@ -96,6 +97,23 @@ class PhpTwigExtension extends AbstractExtension
 
     public function getPositionVariableName(Expression $expr): string
     {
-        return sprintf('$pos_%s', $expr->id);
+        return $this->getExpressionVariableName($expr, 'pos');
+    }
+
+    public function getExpressionVariableName(Expression $expr, string $prefix): string
+    {
+        return sprintf('$%s_%s', $prefix, self::toBase62($expr->id));
+    }
+
+    const BASE_62 = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+
+    private static function toBase62(int $n): string
+    {
+        if ($n === 0) return '0';
+        $out = '';
+        for (; $n > 0; $n = intval($n / 62)) {
+            $out = self::BASE_62[$n % 62] . $out;
+        }
+        return $out;
     }
 }

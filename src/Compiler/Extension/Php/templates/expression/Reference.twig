@@ -1,12 +1,12 @@
-{% extends "expr.twig" %}
-{% import "macros.twig" as h %}
+{% extends 'expr.twig' %}
+{% import 'macros.twig' as h %}
 
 
 {% block matching %}
 {% if use_apply -%}
 {{ result_var }} = $this->apply('{{ expr.identifier }}', $bindings);
 {%- else %}
-{{ result_var }} = $this->match_{{ expr.identifier }}($bindings);
+{{ result_var }} = $this->parse_{{ expr.identifier }}($bindings);
 {%- endif %}
 {%- endblock matching %}
 

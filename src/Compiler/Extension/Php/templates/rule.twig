@@ -1,8 +1,8 @@
 {% set result_var = result_varname(expr) %}
 /**
- * Matching rule: {{ expr.name }} = {{ expr|escape_comment }}
+ * Parses rule: {{ expr.name }} = {{ expr|escape_comment }}
  */
-public function match_{{ expr.name }}(array $bindings): Node|bool
+public function parse_{{ expr.name }}(array $bindings): Node|bool
 {
 {% if use_cache %}
     if ($memo = $this->memo[$this->isCapturing][$this->pos]['{{ expr.name }}'] ?? null) {

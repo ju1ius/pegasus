@@ -1,10 +1,8 @@
-{% extends "expr.twig" %}
-{% import "macros.twig" as h %}
+{% extends 'expr.twig' %}
+{% import 'macros.twig' as h %}
 
-{% set result_var = result_varname(expr) %}
-{% set pos_var = position_varname(expr) %}
-{% set count_var = '$count_' ~ expr.id %}
-{% set children_var = '$children_' ~ expr.id %}
+{% set count_var = expr_varname(expr, 'count') %}
+{% set children_var = expr_varname(expr, 'children') %}
 {% set subres_var = result_varname(expr[0]) %}
 
 {% block common_header %}

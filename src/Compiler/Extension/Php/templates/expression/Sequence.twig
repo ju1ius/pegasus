@@ -1,17 +1,18 @@
-{% extends "expr.twig" %}
-{% import "macros.twig" as h %}
+{% extends 'expr.twig' %}
+{% import 'macros.twig' as h %}
 
 {% set capturing_decidable = expr.isCapturingDecidable %}
 {% set capture_count = expr.captureCount %}
+{% set children_var = expr_varname(expr, 'children') %}
 
 
-{%- block expr -%}
+{% block expr %}
 {{ expr_comment(expr) }}
 {{ context.isMatching or (capturing_decidable and not capture_count)
     ? block('matching')
     : block('capturing')
 }}
-{%- endblock expr -%}
+{%- endblock expr %}
 
 
 {% block matching %}
@@ -29,7 +30,6 @@ if (!{{ result_var }}) $this->pos = {{ pos_var }};
 
 
 {% block capturing %}
-{% set children_var = '$children_' ~ expr.id %}
 {{ result_var }} = false;
 {{ pos_var }} = $this->pos;
 {{ children_var }} = $this->isCapturing ? [] : false;
@@ -43,8 +43,7 @@ do {
     {{ result_var }} = true; // sequence matched
 } while(0);
 if (!{{ result_var }}) $this->pos = {{ pos_var }}; // sequence failed: backtrack
-else if ($this->isCapturing) {
-    // sequence matched
+else if ($this->isCapturing) { // sequence matched
 {{ capturing_decidable
     ? block('capturing_decidable_success')
     : block('capturing_default_success')
@@ -56,21 +55,21 @@ else if ($this->isCapturing) {
 {% block capturing_decidable_success %}
 {% if capture_count == 1 and not expr.name %}
     {{ result_var }} = {{ children_var }}[0];
-{%- elseif capture_count == 1 %}
+{% elseif capture_count == 1 %}
     if ({{ children_var }}[0]->name) {
         {{ result_var }} = new Decorator('{{ expr.name }}', {{ pos_var }}, $this->pos, {{ children_var }}[0]);
     } else {
         {{ result_var }} = {{ children_var }}[0];
         {{ result_var }}->name = '{{ expr.name }}';
     }
-{%- else %}
+{% else %}
     {{ result_var }} = new Composite('{{ expr.name }}', {{ pos_var }}, $this->pos, {{ children_var }});
 {%- endif %}
 {%- endblock capturing_decidable_success %}
 
 
 {% block capturing_default_success %}
-{%~ if not expr.name %}
+{% if not expr.name %}
     {{ result_var }} = match (\count({{ children_var }})) {
         0 => true,
         1 => {{ children_var }}[0],
@@ -91,5 +90,5 @@ else if ($this->isCapturing) {
             {{ result_var }} = new Composite('{{ expr.name }}', {{ pos_var }}, $this->pos, {{ children_var }});
             break;
     }
-{% endif ~%}
+{%- endif %}
 {%- endblock capturing_default_success %}

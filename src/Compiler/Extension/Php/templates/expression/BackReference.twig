@@ -1,5 +1,6 @@
 {% extends 'expr.twig' %}
-{% set result_var = result_varname(expr) %}
+{% import 'macros.twig' as h %}
+
 
 {% block matching %}
 {{ result_var }} = false;

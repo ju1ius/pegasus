@@ -177,7 +177,7 @@ class LeftRecursivePackratParser extends PackratParser
         $matchers = [];
         $class = new \ReflectionClass($this);
         foreach ($class->getMethods() as $method) {
-            if (str_starts_with($method->name, 'match_')) {
+            if (str_starts_with($method->name, 'parse_')) {
                 $ruleName = substr($method->name, 6);
                 $matchers[$ruleName] = $method->getClosure($this);
             }

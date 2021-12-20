@@ -1,7 +1,5 @@
-{% extends "expr.twig" %}
-{% import "macros.twig" as h %}
-
-{% set pos_var = position_varname(expr) %}
+{% extends 'expr.twig' %}
+{% import 'macros.twig' as h %}
 
 
 {% block body %}
@@ -20,7 +18,7 @@ do {
 {% endfor %}
 } while (0);
 $this->cutStack->pop();
-{% endblock %}
+{%- endblock %}
 
 
 {% block matching %}
@@ -30,7 +28,7 @@ $this->cutStack->pop();
 
 {% block capturing %}
 {{ block('body') }}
-{# If we're not a grammar rule, the result node is already lifted! #}
+{#- If we're not a grammar rule, the result node is already lifted! -#}
 {% if expr.name %}
 if ($this->isCapturing && {{ result_var }} && {{ result_var }} !== true) {
     if (!{{ result_var }}->name) {{ result_var }}->name = '{{ expr.name }}';

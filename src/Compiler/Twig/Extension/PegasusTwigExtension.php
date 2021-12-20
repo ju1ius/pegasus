@@ -32,11 +32,11 @@ class PegasusTwigExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('render_expr', [$this, 'renderExpression'], [
+            new TwigFunction('render_expr', $this->renderExpression(...), [
                 'needs_environment' => true,
                 'needs_context' => true,
             ]),
-            new TwigFunction('render_rule', [$this, 'renderRule'], [
+            new TwigFunction('render_rule', $this->renderRule(...), [
                 'needs_environment' => true,
                 'needs_context' => true,
             ]),
@@ -46,7 +46,8 @@ class PegasusTwigExtension extends AbstractExtension
     public function getFilters(): array
     {
         return [
-            new TwigFilter('indent', [$this, 'indent']),
+            new TwigFilter('indent', $this->indent(...)),
+            new TwigFilter('dedent', $this->dedent(...)),
         ];
     }
 
@@ -71,6 +72,12 @@ class PegasusTwigExtension extends AbstractExtension
         }
 
         return $out;
+    }
+
+    public function dedent(string $text, int $level = 1, int $size = 4): string
+    {
+        $pattern = sprintf('/^ {%d}/m', $level * $size);
+        return preg_replace($pattern, '', $text);
     }
 
     public function renderRule(

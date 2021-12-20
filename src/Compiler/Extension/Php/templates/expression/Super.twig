@@ -1,12 +1,12 @@
-{% extends "expr.twig" %}
-{% import "macros.twig" as h %}
+{% extends 'expr.twig' %}
+{% import 'macros.twig' as h %}
 
 
 {% block matching %}
 {% if use_apply -%}
     {{ result_var }} = parent::apply('{{ expr.name }}', $bindings);
 {%- else %}
-    {{ result_var }} = parent::match_{{ expr.name }}($bindings);
+    {{ result_var }} = parent::parse_{{ expr.name }}($bindings);
 {%- endif %}
 {%- endblock matching %}
 

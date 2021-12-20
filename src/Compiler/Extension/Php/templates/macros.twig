@@ -1,5 +1,13 @@
 {% macro failure(rule, expr, pos = '$this->pos') -%}
-$this->registerFailure('{{ rule }}', {{ repr(expr.name ?: expr) }}, {{ pos }});
+
+{% apply dedent(2) %}
+    {%- if debug|default(false) %}
+        $this->registerFailure('{{ rule }}', {{ repr(expr.name ?: expr) }}, {{ pos }});
+    {%- else %}
+        if ({{ pos}} > $this->rightmostFailurePosition) $this->rightmostFailurePosition = {{ pos }};
+    {%- endif %}
+{% endapply %}
+
 {%- endmacro %}
 
 {% macro store_position(expr) -%}
@@ -11,10 +19,10 @@ $this->pos = {{ position_varname(expr) }};
 {%- endmacro %}
 
 {% macro start_non_capturing(expr) -%}
-$isCapturing_{{ expr.id }} = $this->isCapturing;
+{{ expr_varname(expr, 'capturing') }} = $this->isCapturing;
 $this->isCapturing = false;
 {%- endmacro %}
 
 {% macro end_non_capturing(expr) -%}
-$this->isCapturing = $isCapturing_{{ expr.id }};
+$this->isCapturing = {{ expr_varname(expr, 'capturing') }};
 {%- endmacro %}
