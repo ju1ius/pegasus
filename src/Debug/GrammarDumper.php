@@ -32,7 +32,7 @@ final class GrammarDumper extends GrammarVisitor
             ->traverse($grammar);
     }
 
-    public function enterRule(Grammar $grammar, Expression $expr)
+    public function enterRule(Grammar $grammar, Expression $expr): ?Expression
     {
         $this->indentStack = [];
         $this->output->write(
@@ -43,9 +43,11 @@ final class GrammarDumper extends GrammarVisitor
         );
         ExpressionHighlighter::highlight($expr, $this->output);
         $this->output->writeln('');
+
+        return null;
     }
 
-    public function enterExpression(Expression $expr, ?int $index = null, bool $isLast = false)
+    public function enterExpression(Expression $expr, ?int $index = null, bool $isLast = false): ?Expression
     {
         $hasParent = $index !== null;
         $indent = $hasParent ? '  ' : '<d>└ </d>';
@@ -65,12 +67,16 @@ final class GrammarDumper extends GrammarVisitor
         if ($expr instanceof Composite && $hasParent) {
             $this->indentStack[] = $isLast ? '  ' : '│ ';
         }
+
+        return null;
     }
 
-    public function leaveExpression(Expression $expr, ?int $index = null, bool $isLast = false)
+    public function leaveExpression(Expression $expr, ?int $index = null, bool $isLast = false): ?Expression
     {
         if ($expr instanceof Composite) {
             array_pop($this->indentStack);
         }
+
+        return null;
     }
 }

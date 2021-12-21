@@ -57,7 +57,7 @@ final class ExpressionHighlighter extends ExpressionVisitor
         return $expr;
     }
 
-    public function enterExpression(Expression $expr, ?int $index = null, bool $isLast = false)
+    public function enterExpression(Expression $expr, ?int $index = null, bool $isLast = false): ?Expression
     {
         if ($index && !$this->combinatorStack->isEmpty()) {
             $top = $this->combinatorStack->top();
@@ -68,7 +68,7 @@ final class ExpressionHighlighter extends ExpressionVisitor
             }
         }
 
-        if ($expr instanceof Trace) return;
+        if ($expr instanceof Trace) return null;
 
         if ($expr instanceof Reference) {
             $this->output->write(sprintf('<ref>%s</ref>', $expr->getIdentifier()));
@@ -137,11 +137,13 @@ final class ExpressionHighlighter extends ExpressionVisitor
             }
             $this->combinatorStack->push($expr);
         }
+
+        return null;
     }
 
-    public function leaveExpression(Expression $expr, ?int $index = null, bool $isLast = false)
+    public function leaveExpression(Expression $expr, ?int $index = null, bool $isLast = false): ?Expression
     {
-        if ($expr instanceof Trace) return;
+        if ($expr instanceof Trace) return null;
 
         if ($expr instanceof Decorator) {
             if ($this->needsParenthesesAroundDecorator($expr)) {
@@ -175,6 +177,8 @@ final class ExpressionHighlighter extends ExpressionVisitor
                 $this->output->write('<d>)</d>');
             }
         }
+
+        return null;
     }
 
     private function needsParenthesesAroundCombinator(Combinator $expr): bool

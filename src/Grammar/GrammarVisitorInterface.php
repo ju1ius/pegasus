@@ -13,10 +13,6 @@ interface GrammarVisitorInterface
      * Return value semantics:
      *  * null:      $grammar stays as-is
      *  * otherwise: $grammar is set to the return value
-     *
-     * @param Grammar $grammar
-     *
-     * @return mixed
      */
     public function beforeTraverse(Grammar $grammar): ?Grammar;
 
@@ -26,10 +22,6 @@ interface GrammarVisitorInterface
      * Return value semantics:
      *  * null:      $grammar stays as-is
      *  * otherwise: $grammar is set to the return value
-     *
-     * @param Grammar $grammar
-     *
-     * @return mixed
      */
     public function afterTraverse(Grammar $grammar): ?Grammar;
 
@@ -39,13 +31,8 @@ interface GrammarVisitorInterface
      * Return value semantics:
      *  * null:      $expr stays as-is
      *  * otherwise: $expr is set to the return value
-     *
-     * @param Grammar    $grammar The visited grammar.
-     * @param Expression $expr    The visited expression.
-     *
-     * @return mixed
      */
-    public function enterRule(Grammar $grammar, Expression $expr);
+    public function enterRule(Grammar $grammar, Expression $expr): ?Expression;
 
     /**
      * Called when leaving a grammar rule.
@@ -57,13 +44,8 @@ interface GrammarVisitorInterface
      *  * false:     $expr is removed from the grammar.
      *  * array:     The return value is merged into the parent array (at the position of the $node)
      *  * otherwise: $expr is set to the return value
-     *
-     * @param Grammar    $grammar The visited grammar.
-     * @param Expression $expr    The visited expression.
-     *
-     * @return mixed
      */
-    public function leaveRule(Grammar $grammar, Expression $expr);
+    public function leaveRule(Grammar $grammar, Expression $expr): ?Expression;
 
     /**
      * Called when entering an expression.
@@ -73,15 +55,15 @@ interface GrammarVisitorInterface
      *  * otherwise: $expr is set to the return value
      *
      * @param Expression $expr The visited expression.
-     * @param int|null $index The index of the visited expression in it's parent.
+     * @param int|null $index The index of the visited expression in its parent.
      * @param bool $isLast Whether the visited expression is the last child of it's parent
-     *
-     * @return mixed
      */
-    public function enterExpression(Expression $expr, ?int $index = null, bool $isLast = false);
+    public function enterExpression(Expression $expr, ?int $index = null, bool $isLast = false): ?Expression;
 
     /**
      * Called when leaving an expression.
+     *
+     * @todo the following semantics are not implemented by the abstract grammar traverser class !
      *
      * Return value semantics:
      *  * null:      $expr stays as-is
@@ -90,10 +72,8 @@ interface GrammarVisitorInterface
      *  * otherwise: $expr is set to the return value
      *
      * @param Expression $expr The visited expression.
-     * @param int|null $index The index of the visited expression in it's parent.
+     * @param int|null $index The index of the visited expression in its parent.
      * @param bool $isLast Whether the visited expression is the last child of it's parent
-     *
-     * @return mixed
      */
-    public function leaveExpression(Expression $expr, ?int $index = null, bool $isLast = false);
+    public function leaveExpression(Expression $expr, ?int $index = null, bool $isLast = false): ?Expression;
 }

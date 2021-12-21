@@ -11,30 +11,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class ExpressionDumper extends ExpressionVisitor
 {
-    /**
-     * @var OutputInterface
-     */
-    private $output;
+    private array $indentStack;
 
-    /**
-     * @var array
-     */
-    private $indentStack;
-
-    /**
-     * ExpressionDumper constructor.
-     *
-     * @param OutputInterface $output
-     */
-    public function __construct(OutputInterface $output)
-    {
-        $this->output = $output;
+    public function __construct(
+        private OutputInterface $output,
+    ) {
     }
 
-    /**
-     * @param Expression      $expr
-     * @param OutputInterface $output
-     */
     public static function dump(Expression $expr, OutputInterface $output)
     {
         (new ExpressionTraverser())
@@ -42,18 +25,14 @@ final class ExpressionDumper extends ExpressionVisitor
             ->traverse($expr);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function beforeTraverse(Expression $expr)
+    public function beforeTraverse(Expression $expr): ?Expression
     {
         $this->indentStack = [];
+
+        return null;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function enterExpression(Expression $expr, ?int $index = null, bool $isLast = false)
+    public function enterExpression(Expression $expr, ?int $index = null, bool $isLast = false): ?Expression
     {
         $indent = '';
         $hasParent = $index !== null;
@@ -73,15 +52,16 @@ final class ExpressionDumper extends ExpressionVisitor
         if ($expr instanceof Composite && $hasParent) {
             $this->indentStack[] = $isLast ? '  ' : '│ ';
         }
+
+        return null;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function leaveExpression(Expression $expr, ?int $index = null, bool $isLast = false)
+    public function leaveExpression(Expression $expr, ?int $index = null, bool $isLast = false): ?Expression
     {
         if ($expr instanceof Composite) {
             array_pop($this->indentStack);
         }
+
+        return null;
     }
 }

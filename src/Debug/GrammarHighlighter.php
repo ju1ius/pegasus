@@ -46,7 +46,7 @@ final class GrammarHighlighter extends GrammarVisitor
         return null;
     }
 
-    public function enterRule(Grammar $grammar, Expression $expr)
+    public function enterRule(Grammar $grammar, Expression $expr): ?Expression
     {
         if ($expr instanceof Trace) $expr = $expr[0];
 
@@ -58,21 +58,29 @@ final class GrammarHighlighter extends GrammarVisitor
             $expr->getName()
         ));
         $this->expressionHighlighter->beforeTraverse($expr);
+
+        return null;
     }
 
-    public function leaveRule(Grammar $grammar, Expression $expr)
+    public function leaveRule(Grammar $grammar, Expression $expr): ?Expression
     {
         $this->expressionHighlighter->afterTraverse($expr);
         $this->output->writeln(['', '']);
+
+        return null;
     }
 
-    public function enterExpression(Expression $expr, ?int $index = null, bool $isLast = false)
+    public function enterExpression(Expression $expr, ?int $index = null, bool $isLast = false): ?Expression
     {
         $this->expressionHighlighter->enterExpression($expr, $index, $isLast);
+
+        return null;
     }
 
-    public function leaveExpression(Expression $expr, ?int $index = null, bool $isLast = false)
+    public function leaveExpression(Expression $expr, ?int $index = null, bool $isLast = false): ?Expression
     {
         $this->expressionHighlighter->leaveExpression($expr, $index, $isLast);
+
+        return null;
     }
 }

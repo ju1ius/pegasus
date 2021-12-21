@@ -10,50 +10,32 @@ use ju1ius\Pegasus\Grammar;
  */
 class GrammarVisitor implements GrammarVisitorInterface
 {
-    /**
-     * @inheritDoc
-     */
     public function beforeTraverse(Grammar $grammar): ?Grammar
     {
         return null;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function afterTraverse(Grammar $grammar): ?Grammar
     {
         return null;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function enterRule(Grammar $grammar, Expression $expr)
+    public function enterRule(Grammar $grammar, Expression $expr): ?Expression
     {
         return null;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function leaveRule(Grammar $grammar, Expression $expr)
+    public function leaveRule(Grammar $grammar, Expression $expr): ?Expression
     {
         return null;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function enterExpression(Expression $expr, ?int $index = null, bool $isLast = false)
+    public function enterExpression(Expression $expr, ?int $index = null, bool $isLast = false): ?Expression
     {
         return null;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function leaveExpression(Expression $expr, ?int $index = null, bool $isLast = false)
+    public function leaveExpression(Expression $expr, ?int $index = null, bool $isLast = false): ?Expression
     {
         return null;
     }

@@ -11,22 +11,22 @@ use ju1ius\Pegasus\Expression;
  */
 abstract class ExpressionVisitor implements ExpressionVisitorInterface
 {
-    public function beforeTraverse(Expression $expr)
+    public function beforeTraverse(Expression $expr): ?Expression
     {
         return null;
     }
 
-    public function enterExpression(Expression $expr, ?int $index = null, bool $isLast = false)
+    public function enterExpression(Expression $expr, ?int $index = null, bool $isLast = false): ?Expression
     {
         return null;
     }
 
-    public function leaveExpression(Expression $expr, ?int $index = null, bool $isLast = false)
+    public function leaveExpression(Expression $expr, ?int $index = null, bool $isLast = false): ?Expression
     {
         return null;
     }
 
-    public function afterTraverse(Expression $expr)
+    public function afterTraverse(Expression $expr): ?Expression
     {
         return null;
     }
